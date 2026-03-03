@@ -742,7 +742,7 @@ function GuessGame() {
 }
 
 /* ─── Cover Art Challenge ─── */
-const BLUR_LEVELS = [20, 14, 9, 5, 2, 0];
+const BLUR_LEVELS = [10, 7, 5, 3, 1, 0];
 
 function CoverChallenge() {
   const todayKey = getTodayKey();
