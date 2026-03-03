@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import {
   getListenUrl,
   getTodayKey,
+  getDayOfYear,
   ALBUMS,
   VIBES,
   CAROUSEL_ICONS,
@@ -409,6 +410,7 @@ function GuessGame() {
   const [shaking, setShaking] = useState(false);
   const [justRevealedClue, setJustRevealedClue] = useState(-1);
   const inputRef = useRef(null);
+  const shareBtnRef = useRef(null);
 
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_guess_${todayKey}`);
@@ -702,9 +704,10 @@ function GuessGame() {
 
             {/* Share card */}
             <button
+              ref={shareBtnRef}
               className="btn-submit share-btn"
               onClick={() => {
-                const squares = guesses.map((g, i) =>
+                const squares = guesses.map((g) =>
                   g.toLowerCase() === puzzleAlbum.title.toLowerCase()
                     ? "🟩"
                     : "⬛",
@@ -721,7 +724,7 @@ function GuessGame() {
                 navigator.clipboard
                   .writeText(text)
                   .then(() => {
-                    const btn = document.querySelector(".share-btn");
+                    const btn = shareBtnRef.current;
                     if (btn) {
                       btn.textContent = "Copied!";
                       setTimeout(() => {
@@ -742,7 +745,7 @@ function GuessGame() {
 }
 
 /* ─── Cover Art Challenge ─── */
-const BLUR_LEVELS = [10, 7, 5, 3, 1, 0];
+const BLUR_LEVELS = [10, 7, 4, 2, 0];
 
 function CoverChallenge() {
   const todayKey = getTodayKey();
@@ -757,6 +760,7 @@ function CoverChallenge() {
   const [suggestionIndex, setSuggestionIndex] = useState(-1);
   const [shaking, setShaking] = useState(false);
   const inputRef = useRef(null);
+  const shareBtnRef = useRef(null);
 
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_cover_${todayKey}`);
@@ -1016,6 +1020,7 @@ function CoverChallenge() {
               </div>
             )}
             <button
+              ref={shareBtnRef}
               className="btn-submit share-btn"
               onClick={() => {
                 const squares = guesses.map((g) =>
@@ -1035,9 +1040,7 @@ function CoverChallenge() {
                 navigator.clipboard
                   .writeText(text)
                   .then(() => {
-                    const btn = document.querySelector(
-                      ".cover-challenge-img-wrap ~ .guess-result .share-btn",
-                    );
+                    const btn = shareBtnRef.current;
                     if (btn) {
                       btn.textContent = "Copied!";
                       setTimeout(() => {
@@ -1096,35 +1099,47 @@ function HeardleGame() {
   // Load YouTube IFrame API
   useEffect(() => {
     if (!hasYouTube) return;
+
+    let cancelled = false;
+
+    function initPlayer() {
+      if (cancelled || playerRef.current) return;
+      playerRef.current = new window.YT.Player("heardle-player", {
+        height: "0",
+        width: "0",
+        videoId: puzzleAlbum.youtubeId,
+        playerVars: {
+          autoplay: 0,
+          controls: 0,
+          disablekb: 1,
+          fs: 0,
+          modestbranding: 1,
+        },
+        events: { onReady: () => !cancelled && setPlayerReady(true) },
+      });
+    }
+
     if (window.YT && window.YT.Player) {
       initPlayer();
-      return;
+    } else {
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(tag);
+      window.onYouTubeIframeAPIReady = initPlayer;
     }
-    const tag = document.createElement("script");
-    tag.src = "https://www.youtube.com/iframe_api";
-    document.head.appendChild(tag);
-    window.onYouTubeIframeAPIReady = initPlayer;
-    return () => {
-      window.onYouTubeIframeAPIReady = null;
-    };
-  }, [hasYouTube]);
 
-  function initPlayer() {
-    if (playerRef.current) return;
-    playerRef.current = new window.YT.Player("heardle-player", {
-      height: "0",
-      width: "0",
-      videoId: puzzleAlbum.youtubeId,
-      playerVars: {
-        autoplay: 0,
-        controls: 0,
-        disablekb: 1,
-        fs: 0,
-        modestbranding: 1,
-      },
-      events: { onReady: () => setPlayerReady(true) },
-    });
-  }
+    return () => {
+      cancelled = true;
+      window.onYouTubeIframeAPIReady = null;
+      clearTimeout(timerRef.current);
+      if (playerRef.current?.destroy) {
+        try {
+          playerRef.current.destroy();
+        } catch {}
+      }
+      playerRef.current = null;
+    };
+  }, [hasYouTube, puzzleAlbum.youtubeId]);
 
   const clipLength =
     HEARDLE_CLIP_LENGTHS[
@@ -1494,9 +1509,7 @@ function LyricGame() {
   }
 
   // Pick a lyric line deterministically based on day
-  const dayOfYear = Math.floor(
-    (new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000,
-  );
+  const dayOfYear = getDayOfYear();
   const lineIndex = dayOfYear % lyrics.lines.length;
   const fullLine = lyrics.lines[lineIndex];
 
@@ -1531,14 +1544,14 @@ function LyricGame() {
     answerWords.push(words[blankIdx2].replace(/[^a-zA-Z']/g, "").toLowerCase());
 
   const checkAnswer = (guess) => {
-    const g = guess
+    const guessWords = guess
       .trim()
       .toLowerCase()
-      .replace(/[^a-zA-Z' ]/g, "");
-    return (
-      answerWords.some((a) => g.includes(a)) ||
-      answerWords.every((a) => g.split(/\s+/).some((w) => w === a))
-    );
+      .replace(/[^a-zA-Z' ]/g, "")
+      .split(/\s+/)
+      .filter(Boolean);
+    // Every answer word must appear as a whole word in the guess
+    return answerWords.every((a) => guessWords.some((w) => w === a));
   };
 
   const saveState = (newGuesses, isGameOver, isSolved) => {
@@ -1593,10 +1606,11 @@ function LyricGame() {
 
   // Hints based on attempts
   const hints = [];
-  if (guesses.length >= 1 && !gameOver)
-    hints.push(`The missing word has ${answerWords[0].length} letters`);
-  if (guesses.length >= 2 && !gameOver)
-    hints.push(`It starts with "${answerWords[0][0].toUpperCase()}"`);
+  const firstAnswer = answerWords[0] || "";
+  if (guesses.length >= 1 && !gameOver && firstAnswer.length > 0)
+    hints.push(`The missing word has ${firstAnswer.length} letters`);
+  if (guesses.length >= 2 && !gameOver && firstAnswer.length > 0)
+    hints.push(`It starts with "${firstAnswer[0].toUpperCase()}"`);
   if (guesses.length >= 3 && !gameOver)
     hints.push(`From the album "${puzzleAlbum.title}"`);
 
@@ -1732,10 +1746,12 @@ function YesterdayRecap() {
   const [yesterdayData, setYesterdayData] = useState(null);
   const [hasData, setHasData] = useState(false);
 
+  // Compute yesterday in UTC to match getTodayKey() which uses toISOString (UTC)
   const yesterday = useMemo(() => {
-    const d = new Date();
-    d.setDate(d.getDate() - 1);
-    return d;
+    const now = new Date();
+    return new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 1),
+    );
   }, []);
   const yesterdayKey = yesterday.toISOString().split("T")[0];
   const yesterdayAlbum = useMemo(() => getAlbumForDate(yesterday), [yesterday]);
