@@ -7,14 +7,15 @@ import { checkRateLimit, checkDailyLimit, getRealIp } from "@/lib/rate-limit";
 let rateCache = { key: null, data: null, time: 0 };
 const CACHE_TTL = 30000;
 
-export async function GET() {
+export async function GET(request) {
   try {
     const hdrs = await headers();
     const ip = getRealIp(hdrs);
     if (!checkRateLimit(ip)) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
-    const key = getTodayKey();
+    const { searchParams } = new URL(request.url);
+    const key = searchParams.get("key") || getTodayKey();
     const now = Date.now();
     if (rateCache.key === key && now - rateCache.time < CACHE_TTL) {
       return NextResponse.json(rateCache.data);

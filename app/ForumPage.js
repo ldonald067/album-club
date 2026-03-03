@@ -11,6 +11,12 @@ import {
   getPuzzleClues,
   getMarqueeMessage,
   getAlbumForDate,
+  getGameType,
+  getCoverPuzzleAlbum,
+  getScrambleAlbum,
+  getHeardleAlbum,
+  getLyricPuzzleAlbum,
+  scrambleArtist,
 } from "@/lib/albums";
 
 /* ─── Confetti utility (dynamic import, respects reduced motion) ─── */
@@ -735,6 +741,1136 @@ function GuessGame() {
   );
 }
 
+/* ─── Cover Art Challenge ─── */
+const BLUR_LEVELS = [20, 14, 9, 5, 2, 0];
+
+function CoverChallenge() {
+  const todayKey = getTodayKey();
+  const puzzleAlbum = useMemo(() => getCoverPuzzleAlbum(), []);
+
+  const [guesses, setGuesses] = useState([]);
+  const [currentGuess, setCurrentGuess] = useState("");
+  const [gameOver, setGameOver] = useState(false);
+  const [solved, setSolved] = useState(false);
+  const [stats, setStats] = useState(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestionIndex, setSuggestionIndex] = useState(-1);
+  const [shaking, setShaking] = useState(false);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(`aotd_cover_${todayKey}`);
+    if (saved) {
+      const state = JSON.parse(saved);
+      setGuesses(state.guesses);
+      setGameOver(state.gameOver);
+      setSolved(state.solved);
+    }
+    fetch(`/api/guess?type=cover`)
+      .then((r) => r.json())
+      .then((d) => setStats(d.stats))
+      .catch(() => {});
+  }, [todayKey]);
+
+  const saveState = (newGuesses, isGameOver, isSolved) => {
+    localStorage.setItem(
+      `aotd_cover_${todayKey}`,
+      JSON.stringify({
+        guesses: newGuesses,
+        gameOver: isGameOver,
+        solved: isSolved,
+      }),
+    );
+  };
+
+  const postResult = async (attempts, isSolved) => {
+    try {
+      const res = await fetch("/api/guess", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ attempts, solved: isSolved, type: "cover" }),
+      });
+      if (res.ok) setStats((await res.json()).stats);
+    } catch {}
+  };
+
+  const submitGuess = () => {
+    const guess = currentGuess.trim();
+    if (!guess || gameOver) return;
+
+    const newGuesses = [...guesses, guess];
+    setGuesses(newGuesses);
+    setCurrentGuess("");
+    setShowSuggestions(false);
+
+    const isCorrect = guess.toLowerCase() === puzzleAlbum.title.toLowerCase();
+
+    if (isCorrect) {
+      setSolved(true);
+      setGameOver(true);
+      saveState(newGuesses, true, true);
+      postResult(newGuesses.length, true);
+      fireConfetti({ particleCount: 120, spread: 90, startVelocity: 30 });
+    } else if (newGuesses.length >= 5) {
+      setGameOver(true);
+      saveState(newGuesses, true, false);
+      postResult(5, false);
+      setShaking(true);
+      setTimeout(() => setShaking(false), 400);
+    } else {
+      saveState(newGuesses, false, false);
+      setShaking(true);
+      setTimeout(() => setShaking(false), 400);
+      inputRef.current?.focus();
+    }
+  };
+
+  const blurLevel = gameOver
+    ? 0
+    : BLUR_LEVELS[Math.min(guesses.length, BLUR_LEVELS.length - 1)];
+
+  const guessedTitles = guesses.map((g) => g.toLowerCase());
+  const filtered =
+    currentGuess.trim().length > 0
+      ? ALBUMS.filter(
+          (a) =>
+            !guessedTitles.includes(a.title.toLowerCase()) &&
+            (a.title.toLowerCase().includes(currentGuess.toLowerCase()) ||
+              a.artist.toLowerCase().includes(currentGuess.toLowerCase())),
+        ).slice(0, 5)
+      : [];
+
+  return (
+    <div className="panel">
+      <div className="panel-header">
+        <span>
+          <i className="hn hn-star" aria-hidden="true" /> COVER ART CHALLENGE
+        </span>
+        <span style={{ fontSize: "10px", fontWeight: "normal", opacity: 0.7 }}>
+          {gameOver
+            ? solved
+              ? `Solved in ${guesses.length}/5`
+              : "Better luck tomorrow"
+            : `Guess ${guesses.length + 1}/5`}
+        </span>
+      </div>
+      <div className="panel-body">
+        <p className="activity-prompt" style={{ textAlign: "center" }}>
+          Can you identify the album from its blurred cover art? Each wrong
+          guess clears the blur a little more.
+        </p>
+
+        {/* Blurred cover */}
+        <div className="cover-challenge-img-wrap">
+          <img
+            src={puzzleAlbum.image}
+            alt={
+              gameOver ? `${puzzleAlbum.title} cover` : "Mystery album cover"
+            }
+            className="cover-challenge-img"
+            style={{
+              filter: `blur(${blurLevel}px)`,
+              transition: "filter 0.6s ease",
+            }}
+            draggable={false}
+          />
+          {!gameOver && (
+            <div className="cover-challenge-overlay">
+              <span className="cover-challenge-q">?</span>
+            </div>
+          )}
+        </div>
+
+        {/* Guess history */}
+        {guesses.length > 0 && (
+          <div className="guess-history">
+            {guesses.map((g, i) => (
+              <div
+                key={i}
+                className={`guess-item ${g.toLowerCase() === puzzleAlbum.title.toLowerCase() ? "correct" : "wrong"}`}
+              >
+                <span className="guess-num">#{i + 1}</span>
+                <span className="guess-text">{g}</span>
+                <span>
+                  {g.toLowerCase() === puzzleAlbum.title.toLowerCase()
+                    ? "✅"
+                    : "❌"}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Input */}
+        {!gameOver && (
+          <div className={`guess-input-wrap${shaking ? " shaking" : ""}`}>
+            <div className="guess-input-container">
+              <input
+                ref={inputRef}
+                type="text"
+                className="form-input"
+                value={currentGuess}
+                onChange={(e) => {
+                  setCurrentGuess(e.target.value);
+                  setShowSuggestions(true);
+                  setSuggestionIndex(-1);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                placeholder="Type an album name..."
+                role="combobox"
+                aria-expanded={showSuggestions && filtered.length > 0}
+                aria-autocomplete="list"
+                onKeyDown={(e) => {
+                  if (
+                    showSuggestions &&
+                    filtered.length > 0 &&
+                    e.key === "ArrowDown"
+                  ) {
+                    e.preventDefault();
+                    setSuggestionIndex((prev) =>
+                      prev < filtered.length - 1 ? prev + 1 : 0,
+                    );
+                  } else if (
+                    showSuggestions &&
+                    filtered.length > 0 &&
+                    e.key === "ArrowUp"
+                  ) {
+                    e.preventDefault();
+                    setSuggestionIndex((prev) =>
+                      prev > 0 ? prev - 1 : filtered.length - 1,
+                    );
+                  } else if (e.key === "Enter") {
+                    if (suggestionIndex >= 0 && filtered[suggestionIndex]) {
+                      setCurrentGuess(filtered[suggestionIndex].title);
+                      setShowSuggestions(false);
+                      setSuggestionIndex(-1);
+                    } else {
+                      submitGuess();
+                    }
+                  } else if (e.key === "Escape") {
+                    setShowSuggestions(false);
+                    setSuggestionIndex(-1);
+                  }
+                }}
+              />
+              {showSuggestions && filtered.length > 0 && (
+                <div className="suggestions" role="listbox">
+                  {filtered.map((a, i) => (
+                    <div
+                      key={i}
+                      className={`suggestion-item${i === suggestionIndex ? " highlighted" : ""}`}
+                      role="option"
+                      aria-selected={i === suggestionIndex}
+                      onMouseDown={() => {
+                        setCurrentGuess(a.title);
+                        setShowSuggestions(false);
+                        setSuggestionIndex(-1);
+                      }}
+                      onMouseEnter={() => setSuggestionIndex(i)}
+                    >
+                      {a.cover} <strong>{a.title}</strong>{" "}
+                      <span style={{ color: "#888" }}>— {a.artist}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button
+              className="btn-submit"
+              onClick={submitGuess}
+              disabled={!currentGuess.trim()}
+            >
+              Guess
+            </button>
+          </div>
+        )}
+
+        {/* Game over */}
+        {gameOver && (
+          <div className={`guess-result ${solved ? "solved" : "failed"}`}>
+            {solved ? (
+              <span>
+                🎉 You got it in <strong>{guesses.length}/5</strong>!
+              </span>
+            ) : (
+              <span>
+                The answer was: <strong>{puzzleAlbum.title}</strong> by{" "}
+                {puzzleAlbum.artist}
+              </span>
+            )}
+            {!solved && (
+              <a
+                href={getListenUrl(puzzleAlbum)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="listen-btn guess-listen-btn"
+              >
+                ▶ Listen on YouTube
+              </a>
+            )}
+            {stats && stats.totalPlayers > 0 && (
+              <div className="guess-community">
+                {stats.totalSolved}/{stats.totalPlayers} players solved it today
+                ({Math.round((stats.totalSolved / stats.totalPlayers) * 100)}%)
+              </div>
+            )}
+            <button
+              className="btn-submit share-btn"
+              onClick={() => {
+                const squares = guesses.map((g) =>
+                  g.toLowerCase() === puzzleAlbum.title.toLowerCase()
+                    ? "🟩"
+                    : "⬛",
+                );
+                const text = [
+                  `Album Of The Day Club`,
+                  `🖼️ Cover Art Challenge — ${todayKey}`,
+                  solved
+                    ? `Solved in ${guesses.length}/5`
+                    : `X/5 — Better luck tomorrow`,
+                  squares.join(""),
+                  ``,
+                ].join("\n");
+                navigator.clipboard
+                  .writeText(text)
+                  .then(() => {
+                    const btn = document.querySelector(
+                      ".cover-challenge-img-wrap ~ .guess-result .share-btn",
+                    );
+                    if (btn) {
+                      btn.textContent = "Copied!";
+                      setTimeout(() => {
+                        btn.textContent = "📋 Share Results";
+                      }, 2000);
+                    }
+                  })
+                  .catch(() => {});
+              }}
+            >
+              📋 Share Results
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Heardle / Audio Intro ─── */
+const HEARDLE_CLIP_LENGTHS = [1, 2, 4, 8, 16, 30];
+
+function HeardleGame() {
+  const todayKey = getTodayKey();
+  const puzzleAlbum = useMemo(() => getHeardleAlbum(), []);
+  const hasYouTube = !!puzzleAlbum.youtubeId;
+
+  const [guesses, setGuesses] = useState([]);
+  const [currentGuess, setCurrentGuess] = useState("");
+  const [gameOver, setGameOver] = useState(false);
+  const [solved, setSolved] = useState(false);
+  const [stats, setStats] = useState(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestionIndex, setSuggestionIndex] = useState(-1);
+  const [shaking, setShaking] = useState(false);
+  const [playing, setPlaying] = useState(false);
+  const [playerReady, setPlayerReady] = useState(false);
+  const inputRef = useRef(null);
+  const playerRef = useRef(null);
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(`aotd_heardle_${todayKey}`);
+    if (saved) {
+      const state = JSON.parse(saved);
+      setGuesses(state.guesses);
+      setGameOver(state.gameOver);
+      setSolved(state.solved);
+    }
+    fetch(`/api/guess?type=heardle`)
+      .then((r) => r.json())
+      .then((d) => setStats(d.stats))
+      .catch(() => {});
+  }, [todayKey]);
+
+  // Load YouTube IFrame API
+  useEffect(() => {
+    if (!hasYouTube) return;
+    if (window.YT && window.YT.Player) {
+      initPlayer();
+      return;
+    }
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+    window.onYouTubeIframeAPIReady = initPlayer;
+    return () => {
+      window.onYouTubeIframeAPIReady = null;
+    };
+  }, [hasYouTube]);
+
+  function initPlayer() {
+    if (playerRef.current) return;
+    playerRef.current = new window.YT.Player("heardle-player", {
+      height: "0",
+      width: "0",
+      videoId: puzzleAlbum.youtubeId,
+      playerVars: {
+        autoplay: 0,
+        controls: 0,
+        disablekb: 1,
+        fs: 0,
+        modestbranding: 1,
+      },
+      events: { onReady: () => setPlayerReady(true) },
+    });
+  }
+
+  const clipLength =
+    HEARDLE_CLIP_LENGTHS[
+      Math.min(guesses.length, HEARDLE_CLIP_LENGTHS.length - 1)
+    ];
+
+  const playClip = () => {
+    if (!playerRef.current || playing) return;
+    const player = playerRef.current;
+    player.seekTo(0, true);
+    player.playVideo();
+    setPlaying(true);
+    timerRef.current = setTimeout(() => {
+      player.pauseVideo();
+      setPlaying(false);
+    }, clipLength * 1000);
+  };
+
+  const saveState = (newGuesses, isGameOver, isSolved) => {
+    localStorage.setItem(
+      `aotd_heardle_${todayKey}`,
+      JSON.stringify({
+        guesses: newGuesses,
+        gameOver: isGameOver,
+        solved: isSolved,
+      }),
+    );
+  };
+
+  const postResult = async (attempts, isSolved) => {
+    try {
+      const res = await fetch("/api/guess", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ attempts, solved: isSolved, type: "heardle" }),
+      });
+      if (res.ok) setStats((await res.json()).stats);
+    } catch {}
+  };
+
+  const submitGuess = () => {
+    const guess = currentGuess.trim();
+    if (!guess || gameOver) return;
+
+    const newGuesses = [...guesses, guess];
+    setGuesses(newGuesses);
+    setCurrentGuess("");
+    setShowSuggestions(false);
+
+    const isCorrect = guess.toLowerCase() === puzzleAlbum.title.toLowerCase();
+
+    if (isCorrect) {
+      setSolved(true);
+      setGameOver(true);
+      saveState(newGuesses, true, true);
+      postResult(newGuesses.length, true);
+      fireConfetti({ particleCount: 120, spread: 90, startVelocity: 30 });
+      if (playerRef.current) playerRef.current.pauseVideo();
+      clearTimeout(timerRef.current);
+    } else if (newGuesses.length >= 6) {
+      setGameOver(true);
+      saveState(newGuesses, true, false);
+      postResult(6, false);
+      setShaking(true);
+      setTimeout(() => setShaking(false), 400);
+      if (playerRef.current) playerRef.current.pauseVideo();
+      clearTimeout(timerRef.current);
+    } else {
+      saveState(newGuesses, false, false);
+      setShaking(true);
+      setTimeout(() => setShaking(false), 400);
+      inputRef.current?.focus();
+    }
+  };
+
+  // If no YouTube ID, fall back to Cover Challenge
+  if (!hasYouTube) return <CoverChallenge />;
+
+  const guessedTitles = guesses.map((g) => g.toLowerCase());
+  const filtered =
+    currentGuess.trim().length > 0
+      ? ALBUMS.filter(
+          (a) =>
+            !guessedTitles.includes(a.title.toLowerCase()) &&
+            (a.title.toLowerCase().includes(currentGuess.toLowerCase()) ||
+              a.artist.toLowerCase().includes(currentGuess.toLowerCase())),
+        ).slice(0, 5)
+      : [];
+
+  return (
+    <div className="panel">
+      <div className="panel-header">
+        <span>
+          <i className="hn hn-sound-on" aria-hidden="true" /> HEARDLE — NAME
+          THAT TUNE
+        </span>
+        <span style={{ fontSize: "10px", fontWeight: "normal", opacity: 0.7 }}>
+          {gameOver
+            ? solved
+              ? `Solved in ${guesses.length}/6`
+              : "Better luck tomorrow"
+            : `Guess ${guesses.length + 1}/6`}
+        </span>
+      </div>
+      <div className="panel-body">
+        <p className="activity-prompt" style={{ textAlign: "center" }}>
+          Listen to progressively longer clips and guess the album. You get{" "}
+          {clipLength}s this round.
+        </p>
+
+        {/* Hidden YouTube player */}
+        <div
+          id="heardle-player"
+          style={{ position: "absolute", opacity: 0, pointerEvents: "none" }}
+        />
+
+        {/* Play button */}
+        <div className="heardle-controls">
+          <button
+            className="btn-submit heardle-play-btn"
+            onClick={playClip}
+            disabled={!playerReady || playing || gameOver}
+          >
+            {playing
+              ? `🔊 Playing ${clipLength}s...`
+              : `▶ Play ${clipLength}s clip`}
+          </button>
+          <div className="heardle-timeline">
+            {HEARDLE_CLIP_LENGTHS.map((len, i) => (
+              <div
+                key={len}
+                className={`heardle-tick${i <= guesses.length ? " active" : ""}${i === guesses.length && !gameOver ? " current" : ""}`}
+              >
+                {len}s
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Guess history */}
+        {guesses.length > 0 && (
+          <div className="guess-history">
+            {guesses.map((g, i) => (
+              <div
+                key={i}
+                className={`guess-item ${g.toLowerCase() === puzzleAlbum.title.toLowerCase() ? "correct" : "wrong"}`}
+              >
+                <span className="guess-num">#{i + 1}</span>
+                <span className="guess-text">{g}</span>
+                <span>
+                  {g.toLowerCase() === puzzleAlbum.title.toLowerCase()
+                    ? "✅"
+                    : "❌"}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Input */}
+        {!gameOver && (
+          <div className={`guess-input-wrap${shaking ? " shaking" : ""}`}>
+            <div className="guess-input-container">
+              <input
+                ref={inputRef}
+                type="text"
+                className="form-input"
+                value={currentGuess}
+                onChange={(e) => {
+                  setCurrentGuess(e.target.value);
+                  setShowSuggestions(true);
+                  setSuggestionIndex(-1);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                placeholder="Type an album name..."
+                role="combobox"
+                aria-expanded={showSuggestions && filtered.length > 0}
+                aria-autocomplete="list"
+                onKeyDown={(e) => {
+                  if (
+                    showSuggestions &&
+                    filtered.length > 0 &&
+                    e.key === "ArrowDown"
+                  ) {
+                    e.preventDefault();
+                    setSuggestionIndex((prev) =>
+                      prev < filtered.length - 1 ? prev + 1 : 0,
+                    );
+                  } else if (
+                    showSuggestions &&
+                    filtered.length > 0 &&
+                    e.key === "ArrowUp"
+                  ) {
+                    e.preventDefault();
+                    setSuggestionIndex((prev) =>
+                      prev > 0 ? prev - 1 : filtered.length - 1,
+                    );
+                  } else if (e.key === "Enter") {
+                    if (suggestionIndex >= 0 && filtered[suggestionIndex]) {
+                      setCurrentGuess(filtered[suggestionIndex].title);
+                      setShowSuggestions(false);
+                      setSuggestionIndex(-1);
+                    } else {
+                      submitGuess();
+                    }
+                  } else if (e.key === "Escape") {
+                    setShowSuggestions(false);
+                    setSuggestionIndex(-1);
+                  }
+                }}
+              />
+              {showSuggestions && filtered.length > 0 && (
+                <div className="suggestions" role="listbox">
+                  {filtered.map((a, i) => (
+                    <div
+                      key={i}
+                      className={`suggestion-item${i === suggestionIndex ? " highlighted" : ""}`}
+                      role="option"
+                      aria-selected={i === suggestionIndex}
+                      onMouseDown={() => {
+                        setCurrentGuess(a.title);
+                        setShowSuggestions(false);
+                        setSuggestionIndex(-1);
+                      }}
+                      onMouseEnter={() => setSuggestionIndex(i)}
+                    >
+                      {a.cover} <strong>{a.title}</strong>{" "}
+                      <span style={{ color: "#888" }}>— {a.artist}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button
+              className="btn-submit"
+              onClick={submitGuess}
+              disabled={!currentGuess.trim()}
+            >
+              Guess
+            </button>
+          </div>
+        )}
+
+        {/* Game over */}
+        {gameOver && (
+          <div className={`guess-result ${solved ? "solved" : "failed"}`}>
+            {solved ? (
+              <span>
+                🎉 You got it in <strong>{guesses.length}/6</strong>!
+              </span>
+            ) : (
+              <span>
+                The answer was: <strong>{puzzleAlbum.title}</strong> by{" "}
+                {puzzleAlbum.artist}
+              </span>
+            )}
+            {!solved && (
+              <a
+                href={getListenUrl(puzzleAlbum)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="listen-btn guess-listen-btn"
+              >
+                ▶ Listen on YouTube
+              </a>
+            )}
+            {stats && stats.totalPlayers > 0 && (
+              <div className="guess-community">
+                {stats.totalSolved}/{stats.totalPlayers} players solved it today
+                ({Math.round((stats.totalSolved / stats.totalPlayers) * 100)}%)
+              </div>
+            )}
+            <button
+              className="btn-submit share-btn"
+              onClick={() => {
+                const squares = guesses.map((g) =>
+                  g.toLowerCase() === puzzleAlbum.title.toLowerCase()
+                    ? "🟩"
+                    : "⬛",
+                );
+                const text = [
+                  `Album Of The Day Club`,
+                  `🎧 Heardle — ${todayKey}`,
+                  solved
+                    ? `Solved in ${guesses.length}/6`
+                    : `X/6 — Better luck tomorrow`,
+                  squares.join(""),
+                  ``,
+                ].join("\n");
+                navigator.clipboard.writeText(text).catch(() => {});
+              }}
+            >
+              📋 Share Results
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Lyric Fill-in-the-Blank ─── */
+function LyricGame() {
+  const todayKey = getTodayKey();
+  const puzzleAlbum = useMemo(() => getLyricPuzzleAlbum(), []);
+  const [lyrics, setLyrics] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const [guesses, setGuesses] = useState([]);
+  const [currentGuess, setCurrentGuess] = useState("");
+  const [gameOver, setGameOver] = useState(false);
+  const [solved, setSolved] = useState(false);
+  const [stats, setStats] = useState(null);
+  const [shaking, setShaking] = useState(false);
+  const inputRef = useRef(null);
+
+  // Load lyrics data
+  useEffect(() => {
+    import("@/lib/lyrics.json")
+      .then((mod) => {
+        const key =
+          `${puzzleAlbum.artist} - ${puzzleAlbum.title}`.toLowerCase();
+        const data = mod.default || mod;
+        // Find matching lyrics (case-insensitive key match)
+        const match = Object.entries(data).find(
+          ([k]) => k.toLowerCase() === key,
+        );
+        if (match) setLyrics(match[1]);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [puzzleAlbum]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(`aotd_lyric_${todayKey}`);
+    if (saved) {
+      const state = JSON.parse(saved);
+      setGuesses(state.guesses);
+      setGameOver(state.gameOver);
+      setSolved(state.solved);
+    }
+    fetch(`/api/guess?type=lyric`)
+      .then((r) => r.json())
+      .then((d) => setStats(d.stats))
+      .catch(() => {});
+  }, [todayKey]);
+
+  // If no lyrics available, fall back to Cover Challenge
+  if (!loading && !lyrics) return <CoverChallenge />;
+  if (loading) {
+    return (
+      <div className="panel">
+        <div className="panel-header">
+          <span>
+            <i className="hn hn-music" aria-hidden="true" /> LYRIC CHALLENGE
+          </span>
+        </div>
+        <div
+          className="panel-body"
+          style={{ textAlign: "center", padding: 30 }}
+        >
+          Loading...
+        </div>
+      </div>
+    );
+  }
+
+  // Pick a lyric line deterministically based on day
+  const dayOfYear = Math.floor(
+    (new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000,
+  );
+  const lineIndex = dayOfYear % lyrics.lines.length;
+  const fullLine = lyrics.lines[lineIndex];
+
+  // Blank out 1-2 significant words (>3 chars)
+  const words = fullLine.split(" ");
+  const blankableIndices = words
+    .map((w, i) => ({ w: w.replace(/[^a-zA-Z]/g, ""), i }))
+    .filter((x) => x.w.length > 3);
+
+  const seed = dayOfYear * 997 + puzzleAlbum.title.length;
+  const blankIdx1 =
+    blankableIndices.length > 0
+      ? blankableIndices[seed % blankableIndices.length].i
+      : 0;
+  const blankIdx2 =
+    blankableIndices.length > 1
+      ? blankableIndices[(seed + 7) % blankableIndices.length].i
+      : -1;
+
+  const blankedWords = words.map((w, i) => {
+    if (i === blankIdx1 || (i === blankIdx2 && blankIdx2 !== blankIdx1)) {
+      return "____";
+    }
+    return w;
+  });
+  const blankedLine = blankedWords.join(" ");
+
+  const answerWords = [];
+  if (blankIdx1 >= 0)
+    answerWords.push(words[blankIdx1].replace(/[^a-zA-Z']/g, "").toLowerCase());
+  if (blankIdx2 >= 0 && blankIdx2 !== blankIdx1)
+    answerWords.push(words[blankIdx2].replace(/[^a-zA-Z']/g, "").toLowerCase());
+
+  const checkAnswer = (guess) => {
+    const g = guess
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-zA-Z' ]/g, "");
+    return (
+      answerWords.some((a) => g.includes(a)) ||
+      answerWords.every((a) => g.split(/\s+/).some((w) => w === a))
+    );
+  };
+
+  const saveState = (newGuesses, isGameOver, isSolved) => {
+    localStorage.setItem(
+      `aotd_lyric_${todayKey}`,
+      JSON.stringify({
+        guesses: newGuesses,
+        gameOver: isGameOver,
+        solved: isSolved,
+      }),
+    );
+  };
+
+  const postResult = async (attempts, isSolved) => {
+    try {
+      const res = await fetch("/api/guess", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ attempts, solved: isSolved, type: "lyric" }),
+      });
+      if (res.ok) setStats((await res.json()).stats);
+    } catch {}
+  };
+
+  const submitGuess = () => {
+    const guess = currentGuess.trim();
+    if (!guess || gameOver) return;
+
+    const newGuesses = [...guesses, guess];
+    setGuesses(newGuesses);
+    setCurrentGuess("");
+
+    if (checkAnswer(guess)) {
+      setSolved(true);
+      setGameOver(true);
+      saveState(newGuesses, true, true);
+      postResult(newGuesses.length, true);
+      fireConfetti({ particleCount: 80, spread: 60 });
+    } else if (newGuesses.length >= 4) {
+      setGameOver(true);
+      saveState(newGuesses, true, false);
+      postResult(4, false);
+      setShaking(true);
+      setTimeout(() => setShaking(false), 400);
+    } else {
+      saveState(newGuesses, false, false);
+      setShaking(true);
+      setTimeout(() => setShaking(false), 400);
+      inputRef.current?.focus();
+    }
+  };
+
+  // Hints based on attempts
+  const hints = [];
+  if (guesses.length >= 1 && !gameOver)
+    hints.push(`The missing word has ${answerWords[0].length} letters`);
+  if (guesses.length >= 2 && !gameOver)
+    hints.push(`It starts with "${answerWords[0][0].toUpperCase()}"`);
+  if (guesses.length >= 3 && !gameOver)
+    hints.push(`From the album "${puzzleAlbum.title}"`);
+
+  return (
+    <div className="panel">
+      <div className="panel-header">
+        <span>
+          <i className="hn hn-music" aria-hidden="true" /> LYRIC CHALLENGE
+        </span>
+        <span style={{ fontSize: "10px", fontWeight: "normal", opacity: 0.7 }}>
+          {gameOver
+            ? solved
+              ? `Solved in ${guesses.length}/4`
+              : "Better luck tomorrow"
+            : `Guess ${guesses.length + 1}/4`}
+        </span>
+      </div>
+      <div className="panel-body">
+        <p className="activity-prompt" style={{ textAlign: "center" }}>
+          Fill in the missing word(s) from this lyric. You have 4 attempts.
+        </p>
+
+        {/* Lyric display */}
+        <div className="lyric-display">
+          <span className="lyric-quote">&ldquo;</span>
+          <span className="lyric-text">{blankedLine}</span>
+          <span className="lyric-quote">&rdquo;</span>
+        </div>
+
+        {/* Hints */}
+        {hints.length > 0 && (
+          <div className="lyric-hints">
+            {hints.map((h, i) => (
+              <div key={i} className="lyric-hint">
+                💡 {h}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Guess history */}
+        {guesses.length > 0 && (
+          <div className="guess-history">
+            {guesses.map((g, i) => (
+              <div
+                key={i}
+                className={`guess-item ${checkAnswer(g) ? "correct" : "wrong"}`}
+              >
+                <span className="guess-num">#{i + 1}</span>
+                <span className="guess-text">{g}</span>
+                <span>{checkAnswer(g) ? "✅" : "❌"}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Input */}
+        {!gameOver && (
+          <div className={`guess-input-wrap${shaking ? " shaking" : ""}`}>
+            <input
+              ref={inputRef}
+              type="text"
+              className="form-input"
+              value={currentGuess}
+              onChange={(e) => setCurrentGuess(e.target.value)}
+              placeholder="Type the missing word(s)..."
+              onKeyDown={(e) => {
+                if (e.key === "Enter") submitGuess();
+              }}
+            />
+            <button
+              className="btn-submit"
+              onClick={submitGuess}
+              disabled={!currentGuess.trim()}
+            >
+              Guess
+            </button>
+          </div>
+        )}
+
+        {/* Game over */}
+        {gameOver && (
+          <div className={`guess-result ${solved ? "solved" : "failed"}`}>
+            {solved ? (
+              <span>
+                🎉 You got it in <strong>{guesses.length}/4</strong>!
+              </span>
+            ) : (
+              <span>
+                The answer was: <strong>{answerWords.join(", ")}</strong>
+                <br />
+                <em style={{ fontSize: 11 }}>
+                  From &ldquo;{puzzleAlbum.title}&rdquo; by {puzzleAlbum.artist}
+                </em>
+              </span>
+            )}
+            {stats && stats.totalPlayers > 0 && (
+              <div className="guess-community">
+                {stats.totalSolved}/{stats.totalPlayers} players solved it today
+                ({Math.round((stats.totalSolved / stats.totalPlayers) * 100)}%)
+              </div>
+            )}
+            <button
+              className="btn-submit share-btn"
+              onClick={() => {
+                const squares = guesses.map((g) =>
+                  checkAnswer(g) ? "🟩" : "⬛",
+                );
+                const text = [
+                  `Album Of The Day Club`,
+                  `🎤 Lyric Challenge — ${todayKey}`,
+                  solved
+                    ? `Solved in ${guesses.length}/4`
+                    : `X/4 — Better luck tomorrow`,
+                  squares.join(""),
+                  ``,
+                ].join("\n");
+                navigator.clipboard.writeText(text).catch(() => {});
+              }}
+            >
+              📋 Share Results
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Yesterday's Results ─── */
+function YesterdayRecap() {
+  const [expanded, setExpanded] = useState(false);
+  const [yesterdayData, setYesterdayData] = useState(null);
+  const [hasData, setHasData] = useState(false);
+
+  const yesterday = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    return d;
+  }, []);
+  const yesterdayKey = yesterday.toISOString().split("T")[0];
+  const yesterdayAlbum = useMemo(() => getAlbumForDate(yesterday), [yesterday]);
+
+  useEffect(() => {
+    const rated = localStorage.getItem(`aotd_rated_${yesterdayKey}`);
+    const vibed = localStorage.getItem(`aotd_vibed_${yesterdayKey}`);
+    const guessRaw = localStorage.getItem(`aotd_guess_${yesterdayKey}`);
+    const coverRaw = localStorage.getItem(`aotd_cover_${yesterdayKey}`);
+    const heardleRaw = localStorage.getItem(`aotd_heardle_${yesterdayKey}`);
+    const lyricRaw = localStorage.getItem(`aotd_lyric_${yesterdayKey}`);
+
+    if (!rated && !vibed && !guessRaw && !coverRaw && !heardleRaw && !lyricRaw)
+      return;
+    setHasData(true);
+
+    const data = {
+      myRating: rated ? parseInt(rated) : null,
+      myVibes: null,
+      myGuess: null,
+    };
+    if (vibed) {
+      try {
+        data.myVibes = JSON.parse(vibed);
+      } catch {}
+    }
+    for (const raw of [guessRaw, coverRaw, heardleRaw, lyricRaw]) {
+      if (raw) {
+        try {
+          data.myGuess = JSON.parse(raw);
+          break;
+        } catch {}
+      }
+    }
+
+    // Fetch community data
+    Promise.all([
+      fetch(`/api/rate?key=${yesterdayKey}`)
+        .then((r) => r.json())
+        .catch(() => null),
+      fetch(`/api/vibe?key=${yesterdayKey}`)
+        .then((r) => r.json())
+        .catch(() => null),
+    ]).then(([rateData, vibeData]) => {
+      data.communityAvg = rateData?.average ?? null;
+      data.communityTotal = rateData?.total ?? 0;
+      data.topVibe = vibeData?.distribution
+        ? Object.entries(vibeData.distribution).sort(
+            (a, b) => b[1] - a[1],
+          )[0]?.[0]
+        : null;
+      setYesterdayData(data);
+    });
+  }, [yesterdayKey]);
+
+  if (!hasData) return null;
+
+  return (
+    <div className="panel yesterday-recap">
+      <div
+        className="panel-header"
+        style={{ cursor: "pointer" }}
+        onClick={() => setExpanded(!expanded)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") setExpanded(!expanded);
+        }}
+        aria-expanded={expanded}
+      >
+        <span>
+          <i className="hn hn-calender" aria-hidden="true" /> YESTERDAY&apos;S
+          RECAP — {yesterdayAlbum.title}
+        </span>
+        <span style={{ fontSize: "14px" }}>{expanded ? "▾" : "▸"}</span>
+      </div>
+      {expanded && yesterdayData && (
+        <div className="panel-body yesterday-body">
+          <div className="yesterday-album-row">
+            <span className="yesterday-emoji">{yesterdayAlbum.cover}</span>
+            <div>
+              <strong>{yesterdayAlbum.title}</strong>
+              <div style={{ fontSize: 11, color: "#888" }}>
+                by {yesterdayAlbum.artist} · {yesterdayAlbum.genre} ·{" "}
+                {yesterdayAlbum.year}
+              </div>
+            </div>
+          </div>
+          <div className="yesterday-stats-row">
+            {yesterdayData.myRating && (
+              <div className="yesterday-stat">
+                <div className="yesterday-stat-num">
+                  ⭐ {yesterdayData.myRating}/10
+                </div>
+                <div className="yesterday-stat-label">Your Rating</div>
+              </div>
+            )}
+            {yesterdayData.communityAvg !== null && (
+              <div className="yesterday-stat">
+                <div className="yesterday-stat-num">
+                  📊 {yesterdayData.communityAvg}/10
+                </div>
+                <div className="yesterday-stat-label">
+                  Community ({yesterdayData.communityTotal} votes)
+                </div>
+              </div>
+            )}
+            {yesterdayData.topVibe && (
+              <div className="yesterday-stat">
+                <div className="yesterday-stat-num">
+                  {VIBES.find((v) => v.label === yesterdayData.topVibe)
+                    ?.emoji || "🎵"}{" "}
+                  {yesterdayData.topVibe}
+                </div>
+                <div className="yesterday-stat-label">Top Vibe</div>
+              </div>
+            )}
+            {yesterdayData.myGuess && (
+              <div className="yesterday-stat">
+                <div className="yesterday-stat-num">
+                  {yesterdayData.myGuess.solved ? "✅" : "❌"}{" "}
+                  {yesterdayData.myGuess.solved
+                    ? `${yesterdayData.myGuess.guesses.length} tries`
+                    : "Missed"}
+                </div>
+                <div className="yesterday-stat-label">Puzzle</div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ─── Archive Section ─── */
 function ArchiveSection() {
   const rows = useMemo(() => {
@@ -1051,16 +2187,21 @@ export default function ForumPage({ album, dateString }) {
     const s = updateStreak(todayKey);
     setStreak(s.count);
 
-    // Check if all activities completed
+    // Check if all activities completed (check all game type keys)
     const checkDone = () => {
       const rated = localStorage.getItem(`aotd_rated_${todayKey}`);
       const vibed = localStorage.getItem(`aotd_vibed_${todayKey}`);
-      const guessRaw = localStorage.getItem(`aotd_guess_${todayKey}`);
       let guessDone = false;
-      if (guessRaw) {
-        try {
-          guessDone = JSON.parse(guessRaw).gameOver === true;
-        } catch {}
+      for (const gk of ["guess", "cover", "heardle", "lyric"]) {
+        const raw = localStorage.getItem(`aotd_${gk}_${todayKey}`);
+        if (raw) {
+          try {
+            if (JSON.parse(raw).gameOver === true) {
+              guessDone = true;
+              break;
+            }
+          } catch {}
+        }
       }
       setAllDone(!!rated && !!vibed && guessDone);
     };
@@ -1198,16 +2339,25 @@ export default function ForumPage({ album, dateString }) {
               </div>
             </div>
 
+            {/* Yesterday's Recap */}
+            <YesterdayRecap />
+
             {/* Activity intro */}
             <div className="activity-intro">
               Three ways to join today &mdash; rate the album, pick your vibes,
-              or guess the daily puzzle.
+              or play today&apos;s puzzle.
             </div>
 
             {/* The three activities */}
             <RateReveal albumKey={album.key} />
             <VibeCheck albumKey={album.key} />
-            <GuessGame />
+            {(() => {
+              const gameType = getGameType();
+              if (gameType === "cover") return <CoverChallenge />;
+              if (gameType === "lyric") return <LyricGame />;
+              if (gameType === "heardle") return <HeardleGame />;
+              return <GuessGame />;
+            })()}
 
             {/* Daily wrap-up — shows after all activities completed */}
             {allDone && (

@@ -129,7 +129,7 @@ body {
   flex-wrap: wrap;
   gap: 4px;
   font-size: 11px;
-  color: #665;
+  color: #554a2e;
 }
 
 /* Content wrapper */
@@ -161,7 +161,7 @@ body {
   border-radius: 3px;
   overflow: hidden;
   font-size: 11px;
-  color: #665;
+  color: #554a2e;
 }
 
 .marquee-track {
@@ -1286,6 +1286,170 @@ body {
   display: block;
 }
 
+/* ─── Cover Art Challenge ─── */
+.cover-challenge-img-wrap {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 15px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 2px solid var(--border-panel);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.cover-challenge-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cover-challenge-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.cover-challenge-q {
+  font-size: 48px;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* ─── Heardle / Audio Intro ─── */
+.heardle-controls {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.heardle-play-btn {
+  font-size: 14px;
+  padding: 12px 30px;
+  margin-bottom: 10px;
+}
+
+.heardle-timeline {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+.heardle-tick {
+  padding: 3px 8px;
+  font-size: 10px;
+  border-radius: 3px;
+  background: #eee;
+  color: #999;
+  border: 1px solid #ddd;
+}
+
+.heardle-tick.active {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-color: #81c784;
+}
+
+.heardle-tick.current {
+  background: var(--gold);
+  color: #fff;
+  border-color: #a08020;
+  font-weight: bold;
+}
+
+/* ─── Lyric Challenge ─── */
+.lyric-display {
+  text-align: center;
+  padding: 20px;
+  margin-bottom: 15px;
+  background: linear-gradient(135deg, #f9f5ea, #fefcf5);
+  border: 1px solid var(--border-inner);
+  border-radius: 4px;
+  font-size: 16px;
+  font-family: Georgia, serif;
+  font-style: italic;
+  color: var(--text-primary);
+  line-height: 1.8;
+}
+
+.lyric-quote {
+  font-size: 24px;
+  color: var(--gold);
+  vertical-align: -4px;
+}
+
+.lyric-hints {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.lyric-hint {
+  font-size: 11px;
+  color: #665;
+  padding: 4px 10px;
+  background: #fffde7;
+  border: 1px dashed var(--gold);
+  border-radius: 3px;
+}
+
+/* ─── Yesterday's Recap ─── */
+.yesterday-recap .panel-header {
+  background: linear-gradient(to bottom, #4a5a70, #3a4a60);
+}
+
+.yesterday-body {
+  padding: 12px 15px;
+}
+
+.yesterday-album-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px dotted var(--border-inner);
+}
+
+.yesterday-emoji {
+  font-size: 28px;
+}
+
+.yesterday-stats-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.yesterday-stat {
+  flex: 1;
+  min-width: 80px;
+  text-align: center;
+  padding: 8px;
+  background: #f9f7f0;
+  border: 1px solid #e8e0d0;
+  border-radius: 4px;
+}
+
+.yesterday-stat-num {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--text-link);
+}
+
+.yesterday-stat-label {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-top: 2px;
+}
+
 /* ─── Reduced motion ─── */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -1515,9 +1679,14 @@ body {
     padding: 10px;
   }
 
+  .nav-item {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
   .star-lg {
     font-size: 22px;
-    min-width: 28px;
+    min-width: 32px;
     min-height: 44px;
     padding: 8px 0;
   }
@@ -1552,5 +1721,17 @@ body {
 
   .top-vibe-name {
     width: 70px;
+  }
+}
+
+@media (max-width: 400px) {
+  .banner-title {
+    font-size: 18px;
+    letter-spacing: 0;
+  }
+
+  .banner-est {
+    font-size: 9px;
+    letter-spacing: 2px;
   }
 }

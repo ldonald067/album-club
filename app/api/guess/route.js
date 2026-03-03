@@ -1,26 +1,43 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { addGuessStat, getGuessStats } from "@/lib/db";
-import { getPuzzleKey } from "@/lib/albums";
+import { getPuzzleKey, getTodayKey } from "@/lib/albums";
 import { checkRateLimit, checkDailyLimit, getRealIp } from "@/lib/rate-limit";
 
-let guessCache = { key: null, data: null, time: 0 };
+// Cache per game type
+const guessCaches = {};
 const CACHE_TTL = 30000;
 
-export async function GET() {
+const VALID_TYPES = ["puzzle", "cover", "heardle", "lyric"];
+const MAX_ATTEMPTS = { puzzle: 6, cover: 5, heardle: 6, lyric: 4 };
+
+function resolveKey(type) {
+  const today = getTodayKey();
+  if (!type || type === "puzzle") return getPuzzleKey();
+  return `${type}-${today}`;
+}
+
+export async function GET(request) {
   try {
     const hdrs = await headers();
     const ip = getRealIp(hdrs);
     if (!checkRateLimit(ip)) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
-    const key = getPuzzleKey();
+    const { searchParams } = new URL(request.url);
+    const type = searchParams.get("type") || "puzzle";
+    if (!VALID_TYPES.includes(type)) {
+      return NextResponse.json({ error: "Invalid type" }, { status: 400 });
+    }
+
+    const key = resolveKey(type);
     const now = Date.now();
-    if (guessCache.key === key && now - guessCache.time < CACHE_TTL) {
-      return NextResponse.json({ stats: guessCache.data });
+    const cached = guessCaches[type];
+    if (cached && cached.key === key && now - cached.time < CACHE_TTL) {
+      return NextResponse.json({ stats: cached.data });
     }
     const stats = getGuessStats(key);
-    guessCache = { key, data: stats, time: now };
+    guessCaches[type] = { key, data: stats, time: now };
     return NextResponse.json({ stats });
   } catch (error) {
     console.error("GET /api/guess error:", error);
@@ -45,7 +62,7 @@ export async function POST(request) {
       return NextResponse.json({ error: "Request too large" }, { status: 413 });
     }
 
-    // Daily vote cap: 3 guess submissions per IP per day
+    // Daily vote cap: 3 guess submissions per IP per day (shared across game types)
     if (!checkDailyLimit(ip, "guess")) {
       return NextResponse.json(
         { error: "Daily guess limit reached" },
@@ -53,12 +70,18 @@ export async function POST(request) {
       );
     }
 
-    const { attempts, solved } = await request.json();
+    const { attempts, solved, type: rawType } = await request.json();
+    const type = rawType || "puzzle";
+    if (!VALID_TYPES.includes(type)) {
+      return NextResponse.json({ error: "Invalid type" }, { status: 400 });
+    }
+
+    const maxAttempts = MAX_ATTEMPTS[type];
     if (
       typeof attempts !== "number" ||
       !Number.isInteger(attempts) ||
       attempts < 1 ||
-      attempts > 6
+      attempts > maxAttempts
     ) {
       return NextResponse.json({ error: "Invalid attempts" }, { status: 400 });
     }
@@ -68,18 +91,18 @@ export async function POST(request) {
         { status: 400 },
       );
     }
-    // Logical consistency: if not solved, attempts must be 6
-    if (!solved && attempts !== 6) {
+    // Logical consistency: if not solved, attempts must be max
+    if (!solved && attempts !== maxAttempts) {
       return NextResponse.json(
         { error: "Invalid attempts/solved combination" },
         { status: 400 },
       );
     }
 
-    const puzzleKey = getPuzzleKey();
+    const puzzleKey = resolveKey(type);
     addGuessStat(puzzleKey, attempts, solved);
     const stats = getGuessStats(puzzleKey);
-    guessCache = { key: puzzleKey, data: stats, time: Date.now() };
+    guessCaches[type] = { key: puzzleKey, data: stats, time: Date.now() };
     return NextResponse.json({ stats });
   } catch (error) {
     console.error("POST /api/guess error:", error);
