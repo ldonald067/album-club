@@ -3,6 +3,10 @@
  * Fetch lyrics for recognizable albums from Genius API.
  * Usage: GENIUS_ACCESS_TOKEN=xxx node scripts/fetch-lyrics.mjs
  *
+ * Strategy: Search for "artist" to find their top songs, then try
+ * multiple songs until we get good lyrics. Falls back to searching
+ * "artist album_title" filtered to actual songs only.
+ *
  * Stores results in lib/lyrics.json.
  * Skips albums that already have lyrics data.
  */
@@ -36,6 +40,8 @@ console.log(
   `Found ${recognizable.length} recognizable albums, ${Object.keys(lyrics).length} already have lyrics`,
 );
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 async function searchGenius(query) {
   const url = `https://api.genius.com/search?q=${encodeURIComponent(query)}`;
   const res = await fetch(url, {
@@ -45,8 +51,30 @@ async function searchGenius(query) {
   return (await res.json()).response.hits;
 }
 
+/** Filter search hits to actual songs with lyrics by the correct artist */
+function filterSongHits(hits, artistName) {
+  const artistLower = artistName.toLowerCase();
+  // Build multiple matching tokens for the artist name
+  const artistTokens = artistLower.split(/[\s&,]+/).filter((t) => t.length > 2);
+  return hits.filter((h) => {
+    const r = h.result;
+    // Must be a song type
+    if (h.type !== "song") return false;
+    // Must have lyrics
+    if (r.lyrics_state !== "complete") return false;
+    // URL should end in -lyrics (actual song pages)
+    if (!r.url.endsWith("-lyrics")) return false;
+    // MUST match artist — check primary_artist and featured artists
+    const hitArtist = (r.primary_artist?.name || "").toLowerCase();
+    const hitFull = (r.full_title || "").toLowerCase();
+    const artistMatch = artistTokens.some(
+      (token) => hitArtist.includes(token) || hitFull.includes(token),
+    );
+    return artistMatch;
+  });
+}
+
 async function fetchLyricsPage(url) {
-  // Genius lyrics are on the HTML page, need to scrape
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Failed to fetch lyrics page: ${res.status}`);
   const html = await res.text();
@@ -56,7 +84,6 @@ async function fetchLyricsPage(url) {
   let lyricsText = "";
   let match;
   while ((match = containerRegex.exec(html)) !== null) {
-    // Strip HTML tags, decode entities
     let chunk = match[1]
       .replace(/<br\s*\/?>/gi, "\n")
       .replace(/<[^>]+>/g, "")
@@ -77,19 +104,32 @@ function extractGoodLines(lyricsText) {
     .map((l) => l.trim())
     .filter(
       (l) =>
-        l.length > 20 &&
-        l.length < 100 &&
+        l.length > 15 &&
+        l.length < 120 &&
         !l.startsWith("[") &&
         !l.match(/^\(/) &&
-        l.split(" ").length >= 4,
+        !l.match(/^\d+\.\s/) &&
+        !l.match(/\d+\s*Contributors/i) &&
+        !l.match(/Lyrics$/i) &&
+        !l.match(/^You might also like/) &&
+        !l.match(/^See .* Live/) &&
+        !l.match(/^Get tickets/) &&
+        l.split(" ").length >= 3,
     );
 
-  // Pick up to 8 varied lines (skip consecutive)
+  // Pick up to 8 varied lines (skip consecutive to get spread)
   const selected = [];
-  for (let i = 0; i < lines.length && selected.length < 8; i += 2) {
+  const step = Math.max(2, Math.floor(lines.length / 8));
+  for (let i = 0; i < lines.length && selected.length < 8; i += step) {
     selected.push(lines[i]);
   }
   return selected;
+}
+
+/** Try to fetch good lyrics from a single Genius song hit */
+async function tryHit(hit) {
+  const fullLyrics = await fetchLyricsPage(hit.result.url);
+  return extractGoodLines(fullLyrics);
 }
 
 let fetched = 0;
@@ -105,46 +145,58 @@ for (const album of recognizable) {
 
   try {
     console.log(`Searching: ${key}`);
-    const hits = await searchGenius(`${album.artist} ${album.title}`);
 
-    if (hits.length === 0) {
-      console.log(`  No results found`);
+    // Strategy 1: search "artist album_title" and filter to songs
+    let hits = await searchGenius(`${album.artist} ${album.title}`);
+    let songHits = filterSongHits(hits, album.artist);
+    await sleep(500);
+
+    // Strategy 2: if no songs found, search just the artist name
+    if (songHits.length === 0) {
+      console.log(`  Trying artist-only search...`);
+      hits = await searchGenius(album.artist);
+      songHits = filterSongHits(hits, album.artist);
+      await sleep(500);
+    }
+
+    if (songHits.length === 0) {
+      console.log(`  ✗ No song results found`);
       failed++;
       continue;
     }
 
-    // Find best match — prefer matching artist
-    const bestHit =
-      hits.find((h) =>
-        h.result.primary_artist.name
-          .toLowerCase()
-          .includes(album.artist.toLowerCase().split(" ")[0]),
-      ) || hits[0];
+    // Try up to 3 song hits until we get good lines
+    let gotLines = null;
+    for (let i = 0; i < Math.min(3, songHits.length); i++) {
+      const hit = songHits[i];
+      console.log(`  Trying: ${hit.result.full_title}`);
+      const lines = await tryHit(hit);
+      if (lines.length >= 3) {
+        gotLines = lines;
+        console.log(`  ✓ Got ${lines.length} lines from ${hit.result.url}`);
+        break;
+      }
+      console.log(`  … only ${lines.length} usable lines, trying next`);
+      await sleep(500);
+    }
 
-    const lyricsUrl = bestHit.result.url;
-    console.log(`  Fetching lyrics from: ${lyricsUrl}`);
-
-    const fullLyrics = await fetchLyricsPage(lyricsUrl);
-    const goodLines = extractGoodLines(fullLyrics);
-
-    if (goodLines.length >= 3) {
-      lyrics[key] = { lines: goodLines, source: "genius" };
+    if (gotLines) {
+      lyrics[key] = { lines: gotLines, source: "genius" };
       fetched++;
-      console.log(`  ✓ Got ${goodLines.length} lines`);
     } else {
-      console.log(`  ✗ Not enough usable lines (${goodLines.length})`);
+      console.log(`  ✗ No song had enough usable lyrics`);
       failed++;
     }
 
-    // Rate limiting — be nice to Genius
-    await new Promise((r) => setTimeout(r, 1500));
+    // Rate limiting
+    await sleep(1000);
   } catch (err) {
     console.log(`  ✗ Error: ${err.message}`);
     failed++;
   }
 
   // Save progress every 10 albums
-  if ((fetched + failed) % 10 === 0) {
+  if ((fetched + failed + skipped) % 10 === 0) {
     fs.writeFileSync(LYRICS_PATH, JSON.stringify(lyrics, null, 2));
   }
 }
