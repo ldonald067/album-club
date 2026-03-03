@@ -15,7 +15,9 @@ export async function GET(request) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
     const { searchParams } = new URL(request.url);
-    const key = searchParams.get("key") || getTodayKey();
+    const rawKey = searchParams.get("key");
+    const key =
+      rawKey && /^\d{4}-\d{2}-\d{2}$/.test(rawKey) ? rawKey : getTodayKey();
     const now = Date.now();
     if (rateCache.key === key && now - rateCache.time < CACHE_TTL) {
       return NextResponse.json(rateCache.data);

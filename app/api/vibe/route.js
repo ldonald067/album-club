@@ -15,7 +15,9 @@ export async function GET(request) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
     const { searchParams } = new URL(request.url);
-    const key = searchParams.get("key") || getTodayKey();
+    const rawKey = searchParams.get("key");
+    const key =
+      rawKey && /^\d{4}-\d{2}-\d{2}$/.test(rawKey) ? rawKey : getTodayKey();
     const now = Date.now();
     if (vibeCache.key === key && now - vibeCache.time < CACHE_TTL) {
       return NextResponse.json(vibeCache.data);
@@ -67,7 +69,8 @@ export async function POST(request) {
     }
 
     const albumKey = getTodayKey();
-    for (const v of vibes) {
+    const uniqueVibes = [...new Set(vibes)];
+    for (const v of uniqueVibes) {
       addVibe(albumKey, v);
     }
 

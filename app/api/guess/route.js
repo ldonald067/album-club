@@ -62,21 +62,24 @@ export async function POST(request) {
       return NextResponse.json({ error: "Request too large" }, { status: 413 });
     }
 
-    // Daily vote cap: 3 guess submissions per IP per day (shared across game types)
-    if (!checkDailyLimit(ip, "guess")) {
-      return NextResponse.json(
-        { error: "Daily guess limit reached" },
-        { status: 429 },
-      );
-    }
-
     const { attempts, solved, type: rawType } = await request.json();
     const type = rawType || "puzzle";
     if (!VALID_TYPES.includes(type)) {
       return NextResponse.json({ error: "Invalid type" }, { status: 400 });
     }
 
+    // Daily vote cap: 3 submissions per IP per game type per day
+    if (!checkDailyLimit(ip, `guess-${type}`)) {
+      return NextResponse.json(
+        { error: "Daily guess limit reached" },
+        { status: 429 },
+      );
+    }
+
     const maxAttempts = MAX_ATTEMPTS[type];
+    if (!maxAttempts) {
+      return NextResponse.json({ error: "Invalid type" }, { status: 400 });
+    }
     if (
       typeof attempts !== "number" ||
       !Number.isInteger(attempts) ||
