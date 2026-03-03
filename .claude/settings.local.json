@@ -51,7 +51,12 @@
       "Bash(gh auth status)",
       "Bash(git init)",
       "Bash(git add -A)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git config user.name \"ldonald067\")",
+      "Bash(git config user.email \"ldonald067@users.noreply.github.com\")",
+      "Bash(gh repo create album-club --public --source=. --push)",
+      "Bash(node -e \"const a = require\\(''./lib/albums.json''\\); console.log\\(''Total:'', a.length, ''With images:'', a.filter\\(x=>x.image\\).length, ''JSON size:'', JSON.stringify\\(a\\).length + '' bytes''\\)\")",
+      "Bash(git push)"
     ]
   }
 }
