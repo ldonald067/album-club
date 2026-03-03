@@ -2,7 +2,12 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { addVibe, getVibeDistribution } from "@/lib/db";
 import { getTodayKey, VIBES } from "@/lib/albums";
-import { checkRateLimit, checkDailyLimit, getRealIp } from "@/lib/rate-limit";
+import {
+  checkRateLimit,
+  checkDailyLimit,
+  getRealIp,
+  isValidDateKey,
+} from "@/lib/rate-limit";
 
 let vibeCache = { key: null, data: null, time: 0 };
 const CACHE_TTL = 30000;
@@ -16,8 +21,7 @@ export async function GET(request) {
     }
     const { searchParams } = new URL(request.url);
     const rawKey = searchParams.get("key");
-    const key =
-      rawKey && /^\d{4}-\d{2}-\d{2}$/.test(rawKey) ? rawKey : getTodayKey();
+    const key = rawKey && isValidDateKey(rawKey) ? rawKey : getTodayKey();
     const now = Date.now();
     if (vibeCache.key === key && now - vibeCache.time < CACHE_TTL) {
       return NextResponse.json(vibeCache.data);
