@@ -60,7 +60,13 @@ export async function POST(request) {
       );
     }
 
-    const { vibes } = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    }
+    const { vibes } = body;
     if (!Array.isArray(vibes) || vibes.length === 0 || vibes.length > 3) {
       return NextResponse.json({ error: "Pick 1-3 vibes" }, { status: 400 });
     }

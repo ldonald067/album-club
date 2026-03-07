@@ -62,7 +62,13 @@ export async function POST(request) {
       return NextResponse.json({ error: "Request too large" }, { status: 413 });
     }
 
-    const { attempts, solved, type: rawType } = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    }
+    const { attempts, solved, type: rawType } = body;
     const type = rawType || "puzzle";
     if (!VALID_TYPES.includes(type)) {
       return NextResponse.json({ error: "Invalid type" }, { status: 400 });
