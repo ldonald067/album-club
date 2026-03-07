@@ -1,72 +1,71 @@
-# 💿 Album Of The Day Club
+# Album Of The Day Club
 
-A retro forum-style website where a new album is featured every day and visitors can leave reviews and ratings. Built with Next.js and SQLite.
+A retro forum-style website where a new album is featured every day. Rate it, pick vibes, and play daily music games — all anonymous, no accounts needed.
+
+## Features
+
+- **Daily Album** — a different album every day from a rotation of 383 curated albums
+- **Rate & Reveal** — rate 1-10 and see the community histogram
+- **Vibe Check** — pick 1-3 mood vibes and see what everyone else chose
+- **5 Daily Games** (rotating):
+  - **Guess the Album** — clue-based guessing (genre, decade, artist initial)
+  - **Cover Art Challenge** — guess from a blurred album cover
+  - **Lyric Fill-in-the-Blank** — complete the missing words
+  - **Heardle** — name the album from a short audio clip
+  - **Artist Scramble** — unscramble the artist name, guess the album
+- **Streak Tracking** — tracks your daily participation streak
+- **Shareable Results** — Wordle-style copy-to-clipboard for all activities
+- **Yesterday's Recap** — see what the community thought about yesterday's album
+- **Retro Aesthetic** — 2004 forum vibes with pixel art icons and a vinyl record CSS effect
 
 ## Setup
 
-**Prerequisites:** You need [Node.js](https://nodejs.org/) installed (v18 or newer).
-
-### 1. Download this project folder to your PC
-
-### 2. Open a terminal in the project folder and install dependencies:
+Requires [Node.js](https://nodejs.org/) v18+.
 
 ```bash
+git clone https://github.com/ldonald067/album-club.git
+cd album-club
 npm install
-```
-
-### 3. Start the development server:
-
-```bash
 npm run dev
 ```
 
-### 4. Open your browser to:
-
-```
-http://localhost:3000
-```
-
-That's it! The SQLite database is created automatically on first run.
+Open http://localhost:3000. The SQLite database creates itself on first request.
 
 ## Project Structure
 
 ```
-album-club/
-├── app/
-│   ├── api/reviews/route.js   ← Backend API for reviews
-│   ├── ForumPage.js           ← Main forum UI (client component)
-│   ├── globals.css            ← All the old-school forum styling
-│   ├── layout.js              ← Root HTML layout
-│   └── page.js                ← Home page (server component)
-├── lib/
-│   ├── albums.js              ← Album list + helper functions
-│   └── db.js                  ← SQLite database operations
-├── data/                      ← Auto-created, holds the SQLite database
-├── package.json
-└── README.md
+app/
+  page.js              # Server component — resolves today's album
+  ForumPage.js         # Client component — all UI and games
+  globals.css          # All styling
+  api/                 # rate, vibe, guess, stats routes
+lib/
+  albums.json          # 383 album entries (source of truth)
+  albums.js            # Shuffle logic, game helpers, vibes
+  lyrics.json          # Lyric lines for ~88 albums
+  db.js                # SQLite database
+data/                  # Auto-created, holds aotd.db (gitignored)
+scripts/               # Data fetching tools (covers, lyrics, YouTube IDs)
+docs/                  # Developer documentation
 ```
 
-## How It Works
+## Data Scripts (Optional)
 
-- **Album rotation:** A different album is featured each day, cycling through 30 curated classics
-- **Reviews:** Visitors enter a username, rate 1-10, and write a review — stored in SQLite
-- **Forum ranks:** Users earn ranks based on total post count (Lurker → Legend)
-- **No auth required:** Simple username-based posting, just like old-school forums
+These populate game data. The site works without them — games fall back to Cover Art Challenge.
 
-## Customization
+```bash
+LASTFM_API_KEY=xxx npm run fetch-covers        # Album cover art
+GENIUS_ACCESS_TOKEN=xxx npm run fetch-lyrics    # Lyrics for Lyric game
+YOUTUBE_API_KEY=xxx npm run fetch-youtube-ids   # YouTube IDs for Heardle
+```
 
-- **Add albums:** Edit the `ALBUMS` array in `lib/albums.js`
-- **Change styling:** Edit `app/globals.css` — all the forum styling is there
-- **Add features:** The API is in `app/api/reviews/route.js`
+## Tech Stack
 
-## Deploying
-
-For a quick deploy, push to GitHub and connect to [Vercel](https://vercel.com):
-
-> ⚠️ Note: SQLite works great for local dev and small sites. For a production
-> deployment with lots of traffic, you'd want to swap to a hosted database
-> like [Turso](https://turso.tech) (SQLite-compatible) or PostgreSQL.
+- **Next.js 15** (App Router)
+- **SQLite** via better-sqlite3
+- **No auth** — fully anonymous, localStorage for client state
+- **No CSS framework** — hand-written retro CSS
 
 ## License
 
-Do whatever you want with it. Have fun! 🎶
+Do whatever you want with it. Have fun!

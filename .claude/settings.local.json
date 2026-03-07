@@ -61,7 +61,8 @@
       "Bash(node -e \"const a = require\\(''./lib/albums.json''\\); const noImg = a.filter\\(x => x.image === null\\).length; const recog = a.filter\\(x => x.recognizable\\).length; const withYt = a.filter\\(x => x.recognizable && x.youtubeId\\).length; console.log\\(''Total:'', a.length, ''Missing covers:'', noImg, ''YouTube:'', withYt + ''/'' + recog\\);\")",
       "Bash(node -e \"const l = require\\(''./lib/lyrics.json''\\); console.log\\(''Lyrics entries:'', Object.keys\\(l\\).length\\);\")",
       "Bash(node -e \"const l = require\\(''./lib/lyrics.json''\\); const keys = Object.keys\\(l\\); console.log\\(''Total:'', keys.length\\); console.log\\(''Sample key:'', keys[0]\\); console.log\\(''Sample value type:'', typeof l[keys[0]]\\); console.log\\(''Sample value:'', JSON.stringify\\(l[keys[0]]\\).substring\\(0, 200\\)\\);\")",
-      "Bash(npx next build)"
+      "Bash(npx next build)",
+      "WebFetch(domain:alexop.dev)"
     ]
   }
 }
