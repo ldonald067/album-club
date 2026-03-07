@@ -4,7 +4,7 @@ import { getSiteStats } from "@/lib/db";
 import { checkRateLimit, getRealIp } from "@/lib/rate-limit";
 
 let statsRouteCache = { data: null, time: 0 };
-const CACHE_TTL = 60000;
+const CACHE_TTL = 300000; // 5 min
 
 export async function GET() {
   try {

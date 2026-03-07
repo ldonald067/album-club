@@ -1153,9 +1153,11 @@ body {
 
 .attempt-bar {
   height: 100%;
+  width: 100%;
   background: #3d6b3d;
   border-radius: 2px;
-  transition: width 0.6s ease-out;
+  transform-origin: left;
+  transition: transform 0.6s ease-out;
 }
 
 .attempt-bar.yours {
@@ -1660,13 +1662,15 @@ body {
 
 .top-vibe-bar {
   height: 100%;
+  width: 100%;
   background: linear-gradient(
     to right,
     var(--accent-color, #3a5f8f),
     color-mix(in srgb, var(--accent-color, #5a8fbf) 70%, #fff)
   );
   border-radius: 4px;
-  transition: width 0.5s ease;
+  transform-origin: left;
+  transition: transform 0.5s ease;
 }
 
 .top-vibe-count {

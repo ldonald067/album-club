@@ -20,6 +20,13 @@ import {
   scrambleArtist,
 } from "@/lib/albums";
 
+/* ─── Pre-lowercased album search index (avoids repeated toLowerCase per keystroke) ─── */
+const ALBUM_SEARCH = ALBUMS.map((a) => ({
+  ...a,
+  _titleLc: a.title.toLowerCase(),
+  _artistLc: a.artist.toLowerCase(),
+}));
+
 /* ─── Confetti utility (dynamic import, respects reduced motion) ─── */
 async function fireConfetti(options = {}) {
   if (
@@ -622,17 +629,16 @@ function GuessGame() {
     }
   };
 
-  const guessedTitles = guesses.map((g) => g.toLowerCase());
-
-  const filtered =
-    currentGuess.trim().length > 0
-      ? ALBUMS.filter(
-          (a) =>
-            !guessedTitles.includes(a.title.toLowerCase()) &&
-            (a.title.toLowerCase().includes(currentGuess.toLowerCase()) ||
-              a.artist.toLowerCase().includes(currentGuess.toLowerCase())),
-        ).slice(0, 5)
-      : [];
+  const filtered = useMemo(() => {
+    if (!currentGuess.trim()) return [];
+    const q = currentGuess.toLowerCase();
+    const excluded = new Set(guesses.map((g) => g.toLowerCase()));
+    return ALBUM_SEARCH.filter(
+      (a) =>
+        !excluded.has(a._titleLc) &&
+        (a._titleLc.includes(q) || a._artistLc.includes(q)),
+    ).slice(0, 5);
+  }, [currentGuess, guesses]);
 
   return (
     <div className="panel">
@@ -827,7 +833,7 @@ function GuessGame() {
                         <div
                           className={`attempt-bar${isYou ? " yours" : ""}`}
                           style={{
-                            width: `${Math.max(pct, count > 0 ? 5 : 0)}%`,
+                            transform: `scaleX(${Math.max(pct, count > 0 ? 5 : 0) / 100})`,
                           }}
                         />
                       </div>
@@ -969,16 +975,16 @@ function CoverChallenge() {
     ? 0
     : BLUR_LEVELS[Math.min(guesses.length, BLUR_LEVELS.length - 1)];
 
-  const guessedTitles = guesses.map((g) => g.toLowerCase());
-  const filtered =
-    currentGuess.trim().length > 0
-      ? ALBUMS.filter(
-          (a) =>
-            !guessedTitles.includes(a.title.toLowerCase()) &&
-            (a.title.toLowerCase().includes(currentGuess.toLowerCase()) ||
-              a.artist.toLowerCase().includes(currentGuess.toLowerCase())),
-        ).slice(0, 5)
-      : [];
+  const filtered = useMemo(() => {
+    if (!currentGuess.trim()) return [];
+    const q = currentGuess.toLowerCase();
+    const excluded = new Set(guesses.map((g) => g.toLowerCase()));
+    return ALBUM_SEARCH.filter(
+      (a) =>
+        !excluded.has(a._titleLc) &&
+        (a._titleLc.includes(q) || a._artistLc.includes(q)),
+    ).slice(0, 5);
+  }, [currentGuess, guesses]);
 
   return (
     <div className="panel">
@@ -1355,16 +1361,16 @@ function HeardleGame() {
   // If no YouTube ID, fall back to Cover Challenge
   if (!hasYouTube) return <CoverChallenge />;
 
-  const guessedTitles = guesses.map((g) => g.toLowerCase());
-  const filtered =
-    currentGuess.trim().length > 0
-      ? ALBUMS.filter(
-          (a) =>
-            !guessedTitles.includes(a.title.toLowerCase()) &&
-            (a.title.toLowerCase().includes(currentGuess.toLowerCase()) ||
-              a.artist.toLowerCase().includes(currentGuess.toLowerCase())),
-        ).slice(0, 5)
-      : [];
+  const filtered = useMemo(() => {
+    if (!currentGuess.trim()) return [];
+    const q = currentGuess.toLowerCase();
+    const excluded = new Set(guesses.map((g) => g.toLowerCase()));
+    return ALBUM_SEARCH.filter(
+      (a) =>
+        !excluded.has(a._titleLc) &&
+        (a._titleLc.includes(q) || a._artistLc.includes(q)),
+    ).slice(0, 5);
+  }, [currentGuess, guesses]);
 
   return (
     <div className="panel">
@@ -2008,17 +2014,16 @@ function ScrambleGame() {
     }
   };
 
-  const guessedTitles = guesses.map((g) => g.toLowerCase());
-
-  const filtered =
-    currentGuess.trim().length > 0
-      ? ALBUMS.filter(
-          (a) =>
-            !guessedTitles.includes(a.title.toLowerCase()) &&
-            (a.title.toLowerCase().includes(currentGuess.toLowerCase()) ||
-              a.artist.toLowerCase().includes(currentGuess.toLowerCase())),
-        ).slice(0, 5)
-      : [];
+  const filtered = useMemo(() => {
+    if (!currentGuess.trim()) return [];
+    const q = currentGuess.toLowerCase();
+    const excluded = new Set(guesses.map((g) => g.toLowerCase()));
+    return ALBUM_SEARCH.filter(
+      (a) =>
+        !excluded.has(a._titleLc) &&
+        (a._titleLc.includes(q) || a._artistLc.includes(q)),
+    ).slice(0, 5);
+  }, [currentGuess, guesses]);
 
   return (
     <div className="panel">
@@ -2541,7 +2546,7 @@ function StatsSection() {
                     <div className="top-vibe-bar-wrap">
                       <div
                         className="top-vibe-bar"
-                        style={{ width: `${pct}%` }}
+                        style={{ transform: `scaleX(${pct / 100})` }}
                       />
                     </div>
                     <span className="top-vibe-count">{v.count}</span>
@@ -2734,6 +2739,7 @@ export default function ForumPage({ album, dateString }) {
   }, [todayKey]);
 
   const accentColor = isLightColor(album.color) ? "#2a4570" : album.color;
+  const gameType = useMemo(() => getGameType(), []);
 
   return (
     <>
@@ -2909,14 +2915,17 @@ export default function ForumPage({ album, dateString }) {
             {/* The three activities */}
             <RateReveal albumKey={album.key} />
             <VibeCheck albumKey={album.key} />
-            {(() => {
-              const gameType = getGameType();
-              if (gameType === "cover") return <CoverChallenge />;
-              if (gameType === "lyric") return <LyricGame />;
-              if (gameType === "heardle") return <HeardleGame />;
-              if (gameType === "scramble") return <ScrambleGame />;
-              return <GuessGame />;
-            })()}
+            {gameType === "cover" ? (
+              <CoverChallenge />
+            ) : gameType === "lyric" ? (
+              <LyricGame />
+            ) : gameType === "heardle" ? (
+              <HeardleGame />
+            ) : gameType === "scramble" ? (
+              <ScrambleGame />
+            ) : (
+              <GuessGame />
+            )}
 
             {/* Daily wrap-up — shows after all activities completed */}
             {allDone && (
