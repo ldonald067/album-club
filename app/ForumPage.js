@@ -427,6 +427,11 @@ function VibeCheck({ albumKey }) {
               <button
                 key={v.label}
                 className={`vibe-btn${selected.includes(v.label) ? " selected" : ""}${submitted ? " locked" : ""}${justToggledVibe === v.label ? " just-selected" : ""}${!submitted && selected.length >= 3 && !selected.includes(v.label) ? " capped" : ""}`}
+                style={
+                  selected.includes(v.label)
+                    ? { backgroundColor: v.color }
+                    : undefined
+                }
                 onClick={() => toggle(v.label)}
                 disabled={submitted}
               >

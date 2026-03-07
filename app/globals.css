@@ -757,10 +757,9 @@ body {
 
 .vibe-btn.selected {
   border-color: var(--accent-color, var(--gold));
-  background: linear-gradient(135deg, #fffde7, #fff8d0);
   box-shadow:
     0 0 0 2px var(--accent-color, var(--gold)),
-    0 2px 8px rgba(201, 162, 39, 0.2);
+    0 2px 8px rgba(201, 162, 39, 0.15);
 }
 
 .vibe-check {
