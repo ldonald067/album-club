@@ -8,8 +8,8 @@ import { checkRateLimit, checkDailyLimit, getRealIp } from "@/lib/rate-limit";
 const guessCaches = {};
 const CACHE_TTL = 30000;
 
-const VALID_TYPES = ["puzzle", "cover", "heardle", "lyric"];
-const MAX_ATTEMPTS = { puzzle: 6, cover: 5, heardle: 6, lyric: 4 };
+const VALID_TYPES = ["puzzle", "cover", "heardle", "lyric", "scramble"];
+const MAX_ATTEMPTS = { puzzle: 6, cover: 5, heardle: 6, lyric: 4, scramble: 5 };
 
 function resolveKey(type) {
   const today = getTodayKey();

@@ -56,7 +56,12 @@
       "Bash(git config user.email \"ldonald067@users.noreply.github.com\")",
       "Bash(gh repo create album-club --public --source=. --push)",
       "Bash(node -e \"const a = require\\(''./lib/albums.json''\\); console.log\\(''Total:'', a.length, ''With images:'', a.filter\\(x=>x.image\\).length, ''JSON size:'', JSON.stringify\\(a\\).length + '' bytes''\\)\")",
-      "Bash(git push)"
+      "Bash(git push)",
+      "Bash(node -e \"const a = require\\(''./lib/albums.json''\\); const noImg = a.filter\\(x => !x.image\\).length; const noYt = a.filter\\(x => x.recognizable && !x.youtubeId\\).length; const recog = a.filter\\(x => x.recognizable\\).length; const withYt = a.filter\\(x => x.recognizable && x.youtubeId\\).length; console.log\\(''Total albums:'', a.length\\); console.log\\(''Missing cover art:'', noImg\\); console.log\\(''Recognizable:'', recog\\); console.log\\(''With YouTube IDs:'', withYt, ''/'', recog\\); console.log\\(''Missing YouTube IDs:'', noYt\\);\")",
+      "Bash(node -e \"const a = require\\(''./lib/albums.json''\\); const noImg = a.filter\\(x => x.image === null\\).length; const recog = a.filter\\(x => x.recognizable\\).length; const withYt = a.filter\\(x => x.recognizable && x.youtubeId\\).length; console.log\\(''Total:'', a.length, ''Missing covers:'', noImg, ''YouTube:'', withYt + ''/'' + recog\\);\")",
+      "Bash(node -e \"const l = require\\(''./lib/lyrics.json''\\); console.log\\(''Lyrics entries:'', Object.keys\\(l\\).length\\);\")",
+      "Bash(node -e \"const l = require\\(''./lib/lyrics.json''\\); const keys = Object.keys\\(l\\); console.log\\(''Total:'', keys.length\\); console.log\\(''Sample key:'', keys[0]\\); console.log\\(''Sample value type:'', typeof l[keys[0]]\\); console.log\\(''Sample value:'', JSON.stringify\\(l[keys[0]]\\).substring\\(0, 200\\)\\);\")",
+      "Bash(npx next build)"
     ]
   }
 }
