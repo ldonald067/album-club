@@ -1398,7 +1398,7 @@
     "year": 2013,
     "genre": "Blackgaze",
     "cover": "☀️",
-    "color": "#ff69b4",
+    "color": "#e8a040",
     "recognizable": false,
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/8a6a1123bb124e4890f20c956a63e734.png"
   },
@@ -1889,7 +1889,7 @@
     "year": 2018,
     "genre": "Hyperpop/Experimental",
     "cover": "🫧",
-    "color": "#ff69b4",
+    "color": "#c0c0c0",
     "recognizable": false,
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/b482e95ee228abbaaccd0d5a31b81ad2.jpg"
   },
@@ -2007,7 +2007,7 @@
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/c08ee7a481734565ab0b2480d1e10368.jpg"
   },
   {
-    "title": "Blade Runner Soundtrack",
+    "title": "Blade Runner",
     "artist": "Vangelis",
     "year": 1982,
     "genre": "Synth/Soundtrack",
@@ -2017,7 +2017,7 @@
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/a99ebc6d1aa64f7ba37458b050c0c382.png"
   },
   {
-    "title": "Interstellar Soundtrack",
+    "title": "Interstellar",
     "artist": "Hans Zimmer",
     "year": 2014,
     "genre": "Orchestral/Soundtrack",
@@ -2027,7 +2027,7 @@
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/ccff9f6d8a7b46ecc6cb7c7b8cc1c6a7.jpg"
   },
   {
-    "title": "The Social Network Soundtrack",
+    "title": "The Social Network",
     "artist": "Trent Reznor & Atticus Ross",
     "year": 2010,
     "genre": "Electronic/Soundtrack",
@@ -2037,17 +2037,17 @@
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/64d1723e24604f40b606efa7d15f6897.jpg"
   },
   {
-    "title": "Drive Soundtrack",
+    "title": "Drive",
     "artist": "Cliff Martinez",
     "year": 2011,
     "genre": "Synthwave/Soundtrack",
     "cover": "🚗",
-    "color": "#ff69b4",
+    "color": "#d4536a",
     "recognizable": false,
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/eb0359927425f7e71181f072de24cff0.jpg"
   },
   {
-    "title": "Spirited Away Soundtrack",
+    "title": "Spirited Away",
     "artist": "Joe Hisaishi",
     "year": 2001,
     "genre": "Orchestral/Soundtrack",
@@ -2057,7 +2057,7 @@
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/762c3b8027d4b334d11020bc0777089d.jpg"
   },
   {
-    "title": "Akira Soundtrack",
+    "title": "Akira",
     "artist": "Geinoh Yamashirogumi",
     "year": 1988,
     "genre": "Electronic/Soundtrack",
@@ -2067,7 +2067,7 @@
     "image": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/53/17/2d/53172dc4-ea48-4ada-85c0-8027ebaddf3d/VICL-65922.jpg/600x600bb.jpg"
   },
   {
-    "title": "Her Soundtrack",
+    "title": "Her",
     "artist": "Arcade Fire & Owen Pallett",
     "year": 2013,
     "genre": "Ambient/Soundtrack",
@@ -2292,7 +2292,7 @@
     "year": 2018,
     "genre": "Hip-Hop/Experimental",
     "cover": "🤪",
-    "color": "#ff69b4",
+    "color": "#6b8e5a",
     "recognizable": false,
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/3c277d9b4c5f40156e013a490818dcec.jpg"
   },
@@ -2412,7 +2412,7 @@
     "year": 2018,
     "genre": "Art Pop",
     "cover": "🤠",
-    "color": "#ff69b4",
+    "color": "#c44569",
     "recognizable": false,
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/a9b9c68a6ecb979e1ac95e28bb28e06b.png"
   },
@@ -2787,7 +2787,7 @@
     "cover": "⛵",
     "color": "#1a5276",
     "recognizable": false,
-    "image": null
+    "image": "http://coverartarchive.org/release/c5faab6d-54ed-4b3d-8cd1-f1f4a6ae2861/13518472781-500.jpg"
   },
   {
     "title": "Midnight Marauders",
@@ -2879,7 +2879,7 @@
     "cover": "🔮",
     "color": "#4a1a6b",
     "recognizable": false,
-    "image": null
+    "image": "http://coverartarchive.org/release/1aaa2ae2-f935-4593-9140-a9766522fe52/37987279897-500.jpg"
   },
   {
     "title": "GNX",
@@ -2929,7 +2929,7 @@
     "year": 2024,
     "genre": "Post-Punk",
     "cover": "💖",
-    "color": "#ff69b4",
+    "color": "#e05080",
     "recognizable": false,
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/de7a2f010aac09f197aa8b342159c0f0.jpg"
   },
@@ -2969,7 +2969,7 @@
     "year": 2011,
     "genre": "Vaporwave",
     "cover": "🏛️",
-    "color": "#ff69b4",
+    "color": "#7b68ae",
     "recognizable": false,
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/77a37724b70842199072e0a0df578130.png"
   },
@@ -3059,7 +3059,7 @@
     "year": 2015,
     "genre": "Synth-Pop",
     "cover": "👼",
-    "color": "#ff69b4",
+    "color": "#9b59b6",
     "recognizable": false,
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/f6b3a85f39a656aaa61d30d1d2ec8d85.png"
   },
@@ -3129,7 +3129,7 @@
     "year": 2020,
     "genre": "City Pop/Mix",
     "cover": "🗼",
-    "color": "#ff69b4",
+    "color": "#e8836b",
     "recognizable": false,
     "image": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/4b/30/2c/4b302cb6-7a14-5464-4e97-0577e9d0be49/18UMGIM82277.rgb.jpg/600x600bb.jpg"
   },
@@ -3263,7 +3263,7 @@
     "year": 2015,
     "genre": "Synth-Pop",
     "cover": "💖",
-    "color": "#ff69b4",
+    "color": "#5b8dc9",
     "recognizable": false,
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/f8e8eb1fab348cff53beb038f0a05210.png"
   },
@@ -3575,7 +3575,7 @@
     "year": 1983,
     "genre": "City Pop",
     "cover": "⏰",
-    "color": "#ff69b4",
+    "color": "#d4a040",
     "recognizable": false,
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/a0326c06dcb45a5dfdeebf7654643446.jpg"
   },
@@ -3790,7 +3790,7 @@
     "year": 2013,
     "genre": "K-Pop/Electropop",
     "cover": "📼",
-    "color": "#ff69b4",
+    "color": "#d660a0",
     "recognizable": false,
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/3eab7ad36e2fb0e315e51892c794c540.jpg"
   },
@@ -3860,7 +3860,7 @@
     "artist": "Run the Jewels",
     "year": 2014,
     "genre": "Hip-Hop",
-    "cover": "👉🤛",
+    "cover": "🔫",
     "color": "#1a8f5c",
     "recognizable": false,
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/5591506667b045aac54e13f41def97b2.png"
