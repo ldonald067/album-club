@@ -438,6 +438,11 @@ function VibeCheck({ albumKey }) {
                   draggable={false}
                 />
                 <span className="vibe-label">{v.label}</span>
+                {selected.includes(v.label) && !submitted && (
+                  <span className="vibe-check" aria-hidden="true">
+                    ✓
+                  </span>
+                )}
                 {submitted && (
                   <div className="vibe-bar-wrap">
                     <div
@@ -871,7 +876,7 @@ function GuessGame() {
 }
 
 /* ─── Cover Art Challenge ─── */
-const BLUR_LEVELS = [5, 3, 2, 1, 0];
+const BLUR_LEVELS = [3, 2, 1, 0.5, 0];
 
 function CoverChallenge() {
   const todayKey = getTodayKey();
