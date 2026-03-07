@@ -1138,6 +1138,12 @@ body {
   padding: 8px 16px;
 }
 
+.share-day-btn {
+  margin-top: 14px;
+  font-size: 12px;
+  padding: 10px 24px;
+}
+
 /* ─── Daily Wrap-up ─── */
 .daily-wrap .panel-header {
   background: linear-gradient(135deg, #2a4570, #3d6b3d);

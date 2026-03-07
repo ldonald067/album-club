@@ -55,6 +55,7 @@ function RateReveal({ albumKey }) {
   const [justRevealed, setJustRevealed] = useState(false);
   const [locking, setLocking] = useState(false);
   const [error, setError] = useState(null);
+  const shareBtnRef = useRef(null);
 
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_rated_${albumKey}`);
@@ -161,6 +162,35 @@ function RateReveal({ albumKey }) {
               </div>
             ))}
           </div>
+          <button
+            ref={shareBtnRef}
+            className="btn-submit share-btn"
+            onClick={() => {
+              const stars =
+                "\u2605".repeat(myRating) + "\u2606".repeat(10 - myRating);
+              const text = [
+                `Album Of The Day Club`,
+                `\u2b50 Rate & Reveal \u2014 ${albumKey}`,
+                `My Rating: ${myRating}/10 ${stars}`,
+                `Community Avg: ${results.average}/10 (${results.total} ratings)`,
+                window.location.origin,
+              ].join("\n");
+              navigator.clipboard
+                .writeText(text)
+                .then(() => {
+                  const btn = shareBtnRef.current;
+                  if (btn) {
+                    btn.textContent = "Copied!";
+                    setTimeout(() => {
+                      btn.textContent = "\ud83d\udccb Share Rating";
+                    }, 2000);
+                  }
+                })
+                .catch(() => {});
+            }}
+          >
+            {"\ud83d\udccb"} Share Rating
+          </button>
         </div>
       </div>
     );
@@ -224,6 +254,7 @@ function VibeCheck({ albumKey }) {
   const [justToggledVibe, setJustToggledVibe] = useState(null);
   const [atLimit, setAtLimit] = useState(false);
   const [error, setError] = useState(null);
+  const shareBtnRef = useRef(null);
 
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_vibed_${albumKey}`);
@@ -370,6 +401,45 @@ function VibeCheck({ albumKey }) {
           })}
         </div>
         {error && <p className="submit-error">{error}</p>}
+        {submitted && (
+          <button
+            ref={shareBtnRef}
+            className="btn-submit share-btn"
+            onClick={() => {
+              const vibeEmojis = selected
+                .map((s) => {
+                  const v = VIBES.find((vb) => vb.label === s);
+                  return v ? `${v.emoji} ${v.label}` : s;
+                })
+                .join(", ");
+              const lines = [
+                `Album Of The Day Club`,
+                `\ud83c\udfad Vibe Check \u2014 ${albumKey}`,
+                `My Vibes: ${vibeEmojis}`,
+              ];
+              if (topVibeData) {
+                lines.push(
+                  `Top Vibe: ${topVibeData.emoji} ${topVibeData.label} (${topVibePct}%)`,
+                );
+              }
+              lines.push(window.location.origin);
+              navigator.clipboard
+                .writeText(lines.join("\n"))
+                .then(() => {
+                  const btn = shareBtnRef.current;
+                  if (btn) {
+                    btn.textContent = "Copied!";
+                    setTimeout(() => {
+                      btn.textContent = "\ud83d\udccb Share Vibes";
+                    }, 2000);
+                  }
+                })
+                .catch(() => {});
+            }}
+          >
+            {"\ud83d\udccb"} Share Vibes
+          </button>
+        )}
         {!submitted && (
           <div className="activity-footer">
             <span className={`activity-hint${atLimit ? " at-limit" : ""}`}>
@@ -719,7 +789,7 @@ function GuessGame() {
                     ? `Solved in ${guesses.length}/6`
                     : `X/6 — Better luck tomorrow`,
                   squares.join(""),
-                  ``,
+                  window.location.origin,
                 ].join("\n");
                 navigator.clipboard
                   .writeText(text)
@@ -1035,7 +1105,7 @@ function CoverChallenge() {
                     ? `Solved in ${guesses.length}/5`
                     : `X/5 — Better luck tomorrow`,
                   squares.join(""),
-                  ``,
+                  window.location.origin,
                 ].join("\n");
                 navigator.clipboard
                   .writeText(text)
@@ -1081,6 +1151,7 @@ function HeardleGame() {
   const inputRef = useRef(null);
   const playerRef = useRef(null);
   const timerRef = useRef(null);
+  const shareBtnRef = useRef(null);
 
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_heardle_${todayKey}`);
@@ -1414,6 +1485,7 @@ function HeardleGame() {
               </div>
             )}
             <button
+              ref={shareBtnRef}
               className="btn-submit share-btn"
               onClick={() => {
                 const squares = guesses.map((g) =>
@@ -1428,9 +1500,20 @@ function HeardleGame() {
                     ? `Solved in ${guesses.length}/6`
                     : `X/6 — Better luck tomorrow`,
                   squares.join(""),
-                  ``,
+                  window.location.origin,
                 ].join("\n");
-                navigator.clipboard.writeText(text).catch(() => {});
+                navigator.clipboard
+                  .writeText(text)
+                  .then(() => {
+                    const btn = shareBtnRef.current;
+                    if (btn) {
+                      btn.textContent = "Copied!";
+                      setTimeout(() => {
+                        btn.textContent = "📋 Share Results";
+                      }, 2000);
+                    }
+                  })
+                  .catch(() => {});
               }}
             >
               📋 Share Results
@@ -1456,6 +1539,7 @@ function LyricGame() {
   const [stats, setStats] = useState(null);
   const [shaking, setShaking] = useState(false);
   const inputRef = useRef(null);
+  const shareBtnRef = useRef(null);
 
   // Load lyrics data
   useEffect(() => {
@@ -1714,6 +1798,7 @@ function LyricGame() {
               </div>
             )}
             <button
+              ref={shareBtnRef}
               className="btn-submit share-btn"
               onClick={() => {
                 const squares = guesses.map((g) =>
@@ -1726,9 +1811,20 @@ function LyricGame() {
                     ? `Solved in ${guesses.length}/4`
                     : `X/4 — Better luck tomorrow`,
                   squares.join(""),
-                  ``,
+                  window.location.origin,
                 ].join("\n");
-                navigator.clipboard.writeText(text).catch(() => {});
+                navigator.clipboard
+                  .writeText(text)
+                  .then(() => {
+                    const btn = shareBtnRef.current;
+                    if (btn) {
+                      btn.textContent = "Copied!";
+                      setTimeout(() => {
+                        btn.textContent = "📋 Share Results";
+                      }, 2000);
+                    }
+                  })
+                  .catch(() => {});
               }}
             >
               📋 Share Results
@@ -2185,6 +2281,7 @@ export default function ForumPage({ album, dateString }) {
   const [imgError, setImgError] = useState(false);
   const [streak, setStreak] = useState(0);
   const [allDone, setAllDone] = useState(false);
+  const shareDayBtnRef = useRef(null);
 
   const todayKey = getTodayKey();
 
@@ -2401,6 +2498,96 @@ export default function ForumPage({ album, dateString }) {
                     Tomorrow&apos;s genre:{" "}
                     <strong>{tomorrowAlbum.genre}</strong>
                   </div>
+                  <button
+                    ref={shareDayBtnRef}
+                    className="btn-submit share-btn share-day-btn"
+                    onClick={() => {
+                      const lines = [
+                        `Album Of The Day Club`,
+                        `\ud83d\udcbf Daily Recap \u2014 ${todayKey}`,
+                        `\ud83c\udfb5 ${album.title} by ${album.artist}`,
+                        ``,
+                      ];
+                      const myRating = localStorage.getItem(
+                        `aotd_rated_${todayKey}`,
+                      );
+                      if (myRating) {
+                        const r = parseInt(myRating);
+                        const stars =
+                          "\u2605".repeat(r) + "\u2606".repeat(10 - r);
+                        lines.push(`\u2b50 ${r}/10 ${stars}`);
+                      }
+                      const vibeRaw = localStorage.getItem(
+                        `aotd_vibed_${todayKey}`,
+                      );
+                      if (vibeRaw) {
+                        try {
+                          const vibes = JSON.parse(vibeRaw);
+                          const vibeText = vibes
+                            .map((s) => {
+                              const v = VIBES.find((vb) => vb.label === s);
+                              return v ? `${v.emoji} ${v.label}` : s;
+                            })
+                            .join(", ");
+                          lines.push(`\ud83c\udfad ${vibeText}`);
+                        } catch {}
+                      }
+                      for (const gk of ["guess", "cover", "heardle", "lyric"]) {
+                        const raw = localStorage.getItem(
+                          `aotd_${gk}_${todayKey}`,
+                        );
+                        if (raw) {
+                          try {
+                            const state = JSON.parse(raw);
+                            if (state.gameOver) {
+                              const emoji = {
+                                guess: "\ud83c\udfb5",
+                                cover: "\ud83d\uddbc\ufe0f",
+                                heardle: "\ud83c\udfa7",
+                                lyric: "\ud83c\udfa4",
+                              }[gk];
+                              const name = {
+                                guess: "Puzzle",
+                                cover: "Cover",
+                                heardle: "Heardle",
+                                lyric: "Lyric",
+                              }[gk];
+                              const max = {
+                                guess: 6,
+                                cover: 5,
+                                heardle: 6,
+                                lyric: 4,
+                              }[gk];
+                              lines.push(
+                                state.solved
+                                  ? `${emoji} ${name}: Solved in ${state.guesses.length}/${max}`
+                                  : `${emoji} ${name}: X/${max}`,
+                              );
+                              break;
+                            }
+                          } catch {}
+                        }
+                      }
+                      if (streak >= 2) {
+                        lines.push(`\ud83d\udd25 ${streak}-day streak`);
+                      }
+                      lines.push(window.location.origin);
+                      navigator.clipboard
+                        .writeText(lines.join("\n"))
+                        .then(() => {
+                          const btn = shareDayBtnRef.current;
+                          if (btn) {
+                            btn.textContent = "Copied!";
+                            setTimeout(() => {
+                              btn.textContent = "\ud83d\udccb Share My Day";
+                            }, 2000);
+                          }
+                        })
+                        .catch(() => {});
+                    }}
+                  >
+                    {"\ud83d\udccb"} Share My Day
+                  </button>
                 </div>
               </div>
             )}
