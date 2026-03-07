@@ -56,15 +56,17 @@ export async function POST(request) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
 
-    // Body size guard
-    const contentLength = hdrs.get("content-length");
-    if (contentLength && parseInt(contentLength, 10) > 1024) {
-      return NextResponse.json({ error: "Request too large" }, { status: 413 });
-    }
-
+    // Body size guard: check actual body size, not spoofable content-length
     let body;
     try {
-      body = await request.json();
+      const text = await request.text();
+      if (text.length > 1024) {
+        return NextResponse.json(
+          { error: "Request too large" },
+          { status: 413 },
+        );
+      }
+      body = JSON.parse(text);
     } catch {
       return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
     }
