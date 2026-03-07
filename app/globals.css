@@ -1774,3 +1774,64 @@ body {
     letter-spacing: 2px;
   }
 }
+
+/* ─── Vinyl click-to-spin ─── */
+.vinyl-disc.spinning {
+  animation: vinylSpin 0.8s linear infinite !important;
+}
+
+/* ─── Konami code banner ─── */
+.konami-banner {
+  text-align: center;
+  padding: 10px;
+  background: linear-gradient(
+    90deg,
+    #ff6b6b,
+    #feca57,
+    #48dbfb,
+    #ff9ff3,
+    #54a0ff
+  );
+  color: #1a1a2e;
+  font-weight: bold;
+  font-size: 13px;
+  letter-spacing: 1px;
+  animation: konamiFade 5s ease-out forwards;
+}
+
+@keyframes konamiFade {
+  0% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ─── Visit rank badge ─── */
+.rank-badge {
+  font-size: 11px;
+  opacity: 0.85;
+  cursor: default;
+}
+
+/* ─── Forum signature ─── */
+.forum-sig {
+  display: block;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed #445566;
+  font-style: italic;
+  font-size: 10px;
+  opacity: 0.5;
+  color: #8899aa;
+}
+
+/* ─── EST hover easter egg ─── */
+.banner-est {
+  cursor: default;
+  transition: opacity 0.2s;
+}

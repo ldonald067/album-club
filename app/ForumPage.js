@@ -37,6 +37,62 @@ async function fireConfetti(options = {}) {
   });
 }
 
+/* ─── Forum signatures (easter egg) ─── */
+const FORUM_SIGS = [
+  "— xXMusicFan2004Xx | 'If the bass don't hit, I don't sit'",
+  "— vinyl_4_life | 'Albums > playlists, always.'",
+  "— StereoPhoenix | 'I rate albums, therefore I am.'",
+  "— bassline_queen | 'Turn it up until the neighbors complain.'",
+  "— The_Riff_Lord | 'My ears have trust issues with singles.'",
+  "— lo-fi_larry | 'Listening is not a passive sport.'",
+  "— NightOwlBeats | 'Every album deserves at least one full listen.'",
+  "— PixelPunk99 | '128kbps? In this economy?'",
+  "— CrateDigger3000 | 'My backlog has a backlog.'",
+  "— echo_chamber | 'I don't have a problem, I have a collection.'",
+];
+
+/* ─── Visit rank (forum-style) ─── */
+const VISIT_RANKS = [
+  { min: 0, label: "Lurker", icon: "👁️" },
+  { min: 3, label: "Newbie", icon: "🌱" },
+  { min: 7, label: "Regular", icon: "🎧" },
+  { min: 14, label: "Member", icon: "💿" },
+  { min: 30, label: "Veteran", icon: "🎸" },
+  { min: 60, label: "Elder", icon: "👑" },
+  { min: 100, label: "Legend", icon: "⭐" },
+];
+
+function getVisitRank() {
+  const count = parseInt(localStorage.getItem("aotd_visit_count") || "0", 10);
+  let rank = VISIT_RANKS[0];
+  for (const r of VISIT_RANKS) {
+    if (count >= r.min) rank = r;
+  }
+  return rank;
+}
+
+function incrementVisitCount(todayKey) {
+  const lastVisit = localStorage.getItem("aotd_last_visit");
+  if (lastVisit === todayKey) return; // already counted today
+  const count = parseInt(localStorage.getItem("aotd_visit_count") || "0", 10);
+  localStorage.setItem("aotd_visit_count", (count + 1).toString());
+  localStorage.setItem("aotd_last_visit", todayKey);
+}
+
+/* ─── Konami Code detector ─── */
+const KONAMI_CODE = [
+  "ArrowUp",
+  "ArrowUp",
+  "ArrowDown",
+  "ArrowDown",
+  "ArrowLeft",
+  "ArrowRight",
+  "ArrowLeft",
+  "ArrowRight",
+  "b",
+  "a",
+];
+
 /* ─── Color utility ─── */
 function isLightColor(hex) {
   const r = parseInt(hex.slice(1, 3), 16);
@@ -2585,7 +2641,13 @@ export default function ForumPage({ album, dateString }) {
   const [streak, setStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
   const [allDone, setAllDone] = useState(false);
+  const [visitRank, setVisitRank] = useState(null);
+  const [konamiTriggered, setKonamiTriggered] = useState(false);
+  const [vinylSpinning, setVinylSpinning] = useState(false);
+  const [estHover, setEstHover] = useState(false);
+  const [forumSig, setForumSig] = useState("");
   const shareDayBtnRef = useRef(null);
+  const konamiRef = useRef([]);
 
   const todayKey = getTodayKey();
 
@@ -2599,6 +2661,34 @@ export default function ForumPage({ album, dateString }) {
   useEffect(() => {
     setOnlineCount(Math.floor(Math.random() * 40) + 5);
     setGuestCount(Math.floor(Math.random() * 120) + 20);
+
+    // Visit rank tracking
+    incrementVisitCount(todayKey);
+    setVisitRank(getVisitRank());
+
+    // Random forum signature
+    setForumSig(FORUM_SIGS[Math.floor(Math.random() * FORUM_SIGS.length)]);
+
+    // Konami code listener
+    const handleKey = (e) => {
+      konamiRef.current.push(e.key);
+      konamiRef.current = konamiRef.current.slice(-KONAMI_CODE.length);
+      if (konamiRef.current.join(",") === KONAMI_CODE.join(",")) {
+        setKonamiTriggered(true);
+        fireConfetti({ particleCount: 200, spread: 160, origin: { y: 0.3 } });
+        setTimeout(
+          () =>
+            fireConfetti({
+              particleCount: 100,
+              spread: 120,
+              origin: { y: 0.5 },
+            }),
+          300,
+        );
+        setTimeout(() => setKonamiTriggered(false), 5000);
+      }
+    };
+    window.addEventListener("keydown", handleKey);
 
     // Check streak
     const s = updateStreak(todayKey);
@@ -2627,7 +2717,10 @@ export default function ForumPage({ album, dateString }) {
 
     // Re-check periodically (activities write to localStorage)
     const interval = setInterval(checkDone, 2000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("keydown", handleKey);
+    };
   }, [todayKey]);
 
   const accentColor = isLightColor(album.color) ? "#2a4570" : album.color;
@@ -2637,7 +2730,14 @@ export default function ForumPage({ album, dateString }) {
       {/* Banner */}
       <div className="banner">
         <div className="banner-inner">
-          <div className="banner-est">♫ EST. 2004 ♫</div>
+          <div
+            className="banner-est"
+            onMouseEnter={() => setEstHover(true)}
+            onMouseLeave={() => setEstHover(false)}
+            title="Or is it?"
+          >
+            {estHover ? "♫ just kidding, est. 2025 ♫" : "♫ EST. 2004 ♫"}
+          </div>
           <h1 className="banner-title">💿 Album Of The Day Club 💿</h1>
           <div className="banner-tagline">
             &ldquo;One album. One day. A thousand opinions.&rdquo;
@@ -2665,6 +2765,13 @@ export default function ForumPage({ album, dateString }) {
         </nav>
       </div>
 
+      {/* Konami easter egg */}
+      {konamiTriggered && (
+        <div className="konami-banner">
+          You found the secret code! You are a true music nerd.
+        </div>
+      )}
+
       {/* Info bar */}
       <div className="info-bar">
         <span>
@@ -2674,6 +2781,14 @@ export default function ForumPage({ album, dateString }) {
           <span className="streak-badge">
             {streak >= 3 ? "\ud83d\udd25" : "\ud83d\udcc5"} <b>{streak}</b>-day
             streak{bestStreak > streak ? ` (best: ${bestStreak})` : ""}
+          </span>
+        )}
+        {visitRank && (
+          <span
+            className="rank-badge"
+            title={`${parseInt(localStorage.getItem("aotd_visit_count") || "0", 10)} days visited`}
+          >
+            {visitRank.icon} {visitRank.label}
           </span>
         )}
         <span>
@@ -2733,7 +2848,16 @@ export default function ForumPage({ album, dateString }) {
                       <span className="cover-emoji">{album.cover}</span>
                     )}
                   </div>
-                  <div className="vinyl-disc" aria-hidden="true" />
+                  <div
+                    className={`vinyl-disc${vinylSpinning ? " spinning" : ""}`}
+                    aria-hidden="true"
+                    onClick={() => {
+                      setVinylSpinning(true);
+                      setTimeout(() => setVinylSpinning(false), 3000);
+                    }}
+                    style={{ cursor: "pointer" }}
+                    title="Click to spin!"
+                  />
                 </div>
                 <div className="album-info">
                   <h2 className="album-title">{album.title}</h2>
@@ -3060,6 +3184,12 @@ export default function ForumPage({ album, dateString }) {
               Streamline
             </a>
           </span>
+          {forumSig && (
+            <>
+              <br />
+              <span className="forum-sig">{forumSig}</span>
+            </>
+          )}
         </div>
       </div>
     </>
