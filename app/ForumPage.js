@@ -27,7 +27,8 @@ const ALBUM_SEARCH = ALBUMS.map((a) => ({
   _artistLc: a.artist.toLowerCase(),
 }));
 
-/* ─── Confetti utility (dynamic import, respects reduced motion) ─── */
+/* ─── Confetti utility (cached dynamic import, respects reduced motion) ─── */
+let _confetti = null;
 async function fireConfetti(options = {}) {
   if (
     typeof window !== "undefined" &&
@@ -35,8 +36,8 @@ async function fireConfetti(options = {}) {
   ) {
     return;
   }
-  const confetti = (await import("canvas-confetti")).default;
-  confetti({
+  if (!_confetti) _confetti = (await import("canvas-confetti")).default;
+  _confetti({
     particleCount: 80,
     spread: 70,
     origin: { y: 0.6 },
@@ -629,16 +630,19 @@ function GuessGame() {
     }
   };
 
+  const excluded = useMemo(
+    () => new Set(guesses.map((g) => g.toLowerCase())),
+    [guesses],
+  );
   const filtered = useMemo(() => {
     if (!currentGuess.trim()) return [];
     const q = currentGuess.toLowerCase();
-    const excluded = new Set(guesses.map((g) => g.toLowerCase()));
     return ALBUM_SEARCH.filter(
       (a) =>
         !excluded.has(a._titleLc) &&
         (a._titleLc.includes(q) || a._artistLc.includes(q)),
     ).slice(0, 5);
-  }, [currentGuess, guesses]);
+  }, [currentGuess, excluded]);
 
   return (
     <div className="panel">
@@ -975,16 +979,19 @@ function CoverChallenge() {
     ? 0
     : BLUR_LEVELS[Math.min(guesses.length, BLUR_LEVELS.length - 1)];
 
+  const excluded = useMemo(
+    () => new Set(guesses.map((g) => g.toLowerCase())),
+    [guesses],
+  );
   const filtered = useMemo(() => {
     if (!currentGuess.trim()) return [];
     const q = currentGuess.toLowerCase();
-    const excluded = new Set(guesses.map((g) => g.toLowerCase()));
     return ALBUM_SEARCH.filter(
       (a) =>
         !excluded.has(a._titleLc) &&
         (a._titleLc.includes(q) || a._artistLc.includes(q)),
     ).slice(0, 5);
-  }, [currentGuess, guesses]);
+  }, [currentGuess, excluded]);
 
   return (
     <div className="panel">
@@ -1361,16 +1368,19 @@ function HeardleGame() {
   // If no YouTube ID, fall back to Cover Challenge
   if (!hasYouTube) return <CoverChallenge />;
 
+  const excluded = useMemo(
+    () => new Set(guesses.map((g) => g.toLowerCase())),
+    [guesses],
+  );
   const filtered = useMemo(() => {
     if (!currentGuess.trim()) return [];
     const q = currentGuess.toLowerCase();
-    const excluded = new Set(guesses.map((g) => g.toLowerCase()));
     return ALBUM_SEARCH.filter(
       (a) =>
         !excluded.has(a._titleLc) &&
         (a._titleLc.includes(q) || a._artistLc.includes(q)),
     ).slice(0, 5);
-  }, [currentGuess, guesses]);
+  }, [currentGuess, excluded]);
 
   return (
     <div className="panel">
@@ -2014,16 +2024,19 @@ function ScrambleGame() {
     }
   };
 
+  const excluded = useMemo(
+    () => new Set(guesses.map((g) => g.toLowerCase())),
+    [guesses],
+  );
   const filtered = useMemo(() => {
     if (!currentGuess.trim()) return [];
     const q = currentGuess.toLowerCase();
-    const excluded = new Set(guesses.map((g) => g.toLowerCase()));
     return ALBUM_SEARCH.filter(
       (a) =>
         !excluded.has(a._titleLc) &&
         (a._titleLc.includes(q) || a._artistLc.includes(q)),
     ).slice(0, 5);
-  }, [currentGuess, guesses]);
+  }, [currentGuess, excluded]);
 
   return (
     <div className="panel">
