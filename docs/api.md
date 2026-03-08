@@ -11,23 +11,13 @@ Two layers of protection, both using in-memory Maps:
 - **Date validation**: `isValidDateKey()` validates `YYYY-MM-DD` format, real calendar date, not in the future
 - All POST routes reject `content-length > 1024`
 
-## Caching
-
-| Route                  | TTL  | Notes                                              |
-| ---------------------- | ---- | -------------------------------------------------- |
-| `/api/rate` GET        | 30s  | Keyed by album date, busted on POST                |
-| `/api/vibe` GET        | 30s  | Keyed by album date, busted on POST                |
-| `/api/guess` GET       | 30s  | Per game type, keyed by puzzle key, busted on POST |
-| `/api/stats` GET       | 5min | Server-side + route-level double cache             |
-| `db.js getSiteStats()` | 5min | Module-level cache, full-table aggregation         |
-
-All caches are in-memory objects, no external cache layer.
-
 ## Database (`lib/db.js`)
 
 - **SQLite** via better-sqlite3, WAL mode, singleton connection
 - **Prepared statements** cached at module scope (10 statements, created once on first `getDb()` call)
 - **Covering indexes** on all query patterns: `(album_key, rating)`, `(album_key, vibe)`, `(puzzle_key, attempts, solved)`
+
+For caching details, see `docs/performance.md`.
 
 ## Routes
 
