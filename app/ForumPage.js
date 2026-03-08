@@ -50,6 +50,165 @@ async function fireConfetti(options = {}) {
   });
 }
 
+/* ─── Shared Components ─── */
+
+/** Reusable share button with clipboard copy + "Copied!" feedback */
+function ShareResultButton({ getText, label = "📋 Share Results" }) {
+  const btnRef = useRef(null);
+  return (
+    <button
+      ref={btnRef}
+      className="btn-submit share-btn"
+      onClick={() => {
+        navigator.clipboard
+          .writeText(getText())
+          .then(() => {
+            const btn = btnRef.current;
+            if (btn) {
+              btn.textContent = "Copied!";
+              setTimeout(() => {
+                btn.textContent = label;
+              }, COPIED_FEEDBACK_MS);
+            }
+          })
+          .catch(() => {});
+      }}
+    >
+      {label}
+    </button>
+  );
+}
+
+/** Guess history list — shows previous guesses with ✅/❌ */
+function GuessHistory({ guesses, checkFn }) {
+  return (
+    <div className="guess-history">
+      {guesses.map((g, i) => (
+        <div
+          key={i}
+          className={`guess-item ${checkFn(g) ? "correct" : "wrong"}`}
+        >
+          <span className="guess-num">#{i + 1}</span>
+          <span className="guess-text">{g}</span>
+          <span>{checkFn(g) ? "✅" : "❌"}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Album autocomplete input with dropdown suggestions + keyboard navigation */
+function AlbumAutocomplete({
+  guesses,
+  currentGuess,
+  onGuessChange,
+  onSubmit,
+  shaking,
+  inputRef,
+}) {
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestionIndex, setSuggestionIndex] = useState(-1);
+
+  const excluded = useMemo(
+    () => new Set(guesses.map((g) => g.toLowerCase())),
+    [guesses],
+  );
+  const filtered = useMemo(() => {
+    if (!currentGuess.trim()) return [];
+    const q = currentGuess.toLowerCase();
+    return ALBUM_SEARCH.filter(
+      (a) =>
+        !excluded.has(a._titleLc) &&
+        (a._titleLc.includes(q) || a._artistLc.includes(q)),
+    ).slice(0, MAX_SUGGESTIONS);
+  }, [currentGuess, excluded]);
+
+  return (
+    <div className={`guess-input-wrap${shaking ? " shaking" : ""}`}>
+      <div className="guess-input-container">
+        <input
+          ref={inputRef}
+          type="text"
+          className="form-input"
+          value={currentGuess}
+          aria-label="Guess the album"
+          onChange={(e) => {
+            onGuessChange(e.target.value);
+            setShowSuggestions(true);
+            setSuggestionIndex(-1);
+          }}
+          onFocus={() => setShowSuggestions(true)}
+          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+          placeholder="Type an album name..."
+          role="combobox"
+          aria-expanded={showSuggestions && filtered.length > 0}
+          aria-autocomplete="list"
+          onKeyDown={(e) => {
+            if (
+              showSuggestions &&
+              filtered.length > 0 &&
+              e.key === "ArrowDown"
+            ) {
+              e.preventDefault();
+              setSuggestionIndex((prev) =>
+                prev < filtered.length - 1 ? prev + 1 : 0,
+              );
+            } else if (
+              showSuggestions &&
+              filtered.length > 0 &&
+              e.key === "ArrowUp"
+            ) {
+              e.preventDefault();
+              setSuggestionIndex((prev) =>
+                prev > 0 ? prev - 1 : filtered.length - 1,
+              );
+            } else if (e.key === "Enter") {
+              if (suggestionIndex >= 0 && filtered[suggestionIndex]) {
+                onGuessChange(filtered[suggestionIndex].title);
+                setShowSuggestions(false);
+                setSuggestionIndex(-1);
+              } else {
+                onSubmit();
+              }
+            } else if (e.key === "Escape") {
+              setShowSuggestions(false);
+              setSuggestionIndex(-1);
+            }
+          }}
+        />
+        {showSuggestions && filtered.length > 0 && (
+          <div className="suggestions" role="listbox">
+            {filtered.map((a, i) => (
+              <div
+                key={i}
+                className={`suggestion-item${i === suggestionIndex ? " highlighted" : ""}`}
+                role="option"
+                aria-selected={i === suggestionIndex}
+                onMouseDown={() => {
+                  onGuessChange(a.title);
+                  setShowSuggestions(false);
+                  setSuggestionIndex(-1);
+                }}
+                onMouseEnter={() => setSuggestionIndex(i)}
+              >
+                {a.cover} <strong>{a.title}</strong>{" "}
+                <span style={{ color: "#888" }}>— {a.artist}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      <button
+        className="btn-submit"
+        onClick={onSubmit}
+        disabled={!currentGuess.trim()}
+      >
+        Guess
+      </button>
+    </div>
+  );
+}
+
 /* ─── Forum signatures (easter egg) ─── */
 const FORUM_SIGS = [
   "— xXMusicFan2004Xx | 'If the bass don't hit, I don't sit'",
@@ -124,7 +283,6 @@ function RateReveal({ albumKey }) {
   const [justRevealed, setJustRevealed] = useState(false);
   const [locking, setLocking] = useState(false);
   const [error, setError] = useState(null);
-  const shareBtnRef = useRef(null);
 
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_rated_${albumKey}`);
@@ -231,35 +389,20 @@ function RateReveal({ albumKey }) {
               </div>
             ))}
           </div>
-          <button
-            ref={shareBtnRef}
-            className="btn-submit share-btn"
-            onClick={() => {
+          <ShareResultButton
+            label="📋 Share Rating"
+            getText={() => {
               const stars =
                 "\u2605".repeat(myRating) + "\u2606".repeat(10 - myRating);
-              const text = [
+              return [
                 `Album Of The Day Club`,
                 `\u2b50 Rate & Reveal \u2014 ${albumKey}`,
                 `My Rating: ${myRating}/10 ${stars}`,
                 `Community Avg: ${results.average}/10 (${results.total} ratings)`,
                 window.location.origin,
               ].join("\n");
-              navigator.clipboard
-                .writeText(text)
-                .then(() => {
-                  const btn = shareBtnRef.current;
-                  if (btn) {
-                    btn.textContent = "Copied!";
-                    setTimeout(() => {
-                      btn.textContent = "\ud83d\udccb Share Rating";
-                    }, COPIED_FEEDBACK_MS);
-                  }
-                })
-                .catch(() => {});
             }}
-          >
-            {"\ud83d\udccb"} Share Rating
-          </button>
+          />
         </div>
       </div>
     );
@@ -327,7 +470,6 @@ function VibeCheck({ albumKey }) {
   const [justToggledVibe, setJustToggledVibe] = useState(null);
   const [atLimit, setAtLimit] = useState(false);
   const [error, setError] = useState(null);
-  const shareBtnRef = useRef(null);
 
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_vibed_${albumKey}`);
@@ -491,10 +633,9 @@ function VibeCheck({ albumKey }) {
           </p>
         )}
         {submitted && (
-          <button
-            ref={shareBtnRef}
-            className="btn-submit share-btn"
-            onClick={() => {
+          <ShareResultButton
+            label="📋 Share Vibes"
+            getText={() => {
               const vibeEmojis = selected
                 .map((s) => {
                   const v = VIBES.find((vb) => vb.label === s);
@@ -512,22 +653,9 @@ function VibeCheck({ albumKey }) {
                 );
               }
               lines.push(window.location.origin);
-              navigator.clipboard
-                .writeText(lines.join("\n"))
-                .then(() => {
-                  const btn = shareBtnRef.current;
-                  if (btn) {
-                    btn.textContent = "Copied!";
-                    setTimeout(() => {
-                      btn.textContent = "\ud83d\udccb Share Vibes";
-                    }, COPIED_FEEDBACK_MS);
-                  }
-                })
-                .catch(() => {});
+              return lines.join("\n");
             }}
-          >
-            {"\ud83d\udccb"} Share Vibes
-          </button>
+          />
         )}
         {!submitted && (
           <div className="activity-footer">
@@ -564,12 +692,9 @@ function GuessGame() {
   const [gameOver, setGameOver] = useState(false);
   const [solved, setSolved] = useState(false);
   const [stats, setStats] = useState(null);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [suggestionIndex, setSuggestionIndex] = useState(-1);
   const [shaking, setShaking] = useState(false);
   const [justRevealedClue, setJustRevealedClue] = useState(-1);
   const inputRef = useRef(null);
-  const shareBtnRef = useRef(null);
 
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_guess_${todayKey}`);
@@ -617,7 +742,6 @@ function GuessGame() {
     const newGuesses = [...guesses, guess];
     setGuesses(newGuesses);
     setCurrentGuess("");
-    setShowSuggestions(false);
 
     const isCorrect = guess.toLowerCase() === puzzleAlbum.title.toLowerCase();
 
@@ -645,19 +769,8 @@ function GuessGame() {
     }
   };
 
-  const excluded = useMemo(
-    () => new Set(guesses.map((g) => g.toLowerCase())),
-    [guesses],
-  );
-  const filtered = useMemo(() => {
-    if (!currentGuess.trim()) return [];
-    const q = currentGuess.toLowerCase();
-    return ALBUM_SEARCH.filter(
-      (a) =>
-        !excluded.has(a._titleLc) &&
-        (a._titleLc.includes(q) || a._artistLc.includes(q)),
-    ).slice(0, MAX_SUGGESTIONS);
-  }, [currentGuess, excluded]);
+  const isCorrectGuess = (g) =>
+    g.toLowerCase() === puzzleAlbum.title.toLowerCase();
 
   return (
     <div className="panel">
@@ -692,113 +805,19 @@ function GuessGame() {
 
         {/* Guess history */}
         {guesses.length > 0 && (
-          <div className="guess-history">
-            {guesses.map((g, i) => (
-              <div
-                key={i}
-                className={`guess-item ${g.toLowerCase() === puzzleAlbum.title.toLowerCase() ? "correct" : "wrong"}`}
-              >
-                <span className="guess-num">#{i + 1}</span>
-                <span className="guess-text">{g}</span>
-                <span>
-                  {g.toLowerCase() === puzzleAlbum.title.toLowerCase()
-                    ? "✅"
-                    : "❌"}
-                </span>
-              </div>
-            ))}
-          </div>
+          <GuessHistory guesses={guesses} checkFn={isCorrectGuess} />
         )}
 
         {/* Input */}
         {!gameOver && (
-          <div className={`guess-input-wrap${shaking ? " shaking" : ""}`}>
-            <div className="guess-input-container">
-              <input
-                ref={inputRef}
-                type="text"
-                className="form-input"
-                value={currentGuess}
-                aria-label="Guess the album"
-                onChange={(e) => {
-                  setCurrentGuess(e.target.value);
-                  setShowSuggestions(true);
-                  setSuggestionIndex(-1);
-                }}
-                onFocus={() => setShowSuggestions(true)}
-                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                placeholder="Type an album name..."
-                role="combobox"
-                aria-expanded={showSuggestions && filtered.length > 0}
-                aria-autocomplete="list"
-                aria-controls="guess-suggestions"
-                onKeyDown={(e) => {
-                  if (
-                    showSuggestions &&
-                    filtered.length > 0 &&
-                    e.key === "ArrowDown"
-                  ) {
-                    e.preventDefault();
-                    setSuggestionIndex((prev) =>
-                      prev < filtered.length - 1 ? prev + 1 : 0,
-                    );
-                  } else if (
-                    showSuggestions &&
-                    filtered.length > 0 &&
-                    e.key === "ArrowUp"
-                  ) {
-                    e.preventDefault();
-                    setSuggestionIndex((prev) =>
-                      prev > 0 ? prev - 1 : filtered.length - 1,
-                    );
-                  } else if (e.key === "Enter") {
-                    if (suggestionIndex >= 0 && filtered[suggestionIndex]) {
-                      setCurrentGuess(filtered[suggestionIndex].title);
-                      setShowSuggestions(false);
-                      setSuggestionIndex(-1);
-                    } else {
-                      submitGuess();
-                    }
-                  } else if (e.key === "Escape") {
-                    setShowSuggestions(false);
-                    setSuggestionIndex(-1);
-                  }
-                }}
-              />
-              {showSuggestions && filtered.length > 0 && (
-                <div
-                  className="suggestions"
-                  id="guess-suggestions"
-                  role="listbox"
-                >
-                  {filtered.map((a, i) => (
-                    <div
-                      key={i}
-                      className={`suggestion-item${i === suggestionIndex ? " highlighted" : ""}`}
-                      role="option"
-                      aria-selected={i === suggestionIndex}
-                      onMouseDown={() => {
-                        setCurrentGuess(a.title);
-                        setShowSuggestions(false);
-                        setSuggestionIndex(-1);
-                      }}
-                      onMouseEnter={() => setSuggestionIndex(i)}
-                    >
-                      {a.cover} <strong>{a.title}</strong>{" "}
-                      <span style={{ color: "#888" }}>— {a.artist}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            <button
-              className="btn-submit"
-              onClick={submitGuess}
-              disabled={!currentGuess.trim()}
-            >
-              Guess
-            </button>
-          </div>
+          <AlbumAutocomplete
+            guesses={guesses}
+            currentGuess={currentGuess}
+            onGuessChange={setCurrentGuess}
+            onSubmit={submitGuess}
+            shaking={shaking}
+            inputRef={inputRef}
+          />
         )}
 
         {/* Game over */}
@@ -869,40 +888,22 @@ function GuessGame() {
             )}
 
             {/* Share card */}
-            <button
-              ref={shareBtnRef}
-              className="btn-submit share-btn"
-              onClick={() => {
-                const squares = guesses.map((g) =>
-                  g.toLowerCase() === puzzleAlbum.title.toLowerCase()
-                    ? "🟩"
-                    : "⬛",
-                );
-                const text = [
+            <ShareResultButton
+              getText={() => {
+                const squares = guesses
+                  .map((g) => (isCorrectGuess(g) ? "🟩" : "⬛"))
+                  .join("");
+                return [
                   `Album Of The Day Club`,
                   `🎵 Daily Puzzle — ${todayKey}`,
                   solved
                     ? `Solved in ${guesses.length}/6`
                     : `X/6 — Better luck tomorrow`,
-                  squares.join(""),
+                  squares,
                   window.location.origin,
                 ].join("\n");
-                navigator.clipboard
-                  .writeText(text)
-                  .then(() => {
-                    const btn = shareBtnRef.current;
-                    if (btn) {
-                      btn.textContent = "Copied!";
-                      setTimeout(() => {
-                        btn.textContent = "📋 Share Results";
-                      }, COPIED_FEEDBACK_MS);
-                    }
-                  })
-                  .catch(() => {});
               }}
-            >
-              📋 Share Results
-            </button>
+            />
           </div>
         )}
       </div>
@@ -922,11 +923,8 @@ function CoverChallenge() {
   const [gameOver, setGameOver] = useState(false);
   const [solved, setSolved] = useState(false);
   const [stats, setStats] = useState(null);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [suggestionIndex, setSuggestionIndex] = useState(-1);
   const [shaking, setShaking] = useState(false);
   const inputRef = useRef(null);
-  const shareBtnRef = useRef(null);
 
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_cover_${todayKey}`);
@@ -971,7 +969,6 @@ function CoverChallenge() {
     const newGuesses = [...guesses, guess];
     setGuesses(newGuesses);
     setCurrentGuess("");
-    setShowSuggestions(false);
 
     const isCorrect = guess.toLowerCase() === puzzleAlbum.title.toLowerCase();
 
@@ -999,19 +996,8 @@ function CoverChallenge() {
     ? 0
     : BLUR_LEVELS[Math.min(guesses.length, BLUR_LEVELS.length - 1)];
 
-  const excluded = useMemo(
-    () => new Set(guesses.map((g) => g.toLowerCase())),
-    [guesses],
-  );
-  const filtered = useMemo(() => {
-    if (!currentGuess.trim()) return [];
-    const q = currentGuess.toLowerCase();
-    return ALBUM_SEARCH.filter(
-      (a) =>
-        !excluded.has(a._titleLc) &&
-        (a._titleLc.includes(q) || a._artistLc.includes(q)),
-    ).slice(0, MAX_SUGGESTIONS);
-  }, [currentGuess, excluded]);
+  const isCorrectGuess = (g) =>
+    g.toLowerCase() === puzzleAlbum.title.toLowerCase();
 
   return (
     <div className="panel">
@@ -1056,108 +1042,19 @@ function CoverChallenge() {
 
         {/* Guess history */}
         {guesses.length > 0 && (
-          <div className="guess-history">
-            {guesses.map((g, i) => (
-              <div
-                key={i}
-                className={`guess-item ${g.toLowerCase() === puzzleAlbum.title.toLowerCase() ? "correct" : "wrong"}`}
-              >
-                <span className="guess-num">#{i + 1}</span>
-                <span className="guess-text">{g}</span>
-                <span>
-                  {g.toLowerCase() === puzzleAlbum.title.toLowerCase()
-                    ? "✅"
-                    : "❌"}
-                </span>
-              </div>
-            ))}
-          </div>
+          <GuessHistory guesses={guesses} checkFn={isCorrectGuess} />
         )}
 
         {/* Input */}
         {!gameOver && (
-          <div className={`guess-input-wrap${shaking ? " shaking" : ""}`}>
-            <div className="guess-input-container">
-              <input
-                ref={inputRef}
-                type="text"
-                className="form-input"
-                value={currentGuess}
-                aria-label="Guess the album"
-                onChange={(e) => {
-                  setCurrentGuess(e.target.value);
-                  setShowSuggestions(true);
-                  setSuggestionIndex(-1);
-                }}
-                onFocus={() => setShowSuggestions(true)}
-                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                placeholder="Type an album name..."
-                role="combobox"
-                aria-expanded={showSuggestions && filtered.length > 0}
-                aria-autocomplete="list"
-                onKeyDown={(e) => {
-                  if (
-                    showSuggestions &&
-                    filtered.length > 0 &&
-                    e.key === "ArrowDown"
-                  ) {
-                    e.preventDefault();
-                    setSuggestionIndex((prev) =>
-                      prev < filtered.length - 1 ? prev + 1 : 0,
-                    );
-                  } else if (
-                    showSuggestions &&
-                    filtered.length > 0 &&
-                    e.key === "ArrowUp"
-                  ) {
-                    e.preventDefault();
-                    setSuggestionIndex((prev) =>
-                      prev > 0 ? prev - 1 : filtered.length - 1,
-                    );
-                  } else if (e.key === "Enter") {
-                    if (suggestionIndex >= 0 && filtered[suggestionIndex]) {
-                      setCurrentGuess(filtered[suggestionIndex].title);
-                      setShowSuggestions(false);
-                      setSuggestionIndex(-1);
-                    } else {
-                      submitGuess();
-                    }
-                  } else if (e.key === "Escape") {
-                    setShowSuggestions(false);
-                    setSuggestionIndex(-1);
-                  }
-                }}
-              />
-              {showSuggestions && filtered.length > 0 && (
-                <div className="suggestions" role="listbox">
-                  {filtered.map((a, i) => (
-                    <div
-                      key={i}
-                      className={`suggestion-item${i === suggestionIndex ? " highlighted" : ""}`}
-                      role="option"
-                      aria-selected={i === suggestionIndex}
-                      onMouseDown={() => {
-                        setCurrentGuess(a.title);
-                        setShowSuggestions(false);
-                        setSuggestionIndex(-1);
-                      }}
-                      onMouseEnter={() => setSuggestionIndex(i)}
-                    >
-                      {a.cover} <strong>{a.title}</strong>{" "}
-                      <span style={{ color: "#888" }}>— {a.artist}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            <button
-              className="btn-submit"
-              onClick={submitGuess}
-              disabled={!currentGuess.trim()}
-            >
-              Guess
-            </button>
-          </div>
+          <AlbumAutocomplete
+            guesses={guesses}
+            currentGuess={currentGuess}
+            onGuessChange={setCurrentGuess}
+            onSubmit={submitGuess}
+            shaking={shaking}
+            inputRef={inputRef}
+          />
         )}
 
         {/* Game over */}
@@ -1193,40 +1090,22 @@ function CoverChallenge() {
                 ({Math.round((stats.totalSolved / stats.totalPlayers) * 100)}%)
               </div>
             )}
-            <button
-              ref={shareBtnRef}
-              className="btn-submit share-btn"
-              onClick={() => {
-                const squares = guesses.map((g) =>
-                  g.toLowerCase() === puzzleAlbum.title.toLowerCase()
-                    ? "🟩"
-                    : "⬛",
-                );
-                const text = [
+            <ShareResultButton
+              getText={() => {
+                const squares = guesses
+                  .map((g) => (isCorrectGuess(g) ? "🟩" : "⬛"))
+                  .join("");
+                return [
                   `Album Of The Day Club`,
                   `🖼️ Cover Art Challenge — ${todayKey}`,
                   solved
                     ? `Solved in ${guesses.length}/5`
                     : `X/5 — Better luck tomorrow`,
-                  squares.join(""),
+                  squares,
                   window.location.origin,
                 ].join("\n");
-                navigator.clipboard
-                  .writeText(text)
-                  .then(() => {
-                    const btn = shareBtnRef.current;
-                    if (btn) {
-                      btn.textContent = "Copied!";
-                      setTimeout(() => {
-                        btn.textContent = "📋 Share Results";
-                      }, COPIED_FEEDBACK_MS);
-                    }
-                  })
-                  .catch(() => {});
               }}
-            >
-              📋 Share Results
-            </button>
+            />
           </div>
         )}
       </div>
@@ -1247,15 +1126,12 @@ function HeardleGame() {
   const [gameOver, setGameOver] = useState(false);
   const [solved, setSolved] = useState(false);
   const [stats, setStats] = useState(null);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [suggestionIndex, setSuggestionIndex] = useState(-1);
   const [shaking, setShaking] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [playerReady, setPlayerReady] = useState(false);
   const inputRef = useRef(null);
   const playerRef = useRef(null);
   const timerRef = useRef(null);
-  const shareBtnRef = useRef(null);
 
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_heardle_${todayKey}`);
@@ -1362,7 +1238,6 @@ function HeardleGame() {
     const newGuesses = [...guesses, guess];
     setGuesses(newGuesses);
     setCurrentGuess("");
-    setShowSuggestions(false);
 
     const isCorrect = guess.toLowerCase() === puzzleAlbum.title.toLowerCase();
 
@@ -1393,19 +1268,8 @@ function HeardleGame() {
   // If no YouTube ID, fall back to Cover Challenge
   if (!hasYouTube) return <CoverChallenge />;
 
-  const excluded = useMemo(
-    () => new Set(guesses.map((g) => g.toLowerCase())),
-    [guesses],
-  );
-  const filtered = useMemo(() => {
-    if (!currentGuess.trim()) return [];
-    const q = currentGuess.toLowerCase();
-    return ALBUM_SEARCH.filter(
-      (a) =>
-        !excluded.has(a._titleLc) &&
-        (a._titleLc.includes(q) || a._artistLc.includes(q)),
-    ).slice(0, MAX_SUGGESTIONS);
-  }, [currentGuess, excluded]);
+  const isCorrectGuess = (g) =>
+    g.toLowerCase() === puzzleAlbum.title.toLowerCase();
 
   return (
     <div className="panel">
@@ -1459,108 +1323,19 @@ function HeardleGame() {
 
         {/* Guess history */}
         {guesses.length > 0 && (
-          <div className="guess-history">
-            {guesses.map((g, i) => (
-              <div
-                key={i}
-                className={`guess-item ${g.toLowerCase() === puzzleAlbum.title.toLowerCase() ? "correct" : "wrong"}`}
-              >
-                <span className="guess-num">#{i + 1}</span>
-                <span className="guess-text">{g}</span>
-                <span>
-                  {g.toLowerCase() === puzzleAlbum.title.toLowerCase()
-                    ? "✅"
-                    : "❌"}
-                </span>
-              </div>
-            ))}
-          </div>
+          <GuessHistory guesses={guesses} checkFn={isCorrectGuess} />
         )}
 
         {/* Input */}
         {!gameOver && (
-          <div className={`guess-input-wrap${shaking ? " shaking" : ""}`}>
-            <div className="guess-input-container">
-              <input
-                ref={inputRef}
-                type="text"
-                className="form-input"
-                value={currentGuess}
-                aria-label="Guess the album"
-                onChange={(e) => {
-                  setCurrentGuess(e.target.value);
-                  setShowSuggestions(true);
-                  setSuggestionIndex(-1);
-                }}
-                onFocus={() => setShowSuggestions(true)}
-                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                placeholder="Type an album name..."
-                role="combobox"
-                aria-expanded={showSuggestions && filtered.length > 0}
-                aria-autocomplete="list"
-                onKeyDown={(e) => {
-                  if (
-                    showSuggestions &&
-                    filtered.length > 0 &&
-                    e.key === "ArrowDown"
-                  ) {
-                    e.preventDefault();
-                    setSuggestionIndex((prev) =>
-                      prev < filtered.length - 1 ? prev + 1 : 0,
-                    );
-                  } else if (
-                    showSuggestions &&
-                    filtered.length > 0 &&
-                    e.key === "ArrowUp"
-                  ) {
-                    e.preventDefault();
-                    setSuggestionIndex((prev) =>
-                      prev > 0 ? prev - 1 : filtered.length - 1,
-                    );
-                  } else if (e.key === "Enter") {
-                    if (suggestionIndex >= 0 && filtered[suggestionIndex]) {
-                      setCurrentGuess(filtered[suggestionIndex].title);
-                      setShowSuggestions(false);
-                      setSuggestionIndex(-1);
-                    } else {
-                      submitGuess();
-                    }
-                  } else if (e.key === "Escape") {
-                    setShowSuggestions(false);
-                    setSuggestionIndex(-1);
-                  }
-                }}
-              />
-              {showSuggestions && filtered.length > 0 && (
-                <div className="suggestions" role="listbox">
-                  {filtered.map((a, i) => (
-                    <div
-                      key={i}
-                      className={`suggestion-item${i === suggestionIndex ? " highlighted" : ""}`}
-                      role="option"
-                      aria-selected={i === suggestionIndex}
-                      onMouseDown={() => {
-                        setCurrentGuess(a.title);
-                        setShowSuggestions(false);
-                        setSuggestionIndex(-1);
-                      }}
-                      onMouseEnter={() => setSuggestionIndex(i)}
-                    >
-                      {a.cover} <strong>{a.title}</strong>{" "}
-                      <span style={{ color: "#888" }}>— {a.artist}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            <button
-              className="btn-submit"
-              onClick={submitGuess}
-              disabled={!currentGuess.trim()}
-            >
-              Guess
-            </button>
-          </div>
+          <AlbumAutocomplete
+            guesses={guesses}
+            currentGuess={currentGuess}
+            onGuessChange={setCurrentGuess}
+            onSubmit={submitGuess}
+            shaking={shaking}
+            inputRef={inputRef}
+          />
         )}
 
         {/* Game over */}
@@ -1596,40 +1371,22 @@ function HeardleGame() {
                 ({Math.round((stats.totalSolved / stats.totalPlayers) * 100)}%)
               </div>
             )}
-            <button
-              ref={shareBtnRef}
-              className="btn-submit share-btn"
-              onClick={() => {
-                const squares = guesses.map((g) =>
-                  g.toLowerCase() === puzzleAlbum.title.toLowerCase()
-                    ? "🟩"
-                    : "⬛",
-                );
-                const text = [
+            <ShareResultButton
+              getText={() => {
+                const squares = guesses
+                  .map((g) => (isCorrectGuess(g) ? "🟩" : "⬛"))
+                  .join("");
+                return [
                   `Album Of The Day Club`,
                   `🎧 Heardle — ${todayKey}`,
                   solved
                     ? `Solved in ${guesses.length}/6`
                     : `X/6 — Better luck tomorrow`,
-                  squares.join(""),
+                  squares,
                   window.location.origin,
                 ].join("\n");
-                navigator.clipboard
-                  .writeText(text)
-                  .then(() => {
-                    const btn = shareBtnRef.current;
-                    if (btn) {
-                      btn.textContent = "Copied!";
-                      setTimeout(() => {
-                        btn.textContent = "📋 Share Results";
-                      }, COPIED_FEEDBACK_MS);
-                    }
-                  })
-                  .catch(() => {});
               }}
-            >
-              📋 Share Results
-            </button>
+            />
           </div>
         )}
       </div>
@@ -1651,7 +1408,6 @@ function LyricGame() {
   const [stats, setStats] = useState(null);
   const [shaking, setShaking] = useState(false);
   const inputRef = useRef(null);
-  const shareBtnRef = useRef(null);
 
   // Load lyrics data
   useEffect(() => {
@@ -1849,18 +1605,7 @@ function LyricGame() {
 
         {/* Guess history */}
         {guesses.length > 0 && (
-          <div className="guess-history">
-            {guesses.map((g, i) => (
-              <div
-                key={i}
-                className={`guess-item ${checkAnswer(g) ? "correct" : "wrong"}`}
-              >
-                <span className="guess-num">#{i + 1}</span>
-                <span className="guess-text">{g}</span>
-                <span>{checkAnswer(g) ? "✅" : "❌"}</span>
-              </div>
-            ))}
-          </div>
+          <GuessHistory guesses={guesses} checkFn={checkAnswer} />
         )}
 
         {/* Input */}
@@ -1914,38 +1659,22 @@ function LyricGame() {
                 ({Math.round((stats.totalSolved / stats.totalPlayers) * 100)}%)
               </div>
             )}
-            <button
-              ref={shareBtnRef}
-              className="btn-submit share-btn"
-              onClick={() => {
-                const squares = guesses.map((g) =>
-                  checkAnswer(g) ? "🟩" : "⬛",
-                );
-                const text = [
+            <ShareResultButton
+              getText={() => {
+                const squares = guesses
+                  .map((g) => (checkAnswer(g) ? "🟩" : "⬛"))
+                  .join("");
+                return [
                   `Album Of The Day Club`,
                   `🎤 Lyric Challenge — ${todayKey}`,
                   solved
                     ? `Solved in ${guesses.length}/4`
                     : `X/4 — Better luck tomorrow`,
-                  squares.join(""),
+                  squares,
                   window.location.origin,
                 ].join("\n");
-                navigator.clipboard
-                  .writeText(text)
-                  .then(() => {
-                    const btn = shareBtnRef.current;
-                    if (btn) {
-                      btn.textContent = "Copied!";
-                      setTimeout(() => {
-                        btn.textContent = "📋 Share Results";
-                      }, COPIED_FEEDBACK_MS);
-                    }
-                  })
-                  .catch(() => {});
               }}
-            >
-              📋 Share Results
-            </button>
+            />
           </div>
         )}
       </div>
@@ -1971,7 +1700,6 @@ function ScrambleGame() {
   const [suggestionIndex, setSuggestionIndex] = useState(-1);
   const [shaking, setShaking] = useState(false);
   const inputRef = useRef(null);
-  const shareBtnRef = useRef(null);
 
   const maxAttempts = 5;
 
@@ -2219,40 +1947,26 @@ function ScrambleGame() {
                 ({Math.round((stats.totalSolved / stats.totalPlayers) * 100)}%)
               </div>
             )}
-            <button
-              ref={shareBtnRef}
-              className="btn-submit share-btn"
-              onClick={() => {
-                const squares = guesses.map((g) =>
-                  g.toLowerCase() === puzzleAlbum.title.toLowerCase()
-                    ? "\ud83d\udfe9"
-                    : "\u2b1b",
-                );
-                const text = [
+            <ShareResultButton
+              getText={() => {
+                const squares = guesses
+                  .map((g) =>
+                    g.toLowerCase() === puzzleAlbum.title.toLowerCase()
+                      ? "\ud83d\udfe9"
+                      : "\u2b1b",
+                  )
+                  .join("");
+                return [
                   `Album Of The Day Club`,
                   `\ud83d\udd00 Artist Scramble \u2014 ${todayKey}`,
                   solved
                     ? `Solved in ${guesses.length}/${maxAttempts}`
                     : `X/${maxAttempts} \u2014 Better luck tomorrow`,
-                  squares.join(""),
+                  squares,
                   window.location.origin,
                 ].join("\n");
-                navigator.clipboard
-                  .writeText(text)
-                  .then(() => {
-                    const btn = shareBtnRef.current;
-                    if (btn) {
-                      btn.textContent = "Copied!";
-                      setTimeout(() => {
-                        btn.textContent = "\ud83d\udccb Share Results";
-                      }, COPIED_FEEDBACK_MS);
-                    }
-                  })
-                  .catch(() => {});
               }}
-            >
-              {"\ud83d\udccb"} Share Results
-            </button>
+            />
           </div>
         )}
       </div>
