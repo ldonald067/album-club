@@ -28,7 +28,7 @@ app/page.js           # Server component — resolves today's album
 app/ForumPage.js      # Client component — all UI + game components
 app/globals.css       # All styling
 app/api/{rate,vibe,guess,stats}/  # API routes
-lib/albums.json       # 383 albums (source of truth)
+lib/albums.json       # 403 albums (source of truth)
 lib/albums.js         # Seeded shuffle, game logic, VIBES, CAROUSEL_ICONS
 lib/lyrics.json       # ~88 lyric entries for Lyric game
 lib/db.js             # SQLite queries

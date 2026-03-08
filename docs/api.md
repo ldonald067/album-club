@@ -1,17 +1,33 @@
 # API Patterns
 
-## Rate Limiting
+## Rate Limiting (`lib/rate-limit.js`)
 
-- All routes use `checkRateLimit(ip)` — 30 req/min per IP, hard cap at 2000 tracked IPs
-- IP via `getRealIp()` which prefers `x-real-ip` header (set by Vercel/Netlify)
-- POST routes also use `checkDailyLimit(ip, endpoint)` — max 3 submissions per IP per endpoint per day
+Two layers of protection, both using in-memory Maps:
+
+- **Per-minute**: `checkRateLimit(ip)` — 30 req/min sliding window per IP, hard cap at 2000 tracked IPs
+- **Per-day**: `checkDailyLimit(ip, endpoint)` — max 3 submissions per IP per endpoint per day, hard cap at 20k entries
+- **IP resolution**: `getRealIp()` prefers `x-real-ip` (set by Vercel/Netlify, not spoofable), falls back to `x-forwarded-for`
+- **Cleanup**: Deterministic `setInterval` every 60s purges stale entries from both maps. Additionally, probabilistic cleanup (~1% of requests) and size-based cleanup (>1000 IPs) run inline
+- **Date validation**: `isValidDateKey()` validates `YYYY-MM-DD` format, real calendar date, not in the future
 - All POST routes reject `content-length > 1024`
 
 ## Caching
 
-- Each GET route has a 30s in-memory cache (`rateCache`, `vibeCache`, `guessCache`)
-- Stats has 60s TTL
-- Caches are keyed by today's date and busted on new POSTs
+| Route                  | TTL  | Notes                                              |
+| ---------------------- | ---- | -------------------------------------------------- |
+| `/api/rate` GET        | 30s  | Keyed by album date, busted on POST                |
+| `/api/vibe` GET        | 30s  | Keyed by album date, busted on POST                |
+| `/api/guess` GET       | 30s  | Per game type, keyed by puzzle key, busted on POST |
+| `/api/stats` GET       | 5min | Server-side + route-level double cache             |
+| `db.js getSiteStats()` | 5min | Module-level cache, full-table aggregation         |
+
+All caches are in-memory objects, no external cache layer.
+
+## Database (`lib/db.js`)
+
+- **SQLite** via better-sqlite3, WAL mode, singleton connection
+- **Prepared statements** cached at module scope (10 statements, created once on first `getDb()` call)
+- **Covering indexes** on all query patterns: `(album_key, rating)`, `(album_key, vibe)`, `(puzzle_key, attempts, solved)`
 
 ## Routes
 
@@ -21,12 +37,22 @@ Rating must be integer 1-10. GET validates `?key=` against `/^\d{4}-\d{2}-\d{2}$
 
 ### POST/GET `/api/vibe`
 
-Vibes must be 1-3 valid labels (deduplicated server-side). GET validates `?key=` same as rate.
+Vibes must be 1-3 valid labels (deduplicated server-side against VIBES list). GET validates `?key=` same as rate.
 
 ### POST/GET `/api/guess`
 
-`?type=` param supports `puzzle` (default), `cover`, `heardle`, `lyric`, `scramble`. Max attempts vary: puzzle=6, cover=5, heardle=6, lyric=4, scramble=5. Daily limits are per game type (`guess-${type}`). Attempts must be integer 1-maxAttempts, solved is boolean, unsolved must have attempts=maxAttempts.
+`?type=` param supports `puzzle` (default), `cover`, `heardle`, `lyric`, `scramble`. Max attempts vary by type:
+
+| Type     | Max Attempts |
+| -------- | ------------ |
+| puzzle   | 6            |
+| cover    | 5            |
+| heardle  | 6            |
+| lyric    | 4            |
+| scramble | 5            |
+
+Daily limits are per game type (`guess-${type}`). Attempts must be integer 1-maxAttempts, solved is boolean, unsolved must have attempts=maxAttempts.
 
 ### GET `/api/stats`
 
-Aggregate site statistics. 60s server cache.
+Aggregate site statistics (total ratings, avg rating, albums rated, top vibes, puzzle stats). 5-minute double cache (route + db layer).
