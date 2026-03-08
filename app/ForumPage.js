@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, memo } from "react";
 import {
   getListenUrl,
   getTodayKey,
@@ -260,6 +260,8 @@ const STREAK_MILESTONES = [
   { at: 60, msg: "60 days?! You're practically staff." },
   { at: 100, msg: "LEGEND STATUS ACHIEVED. 100 days." },
 ];
+// Pre-computed: highest milestone first for .find() lookups
+const STREAK_MILESTONES_DESC = [...STREAK_MILESTONES].reverse();
 
 function getCelebratedMilestones() {
   try {
@@ -2430,7 +2432,7 @@ function FAQSection() {
 }
 
 /* ─── Countdown to next album ─── */
-function NextAlbumCountdown() {
+const NextAlbumCountdown = memo(function NextAlbumCountdown() {
   const [timeLeft, setTimeLeft] = useState("");
 
   useEffect(() => {
@@ -2461,7 +2463,7 @@ function NextAlbumCountdown() {
       Next album in <span className="countdown-time">{timeLeft}</span>
     </div>
   );
-}
+});
 
 /* ─── Personal stats from localStorage ─── */
 function computePersonalStats() {
@@ -2690,9 +2692,7 @@ export default function ForumPage({ album, dateString }) {
   // Milestone celebration when daily wrap-up triggers
   useEffect(() => {
     if (!allDone || streak < 3) return;
-    const milestone = [...STREAK_MILESTONES]
-      .reverse()
-      .find((m) => streak >= m.at);
+    const milestone = STREAK_MILESTONES_DESC.find((m) => streak >= m.at);
     if (!milestone) return;
     const celebrated = getCelebratedMilestones();
     if (celebrated.includes(milestone.at)) {
