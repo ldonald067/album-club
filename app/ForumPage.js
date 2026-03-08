@@ -2422,6 +2422,112 @@ function FAQSection() {
   );
 }
 
+/* ─── Countdown to next album ─── */
+function NextAlbumCountdown() {
+  const [timeLeft, setTimeLeft] = useState("");
+
+  useEffect(() => {
+    function update() {
+      const now = new Date();
+      const tomorrow = new Date(now);
+      tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+      tomorrow.setUTCHours(0, 0, 0, 0);
+      const diff = tomorrow - now;
+      if (diff <= 0) {
+        setTimeLeft("Any moment now\u2026");
+        return;
+      }
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      if (h > 0) setTimeLeft(`${h}h ${m}m`);
+      else if (m >= 5) setTimeLeft(`${m}m`);
+      else setTimeLeft(`${m}m ${s}s`);
+    }
+    update();
+    const interval = setInterval(update, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="wrap-countdown">
+      Next album in <span className="countdown-time">{timeLeft}</span>
+    </div>
+  );
+}
+
+/* ─── Personal stats from localStorage ─── */
+function computePersonalStats() {
+  let ratedCount = 0;
+  let ratingSum = 0;
+  let puzzlesSolved = 0;
+  let puzzlesAttempted = 0;
+  const vibeCounts = {};
+
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (!key || !key.startsWith("aotd_")) continue;
+
+    if (key.startsWith("aotd_rated_")) {
+      const val = parseInt(localStorage.getItem(key), 10);
+      if (val > 0 && val <= 10) {
+        ratedCount++;
+        ratingSum += val;
+      }
+    } else if (key.startsWith("aotd_vibed_")) {
+      try {
+        const vibes = JSON.parse(localStorage.getItem(key));
+        if (Array.isArray(vibes)) {
+          vibes.forEach((v) => {
+            vibeCounts[v] = (vibeCounts[v] || 0) + 1;
+          });
+        }
+      } catch {}
+    } else if (
+      key.startsWith("aotd_guess_") ||
+      key.startsWith("aotd_cover_") ||
+      key.startsWith("aotd_heardle_") ||
+      key.startsWith("aotd_lyric_") ||
+      key.startsWith("aotd_scramble_")
+    ) {
+      try {
+        const state = JSON.parse(localStorage.getItem(key));
+        if (state && state.gameOver) {
+          puzzlesAttempted++;
+          if (state.solved) puzzlesSolved++;
+        }
+      } catch {}
+    }
+  }
+
+  let favoriteVibe = null;
+  let maxVibeCount = 0;
+  for (const [label, count] of Object.entries(vibeCounts)) {
+    if (count > maxVibeCount) {
+      maxVibeCount = count;
+      favoriteVibe = label;
+    }
+  }
+
+  const favoriteVibeObj = favoriteVibe
+    ? VIBES.find((v) => v.label === favoriteVibe)
+    : null;
+
+  return {
+    ratedCount,
+    avgRating: ratedCount > 0 ? (ratingSum / ratedCount).toFixed(1) : null,
+    puzzlesSolved,
+    puzzlesAttempted,
+    favoriteVibe: favoriteVibeObj
+      ? {
+          emoji: favoriteVibeObj.emoji,
+          label: favoriteVibeObj.label,
+          count: maxVibeCount,
+        }
+      : null,
+  };
+}
+
 /* ─── Streak utility ─── */
 function getStreak() {
   try {
@@ -2465,7 +2571,7 @@ export default function ForumPage({ album, dateString }) {
   const [vinylSpinning, setVinylSpinning] = useState(false);
   const [estHover, setEstHover] = useState(false);
   const [forumSig, setForumSig] = useState("");
-  const shareDayBtnRef = useRef(null);
+
   const konamiRef = useRef([]);
 
   const todayKey = getTodayKey();
@@ -2476,6 +2582,13 @@ export default function ForumPage({ album, dateString }) {
     tomorrow.setDate(tomorrow.getDate() + 1);
     return getAlbumForDate(tomorrow);
   }, []);
+
+  // Personal stats — recompute when allDone changes to capture latest data
+  const personalStats = useMemo(() => {
+    if (typeof window === "undefined") return null;
+    return computePersonalStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allDone]);
 
   useEffect(() => {
     setOnlineCount(Math.floor(Math.random() * 40) + 5);
@@ -2851,15 +2964,56 @@ export default function ForumPage({ album, dateString }) {
                           ? "Nice streak going! Keep it up."
                           : "Come back tomorrow to start a streak!"}
                   </p>
-                  <div className="wrap-tomorrow">
-                    <i className="hn hn-music" aria-hidden="true" />{" "}
-                    Tomorrow&apos;s genre:{" "}
-                    <strong>{tomorrowAlbum.genre}</strong>
+                  {/* Enhanced tomorrow teaser */}
+                  <div className="wrap-tomorrow enhanced">
+                    <div className="tomorrow-cover">{tomorrowAlbum.cover}</div>
+                    <div className="tomorrow-info">
+                      <div className="tomorrow-label">
+                        Tomorrow&apos;s Album
+                      </div>
+                      <div className="tomorrow-genre">
+                        {tomorrowAlbum.genre} &middot;{" "}
+                        {Math.floor(tomorrowAlbum.year / 10) * 10}s
+                      </div>
+                    </div>
                   </div>
-                  <button
-                    ref={shareDayBtnRef}
-                    className="btn-submit share-btn share-day-btn"
-                    onClick={() => {
+
+                  {/* Countdown to next album */}
+                  <NextAlbumCountdown />
+
+                  {/* Personal stats */}
+                  {personalStats && personalStats.ratedCount > 0 && (
+                    <div className="wrap-stats">
+                      <div className="wrap-stats-title">Your Stats</div>
+                      <div className="wrap-stats-grid">
+                        <span>
+                          Rated <strong>{personalStats.ratedCount}</strong>{" "}
+                          album{personalStats.ratedCount !== 1 ? "s" : ""}
+                          {personalStats.avgRating &&
+                            ` (avg ${personalStats.avgRating}/10)`}
+                        </span>
+                        {personalStats.puzzlesAttempted > 0 && (
+                          <span>
+                            Puzzles solved:{" "}
+                            <strong>{personalStats.puzzlesSolved}</strong> of{" "}
+                            {personalStats.puzzlesAttempted} attempted
+                          </span>
+                        )}
+                        {personalStats.favoriteVibe && (
+                          <span>
+                            Favorite vibe: {personalStats.favoriteVibe.emoji}{" "}
+                            {personalStats.favoriteVibe.label} (chosen{" "}
+                            {personalStats.favoriteVibe.count}x)
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Share My Day */}
+                  <ShareResultButton
+                    label="📋 Share My Day"
+                    getText={() => {
                       const lines = [
                         `Album Of The Day Club`,
                         `\ud83d\udcbf Daily Recap \u2014 ${todayKey}`,
@@ -2939,22 +3093,9 @@ export default function ForumPage({ album, dateString }) {
                         lines.push(`\ud83d\udd25 ${streak}-day streak`);
                       }
                       lines.push(window.location.origin);
-                      navigator.clipboard
-                        .writeText(lines.join("\n"))
-                        .then(() => {
-                          const btn = shareDayBtnRef.current;
-                          if (btn) {
-                            btn.textContent = "Copied!";
-                            setTimeout(() => {
-                              btn.textContent = "\ud83d\udccb Share My Day";
-                            }, COPIED_FEEDBACK_MS);
-                          }
-                        })
-                        .catch(() => {});
+                      return lines.join("\n");
                     }}
-                  >
-                    {"\ud83d\udccb"} Share My Day
-                  </button>
+                  />
                 </div>
               </div>
             )}

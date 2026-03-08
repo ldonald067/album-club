@@ -1959,6 +1959,88 @@ body {
   color: #8899aa;
 }
 
+/* ─── Next album countdown ─── */
+.wrap-countdown {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 8px 0 4px;
+}
+
+.countdown-time {
+  display: inline-block;
+  font-family: "Courier New", monospace;
+  font-weight: bold;
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: var(--bg-panel-alt);
+  border: 1px dashed var(--border-light);
+  border-radius: 3px;
+  padding: 1px 6px;
+  margin-left: 2px;
+  letter-spacing: 0.5px;
+}
+
+/* ─── Personal stats in wrap-up ─── */
+.wrap-stats {
+  margin: 12px 0 6px;
+  padding: 10px 14px;
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  background: var(--bg-panel-alt);
+}
+
+.wrap-stats-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.wrap-stats-grid {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.wrap-stats-grid span {
+  white-space: nowrap;
+}
+
+/* ─── Enhanced tomorrow teaser ─── */
+.wrap-tomorrow.enhanced {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+  padding: 10px 14px;
+  background: var(--bg-panel-alt);
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+}
+
+.tomorrow-cover {
+  font-size: 28px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.tomorrow-label {
+  font-size: 11px;
+  font-weight: bold;
+  color: var(--text-secondary);
+}
+
+.tomorrow-genre {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
 /* ─── EST hover easter egg ─── */
 .banner-est {
   cursor: default;
