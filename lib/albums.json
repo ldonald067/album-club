@@ -643,7 +643,7 @@
     "year": 2017,
     "genre": "Rap/Neo-Soul",
     "cover": "🌻",
-    "color": "#d4bd0d",
+    "color": "#8a7b08",
     "recognizable": true,
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/52a7f32bdc99238080b0f17e859b3b4d.jpg",
     "youtubeId": "NmvVhovjJI0"
@@ -885,7 +885,7 @@
     "year": 2024,
     "genre": "Hyperpop/Dance",
     "cover": "💚",
-    "color": "#7ddf00",
+    "color": "#4a8500",
     "recognizable": true,
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/b00527c6ae0cd1d4c9bf3706b130ad56.jpg",
     "youtubeId": "WJW-VvmRKsE"
@@ -1436,7 +1436,7 @@
     "title": "The Glow Pt. 2",
     "artist": "The Microphones",
     "year": 2001,
-    "genre": "Lo-fi/Indie",
+    "genre": "Lofi/Indie",
     "cover": "🌋",
     "color": "#a95100",
     "recognizable": false,
@@ -1669,7 +1669,7 @@
     "year": 2020,
     "genre": "Colombian Electronic",
     "cover": "🌶️",
-    "color": "#dec50e",
+    "color": "#917f0a",
     "recognizable": false,
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/4157fe19ad6b82a485013a32b7dc3029.jpg"
   },
@@ -1889,7 +1889,7 @@
     "year": 2018,
     "genre": "Hyperpop/Experimental",
     "cover": "⏳",
-    "color": "#c0c0c0",
+    "color": "#707080",
     "recognizable": false,
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/b482e95ee228abbaaccd0d5a31b81ad2.jpg"
   },
@@ -1899,7 +1899,7 @@
     "year": 2019,
     "genre": "Hyperpop",
     "cover": "🦎",
-    "color": "#6adf00",
+    "color": "#3f8500",
     "recognizable": false,
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/a6e7b4bdb9f7674e3364404be2f5f683.jpg"
   },
@@ -2432,7 +2432,7 @@
     "year": 2019,
     "genre": "Indie Pop",
     "cover": "🪆",
-    "color": "#e7ce0e",
+    "color": "#8f7f0a",
     "recognizable": false,
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/cf1e2df2d2d55735e8d682d7cdb3fdec.jpg"
   },
@@ -2867,7 +2867,7 @@
     "year": 1989,
     "genre": "Hip-Hop",
     "cover": "📏",
-    "color": "#dac107",
+    "color": "#8a7a06",
     "recognizable": false,
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/415acc90e5364817c80c7eb2c84c22f8.png"
   },
@@ -3027,7 +3027,7 @@
     "title": "Kick i",
     "artist": "Arca",
     "year": 2020,
-    "genre": "Experimental Electronic",
+    "genre": "Experimental/Electronic",
     "cover": "👠",
     "color": "#7a1739",
     "recognizable": false,
@@ -3037,7 +3037,7 @@
     "title": "Geidi Primes",
     "artist": "Grimes",
     "year": 2010,
-    "genre": "Lo-fi/Experimental",
+    "genre": "Lofi/Experimental",
     "cover": "🍾",
     "color": "#501d68",
     "recognizable": false,
@@ -3535,7 +3535,7 @@
     "year": 1989,
     "genre": "Madchester",
     "cover": "⚜️",
-    "color": "#e3ca08",
+    "color": "#8c7d06",
     "recognizable": false,
     "image": "https://lastfm.freetls.fastly.net/i/u/300x300/f07a5a1e86624b3cb8ec76543b9863d7.png"
   },
