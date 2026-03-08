@@ -237,10 +237,49 @@ const VISIT_RANKS = [
 function getVisitRank() {
   const count = parseInt(localStorage.getItem("aotd_visit_count") || "0", 10);
   let rank = VISIT_RANKS[0];
-  for (const r of VISIT_RANKS) {
-    if (count >= r.min) rank = r;
+  let rankIndex = 0;
+  for (let i = 0; i < VISIT_RANKS.length; i++) {
+    if (count >= VISIT_RANKS[i].min) {
+      rank = VISIT_RANKS[i];
+      rankIndex = i;
+    }
   }
-  return rank;
+  const nextRank = VISIT_RANKS[rankIndex + 1] || null;
+  const progress = nextRank
+    ? (count - rank.min) / (nextRank.min - rank.min)
+    : 1;
+  return { ...rank, count, nextRank, progress };
+}
+
+/* ─── Streak milestones ─── */
+const STREAK_MILESTONES = [
+  { at: 3, msg: "3 days strong! You're building a habit." },
+  { at: 7, msg: "A whole week! You're a regular now!" },
+  { at: 14, msg: "Two weeks straight — serious dedication." },
+  { at: 30, msg: "One month! You belong here." },
+  { at: 60, msg: "60 days?! You're practically staff." },
+  { at: 100, msg: "LEGEND STATUS ACHIEVED. 100 days." },
+];
+
+function getCelebratedMilestones() {
+  try {
+    return JSON.parse(
+      localStorage.getItem("aotd_milestones_celebrated") || "[]",
+    );
+  } catch {
+    return [];
+  }
+}
+
+function markMilestoneCelebrated(milestone) {
+  const celebrated = getCelebratedMilestones();
+  if (!celebrated.includes(milestone)) {
+    celebrated.push(milestone);
+    localStorage.setItem(
+      "aotd_milestones_celebrated",
+      JSON.stringify(celebrated),
+    );
+  }
 }
 
 function incrementVisitCount(todayKey) {
@@ -2420,6 +2459,8 @@ export default function ForumPage({ album, dateString }) {
   const [bestStreak, setBestStreak] = useState(0);
   const [allDone, setAllDone] = useState(false);
   const [visitRank, setVisitRank] = useState(null);
+  const [activeMilestone, setActiveMilestone] = useState(null);
+  const [welcomeBack, setWelcomeBack] = useState(null);
   const [konamiTriggered, setKonamiTriggered] = useState(false);
   const [vinylSpinning, setVinylSpinning] = useState(false);
   const [estHover, setEstHover] = useState(false);
@@ -2469,9 +2510,29 @@ export default function ForumPage({ album, dateString }) {
     window.addEventListener("keydown", handleKey);
 
     // Check streak
+    const oldStreak = getStreak();
     const s = updateStreak(todayKey);
     setStreak(s.count);
     setBestStreak(s.best || s.count);
+
+    // Welcome-back detection: user was away > 1 day and had a previous streak
+    if (
+      s.count === 1 &&
+      oldStreak.lastDate &&
+      oldStreak.lastDate !== todayKey &&
+      (oldStreak.best || oldStreak.count) > 1 &&
+      !sessionStorage.getItem("aotd_welcome_back_dismissed")
+    ) {
+      const last = new Date(oldStreak.lastDate + "T00:00:00");
+      const today = new Date(todayKey + "T00:00:00");
+      const daysAway = Math.round((today - last) / 86400000);
+      if (daysAway > 1) {
+        setWelcomeBack({
+          daysAway,
+          bestStreak: s.best || oldStreak.best || oldStreak.count,
+        });
+      }
+    }
 
     // Check if all activities completed (check all game type keys)
     const checkDone = () => {
@@ -2500,6 +2561,28 @@ export default function ForumPage({ album, dateString }) {
       window.removeEventListener("keydown", handleKey);
     };
   }, [todayKey]);
+
+  // Milestone celebration when daily wrap-up triggers
+  useEffect(() => {
+    if (!allDone || streak < 3) return;
+    const milestone = [...STREAK_MILESTONES]
+      .reverse()
+      .find((m) => streak >= m.at);
+    if (!milestone) return;
+    const celebrated = getCelebratedMilestones();
+    if (celebrated.includes(milestone.at)) {
+      // Already celebrated — still show message, no confetti
+      setActiveMilestone(milestone);
+      return;
+    }
+    // First time hitting this milestone!
+    setActiveMilestone(milestone);
+    markMilestoneCelebrated(milestone.at);
+    fireConfetti({ particleCount: 200, spread: 140, origin: { y: 0.4 } });
+    setTimeout(() => {
+      fireConfetti({ particleCount: 120, spread: 100, origin: { y: 0.5 } });
+    }, 400);
+  }, [allDone, streak]);
 
   const accentColor = isLightColor(album.color) ? "#2a4570" : album.color;
   const gameType = useMemo(() => getGameType(), []);
@@ -2568,9 +2651,25 @@ export default function ForumPage({ album, dateString }) {
         {visitRank && (
           <span
             className="rank-badge"
-            title={`${parseInt(localStorage.getItem("aotd_visit_count") || "0", 10)} days visited`}
+            title={`${visitRank.count} days visited`}
           >
             {visitRank.icon} {visitRank.label}
+            {visitRank.nextRank && (
+              <span className="rank-progress">
+                <span className="rank-progress-bar">
+                  <span
+                    className="rank-progress-fill"
+                    style={{
+                      width: `${Math.round(visitRank.progress * 100)}%`,
+                    }}
+                  />
+                </span>
+                <span className="rank-progress-text">
+                  {visitRank.count}/{visitRank.nextRank.min} to{" "}
+                  {visitRank.nextRank.icon}
+                </span>
+              </span>
+            )}
           </span>
         )}
         <span>
@@ -2596,6 +2695,27 @@ export default function ForumPage({ album, dateString }) {
               </div>
             </div>
             <p className="sr-only">{getMarqueeMessage(album)}</p>
+
+            {/* Welcome-back banner */}
+            {welcomeBack && (
+              <div className="welcome-back-banner" role="status">
+                <span>
+                  Welcome back! You were away for {welcomeBack.daysAway} day
+                  {welcomeBack.daysAway > 1 ? "s" : ""}. Your best streak was{" "}
+                  {welcomeBack.bestStreak} 🔥 — let&apos;s start a new one!
+                </span>
+                <button
+                  className="welcome-back-dismiss"
+                  onClick={() => {
+                    sessionStorage.setItem("aotd_welcome_back_dismissed", "1");
+                    setWelcomeBack(null);
+                  }}
+                  aria-label="Dismiss welcome back message"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
 
             {/* Album of the Day */}
             <div className="panel">
@@ -2720,12 +2840,16 @@ export default function ForumPage({ album, dateString }) {
                       <span className="best-streak"> (best: {bestStreak})</span>
                     )}
                   </div>
-                  <p className="wrap-message">
-                    {streak >= 7
-                      ? "Legendary listener! You're on fire."
-                      : streak >= 3
-                        ? "Nice streak going! Keep it up."
-                        : "Come back tomorrow to start a streak!"}
+                  <p
+                    className={`wrap-message${activeMilestone ? " wrap-milestone" : ""}`}
+                  >
+                    {activeMilestone
+                      ? `🏆 ${activeMilestone.msg}`
+                      : streak >= 7
+                        ? "Legendary listener! You're on fire."
+                        : streak >= 3
+                          ? "Nice streak going! Keep it up."
+                          : "Come back tomorrow to start a streak!"}
                   </p>
                   <div className="wrap-tomorrow">
                     <i className="hn hn-music" aria-hidden="true" />{" "}
