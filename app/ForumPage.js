@@ -20,6 +20,11 @@ import {
   scrambleArtist,
 } from "@/lib/albums";
 
+/* ─── Constants ─── */
+const MAX_SUGGESTIONS = 5;
+const SHAKE_MS = 400;
+const COPIED_FEEDBACK_MS = 2000;
+
 /* ─── Pre-lowercased album search index (avoids repeated toLowerCase per keystroke) ─── */
 const ALBUM_SEARCH = ALBUMS.map((a) => ({
   ...a,
@@ -247,7 +252,7 @@ function RateReveal({ albumKey }) {
                     btn.textContent = "Copied!";
                     setTimeout(() => {
                       btn.textContent = "\ud83d\udccb Share Rating";
-                    }, 2000);
+                    }, COPIED_FEEDBACK_MS);
                   }
                 })
                 .catch(() => {});
@@ -291,7 +296,11 @@ function RateReveal({ albumKey }) {
           ))}
         </div>
         {myRating > 0 && <div className="score-lg">{myRating}/10</div>}
-        {error && <p className="submit-error">{error}</p>}
+        {error && (
+          <p className="submit-error" role="alert">
+            {error}
+          </p>
+        )}
         <button
           className={`btn-submit${locking ? " locking" : ""}`}
           onClick={submit}
@@ -442,6 +451,8 @@ function VibeCheck({ albumKey }) {
                 }}
                 onClick={() => toggle(v.label)}
                 disabled={submitted}
+                aria-label={`${v.label}${selected.includes(v.label) ? ", selected" : ""}`}
+                aria-pressed={selected.includes(v.label)}
               >
                 <img
                   src={v.icon}
@@ -474,7 +485,11 @@ function VibeCheck({ albumKey }) {
             );
           })}
         </div>
-        {error && <p className="submit-error">{error}</p>}
+        {error && (
+          <p className="submit-error" role="alert">
+            {error}
+          </p>
+        )}
         {submitted && (
           <button
             ref={shareBtnRef}
@@ -505,7 +520,7 @@ function VibeCheck({ albumKey }) {
                     btn.textContent = "Copied!";
                     setTimeout(() => {
                       btn.textContent = "\ud83d\udccb Share Vibes";
-                    }, 2000);
+                    }, COPIED_FEEDBACK_MS);
                   }
                 })
                 .catch(() => {});
@@ -617,7 +632,7 @@ function GuessGame() {
       saveState(newGuesses, true, false);
       postResult(6, false);
       setShaking(true);
-      setTimeout(() => setShaking(false), 400);
+      setTimeout(() => setShaking(false), SHAKE_MS);
     } else {
       const nextClue = Math.min(newGuesses.length + 1, 6);
       setCluesRevealed(nextClue);
@@ -625,7 +640,7 @@ function GuessGame() {
       setTimeout(() => setJustRevealedClue(-1), 400);
       saveState(newGuesses, false, false);
       setShaking(true);
-      setTimeout(() => setShaking(false), 400);
+      setTimeout(() => setShaking(false), SHAKE_MS);
       inputRef.current?.focus();
     }
   };
@@ -641,7 +656,7 @@ function GuessGame() {
       (a) =>
         !excluded.has(a._titleLc) &&
         (a._titleLc.includes(q) || a._artistLc.includes(q)),
-    ).slice(0, 5);
+    ).slice(0, MAX_SUGGESTIONS);
   }, [currentGuess, excluded]);
 
   return (
@@ -704,6 +719,7 @@ function GuessGame() {
                 type="text"
                 className="form-input"
                 value={currentGuess}
+                aria-label="Guess the album"
                 onChange={(e) => {
                   setCurrentGuess(e.target.value);
                   setShowSuggestions(true);
@@ -787,7 +803,11 @@ function GuessGame() {
 
         {/* Game over */}
         {gameOver && (
-          <div className={`guess-result ${solved ? "solved" : "failed"}`}>
+          <div
+            className={`guess-result ${solved ? "solved" : "failed"}`}
+            role="status"
+            aria-live="polite"
+          >
             {solved ? (
               <span>
                 🎉 You got it in <strong>{guesses.length}/6</strong>!
@@ -875,7 +895,7 @@ function GuessGame() {
                       btn.textContent = "Copied!";
                       setTimeout(() => {
                         btn.textContent = "📋 Share Results";
-                      }, 2000);
+                      }, COPIED_FEEDBACK_MS);
                     }
                   })
                   .catch(() => {});
@@ -966,11 +986,11 @@ function CoverChallenge() {
       saveState(newGuesses, true, false);
       postResult(5, false);
       setShaking(true);
-      setTimeout(() => setShaking(false), 400);
+      setTimeout(() => setShaking(false), SHAKE_MS);
     } else {
       saveState(newGuesses, false, false);
       setShaking(true);
-      setTimeout(() => setShaking(false), 400);
+      setTimeout(() => setShaking(false), SHAKE_MS);
       inputRef.current?.focus();
     }
   };
@@ -990,7 +1010,7 @@ function CoverChallenge() {
       (a) =>
         !excluded.has(a._titleLc) &&
         (a._titleLc.includes(q) || a._artistLc.includes(q)),
-    ).slice(0, 5);
+    ).slice(0, MAX_SUGGESTIONS);
   }, [currentGuess, excluded]);
 
   return (
@@ -1063,6 +1083,7 @@ function CoverChallenge() {
                 type="text"
                 className="form-input"
                 value={currentGuess}
+                aria-label="Guess the album"
                 onChange={(e) => {
                   setCurrentGuess(e.target.value);
                   setShowSuggestions(true);
@@ -1141,7 +1162,11 @@ function CoverChallenge() {
 
         {/* Game over */}
         {gameOver && (
-          <div className={`guess-result ${solved ? "solved" : "failed"}`}>
+          <div
+            className={`guess-result ${solved ? "solved" : "failed"}`}
+            role="status"
+            aria-live="polite"
+          >
             {solved ? (
               <span>
                 🎉 You got it in <strong>{guesses.length}/5</strong>!
@@ -1194,7 +1219,7 @@ function CoverChallenge() {
                       btn.textContent = "Copied!";
                       setTimeout(() => {
                         btn.textContent = "📋 Share Results";
-                      }, 2000);
+                      }, COPIED_FEEDBACK_MS);
                     }
                   })
                   .catch(() => {});
@@ -1354,13 +1379,13 @@ function HeardleGame() {
       saveState(newGuesses, true, false);
       postResult(6, false);
       setShaking(true);
-      setTimeout(() => setShaking(false), 400);
+      setTimeout(() => setShaking(false), SHAKE_MS);
       if (playerRef.current) playerRef.current.pauseVideo();
       clearTimeout(timerRef.current);
     } else {
       saveState(newGuesses, false, false);
       setShaking(true);
-      setTimeout(() => setShaking(false), 400);
+      setTimeout(() => setShaking(false), SHAKE_MS);
       inputRef.current?.focus();
     }
   };
@@ -1379,7 +1404,7 @@ function HeardleGame() {
       (a) =>
         !excluded.has(a._titleLc) &&
         (a._titleLc.includes(q) || a._artistLc.includes(q)),
-    ).slice(0, 5);
+    ).slice(0, MAX_SUGGESTIONS);
   }, [currentGuess, excluded]);
 
   return (
@@ -1461,6 +1486,7 @@ function HeardleGame() {
                 type="text"
                 className="form-input"
                 value={currentGuess}
+                aria-label="Guess the album"
                 onChange={(e) => {
                   setCurrentGuess(e.target.value);
                   setShowSuggestions(true);
@@ -1539,7 +1565,11 @@ function HeardleGame() {
 
         {/* Game over */}
         {gameOver && (
-          <div className={`guess-result ${solved ? "solved" : "failed"}`}>
+          <div
+            className={`guess-result ${solved ? "solved" : "failed"}`}
+            role="status"
+            aria-live="polite"
+          >
             {solved ? (
               <span>
                 🎉 You got it in <strong>{guesses.length}/6</strong>!
@@ -1592,7 +1622,7 @@ function HeardleGame() {
                       btn.textContent = "Copied!";
                       setTimeout(() => {
                         btn.textContent = "📋 Share Results";
-                      }, 2000);
+                      }, COPIED_FEEDBACK_MS);
                     }
                   })
                   .catch(() => {});
@@ -1761,11 +1791,11 @@ function LyricGame() {
       saveState(newGuesses, true, false);
       postResult(4, false);
       setShaking(true);
-      setTimeout(() => setShaking(false), 400);
+      setTimeout(() => setShaking(false), SHAKE_MS);
     } else {
       saveState(newGuesses, false, false);
       setShaking(true);
-      setTimeout(() => setShaking(false), 400);
+      setTimeout(() => setShaking(false), SHAKE_MS);
       inputRef.current?.focus();
     }
   };
@@ -1841,6 +1871,7 @@ function LyricGame() {
               type="text"
               className="form-input"
               value={currentGuess}
+              aria-label="Guess the missing lyrics"
               onChange={(e) => setCurrentGuess(e.target.value)}
               placeholder="Type the missing word(s)..."
               onKeyDown={(e) => {
@@ -1859,7 +1890,11 @@ function LyricGame() {
 
         {/* Game over */}
         {gameOver && (
-          <div className={`guess-result ${solved ? "solved" : "failed"}`}>
+          <div
+            className={`guess-result ${solved ? "solved" : "failed"}`}
+            role="status"
+            aria-live="polite"
+          >
             {solved ? (
               <span>
                 🎉 You got it in <strong>{guesses.length}/4</strong>!
@@ -1903,7 +1938,7 @@ function LyricGame() {
                       btn.textContent = "Copied!";
                       setTimeout(() => {
                         btn.textContent = "📋 Share Results";
-                      }, 2000);
+                      }, COPIED_FEEDBACK_MS);
                     }
                   })
                   .catch(() => {});
@@ -2015,11 +2050,11 @@ function ScrambleGame() {
       saveState(newGuesses, true, false);
       postResult(maxAttempts, false);
       setShaking(true);
-      setTimeout(() => setShaking(false), 400);
+      setTimeout(() => setShaking(false), SHAKE_MS);
     } else {
       saveState(newGuesses, false, false);
       setShaking(true);
-      setTimeout(() => setShaking(false), 400);
+      setTimeout(() => setShaking(false), SHAKE_MS);
       inputRef.current?.focus();
     }
   };
@@ -2035,7 +2070,7 @@ function ScrambleGame() {
       (a) =>
         !excluded.has(a._titleLc) &&
         (a._titleLc.includes(q) || a._artistLc.includes(q)),
-    ).slice(0, 5);
+    ).slice(0, MAX_SUGGESTIONS);
   }, [currentGuess, excluded]);
 
   return (
@@ -2100,6 +2135,7 @@ function ScrambleGame() {
             <input
               ref={inputRef}
               type="text"
+              aria-label="Guess the album"
               placeholder="Type an album name..."
               value={currentGuess}
               onChange={(e) => {
@@ -2151,7 +2187,7 @@ function ScrambleGame() {
 
         {/* Game over results */}
         {gameOver && (
-          <div className="guess-result">
+          <div className="guess-result" role="status" aria-live="polite">
             {solved ? (
               <div className="guess-correct">
                 {"\ud83c\udf89"} You got it in {guesses.length}/{maxAttempts}!
@@ -2209,7 +2245,7 @@ function ScrambleGame() {
                       btn.textContent = "Copied!";
                       setTimeout(() => {
                         btn.textContent = "\ud83d\udccb Share Results";
-                      }, 2000);
+                      }, COPIED_FEEDBACK_MS);
                     }
                   })
                   .catch(() => {});
@@ -2756,6 +2792,9 @@ export default function ForumPage({ album, dateString }) {
 
   return (
     <>
+      <a href="#main-content" className="sr-only">
+        Skip to main content
+      </a>
       {/* Banner */}
       <div className="banner">
         <div className="banner-inner">
@@ -2828,6 +2867,7 @@ export default function ForumPage({ album, dateString }) {
 
       <div
         className="content"
+        id="main-content"
         style={{
           "--accent-color": accentColor,
           "--accent-light": `${accentColor}30`,
@@ -2879,10 +2919,19 @@ export default function ForumPage({ album, dateString }) {
                   </div>
                   <div
                     className={`vinyl-disc${vinylSpinning ? " spinning" : ""}`}
-                    aria-hidden="true"
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Spin the vinyl record"
                     onClick={() => {
                       setVinylSpinning(true);
                       setTimeout(() => setVinylSpinning(false), 3000);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setVinylSpinning(true);
+                        setTimeout(() => setVinylSpinning(false), 3000);
+                      }
                     }}
                     style={{ cursor: "pointer" }}
                     title="Click to spin!"
@@ -3060,7 +3109,7 @@ export default function ForumPage({ album, dateString }) {
                             btn.textContent = "Copied!";
                             setTimeout(() => {
                               btn.textContent = "\ud83d\udccb Share My Day";
-                            }, 2000);
+                            }, COPIED_FEEDBACK_MS);
                           }
                         })
                         .catch(() => {});

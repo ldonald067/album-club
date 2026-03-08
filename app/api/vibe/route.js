@@ -73,15 +73,16 @@ export async function POST(request) {
       return NextResponse.json({ error: "Pick 1-3 vibes" }, { status: 400 });
     }
 
+    // Deduplicate before validation so ["Chill","Chill","Chill"] becomes ["Chill"]
+    const uniqueVibes = [...new Set(vibes)];
     const validLabels = VIBES.map((v) => v.label);
-    for (const v of vibes) {
+    for (const v of uniqueVibes) {
       if (!validLabels.includes(v)) {
         return NextResponse.json({ error: "Invalid vibe" }, { status: 400 });
       }
     }
 
     const albumKey = getTodayKey();
-    const uniqueVibes = [...new Set(vibes)];
     for (const v of uniqueVibes) {
       addVibe(albumKey, v);
     }
