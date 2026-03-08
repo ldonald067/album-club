@@ -435,11 +435,11 @@ function VibeCheck({ albumKey }) {
               <button
                 key={v.label}
                 className={`vibe-btn${selected.includes(v.label) ? " selected" : ""}${submitted ? " locked" : ""}${justToggledVibe === v.label ? " just-selected" : ""}${!submitted && selected.length >= 3 && !selected.includes(v.label) ? " capped" : ""}`}
-                style={
-                  selected.includes(v.label)
-                    ? { backgroundColor: v.color }
-                    : undefined
-                }
+                style={{
+                  backgroundColor: selected.includes(v.label)
+                    ? v.color
+                    : `${v.color}40`,
+                }}
                 onClick={() => toggle(v.label)}
                 disabled={submitted}
               >
@@ -891,7 +891,7 @@ function GuessGame() {
 }
 
 /* ─── Cover Art Challenge ─── */
-const BLUR_LEVELS = [3, 2, 1, 0.5, 0];
+const BLUR_LEVELS = [2, 1.5, 1, 0.5, 0];
 
 function CoverChallenge() {
   const todayKey = getTodayKey();
