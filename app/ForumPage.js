@@ -351,6 +351,7 @@ function RateReveal({ albumKey }) {
       }
       const data = await res.json();
       localStorage.setItem(`aotd_rated_${albumKey}`, myRating.toString());
+      window.dispatchEvent(new Event("aotd-activity"));
       setLocking(true);
       await new Promise((r) => setTimeout(r, 600));
       setLocking(false);
@@ -556,6 +557,7 @@ function VibeCheck({ albumKey }) {
       }
       const data = await res.json();
       localStorage.setItem(`aotd_vibed_${albumKey}`, JSON.stringify(selected));
+      window.dispatchEvent(new Event("aotd-activity"));
       setResults(data);
       setSubmitted(true);
       setJustSubmitted(true);
@@ -759,6 +761,7 @@ function GuessGame() {
         solved: isSolved,
       }),
     );
+    if (isGameOver) window.dispatchEvent(new Event("aotd-activity"));
   };
 
   const postResult = async (attempts, isSolved) => {
@@ -988,6 +991,7 @@ function CoverChallenge() {
         solved: isSolved,
       }),
     );
+    if (isGameOver) window.dispatchEvent(new Event("aotd-activity"));
   };
 
   const postResult = async (attempts, isSolved) => {
@@ -1257,6 +1261,7 @@ function HeardleGame() {
         solved: isSolved,
       }),
     );
+    if (isGameOver) window.dispatchEvent(new Event("aotd-activity"));
   };
 
   const postResult = async (attempts, isSolved) => {
@@ -1554,6 +1559,7 @@ function LyricGame() {
         solved: isSolved,
       }),
     );
+    if (isGameOver) window.dispatchEvent(new Event("aotd-activity"));
   };
 
   const postResult = async (attempts, isSolved) => {
@@ -1778,6 +1784,7 @@ function ScrambleGame() {
         solved: isSolved,
       }),
     );
+    if (isGameOver) window.dispatchEvent(new Event("aotd-activity"));
   };
 
   const postResult = async (attempts, isSolved) => {
@@ -2663,14 +2670,19 @@ export default function ForumPage({ album, dateString }) {
           } catch {}
         }
       }
-      setAllDone(!!rated && !!vibed && guessDone);
+      const done = !!rated && !!vibed && guessDone;
+      setAllDone((prev) => (prev === done ? prev : done));
     };
     checkDone();
 
-    // Re-check periodically (activities write to localStorage)
-    const interval = setInterval(checkDone, 2000);
+    // Listen for activity completions instead of blind polling
+    const onActivity = () => checkDone();
+    window.addEventListener("aotd-activity", onActivity);
+    // Fallback poll for edge cases (tab regain focus, etc.)
+    const interval = setInterval(checkDone, 10000);
     return () => {
       clearInterval(interval);
+      window.removeEventListener("aotd-activity", onActivity);
       window.removeEventListener("keydown", handleKey);
     };
   }, [todayKey]);
@@ -2773,7 +2785,7 @@ export default function ForumPage({ album, dateString }) {
                   <span
                     className="rank-progress-fill"
                     style={{
-                      width: `${Math.round(visitRank.progress * 100)}%`,
+                      transform: `scaleX(${visitRank.progress})`,
                     }}
                   />
                 </span>
