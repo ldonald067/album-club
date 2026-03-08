@@ -62,7 +62,15 @@
       "Bash(node -e \"const l = require\\(''./lib/lyrics.json''\\); console.log\\(''Lyrics entries:'', Object.keys\\(l\\).length\\);\")",
       "Bash(node -e \"const l = require\\(''./lib/lyrics.json''\\); const keys = Object.keys\\(l\\); console.log\\(''Total:'', keys.length\\); console.log\\(''Sample key:'', keys[0]\\); console.log\\(''Sample value type:'', typeof l[keys[0]]\\); console.log\\(''Sample value:'', JSON.stringify\\(l[keys[0]]\\).substring\\(0, 200\\)\\);\")",
       "Bash(npx next build)",
-      "WebFetch(domain:alexop.dev)"
+      "WebFetch(domain:alexop.dev)",
+      "Bash(node scripts/tmp-fetch-2.mjs)",
+      "WebFetch(domain:music.apple.com)",
+      "Bash(node scripts/tmp-fetch-anime.mjs)",
+      "Bash(node -e \"const a = require\\(''./lib/albums.json''\\); console.log\\(''Total albums:'', a.length\\)\")",
+      "Bash(node audit-albums.js)",
+      "Bash(node scripts/fix-colors.mjs)",
+      "Bash(node scripts/fix-emoji.mjs)",
+      "Bash(node scripts/fetch-images.mjs)"
     ]
   }
 }
