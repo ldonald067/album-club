@@ -832,6 +832,11 @@ function GuessGame() {
         </span>
       </div>
       <div className="panel-body">
+        {!gameOver && guesses.length === 0 && (
+          <p className="activity-prompt" style={{ margin: "0 0 8px", fontSize: "11px" }}>
+            Guess a mystery album from the rotation. Wrong guesses reveal more clues!
+          </p>
+        )}
         {/* Clues */}
         <div className="clues-grid">
           {clues.map((clue, i) => (
