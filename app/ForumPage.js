@@ -2567,8 +2567,7 @@ function updateStreak(todayKey) {
 /* ─── Main Page ─── */
 export default function ForumPage({ album, dateString }) {
   const [activeSection, setActiveSection] = useState("home");
-  const [onlineCount, setOnlineCount] = useState(0);
-  const [guestCount, setGuestCount] = useState(0);
+
   const [imgError, setImgError] = useState(false);
   const [streak, setStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
@@ -2600,9 +2599,6 @@ export default function ForumPage({ album, dateString }) {
   }, [allDone]);
 
   useEffect(() => {
-    setOnlineCount(Math.floor(Math.random() * 40) + 5);
-    setGuestCount(Math.floor(Math.random() * 120) + 20);
-
     // Visit rank tracking
     incrementVisitCount(todayKey);
     setVisitRank(getVisitRank());
@@ -2797,10 +2793,7 @@ export default function ForumPage({ album, dateString }) {
             )}
           </span>
         )}
-        <span>
-          <i className="hn hn-sound-on" aria-hidden="true" />{" "}
-          <b>{onlineCount}</b> listeners, <b>{guestCount}</b> guests online
-        </span>
+
       </div>
 
       <div
@@ -3254,6 +3247,16 @@ export default function ForumPage({ album, dateString }) {
               style={{ color: "#6688aa" }}
             >
               Streamline
+            </a>
+          </span>
+          <br />
+          <span className="footer-dim">
+            <i className="hn hn-envelope" aria-hidden="true" />{" "}
+            <a
+              href="mailto:rainbowpudding@littlealbumclub.net"
+              style={{ color: "#6688aa" }}
+            >
+              rainbowpudding@littlealbumclub.net
             </a>
           </span>
           {forumSig && (

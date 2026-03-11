@@ -70,7 +70,19 @@
       "Bash(node audit-albums.js)",
       "Bash(node scripts/fix-colors.mjs)",
       "Bash(node scripts/fix-emoji.mjs)",
-      "Bash(node scripts/fetch-images.mjs)"
+      "Bash(node scripts/fetch-images.mjs)",
+      "mcp__Desktop_Commander__read_file",
+      "Bash(node -e \"const a=JSON.parse\\(require\\(''fs''\\).readFileSync\\(''lib/albums.json'',''utf8''\\)\\); console.log\\(''Albums:'', a.length\\); console.log\\(''With youtubeId:'', a.filter\\(x=>x.youtubeId\\).length\\); console.log\\(''With image:'', a.filter\\(x=>x.image\\).length\\); console.log\\(''Recognizable:'', a.filter\\(x=>x.recognizable\\).length\\);\")",
+      "Bash(node -e \"const l=JSON.parse\\(require\\(''fs''\\).readFileSync\\(''lib/lyrics.json'',''utf8''\\)\\); console.log\\(''Lyric entries:'', Object.keys\\(l\\).length\\);\")",
+      "Bash(taskkill //F //PID 16536)",
+      "mcp__Desktop_Commander__list_directory",
+      "mcp__Desktop_Commander__start_process",
+      "Bash(node tmp_audit.js)",
+      "Bash(wc -l CLAUDE.md docs/*.md)",
+      "Bash(cat /c/Users/nonoa/OneDrive/Desktop/album-club/.env*)",
+      "Bash(grep -n \"NODE_ENV\\\\|VERCEL\\\\|NETLIFY\" /c/Users/nonoa/OneDrive/Desktop/album-club/next.config.mjs /c/Users/nonoa/OneDrive/Desktop/album-club/app/*.js /c/Users/nonoa/OneDrive/Desktop/album-club/lib/*.js)",
+      "WebFetch(domain:littlealbumclub.net)",
+      "Bash(nslookup littlealbumclub.net)"
     ]
   }
 }
