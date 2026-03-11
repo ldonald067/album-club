@@ -416,11 +416,11 @@ body {
   border-radius: 3px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   cursor: pointer;
-  transition: filter 0.15s;
+  transition: opacity 0.15s;
 }
 
 .listen-btn:hover {
-  filter: brightness(1.15);
+  opacity: 0.85;
 }
 
 /* Info table */
@@ -519,7 +519,7 @@ body {
   font-weight: bold;
   cursor: pointer;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  transition: filter 0.15s;
+  transition: opacity 0.15s;
 }
 
 .btn-submit:not(:disabled) {
@@ -527,7 +527,7 @@ body {
 }
 
 .btn-submit:not(:disabled):hover {
-  filter: brightness(1.1);
+  opacity: 0.85;
 }
 
 .btn-submit:disabled {

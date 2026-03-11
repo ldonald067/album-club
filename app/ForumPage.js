@@ -574,12 +574,15 @@ function VibeCheck({ albumKey }) {
     : 1;
 
   // Compute top vibe narrative
-  const topVibe =
-    submitted && results?.distribution
-      ? Object.entries(results.distribution).sort((a, b) => b[1] - a[1])[0]
-      : null;
+  const topVibe = useMemo(
+    () =>
+      submitted && results?.distribution
+        ? Object.entries(results.distribution).sort((a, b) => b[1] - a[1])[0]
+        : null,
+    [submitted, results],
+  );
   const topVibePct =
-    topVibe && results.total > 0
+    topVibe && results?.total > 0
       ? Math.round((topVibe[1] / results.total) * 100)
       : 0;
   const topVibeData = topVibe
