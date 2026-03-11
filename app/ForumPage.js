@@ -729,7 +729,7 @@ function GuessGame() {
   const puzzleAlbum = useMemo(() => getPuzzleAlbum(), []);
   const clues = useMemo(() => getPuzzleClues(puzzleAlbum), [puzzleAlbum]);
 
-  const [cluesRevealed, setCluesRevealed] = useState(1);
+  const [cluesRevealed, setCluesRevealed] = useState(2);
   const [guesses, setGuesses] = useState([]);
   const [currentGuess, setCurrentGuess] = useState("");
   const [gameOver, setGameOver] = useState(false);
@@ -744,7 +744,7 @@ function GuessGame() {
     if (saved) {
       const state = JSON.parse(saved);
       setGuesses(state.guesses);
-      setCluesRevealed(Math.min(state.guesses.length + 1, 6));
+      setCluesRevealed(Math.min(state.guesses.length + 2, 6));
       setGameOver(state.gameOver);
       setSolved(state.solved);
     }
@@ -802,7 +802,7 @@ function GuessGame() {
       setShaking(true);
       setTimeout(() => setShaking(false), SHAKE_MS);
     } else {
-      const nextClue = Math.min(newGuesses.length + 1, 6);
+      const nextClue = Math.min(newGuesses.length + 2, 6);
       setCluesRevealed(nextClue);
       setJustRevealedClue(nextClue - 1);
       setTimeout(() => setJustRevealedClue(-1), 400);
