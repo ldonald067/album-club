@@ -59,6 +59,12 @@ Before starting any task, identify which docs below are relevant and read them f
 - `/deploy` — production build + deploy
 - `/reset-day` — clear today's data for testing
 
+## Production
+
+- **Live site**: https://littlealbumclub.net (Railway, auto-deploys on `git push`)
+- **Analytics**: https://littlealbumclub.goatcounter.com (GoatCounter, script in `layout.js`)
+- **Contact**: rainbowpudding@littlealbumclub.net (mailto link in footer)
+
 ## Repository
 
 GitHub: https://github.com/ldonald067/album-club (public)

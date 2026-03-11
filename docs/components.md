@@ -10,13 +10,13 @@ Three extracted components eliminate duplication across all 5 games + RateReveal
 
 Clipboard copy button with "Copied!" feedback. `getText` returns the share string, `label` is the button text. Used by all 7 activity components + Daily Wrap-up "Share My Day".
 
-### `GuessHistory({ guesses, answer, checkFn })`
+### `GuessHistory({ guesses, checkFn })`
 
 Renders guess attempt list with correct/wrong styling. `checkFn` defaults to exact title match, but LyricGame passes a custom `isCorrectGuess` that normalizes whitespace/punctuation.
 
-### `AlbumAutocomplete({ guess, setGuess, onSubmit, excluded, gameOver, placeholder })`
+### `AlbumAutocomplete({ guesses, currentGuess, onGuessChange, onSubmit, shaking, inputRef })`
 
-Filterable album dropdown with keyboard navigation. Uses `ALBUM_SEARCH` (pre-lowercased index). `excluded` is a Set of already-guessed titles. Used by GuessGame, CoverChallenge, HeardleGame, ScrambleGame. LyricGame uses free-text input instead. Dropdown escapes `.panel` container (panel has no `overflow: hidden`).
+Filterable album dropdown with keyboard navigation. Uses `ALBUM_SEARCH` (pre-lowercased index). Excluded set (already-guessed titles) is computed internally from `guesses`. Used by GuessGame, CoverChallenge, HeardleGame, ScrambleGame. LyricGame uses free-text input instead. Dropdown escapes `.panel` container (panel has no `overflow: hidden`).
 
 ## Retention Features (localStorage-only, no backend)
 
