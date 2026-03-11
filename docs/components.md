@@ -16,7 +16,7 @@ Renders guess attempt list with correct/wrong styling. `checkFn` defaults to exa
 
 ### `AlbumAutocomplete({ guess, setGuess, onSubmit, excluded, gameOver, placeholder })`
 
-Filterable album dropdown with keyboard navigation. Uses `ALBUM_SEARCH` (pre-lowercased index). `excluded` is a Set of already-guessed titles. Used by GuessGame, CoverChallenge, HeardleGame, ScrambleGame. LyricGame uses free-text input instead.
+Filterable album dropdown with keyboard navigation. Uses `ALBUM_SEARCH` (pre-lowercased index). `excluded` is a Set of already-guessed titles. Used by GuessGame, CoverChallenge, HeardleGame, ScrambleGame. LyricGame uses free-text input instead. Dropdown escapes `.panel` container (panel has no `overflow: hidden`).
 
 ## Retention Features (localStorage-only, no backend)
 

@@ -4,7 +4,7 @@
 
 ## Guess the Album (6 attempts)
 
-Clue-based — reveals progressively: genre, decade, word count, artist initial, year, artist name. Uses `AlbumAutocomplete`.
+Clue-based — starts with 2 clues (genre + decade), reveals progressively on wrong guesses: word count, artist initial, year, artist name. First-time instruction text shown before first guess. Uses `AlbumAutocomplete`.
 
 ## Cover Art Challenge (5 attempts)
 
