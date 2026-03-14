@@ -2104,7 +2104,6 @@ body {
   font-size: 11px;
   font-weight: bold;
   min-width: 0;
-  transition: width 0.4s ease;
 }
 
 .playlist-bar-no {
@@ -2116,7 +2115,6 @@ body {
   font-size: 11px;
   font-weight: bold;
   min-width: 0;
-  transition: width 0.4s ease;
 }
 
 .playlist-labels {
@@ -2282,7 +2280,6 @@ body {
   font-size: 11px;
   font-weight: bold;
   min-width: 0;
-  transition: width 0.4s ease;
 }
 
 .matchup-bar-b {
@@ -2294,7 +2291,6 @@ body {
   font-size: 11px;
   font-weight: bold;
   min-width: 0;
-  transition: width 0.4s ease;
 }
 
 .matchup-bar-a.animate-bar,

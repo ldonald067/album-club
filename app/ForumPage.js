@@ -693,7 +693,7 @@ function PlaylistPoll({ albumKey }) {
 }
 
 /* ─── Album vs Album ─── */
-function VersusMatchup() {
+const VersusMatchup = memo(function VersusMatchup() {
   const todayKey = getTodayKey();
   const { albumA, albumB } = useMemo(() => getVersusPair(), []);
   const [myPick, setMyPick] = useState(null);
@@ -843,10 +843,10 @@ function VersusMatchup() {
       </div>
     </div>
   );
-}
+});
 
 /* ─── Blind Taste Test ─── */
-function BlindTasteTest() {
+const BlindTasteTest = memo(function BlindTasteTest() {
   const todayKey = getTodayKey();
   const { albumA, albumB } = useMemo(() => getTastePair(), []);
   const [myPick, setMyPick] = useState(null);
@@ -1106,7 +1106,11 @@ function BlindTasteTest() {
             onClick={() => playClip("A")}
             disabled={!readyA}
           >
-            {playingA ? "\u23F8 Playing..." : "\u25B6 Play Clip A"}
+            {playingA
+              ? "\u23F8 Playing..."
+              : !readyA
+                ? "Loading..."
+                : "\u25B6 Play Clip A"}
           </button>
           {listenedA && <span className="taste-heard">&check; heard</span>}
         </div>
@@ -1116,7 +1120,11 @@ function BlindTasteTest() {
             onClick={() => playClip("B")}
             disabled={!readyB}
           >
-            {playingB ? "\u23F8 Playing..." : "\u25B6 Play Clip B"}
+            {playingB
+              ? "\u23F8 Playing..."
+              : !readyB
+                ? "Loading..."
+                : "\u25B6 Play Clip B"}
           </button>
           {listenedB && <span className="taste-heard">&check; heard</span>}
         </div>
@@ -1142,7 +1150,7 @@ function BlindTasteTest() {
       </div>
     </div>
   );
-}
+});
 
 /* ─── Vibe Check ─── */
 function VibeCheck({ albumKey }) {
