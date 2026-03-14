@@ -36,6 +36,14 @@ Full 5x5 bingo grid for the current month. Each cell is a genre category. Matche
 
 Shared hook between BingoMini and BingoSection. Returns `{ card, matched, hasBingo, nearLines }`. Uses `getBingoCard()`, `getMonthMatches()`, `checkBingo()`, `getNearBingoLines()` from `lib/albums.js`.
 
+## Album vs Album (`VersusMatchup`)
+
+Daily head-to-head matchup. Shows two album covers side by side with title/artist/year/genre info and "Pick this one" buttons. After voting, shows community vote split as animated percentage bar (blue-A vs pink-B). Confetti on vote. Uses `renderCard(album, side, btn)` helper for DRY card rendering. Posts to `/api/matchup` with `type: "versus"`. State: `aotd_versus_{date}`.
+
+## Blind Taste Test (`BlindTasteTest`)
+
+Two 15-second mystery audio clips via YouTube IFrame API. Two `YT.Player` instances (`taste-player-a`, `taste-player-b`) — only one plays at a time. Pick buttons disabled until both clips heard (`listenedA && listenedB`). After voting, reveals both albums with cover art + community preference bar + confetti. YouTube API script shared with HeardleGame — checks `window.YT` before loading, chains `onYouTubeIframeAPIReady`. Posts to `/api/matchup` with `type: "taste"`. State: `aotd_taste_{date}`.
+
 ## Retention Features (localStorage-only, no backend)
 
 ### Streak Milestones
@@ -74,7 +82,7 @@ Shows tomorrow's album emoji + genre + decade (e.g., `🎷 Tomorrow's Album — 
 
 ## State Management Patterns
 
-- **Per-activity localStorage**: `aotd_rated_{date}`, `aotd_vibed_{date}`, `aotd_{gameType}_{date}`
+- **Per-activity localStorage**: `aotd_rated_{date}`, `aotd_vibed_{date}`, `aotd_{gameType}_{date}`, `aotd_versus_{date}`, `aotd_taste_{date}`
 - **Streak**: `aotd_streak` → `{ count, lastDate, best }`
 - **Visit count**: `aotd_visit_count` (integer string)
 - **Milestones**: `aotd_milestones_celebrated` → `[3, 7, 14, ...]`

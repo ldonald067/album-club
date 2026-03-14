@@ -23,6 +23,8 @@ import {
   checkBingo,
   getGenreCategory,
   getNearBingoLines,
+  getVersusPair,
+  getTastePair,
 } from "@/lib/albums";
 
 /* ─── Constants ─── */
@@ -684,6 +686,458 @@ function PlaylistPoll({ albumKey }) {
           {locking && !myVote
             ? "\u2728 Locking..."
             : "\ud83d\udeab Nah, skip it"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Album vs Album ─── */
+function VersusMatchup() {
+  const todayKey = getTodayKey();
+  const { albumA, albumB } = useMemo(() => getVersusPair(), []);
+  const [myPick, setMyPick] = useState(null);
+  const [results, setResults] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [justRevealed, setJustRevealed] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(`aotd_versus_${todayKey}`);
+    if (saved) {
+      setMyPick(saved);
+      setSubmitted(true);
+      fetch("/api/matchup?type=versus")
+        .then((r) => r.json())
+        .then(setResults)
+        .catch(() => {});
+    }
+  }, [todayKey]);
+
+  const submit = async (pick) => {
+    if (submitting) return;
+    setMyPick(pick);
+    setSubmitting(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/matchup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "versus", pick }),
+      });
+      if (!res.ok) {
+        const msg = (await res.json().catch(() => ({}))).error;
+        throw new Error(msg || "Failed to submit");
+      }
+      const data = await res.json();
+      localStorage.setItem(`aotd_versus_${todayKey}`, pick);
+      window.dispatchEvent(new Event("aotd-activity"));
+      fireConfetti({ particleCount: 25, spread: 35 });
+      setResults(data);
+      setSubmitted(true);
+      setJustRevealed(true);
+    } catch (err) {
+      setError(err.message || "Something went wrong.");
+      setMyPick(null);
+      setSubmitting(false);
+    }
+  };
+
+  const renderCard = (album, side, btn) => (
+    <div className={`versus-card${myPick === side ? " selected" : ""}`}>
+      <img
+        src={album.image}
+        alt={`${album.title} by ${album.artist}`}
+        className="versus-cover"
+        loading="lazy"
+      />
+      <div className="versus-info">
+        <strong>{album.title}</strong>
+        <br />
+        {album.artist}
+        <br />
+        <span className="versus-meta">
+          {album.year} &middot; {album.genre}
+        </span>
+      </div>
+      {btn}
+    </div>
+  );
+
+  if (submitted && results) {
+    const aPct =
+      results.total > 0 ? Math.round((results.a / results.total) * 100) : 50;
+    const bPct = 100 - aPct;
+    return (
+      <div className={`versus-matchup${justRevealed ? " animate-reveal" : ""}`}>
+        <div className="versus-header">
+          &#x2694;&#xFE0F; You picked{" "}
+          <strong>{myPick === "A" ? albumA.title : albumB.title}</strong>
+        </div>
+        <div className="versus-cards">
+          {renderCard(albumA, "A")}
+          <span className="versus-vs">VS</span>
+          {renderCard(albumB, "B")}
+        </div>
+        <div className="matchup-bar-wrap">
+          <div
+            className={`matchup-bar-a${justRevealed ? " animate-bar" : ""}`}
+            style={{ width: `${aPct}%` }}
+          >
+            {aPct > 15 && `${aPct}%`}
+          </div>
+          <div
+            className={`matchup-bar-b${justRevealed ? " animate-bar" : ""}`}
+            style={{ width: `${bPct}%` }}
+          >
+            {bPct > 15 && `${bPct}%`}
+          </div>
+        </div>
+        <div className="matchup-labels">
+          <span>
+            {albumA.title} ({results.a})
+          </span>
+          <span>
+            {albumB.title} ({results.b})
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="versus-matchup">
+      <div className="versus-header">
+        &#x2694;&#xFE0F; Album vs Album &mdash; pick your favorite
+      </div>
+      {error && (
+        <p className="submit-error" role="alert">
+          {error}
+        </p>
+      )}
+      <div className="versus-cards">
+        {renderCard(
+          albumA,
+          "A",
+          <button
+            className="versus-btn"
+            onClick={() => submit("A")}
+            disabled={submitting}
+          >
+            Pick this one
+          </button>,
+        )}
+        <span className="versus-vs">VS</span>
+        {renderCard(
+          albumB,
+          "B",
+          <button
+            className="versus-btn"
+            onClick={() => submit("B")}
+            disabled={submitting}
+          >
+            Pick this one
+          </button>,
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Blind Taste Test ─── */
+function BlindTasteTest() {
+  const todayKey = getTodayKey();
+  const { albumA, albumB } = useMemo(() => getTastePair(), []);
+  const [myPick, setMyPick] = useState(null);
+  const [results, setResults] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [justRevealed, setJustRevealed] = useState(false);
+  const [error, setError] = useState(null);
+
+  const [listenedA, setListenedA] = useState(false);
+  const [listenedB, setListenedB] = useState(false);
+  const [playingA, setPlayingA] = useState(false);
+  const [playingB, setPlayingB] = useState(false);
+  const playerARef = useRef(null);
+  const playerBRef = useRef(null);
+  const timerARef = useRef(null);
+  const timerBRef = useRef(null);
+  const [readyA, setReadyA] = useState(false);
+  const [readyB, setReadyB] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(`aotd_taste_${todayKey}`);
+    if (saved) {
+      setMyPick(saved);
+      setSubmitted(true);
+      fetch("/api/matchup?type=taste")
+        .then((r) => r.json())
+        .then(setResults)
+        .catch(() => {});
+    }
+  }, [todayKey]);
+
+  // Load YouTube IFrame API + two players
+  useEffect(() => {
+    if (submitted) return;
+    let cancelled = false;
+
+    function initPlayers() {
+      if (cancelled) return;
+      if (!playerARef.current) {
+        playerARef.current = new window.YT.Player("taste-player-a", {
+          height: "0",
+          width: "0",
+          videoId: albumA.youtubeId,
+          playerVars: { autoplay: 0, controls: 0, disablekb: 1, fs: 0 },
+          events: { onReady: () => !cancelled && setReadyA(true) },
+        });
+      }
+      if (!playerBRef.current) {
+        playerBRef.current = new window.YT.Player("taste-player-b", {
+          height: "0",
+          width: "0",
+          videoId: albumB.youtubeId,
+          playerVars: { autoplay: 0, controls: 0, disablekb: 1, fs: 0 },
+          events: { onReady: () => !cancelled && setReadyB(true) },
+        });
+      }
+    }
+
+    if (window.YT && window.YT.Player) {
+      initPlayers();
+    } else {
+      const prev = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => {
+        if (prev) prev();
+        initPlayers();
+      };
+      if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
+        const tag = document.createElement("script");
+        tag.src = "https://www.youtube.com/iframe_api";
+        document.head.appendChild(tag);
+      }
+    }
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timerARef.current);
+      clearTimeout(timerBRef.current);
+      [playerARef, playerBRef].forEach((ref) => {
+        if (ref.current?.destroy) {
+          try {
+            ref.current.destroy();
+          } catch {}
+        }
+        ref.current = null;
+      });
+    };
+  }, [submitted, albumA.youtubeId, albumB.youtubeId]);
+
+  const playClip = (side) => {
+    const player = side === "A" ? playerARef.current : playerBRef.current;
+    const timerRef = side === "A" ? timerARef : timerBRef;
+    const otherPlayer = side === "A" ? playerBRef.current : playerARef.current;
+    if (!player) return;
+
+    // Pause other player
+    if (otherPlayer?.pauseVideo) {
+      try {
+        otherPlayer.pauseVideo();
+      } catch {}
+    }
+    if (side === "A") {
+      setPlayingB(false);
+    } else {
+      setPlayingA(false);
+    }
+
+    player.seekTo(0, true);
+    player.playVideo();
+    if (side === "A") {
+      setPlayingA(true);
+    } else {
+      setPlayingB(true);
+    }
+
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      player.pauseVideo();
+      if (side === "A") {
+        setPlayingA(false);
+        setListenedA(true);
+      } else {
+        setPlayingB(false);
+        setListenedB(true);
+      }
+    }, 15000);
+  };
+
+  const submit = async (pick) => {
+    if (submitting) return;
+    setMyPick(pick);
+    setSubmitting(true);
+    setError(null);
+    // Stop any playback
+    [playerARef, playerBRef].forEach((ref) => {
+      if (ref.current?.pauseVideo) {
+        try {
+          ref.current.pauseVideo();
+        } catch {}
+      }
+    });
+    try {
+      const res = await fetch("/api/matchup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "taste", pick }),
+      });
+      if (!res.ok) {
+        const msg = (await res.json().catch(() => ({}))).error;
+        throw new Error(msg || "Failed to submit");
+      }
+      const data = await res.json();
+      localStorage.setItem(`aotd_taste_${todayKey}`, pick);
+      window.dispatchEvent(new Event("aotd-activity"));
+      fireConfetti({ particleCount: 40, spread: 50 });
+      setResults(data);
+      setSubmitted(true);
+      setJustRevealed(true);
+    } catch (err) {
+      setError(err.message || "Something went wrong.");
+      setMyPick(null);
+      setSubmitting(false);
+    }
+  };
+
+  if (submitted && results) {
+    const aPct =
+      results.total > 0 ? Math.round((results.a / results.total) * 100) : 50;
+    const bPct = 100 - aPct;
+    return (
+      <div className={`taste-test${justRevealed ? " animate-reveal" : ""}`}>
+        <div className="taste-header">
+          &#x1F3A7; The reveal &mdash; you picked{" "}
+          <strong>
+            {myPick === "A" ? "Clip A" : "Clip B"} (
+            {myPick === "A" ? albumA.title : albumB.title})
+          </strong>
+        </div>
+        <div className="taste-reveal">
+          <div
+            className={`taste-reveal-card${myPick === "A" ? " selected" : ""}`}
+          >
+            <img
+              src={albumA.image}
+              alt={`${albumA.title} by ${albumA.artist}`}
+              className="versus-cover"
+              loading="lazy"
+            />
+            <div className="versus-info">
+              <strong>{albumA.title}</strong>
+              <br />
+              {albumA.artist}
+            </div>
+          </div>
+          <div
+            className={`taste-reveal-card${myPick === "B" ? " selected" : ""}`}
+          >
+            <img
+              src={albumB.image}
+              alt={`${albumB.title} by ${albumB.artist}`}
+              className="versus-cover"
+              loading="lazy"
+            />
+            <div className="versus-info">
+              <strong>{albumB.title}</strong>
+              <br />
+              {albumB.artist}
+            </div>
+          </div>
+        </div>
+        <div className="matchup-bar-wrap">
+          <div
+            className={`matchup-bar-a${justRevealed ? " animate-bar" : ""}`}
+            style={{ width: `${aPct}%` }}
+          >
+            {aPct > 15 && `${aPct}%`}
+          </div>
+          <div
+            className={`matchup-bar-b${justRevealed ? " animate-bar" : ""}`}
+            style={{ width: `${bPct}%` }}
+          >
+            {bPct > 15 && `${bPct}%`}
+          </div>
+        </div>
+        <div className="matchup-labels">
+          <span>Clip A ({results.a})</span>
+          <span>Clip B ({results.b})</span>
+        </div>
+      </div>
+    );
+  }
+
+  const canPick = listenedA && listenedB;
+
+  return (
+    <div className="taste-test">
+      <div className="taste-header">
+        &#x1F3A7; Blind Taste Test &mdash; listen, then pick
+      </div>
+      <p className="taste-desc">
+        Two 15-second mystery clips. Listen to both, then pick your favorite. No
+        peeking!
+      </p>
+      {error && (
+        <p className="submit-error" role="alert">
+          {error}
+        </p>
+      )}
+      <div style={{ position: "absolute", left: -9999 }}>
+        <div id="taste-player-a" />
+        <div id="taste-player-b" />
+      </div>
+      <div className="taste-players">
+        <div className="taste-player">
+          <button
+            className={`taste-play-btn${playingA ? " playing" : ""}`}
+            onClick={() => playClip("A")}
+            disabled={!readyA}
+          >
+            {playingA ? "\u23F8 Playing..." : "\u25B6 Play Clip A"}
+          </button>
+          {listenedA && <span className="taste-heard">&check; heard</span>}
+        </div>
+        <div className="taste-player">
+          <button
+            className={`taste-play-btn${playingB ? " playing" : ""}`}
+            onClick={() => playClip("B")}
+            disabled={!readyB}
+          >
+            {playingB ? "\u23F8 Playing..." : "\u25B6 Play Clip B"}
+          </button>
+          {listenedB && <span className="taste-heard">&check; heard</span>}
+        </div>
+      </div>
+      {!canPick && (
+        <p className="taste-hint">Listen to both clips to unlock voting</p>
+      )}
+      <div className="taste-pick-btns">
+        <button
+          className="versus-btn"
+          onClick={() => submit("A")}
+          disabled={!canPick || submitting}
+        >
+          &#x1F44D; Clip A
+        </button>
+        <button
+          className="versus-btn"
+          onClick={() => submit("B")}
+          disabled={!canPick || submitting}
+        >
+          &#x1F44D; Clip B
         </button>
       </div>
     </div>
@@ -3292,6 +3746,12 @@ export default function ForumPage({ album, dateString }) {
 
             {/* Quick playlist poll */}
             <PlaylistPoll albumKey={album.key} />
+
+            {/* Album vs Album matchup */}
+            <VersusMatchup />
+
+            {/* Blind Taste Test */}
+            <BlindTasteTest />
 
             {/* Bingo mini widget */}
             <BingoMini onNavigate={setActiveSection} />

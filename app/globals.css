@@ -565,7 +565,9 @@ body {
 .listen-btn:focus-visible,
 .suggestion-item:focus-visible,
 .playlist-btn:focus-visible,
-.bingo-mini:focus-visible {
+.bingo-mini:focus-visible,
+.versus-btn:focus-visible,
+.taste-play-btn:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 2px;
 }
@@ -2168,6 +2170,249 @@ body {
   50% {
     transform: scale(1.05);
   }
+}
+
+/* ─── Album vs Album ─── */
+.versus-matchup {
+  border: 1px solid var(--border-panel);
+  border-radius: 4px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  background: var(--bg-panel);
+  text-align: center;
+}
+
+.versus-header {
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.versus-cards {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  align-items: stretch;
+  margin-bottom: 8px;
+}
+
+.versus-card {
+  flex: 1;
+  max-width: 150px;
+  border: 2px solid var(--border-panel);
+  border-radius: 4px;
+  padding: 8px;
+  background: var(--bg-main);
+  transition: opacity 0.15s;
+}
+
+.versus-card.selected {
+  border-color: #5a9a5a;
+  box-shadow: 0 0 6px rgba(90, 154, 90, 0.4);
+}
+
+.versus-vs {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 0 2px;
+}
+
+.versus-cover {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 2px;
+  margin-bottom: 6px;
+}
+
+.versus-info {
+  font-size: 10px;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.versus-meta {
+  color: var(--text-muted);
+  font-size: 9px;
+}
+
+.versus-btn {
+  margin-top: 6px;
+  padding: 6px 12px;
+  border: 2px solid var(--border-panel);
+  border-radius: 4px;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.versus-btn:not(:disabled):hover {
+  opacity: 0.8;
+}
+
+.versus-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── Matchup Result Bar (shared) ─── */
+.matchup-bar-wrap {
+  display: flex;
+  height: 28px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border-panel);
+  margin-bottom: 6px;
+}
+
+.matchup-bar-a {
+  background: #5a7a9a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 11px;
+  font-weight: bold;
+  min-width: 0;
+  transition: width 0.4s ease;
+}
+
+.matchup-bar-b {
+  background: #9a5a7a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 11px;
+  font-weight: bold;
+  min-width: 0;
+  transition: width 0.4s ease;
+}
+
+.matchup-bar-a.animate-bar,
+.matchup-bar-b.animate-bar {
+  animation: bar-grow 0.6s ease-out;
+}
+
+.matchup-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* ─── Blind Taste Test ─── */
+.taste-test {
+  border: 1px solid var(--border-panel);
+  border-radius: 4px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  background: var(--bg-panel);
+  text-align: center;
+}
+
+.taste-header {
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+}
+
+.taste-desc {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+}
+
+.taste-players {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.taste-player {
+  flex: 1;
+  max-width: 140px;
+  text-align: center;
+}
+
+.taste-play-btn {
+  width: 100%;
+  padding: 8px 10px;
+  border: 2px solid var(--border-panel);
+  border-radius: 4px;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.taste-play-btn:not(:disabled):hover {
+  opacity: 0.8;
+}
+
+.taste-play-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.taste-play-btn.playing {
+  border-color: #c9a227;
+  box-shadow: 0 0 8px rgba(201, 162, 39, 0.4);
+}
+
+.taste-heard {
+  display: block;
+  font-size: 10px;
+  color: #5a9a5a;
+  margin-top: 4px;
+  font-weight: bold;
+}
+
+.taste-hint {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin: 0 0 6px;
+  font-style: italic;
+}
+
+.taste-pick-btns {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.taste-reveal {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.taste-reveal-card {
+  flex: 1;
+  max-width: 150px;
+  border: 2px solid var(--border-panel);
+  border-radius: 4px;
+  padding: 8px;
+  background: var(--bg-main);
+}
+
+.taste-reveal-card.selected {
+  border-color: #5a9a5a;
+  box-shadow: 0 0 6px rgba(90, 154, 90, 0.4);
 }
 
 /* ─── Bingo Mini Widget ─── */

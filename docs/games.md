@@ -41,6 +41,14 @@ Each game's `saveState()` dispatches `window.dispatchEvent(new Event("aotd-activ
 - When falling back, stats save under `cover` type and localStorage uses `aotd_cover_` key
 - `checkDone()` handles this by checking all game type keys
 
+## Album vs Album
+
+Daily head-to-head: two past albums shown side by side with cover art. User picks their favorite, community vote split shown as percentage bar after voting. Deterministic daily pairing via `getVersusPair()` using seed `year * 83 + 23` — draws from full 403-album catalog, avoids today's featured album. Posts to `/api/matchup` with `type: "versus"`. State: `aotd_versus_{date}`.
+
+## Blind Taste Test
+
+Two 15-second audio clips from YouTube (no album info visible). User must listen to both before voting is unlocked. After picking, both albums are revealed with cover art + community preference bar. Uses `getTastePair()` with seed `year * 97 + 31` — draws from albums with `youtubeId` (~126). Two simultaneous `YT.Player` instances; only one plays at a time. Posts to `/api/matchup` with `type: "taste"`. State: `aotd_taste_{date}`.
+
 ## State Persistence
 
 Each game saves to localStorage (`aotd_{type}_{todayKey}`) on every guess via `saveState()`. On reload, state is restored without re-animating (animation guards via `justRevealed` booleans). Game results POST to `/api/guess` with `?type=` param for per-game stats tracking.

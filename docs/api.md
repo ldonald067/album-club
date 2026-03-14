@@ -14,8 +14,8 @@ Two layers of protection, both using in-memory Maps:
 ## Database (`lib/db.js`)
 
 - **SQLite** via better-sqlite3, WAL mode, singleton connection
-- **Prepared statements** cached at module scope (12 statements, created once on first `getDb()` call)
-- **Covering indexes** on all query patterns: `(album_key, rating)`, `(album_key, vibe)`, `(puzzle_key, attempts, solved)`, `(album_key, vote)`
+- **Prepared statements** cached at module scope (14 statements, created once on first `getDb()` call)
+- **Covering indexes** on all query patterns: `(album_key, rating)`, `(album_key, vibe)`, `(puzzle_key, attempts, solved)`, `(album_key, vote)`, `(matchup_key, pick)`
 
 For caching details, see `docs/performance.md`.
 
@@ -46,6 +46,10 @@ Daily limits are per game type (`guess-${type}`). Attempts must be integer 1-max
 ### POST/GET `/api/playlist`
 
 Binary poll: "Would you add this to your playlist?" Vote must be boolean. GET validates `?key=` same as rate. 30s in-memory cache, busted on POST.
+
+### POST/GET `/api/matchup`
+
+Shared endpoint for Album vs Album and Blind Taste Test. `?type=` param: `versus` or `taste`. POST body: `{ type, pick }` where pick is `"A"` or `"B"`. Returns `{ a, b, total }`. 30s in-memory cache per type, busted on POST. Daily limit shared across both types (`matchup` endpoint key). DB table: `matchup_votes` with `matchup_key` format `{type}-{date}`.
 
 ### GET `/api/stats`
 

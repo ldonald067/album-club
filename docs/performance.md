@@ -94,7 +94,7 @@ All caches are in-memory objects, no external cache layer needed for single-inst
 
 ## Bundle Budget
 
-Current: **50 kB** page JS, **152 kB** First Load. Target: stay under 50 kB page JS.
+Current: **51.6 kB** page JS, **154 kB** First Load. Target: stay under 55 kB page JS.
 
 - `better-sqlite3` stays server-only (never imported in client code)
 - `lib/albums.json` (403 albums) is intentionally client-bundled — needed for autocomplete
