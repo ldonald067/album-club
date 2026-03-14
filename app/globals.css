@@ -2055,7 +2055,8 @@ body {
 .playlist-btn {
   flex: 1;
   max-width: 150px;
-  padding: 6px 12px;
+  padding: 10px 12px;
+  min-height: 44px;
   border: 2px solid var(--border-panel);
   border-radius: 4px;
   background: var(--bg-main);
@@ -2240,7 +2241,8 @@ body {
 
 .versus-btn {
   margin-top: 6px;
-  padding: 6px 12px;
+  padding: 10px 12px;
+  min-height: 44px;
   border: 2px solid var(--border-panel);
   border-radius: 4px;
   background: var(--bg-main);
@@ -2343,7 +2345,8 @@ body {
 
 .taste-play-btn {
   width: 100%;
-  padding: 8px 10px;
+  padding: 10px 10px;
+  min-height: 44px;
   border: 2px solid var(--border-panel);
   border-radius: 4px;
   background: var(--bg-main);

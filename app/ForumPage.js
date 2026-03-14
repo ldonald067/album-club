@@ -824,6 +824,7 @@ const VersusMatchup = memo(function VersusMatchup() {
             className="versus-btn"
             onClick={() => submit("A")}
             disabled={submitting}
+            aria-label={`Pick ${albumA.title}`}
           >
             Pick this one
           </button>,
@@ -836,6 +837,7 @@ const VersusMatchup = memo(function VersusMatchup() {
             className="versus-btn"
             onClick={() => submit("B")}
             disabled={submitting}
+            aria-label={`Pick ${albumB.title}`}
           >
             Pick this one
           </button>,
@@ -1109,7 +1111,7 @@ const BlindTasteTest = memo(function BlindTasteTest() {
             {playingA
               ? "\u23F8 Playing..."
               : !readyA
-                ? "Loading..."
+                ? "Loading audio..."
                 : "\u25B6 Play Clip A"}
           </button>
           {listenedA && <span className="taste-heard">&check; heard</span>}
@@ -1123,7 +1125,7 @@ const BlindTasteTest = memo(function BlindTasteTest() {
             {playingB
               ? "\u23F8 Playing..."
               : !readyB
-                ? "Loading..."
+                ? "Loading audio..."
                 : "\u25B6 Play Clip B"}
           </button>
           {listenedB && <span className="taste-heard">&check; heard</span>}
