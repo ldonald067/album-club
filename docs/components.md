@@ -1,6 +1,6 @@
 # Components & Features
 
-ForumPage.js is a single client component (~3400 lines) containing all UI. Shared components are defined at the top of the file, game components in the middle, and the main render at the bottom.
+ForumPage.js is a single client component (~4100 lines) containing all UI. Shared components are defined at the top of the file, game components in the middle, and the main render at the bottom.
 
 ## Shared Components
 

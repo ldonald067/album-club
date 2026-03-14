@@ -1,6 +1,6 @@
 # Performance Rules
 
-Follow these rules for all CSS, rendering, and database changes. The build target is <50 kB page JS.
+Follow these rules for all CSS, rendering, and database changes. The build target is <55 kB page JS.
 
 ## CSS — Compositor-Friendly Only
 
@@ -47,7 +47,7 @@ fallback poll → setInterval(checkDone, 10000) (10s, not 2s)
 setAllDone((prev) => (prev === done ? prev : done));
 ```
 
-**Isolate ticking components** with `React.memo()`. `NextAlbumCountdown` has its own 1-second interval — memo prevents parent re-renders from cascading into it.
+**Isolate ticking components** with `React.memo()`. `NextAlbumCountdown` has its own 1-second interval — memo prevents parent re-renders from cascading into it. `VersusMatchup` and `BlindTasteTest` are also memoized to avoid re-renders from parent state changes.
 
 **Pre-compute constants** outside components:
 
@@ -67,8 +67,8 @@ setAllDone((prev) => (prev === done ? prev : done));
 ## Database — Query Patterns
 
 - **Singleton connection** — `db.js` creates one connection, reused across all requests
-- **Prepared statements** — 10 statements cached at module scope, created once on first `getDb()` call
-- **Covering indexes** — `(album_key, rating)`, `(album_key, vibe)`, `(puzzle_key, attempts, solved)`
+- **Prepared statements** — 14 statements cached at module scope, created once on first `getDb()` call
+- **Covering indexes** — `(album_key, rating)`, `(album_key, vibe)`, `(puzzle_key, attempts, solved)`, `(album_key, vote)`, `(matchup_key, pick)`
 - **WAL mode** — concurrent reads while writes complete
 - **Stats cache** — `getSiteStats()` has 5-minute TTL to avoid expensive `COUNT DISTINCT` / `SUM` / `GROUP BY` on every request
 
@@ -88,6 +88,7 @@ setAllDone((prev) => (prev === done ? prev : done));
 | GET `/api/vibe`     | 30s                 | On POST    |
 | GET `/api/guess`    | 30s per game type   | On POST    |
 | GET `/api/playlist` | 30s                 | On POST    |
+| GET `/api/matchup`  | 30s per type        | On POST    |
 | GET `/api/stats`    | 5min (double cache) | Time-based |
 
 All caches are in-memory objects, no external cache layer needed for single-instance deployment.
