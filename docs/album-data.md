@@ -34,6 +34,15 @@
 
 `lib/lyrics.json` stores 5-8 lyric lines per album, keyed by `"artist - title"`. ~88 entries. Populated via `npm run fetch-lyrics` (Genius API). Lines filtered for quality (>15 chars, <120 chars, no metadata, no section headers).
 
+## Genre Bingo (`lib/albums.js`)
+
+`BINGO_CATEGORIES_MAP` maps all 211 unique album genres to 24 broad bingo categories (Rock, Hip-Hop, Electronic, Jazz, Folk, Pop, R&B/Soul, Metal, Punk, Ambient, etc.). `getGenreCategory(genre)` does reverse lookup with "Indie / Other" fallback.
+
+- `getBingoCard(year, month)` — deterministic 5x5 grid using seeded permutation, FREE center at index 12
+- `getMonthMatches(year, month)` — iterates days 1 to current, maps each album's genre to its category
+- `checkBingo(card, matched)` — checks rows, cols, and both diagonals for 5-in-a-row
+- `getNearBingoLines(card, matched)` — finds lines that are 4/5 complete, returns `{ type, index, missing, cells }`
+
 ## Daily Rotation
 
 Seeded shuffle (mulberry32 PRNG + Fisher-Yates) keyed by year. Same date = same album globally. Rotates through all 403 albums before repeating.

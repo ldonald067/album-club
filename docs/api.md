@@ -14,8 +14,8 @@ Two layers of protection, both using in-memory Maps:
 ## Database (`lib/db.js`)
 
 - **SQLite** via better-sqlite3, WAL mode, singleton connection
-- **Prepared statements** cached at module scope (10 statements, created once on first `getDb()` call)
-- **Covering indexes** on all query patterns: `(album_key, rating)`, `(album_key, vibe)`, `(puzzle_key, attempts, solved)`
+- **Prepared statements** cached at module scope (12 statements, created once on first `getDb()` call)
+- **Covering indexes** on all query patterns: `(album_key, rating)`, `(album_key, vibe)`, `(puzzle_key, attempts, solved)`, `(album_key, vote)`
 
 For caching details, see `docs/performance.md`.
 
@@ -42,6 +42,10 @@ Vibes must be 1-3 valid labels (deduplicated server-side against VIBES list). GE
 | scramble | 5            |
 
 Daily limits are per game type (`guess-${type}`). Attempts must be integer 1-maxAttempts, solved is boolean, unsolved must have attempts=maxAttempts.
+
+### POST/GET `/api/playlist`
+
+Binary poll: "Would you add this to your playlist?" Vote must be boolean. GET validates `?key=` same as rate. 30s in-memory cache, busted on POST.
 
 ### GET `/api/stats`
 

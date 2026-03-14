@@ -18,6 +18,11 @@ import {
   getHeardleAlbum,
   getLyricPuzzleAlbum,
   scrambleArtist,
+  getBingoCard,
+  getMonthMatches,
+  checkBingo,
+  getGenreCategory,
+  getNearBingoLines,
 } from "@/lib/albums";
 
 /* ─── Constants ─── */
@@ -502,6 +507,189 @@ function RateReveal({ albumKey }) {
   );
 }
 
+/* ─── Playlist Poll ─── */
+/** Compute playlist voting streak from localStorage */
+function getPlaylistStreak() {
+  let addStreak = 0;
+  let skipStreak = 0;
+  const today = new Date();
+  for (let i = 0; i < 60; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().split("T")[0];
+    const val = localStorage.getItem(`aotd_playlist_${key}`);
+    if (!val) break;
+    if (i === 0 && val === "yes") {
+      addStreak = 1;
+    } else if (i === 0 && val === "no") {
+      skipStreak = 1;
+    } else if (val === "yes" && addStreak > 0) {
+      addStreak++;
+    } else if (val === "no" && skipStreak > 0) {
+      skipStreak++;
+    } else {
+      break;
+    }
+  }
+  return { addStreak, skipStreak };
+}
+
+/** Compute monthly playlist add rate from localStorage */
+function getMonthlyAddRate() {
+  const now = new Date();
+  const monthPrefix = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  let added = 0;
+  let total = 0;
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (!key || !key.startsWith("aotd_playlist_")) continue;
+    const dateStr = key.replace("aotd_playlist_", "");
+    if (!dateStr.startsWith(monthPrefix)) continue;
+    total++;
+    if (localStorage.getItem(key) === "yes") added++;
+  }
+  return { added, total };
+}
+
+function PlaylistPoll({ albumKey }) {
+  const [myVote, setMyVote] = useState(null);
+  const [results, setResults] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [locking, setLocking] = useState(false);
+  const [justRevealed, setJustRevealed] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(`aotd_playlist_${albumKey}`);
+    if (saved) {
+      setMyVote(saved === "yes");
+      setSubmitted(true);
+      fetch("/api/playlist")
+        .then((r) => r.json())
+        .then(setResults)
+        .catch(() => {});
+    }
+  }, [albumKey]);
+
+  const submit = async (vote) => {
+    if (submitting || locking) return;
+    setMyVote(vote);
+    setSubmitting(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/playlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ vote }),
+      });
+      if (!res.ok) {
+        const msg = (await res.json().catch(() => ({}))).error;
+        throw new Error(msg || "Failed to submit");
+      }
+      const data = await res.json();
+      localStorage.setItem(`aotd_playlist_${albumKey}`, vote ? "yes" : "no");
+      window.dispatchEvent(new Event("aotd-activity"));
+      setLocking(true);
+      setSubmitting(false);
+      await new Promise((r) => setTimeout(r, 500));
+      setLocking(false);
+      fireConfetti({ particleCount: 30, spread: 40 });
+      setResults(data);
+      setSubmitted(true);
+      setJustRevealed(true);
+    } catch (err) {
+      setError(err.message || "Something went wrong. Try again.");
+      setMyVote(null);
+      setSubmitting(false);
+    }
+  };
+
+  if (submitted && results) {
+    const yesPct =
+      results.total > 0 ? Math.round((results.yes / results.total) * 100) : 0;
+    const noPct = 100 - yesPct;
+    const { addStreak, skipStreak } = getPlaylistStreak();
+    const monthRate = getMonthlyAddRate();
+    const streakMsg =
+      addStreak >= 2
+        ? `\ud83d\udd25 ${addStreak} adds in a row`
+        : skipStreak >= 2
+          ? `\ud83e\uddd0 ${skipStreak} skips in a row \u2014 picky listener`
+          : null;
+    return (
+      <div className={`playlist-poll${justRevealed ? " animate-reveal" : ""}`}>
+        <div className="playlist-question">
+          {myVote ? "\ud83c\udfa7" : "\ud83d\udeab"} You voted{" "}
+          <strong>{myVote ? "Yes" : "Nah"}</strong>
+        </div>
+        <div className="playlist-bar-wrap">
+          <div
+            className={`playlist-bar-yes${justRevealed ? " animate-bar" : ""}`}
+            style={{ width: `${yesPct}%` }}
+          >
+            {yesPct > 15 && `${yesPct}%`}
+          </div>
+          <div
+            className={`playlist-bar-no${justRevealed ? " animate-bar" : ""}`}
+            style={{ width: `${noPct}%` }}
+          >
+            {noPct > 15 && `${noPct}%`}
+          </div>
+        </div>
+        <div className="playlist-labels">
+          <span>\ud83c\udfa7 Add it ({results.yes})</span>
+          <span>\ud83d\udeab Skip it ({results.no})</span>
+        </div>
+        {(streakMsg || monthRate.total >= 2) && (
+          <div className="playlist-meta">
+            {streakMsg && <span className="playlist-streak">{streakMsg}</span>}
+            {monthRate.total >= 2 && (
+              <span className="playlist-month-rate">
+                This month: {monthRate.added}/{monthRate.total} added (
+                {Math.round((monthRate.added / monthRate.total) * 100)}%)
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="playlist-poll">
+      <div className="playlist-question">
+        Would you add this to your playlist?
+      </div>
+      {error && (
+        <p className="submit-error" role="alert">
+          {error}
+        </p>
+      )}
+      <div className="playlist-buttons">
+        <button
+          className={`playlist-btn playlist-yes${locking && myVote ? " pulsing" : ""}`}
+          onClick={() => submit(true)}
+          disabled={submitting || locking}
+        >
+          {locking && myVote
+            ? "\u2728 Locking..."
+            : "\ud83c\udfa7 Yeah, add it"}
+        </button>
+        <button
+          className={`playlist-btn playlist-no${locking && !myVote ? " pulsing" : ""}`}
+          onClick={() => submit(false)}
+          disabled={submitting || locking}
+        >
+          {locking && !myVote
+            ? "\u2728 Locking..."
+            : "\ud83d\udeab Nah, skip it"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Vibe Check ─── */
 function VibeCheck({ albumKey }) {
   const [selected, setSelected] = useState([]);
@@ -836,8 +1024,12 @@ function GuessGame() {
       </div>
       <div className="panel-body">
         {!gameOver && guesses.length === 0 && (
-          <p className="activity-prompt" style={{ margin: "0 0 8px", fontSize: "11px" }}>
-            Guess a mystery album from the rotation. Wrong guesses reveal more clues!
+          <p
+            className="activity-prompt"
+            style={{ margin: "0 0 8px", fontSize: "11px" }}
+          >
+            Guess a mystery album from the rotation. Wrong guesses reveal more
+            clues!
           </p>
         )}
         {/* Clues */}
@@ -2412,6 +2604,179 @@ const FAQ_ITEMS = [
   },
 ];
 
+/** Shared bingo data hook — used by BingoSection and BingoMini */
+function useBingoData() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;
+  const monthName = now.toLocaleString("en-US", { month: "long" });
+  const card = useMemo(() => getBingoCard(year, month), [year, month]);
+  const matched = useMemo(() => getMonthMatches(year, month), [year, month]);
+  const matchCount = card.filter(
+    (c) => c.free || matched.has(c.category),
+  ).length;
+  const hasBingo = useMemo(() => checkBingo(card, matched), [card, matched]);
+  const nearLines = useMemo(
+    () => getNearBingoLines(card, matched),
+    [card, matched],
+  );
+  // Today's genre category for highlighting
+  const todayAlbum = useMemo(() => getAlbumForDate(new Date()), []);
+  const todayCategory = getGenreCategory(todayAlbum.genre);
+  return {
+    year,
+    month,
+    monthName,
+    card,
+    matched,
+    matchCount,
+    hasBingo,
+    nearLines,
+    todayCategory,
+  };
+}
+
+function BingoMini({ onNavigate }) {
+  const { matchCount, hasBingo, nearLines } = useBingoData();
+  const nearMsg =
+    nearLines.length > 0
+      ? `1 away from ${nearLines.length > 1 ? `${nearLines.length} lines` : "a line"}! Need: ${nearLines[0].missing}`
+      : null;
+  return (
+    <div
+      className="bingo-mini"
+      onClick={() => onNavigate("bingo")}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && onNavigate("bingo")}
+    >
+      <span className="bingo-mini-label">
+        {hasBingo ? "\ud83c\udf89 BINGO!" : `\u2b50 Bingo: ${matchCount}/25`}
+      </span>
+      {nearMsg && !hasBingo && (
+        <span className="bingo-mini-near">{nearMsg}</span>
+      )}
+    </div>
+  );
+}
+
+function BingoSection() {
+  const {
+    year,
+    month,
+    monthName,
+    card,
+    matched,
+    matchCount,
+    hasBingo,
+    nearLines,
+    todayCategory,
+  } = useBingoData();
+
+  useEffect(() => {
+    if (hasBingo) {
+      const celebrated = localStorage.getItem(
+        `aotd_bingo_celebrated_${year}-${month}`,
+      );
+      if (!celebrated) {
+        fireConfetti({ particleCount: 100, spread: 80 });
+        localStorage.setItem(`aotd_bingo_celebrated_${year}-${month}`, "1");
+      }
+    }
+  }, [hasBingo, year, month]);
+
+  // Cells that are part of a near-bingo line (for subtle highlight)
+  const nearCells = useMemo(() => {
+    const s = new Set();
+    for (const line of nearLines) {
+      for (const ci of line.cells) s.add(ci);
+    }
+    return s;
+  }, [nearLines]);
+
+  const getShareText = () => {
+    const lines = [`Genre Bingo \u2014 ${monthName} ${year}`];
+    for (let r = 0; r < 5; r++) {
+      let row = "";
+      for (let c = 0; c < 5; c++) {
+        const cell = card[r * 5 + c];
+        if (cell.free) row += "\u2b50";
+        else if (matched.has(cell.category)) row += "\ud83d\udfe9";
+        else row += "\u2b1c";
+      }
+      lines.push(row);
+    }
+    lines.push(`${matchCount}/25 matched${hasBingo ? " \u2014 BINGO!" : ""}`);
+    lines.push(window.location.origin);
+    return lines.join("\n");
+  };
+
+  return (
+    <div className="panel">
+      <div className="panel-header">
+        <span>
+          <i className="hn hn-star" aria-hidden="true" /> GENRE BINGO &mdash;{" "}
+          {monthName.toUpperCase()}
+        </span>
+        <span style={{ fontSize: "10px", fontWeight: "normal", opacity: 0.7 }}>
+          {matchCount}/25
+        </span>
+      </div>
+      <div className="panel-body">
+        <p className="activity-prompt" style={{ textAlign: "center" }}>
+          Genres light up as they appear this month. Get 5 in a row for BINGO!
+        </p>
+        {hasBingo && (
+          <div className="bingo-win">
+            \ud83c\udf89 BINGO! You got 5 in a row!
+          </div>
+        )}
+        {!hasBingo && nearLines.length > 0 && (
+          <div className="bingo-near">
+            \ud83d\udd25 Almost there! Need{" "}
+            {nearLines
+              .slice(0, 2)
+              .map((l) => <strong key={l.type + l.index}>{l.missing}</strong>)
+              .reduce(
+                (acc, el, i) => (i === 0 ? [el] : [...acc, " or ", el]),
+                [],
+              )}{" "}
+            for bingo
+          </div>
+        )}
+        <div className="bingo-grid">
+          {card.map((cell, i) => {
+            const isMatched = cell.free || matched.has(cell.category);
+            const isToday = !cell.free && cell.category === todayCategory;
+            const isNear = nearCells.has(i) && !isMatched;
+            return (
+              <div
+                key={i}
+                className={`bingo-cell${isMatched ? " matched" : ""}${cell.free ? " free" : ""}${isToday && isMatched ? " today" : ""}${isNear ? " near" : ""}`}
+                title={
+                  isToday
+                    ? "Today's genre!"
+                    : isNear
+                      ? "1 away from bingo!"
+                      : undefined
+                }
+              >
+                {cell.free ? "\u2b50" : cell.category}
+              </div>
+            );
+          })}
+        </div>
+        <div style={{ textAlign: "center", marginTop: 8 }}>
+          <ShareResultButton
+            label="\ud83d\udccb Share Bingo"
+            getText={getShareText}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function FAQSection() {
   return (
     <div className="panel">
@@ -2742,6 +3107,7 @@ export default function ForumPage({ album, dateString }) {
             { key: "home", icon: "hn hn-home", label: "Home" },
             { key: "archive", icon: "hn hn-calender", label: "Archive" },
             { key: "stats", icon: "hn hn-trending", label: "Stats" },
+            { key: "bingo", icon: "hn hn-star", label: "Bingo" },
             { key: "faq", icon: "hn hn-question", label: "FAQ" },
           ].map((item) => (
             <button
@@ -2801,7 +3167,6 @@ export default function ForumPage({ album, dateString }) {
             )}
           </span>
         )}
-
       </div>
 
       <div
@@ -2925,6 +3290,12 @@ export default function ForumPage({ album, dateString }) {
               </div>
             </div>
 
+            {/* Quick playlist poll */}
+            <PlaylistPoll albumKey={album.key} />
+
+            {/* Bingo mini widget */}
+            <BingoMini onNavigate={setActiveSection} />
+
             {/* Yesterday's Recap */}
             <YesterdayRecap />
 
@@ -3042,6 +3413,16 @@ export default function ForumPage({ album, dateString }) {
                           "\u2605".repeat(r) + "\u2606".repeat(10 - r);
                         lines.push(`\u2b50 ${r}/10 ${stars}`);
                       }
+                      const playlistVote = localStorage.getItem(
+                        `aotd_playlist_${todayKey}`,
+                      );
+                      if (playlistVote) {
+                        lines.push(
+                          playlistVote === "yes"
+                            ? "\ud83c\udfa7 Playlist: Yes"
+                            : "\ud83d\udeab Playlist: Nah",
+                        );
+                      }
                       const vibeRaw = localStorage.getItem(
                         `aotd_vibed_${todayKey}`,
                       );
@@ -3117,6 +3498,7 @@ export default function ForumPage({ album, dateString }) {
 
         {activeSection === "archive" && <ArchiveSection />}
         {activeSection === "stats" && <StatsSection />}
+        {activeSection === "bingo" && <BingoSection />}
         {activeSection === "faq" && <FAQSection />}
 
         {/* Album + pixel icon carousel */}

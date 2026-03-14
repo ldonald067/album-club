@@ -82,18 +82,19 @@ setAllDone((prev) => (prev === done ? prev : done));
 
 ## API Caching
 
-| Route            | TTL                 | Cache-bust |
-| ---------------- | ------------------- | ---------- |
-| GET `/api/rate`  | 30s                 | On POST    |
-| GET `/api/vibe`  | 30s                 | On POST    |
-| GET `/api/guess` | 30s per game type   | On POST    |
-| GET `/api/stats` | 5min (double cache) | Time-based |
+| Route               | TTL                 | Cache-bust |
+| ------------------- | ------------------- | ---------- |
+| GET `/api/rate`     | 30s                 | On POST    |
+| GET `/api/vibe`     | 30s                 | On POST    |
+| GET `/api/guess`    | 30s per game type   | On POST    |
+| GET `/api/playlist` | 30s                 | On POST    |
+| GET `/api/stats`    | 5min (double cache) | Time-based |
 
 All caches are in-memory objects, no external cache layer needed for single-instance deployment.
 
 ## Bundle Budget
 
-Current: **46.5 kB** page JS, **149 kB** First Load. Target: stay under 50 kB page JS.
+Current: **50 kB** page JS, **152 kB** First Load. Target: stay under 50 kB page JS.
 
 - `better-sqlite3` stays server-only (never imported in client code)
 - `lib/albums.json` (403 albums) is intentionally client-bundled — needed for autocomplete

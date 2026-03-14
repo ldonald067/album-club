@@ -1,6 +1,6 @@
 # Components & Features
 
-ForumPage.js is a single client component (~3100 lines) containing all UI. Shared components are defined at the top of the file, game components in the middle, and the main render at the bottom.
+ForumPage.js is a single client component (~3400 lines) containing all UI. Shared components are defined at the top of the file, game components in the middle, and the main render at the bottom.
 
 ## Shared Components
 
@@ -17,6 +17,24 @@ Renders guess attempt list with correct/wrong styling. `checkFn` defaults to exa
 ### `AlbumAutocomplete({ guesses, currentGuess, onGuessChange, onSubmit, shaking, inputRef })`
 
 Filterable album dropdown with keyboard navigation. Uses `ALBUM_SEARCH` (pre-lowercased index). Excluded set (already-guessed titles) is computed internally from `guesses`. Used by GuessGame, CoverChallenge, HeardleGame, ScrambleGame. LyricGame uses free-text input instead. Dropdown escapes `.panel` container (panel has no `overflow: hidden`).
+
+## Playlist Poll (`PlaylistPoll`)
+
+Binary "add or skip" vote with lock-in animation (500ms pulsing button), confetti on vote, and animated split bar showing yes/no percentages. Posts to `/api/playlist`. After voting, shows streak tracking ("5 adds in a row") and monthly add rate ("8/12 added"). State tracked via `aotd_playlist_{date}` in localStorage. Helper functions: `getPlaylistStreak()` scans backward up to 60 days, `getMonthlyAddRate()` counts current month.
+
+## Genre Bingo
+
+### `BingoMini({ onNavigate })`
+
+Home page widget showing match count and near-bingo status. Clickable — navigates to Bingo tab via `onNavigate("bingo")`. Has `role="button"` and `tabIndex={0}` for keyboard accessibility.
+
+### `BingoSection()`
+
+Full 5x5 bingo grid for the current month. Each cell is a genre category. Matched cells highlighted green, today's genre has enhanced glow, near-bingo cells have dashed gold border. Shows "Almost there!" message when 4/5 in a line. Confetti on first bingo per month (tracked in `aotd_bingo_celebrated_{month}`). Share button copies emoji grid to clipboard.
+
+### `useBingoData()`
+
+Shared hook between BingoMini and BingoSection. Returns `{ card, matched, hasBingo, nearLines }`. Uses `getBingoCard()`, `getMonthMatches()`, `checkBingo()`, `getNearBingoLines()` from `lib/albums.js`.
 
 ## Retention Features (localStorage-only, no backend)
 
