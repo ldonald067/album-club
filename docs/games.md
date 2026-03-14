@@ -47,7 +47,7 @@ Daily head-to-head: two past albums shown side by side with cover art. User pick
 
 ## Blind Taste Test
 
-Two 15-second audio clips from YouTube (no album info visible). User must listen to both before voting is unlocked. After picking, both albums are revealed with cover art + community preference bar. Uses `getTastePair()` with seed `year * 97 + 31` — draws from albums with `youtubeId` (~126). Two simultaneous `YT.Player` instances; only one plays at a time. Posts to `/api/matchup` with `type: "taste"`. State: `aotd_taste_{date}`.
+Two 60-second audio clips from YouTube (no album info visible). User must listen to both before voting is unlocked. After picking, both albums are revealed with cover art + community preference bar. Uses `getTastePair()` with seed `year * 97 + 31` — draws from albums with `youtubeId` (~126). Two simultaneous `YT.Player` instances; only one plays at a time. Posts to `/api/matchup` with `type: "taste"`. State: `aotd_taste_{date}`.
 
 ## State Persistence
 

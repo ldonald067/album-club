@@ -42,7 +42,7 @@ Daily head-to-head matchup. Shows two album covers side by side with title/artis
 
 ## Blind Taste Test (`BlindTasteTest`)
 
-Two 15-second mystery audio clips via YouTube IFrame API. Two `YT.Player` instances (`taste-player-a`, `taste-player-b`) — only one plays at a time. Pick buttons disabled until both clips heard (`listenedA && listenedB`). After voting, reveals both albums with cover art + community preference bar + confetti. YouTube API script shared with HeardleGame — checks `window.YT` before loading, chains `onYouTubeIframeAPIReady`. Posts to `/api/matchup` with `type: "taste"`. State: `aotd_taste_{date}`.
+Two 60-second mystery audio clips via YouTube IFrame API. Two `YT.Player` instances (`taste-player-a`, `taste-player-b`) — only one plays at a time. Pick buttons disabled until both clips heard (`listenedA && listenedB`). After voting, reveals both albums with cover art + community preference bar + confetti. YouTube API script shared with HeardleGame — checks `window.YT` before loading, chains `onYouTubeIframeAPIReady`. Posts to `/api/matchup` with `type: "taste"`. State: `aotd_taste_{date}`.
 
 ## Retention Features (localStorage-only, no backend)
 

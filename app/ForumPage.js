@@ -972,7 +972,7 @@ function BlindTasteTest() {
         setPlayingB(false);
         setListenedB(true);
       }
-    }, 15000);
+    }, 60000);
   };
 
   const submit = async (pick) => {
@@ -1087,7 +1087,7 @@ function BlindTasteTest() {
         &#x1F3A7; Blind Taste Test &mdash; listen, then pick
       </div>
       <p className="taste-desc">
-        Two 15-second mystery clips. Listen to both, then pick your favorite. No
+        Two 1-minute mystery clips. Listen to both, then pick your favorite. No
         peeking!
       </p>
       {error && (
