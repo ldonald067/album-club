@@ -4,17 +4,17 @@
 
 `lib/albums.json` — 403 album entries. Each has:
 
-| Field          | Type    | Notes                                             |
-| -------------- | ------- | ------------------------------------------------- |
-| `title`        | string  | Album name (no artist prefix)                     |
-| `artist`       | string  | Primary artist or band                            |
-| `year`         | number  | Release year                                      |
-| `genre`        | string  | Primary genre                                     |
-| `cover`        | string  | Single emoji, unique across all albums            |
-| `color`        | string  | Hex color, unique across all albums, R+G+B < 600  |
-| `recognizable` | boolean | True if a general listener could guess from clues |
-| `image`        | string  | Cover art URL (all 403 populated)                 |
-| `youtubeId`    | string? | Optional YouTube video ID for Heardle game        |
+| Field          | Type    | Notes                                              |
+| -------------- | ------- | -------------------------------------------------- |
+| `title`        | string  | Album name (no artist prefix)                      |
+| `artist`       | string  | Primary artist or band                             |
+| `year`         | number  | Release year                                       |
+| `genre`        | string  | Primary genre                                      |
+| `cover`        | string  | Single emoji, unique across all albums             |
+| `color`        | string  | Hex color, unique across all albums, R+G+B < 600   |
+| `recognizable` | boolean | True if a general listener could guess from clues  |
+| `image`        | string  | Cover art URL (all 403 populated)                  |
+| `youtubeId`    | string? | YouTube video ID for Heardle/Taste Test (see note) |
 
 ## Quality Rules
 
@@ -26,6 +26,7 @@
 - **Color must be unique** — no two albums share the same hex
 - **Emoji must be unique** — single codepoint only (no flags 🇫🇷, ZWJ ❤️‍🔥, or keycaps 3️⃣)
 - **`recognizable: true`** only for albums a general listener could guess from clues. Niche/experimental = false
+- **`youtubeId` coverage is intentionally partial (~31%)** — many albums are mixtapes, lofi compilations, DJ sets, or niche releases without official YouTube uploads. This is expected and not a data quality issue. The Heardle and Blind Taste Test games are designed to work with the ~126 album subset that has IDs
 - **`image` must not be null** — fetch via MusicBrainz/iTunes before committing. All 403 currently populated
 - **No duplicates** — check artist+title before adding. Run `/add-album` skill for validation
 - After renaming an album, set `image` to `null` and re-run fetch-covers to get correct artwork
