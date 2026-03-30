@@ -638,6 +638,28 @@ body {
   margin-bottom: 4px;
 }
 
+/* ─── Hot Take Badge ─── */
+.hot-take {
+  text-align: center;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 6px 10px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.hot-take-hot {
+  background: rgba(201, 100, 39, 0.15);
+  border: 1px solid rgba(201, 100, 39, 0.3);
+  color: #e8a040;
+}
+
+.hot-take-crowd {
+  background: rgba(90, 154, 90, 0.15);
+  border: 1px solid rgba(90, 154, 90, 0.3);
+  color: #7aba7a;
+}
+
 .rate-summary {
   display: flex;
   justify-content: center;
@@ -891,6 +913,24 @@ body {
   height: 24px;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+}
+
+/* ─── Vibe Agreement ─── */
+.vibe-agreement {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.vibe-agree-item {
+  font-size: 11px;
+  color: var(--text-primary);
+  background: rgba(201, 162, 39, 0.1);
+  padding: 3px 8px;
+  border-radius: 3px;
+  border: 1px solid rgba(201, 162, 39, 0.2);
 }
 
 .vibe-label {

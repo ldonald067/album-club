@@ -382,8 +382,39 @@ function RateReveal({ albumKey }) {
     return results.total > 0 ? Math.round((below / results.total) * 100) : 0;
   };
 
+  const getHotTake = () => {
+    if (!results || results.total <= 1) return null;
+    const avg = parseFloat(results.average);
+    const diff = myRating - avg;
+    const absDiff = Math.abs(diff);
+    if (absDiff <= 1)
+      return {
+        emoji: "\ud83e\udd1d",
+        text: "Crowd pleaser \u2014 you and the hive mind agree",
+        cls: "crowd",
+      };
+    if (absDiff >= 4)
+      return {
+        emoji: "\ud83d\udd25",
+        text: `Hot take! You said ${myRating}, crowd says ${avg}`,
+        cls: "hot",
+      };
+    if (diff > 0)
+      return {
+        emoji: "\ud83d\ude0e",
+        text: `Bigger fan \u2014 you went ${myRating} vs the crowd's ${avg}`,
+        cls: "hot",
+      };
+    return {
+      emoji: "\ud83e\uddd0",
+      text: `Tough critic \u2014 you went ${myRating} vs the crowd's ${avg}`,
+      cls: "crowd",
+    };
+  };
+
   if (revealed && results) {
     const maxCount = Math.max(...Object.values(results.distribution), 1);
+    const hotTake = getHotTake();
     return (
       <div className={`panel${justRevealed ? " animate-reveal" : ""}`}>
         <div className="panel-header">
@@ -393,6 +424,11 @@ function RateReveal({ albumKey }) {
           </span>
         </div>
         <div className="panel-body">
+          {hotTake && (
+            <div className={`hot-take hot-take-${hotTake.cls}`}>
+              {hotTake.emoji} {hotTake.text}
+            </div>
+          )}
           <div className="rate-summary">
             <div className="rate-stat">
               <div className="rate-stat-num">{myRating}/10</div>
@@ -1273,6 +1309,20 @@ function VibeCheck({ albumKey }) {
             <span>
               Top Vibe: <strong>{topVibeData.label}</strong> — {topVibePct}%
             </span>
+          </div>
+        )}
+        {submitted && results?.distribution && results.total > 0 && (
+          <div className="vibe-agreement">
+            {selected.map((s) => {
+              const count = results.distribution[s] || 0;
+              const pct = Math.round((count / results.total) * 100);
+              const v = VIBES.find((vb) => vb.label === s);
+              return (
+                <span key={s} className="vibe-agree-item">
+                  {v?.emoji} You and <strong>{pct}%</strong> felt {s}
+                </span>
+              );
+            })}
           </div>
         )}
         <div className="vibe-grid">
