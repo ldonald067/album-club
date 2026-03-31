@@ -10,10 +10,6 @@ npm run dev              # Dev server on localhost:3000
 npm run build            # Production build (must pass before committing)
 ```
 
-## Workflow
-
-After every change: `git add -A && git commit -m "description" && git push`
-
 ## Stack
 
 - **Next.js 15 App Router** — single-page app, server + client components
@@ -29,16 +25,14 @@ app/ForumPage.js      # Client component — all UI, games, retention features
 app/globals.css       # All styling
 app/api/{rate,vibe,guess,stats,playlist,matchup}/  # API routes
 lib/albums.json       # 403 albums (source of truth)
-lib/albums.js         # Seeded shuffle, game logic, VIBES, CAROUSEL_ICONS
-lib/lyrics.json       # ~88 lyric entries for Lyric game
+lib/albums.js         # Seeded shuffle, game logic, matchup pairing
 lib/db.js             # SQLite queries (singleton, prepared statements)
 lib/rate-limit.js     # IP-based rate limiter
-scripts/              # fetch-albums, fetch-covers, fetch-lyrics, fetch-youtube-ids
 ```
 
-## IMPORTANT: Read docs before working on specific areas
+## IMPORTANT: Read docs before starting any task
 
-Before starting any task, identify which docs below are relevant and read them first.
+Identify which docs are relevant and read them first. Load the full context before making changes.
 
 | Task involves...       | Read first            |
 | ---------------------- | --------------------- |
@@ -48,24 +42,8 @@ Before starting any task, identify which docs below are relevant and read them f
 | Album data or imports  | `docs/album-data.md`  |
 | CSS or rendering       | `docs/performance.md` |
 | Build errors or quirks | `docs/gotchas.md`     |
+| Skills or production   | `docs/project.md`     |
 
-## Skills
+## Workflow
 
-- `/add-album` (auto) — add album to rotation with validation
-- `/preview-schedule` (auto) — check upcoming album schedule
-- `/ux-review` (auto) — accessibility + mobile review after UI changes
-- `/api-harden` (auto) — security review after API changes
-- `/perf-check` (auto) — performance review after new features
-- `/deploy` — production build + deploy
-- `/reset-day` — clear today's data for testing
-
-## Production
-
-- **Live site**: https://littlealbumclub.net (Railway, auto-deploys on `git push`)
-- **Analytics**: https://littlealbumclub.goatcounter.com (GoatCounter, script in `layout.js`)
-- **Contact**: rainbowpudding@littlealbumclub.net (mailto link in footer)
-
-## Repository
-
-GitHub: https://github.com/ldonald067/album-club (public)
-Git config: user `ldonald067`, email `ldonald067@users.noreply.github.com`
+After every change: `git add -A && git commit -m "description" && git push`
