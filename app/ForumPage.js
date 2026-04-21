@@ -4342,7 +4342,7 @@ export default function ForumPage({ album, dateString }) {
             {
               key: "agent",
               icon: "hn hn-headphones",
-              label: "Listening Booth",
+              label: "Chat Booth",
             },
             { key: "archive", icon: "hn hn-calender", label: "Archive" },
             { key: "stats", icon: "hn hn-trending", label: "Stats" },
