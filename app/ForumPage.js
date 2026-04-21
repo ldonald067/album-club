@@ -170,7 +170,7 @@ function getInitialChatMessages(album) {
       role: "assistant",
       content: `Pull up a chair. Ask me about ${album.title}, soundtrack cousins, pop culture side quests, or what to queue up when this one ends.`,
       citations: [],
-      provider: "ollama",
+      provider: null,
       usedTools: {},
     },
   ];
@@ -372,6 +372,29 @@ function normalizeAgentProvider(provider) {
   return provider === "openai" || provider === "ollama" ? provider : null;
 }
 
+const DEFAULT_CHAT_STATUS = {
+  ready: false,
+  available: true,
+  provider: null,
+  enabledTools: {},
+  reason: "",
+};
+
+function normalizeChatStatus(status) {
+  const available = status?.available !== false;
+
+  return {
+    ready: true,
+    available,
+    provider: normalizeAgentProvider(status?.provider),
+    enabledTools: normalizeAgentUsedTools(status?.enabledTools),
+    reason:
+      !available && typeof status?.reason === "string"
+        ? status.reason.trim().slice(0, 280)
+        : "",
+  };
+}
+
 function createAssistantChatMessage(data) {
   return {
     role: "assistant",
@@ -441,6 +464,7 @@ function CultureChatAgent({ album }) {
   const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [chatStatus, setChatStatus] = useState(DEFAULT_CHAT_STATUS);
   const [storageReady, setStorageReady] = useState(false);
   const [profileReady, setProfileReady] = useState(false);
   const transcriptRef = useRef(null);
@@ -456,6 +480,35 @@ function CultureChatAgent({ album }) {
     () => getChatPersona("user", safeProfile),
     [safeProfile],
   );
+  const chatUnavailable = chatStatus.ready && !chatStatus.available;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadChatStatus() {
+      try {
+        const response = await fetch("/api/chat", {
+          method: "GET",
+          cache: "no-store",
+        });
+        const data = await response.json().catch(() => null);
+
+        if (cancelled || typeof data?.available !== "boolean") {
+          return;
+        }
+
+        setChatStatus(normalizeChatStatus(data));
+      } catch (err) {
+        reportRecoverableClientIssue("Failed to load chat status", err);
+      }
+    }
+
+    loadChatStatus();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     setMessages(getStoredChatMessages(chatStorageKey, initialMessages));
@@ -491,6 +544,13 @@ function CultureChatAgent({ album }) {
   async function sendMessage(presetText) {
     const text = (presetText || draft).trim().slice(0, CHAT_MAX_CHARS);
     if (!text || loading) return;
+    if (chatUnavailable) {
+      setError(
+        chatStatus.reason ||
+          "Chat Booth is unavailable on this deployment right now.",
+      );
+      return;
+    }
     if (!handleModeration.ok) {
       setError(handleModeration.reason);
       return;
@@ -545,6 +605,12 @@ function CultureChatAgent({ album }) {
           Drop a take, ask for a comp, or start a tiny tasteful war about the
           best soundtrack needle drop.
         </p>
+        {chatUnavailable && (
+          <div className="agent-status-note" role="status">
+            {chatStatus.reason ||
+              "Chat Booth is offline on this deployment right now."}
+          </div>
+        )}
 
         <div className="agent-roster" aria-label="Thread regulars">
           {[
@@ -641,7 +707,7 @@ function CultureChatAgent({ album }) {
               type="button"
               className="agent-chip"
               onClick={() => sendMessage(prompt)}
-              disabled={loading || !handleModeration.ok}
+              disabled={loading || chatUnavailable || !handleModeration.ok}
             >
               {prompt}
             </button>
@@ -765,10 +831,26 @@ function CultureChatAgent({ album }) {
                 <div className="agent-message-text agent-thinking">
                   <p>{CHAT_LOADING_COPY}</p>
                 </div>
-                <div className="agent-tool-row" aria-label="Available tools">
-                  <span className="agent-tool-pill">Local model</span>
-                  <span className="agent-tool-pill">Checking crates</span>
-                </div>
+                {(chatStatus.provider ||
+                  chatStatus.enabledTools.files ||
+                  chatStatus.enabledTools.web) && (
+                  <div className="agent-tool-row" aria-label="Available tools">
+                    {chatStatus.provider === "ollama" && (
+                      <span className="agent-tool-pill">Local model</span>
+                    )}
+                    {chatStatus.provider === "openai" && (
+                      <span className="agent-tool-pill">Hosted model</span>
+                    )}
+                    {chatStatus.enabledTools.files && (
+                      <span className="agent-tool-pill">
+                        Checking the crates
+                      </span>
+                    )}
+                    {chatStatus.enabledTools.web && (
+                      <span className="agent-tool-pill">Searching the web</span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -796,7 +878,12 @@ function CultureChatAgent({ album }) {
             value={draft}
             maxLength={CHAT_MAX_CHARS}
             rows={3}
-            placeholder="Ask about samples, scenes, lore, recs, boss-fight music..."
+            placeholder={
+              chatUnavailable
+                ? "Chat Booth is offline on this deployment right now."
+                : "Ask about samples, scenes, lore, recs, boss-fight music..."
+            }
+            disabled={chatUnavailable}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
@@ -812,7 +899,12 @@ function CultureChatAgent({ album }) {
             <button
               type="submit"
               className="btn-submit"
-              disabled={loading || !draft.trim() || !handleModeration.ok}
+              disabled={
+                loading ||
+                chatUnavailable ||
+                !draft.trim() ||
+                !handleModeration.ok
+              }
             >
               {loading ? "Posting..." : "Post Reply"}
             </button>

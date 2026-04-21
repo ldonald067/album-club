@@ -572,6 +572,18 @@ body {
   margin-bottom: 12px;
 }
 
+.agent-status-note {
+  background: #fff7d8;
+  border: 1px solid #d9c878;
+  border-radius: 6px;
+  color: #6a5a12;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1.45;
+  margin-bottom: 12px;
+  padding: 9px 10px;
+}
+
 .agent-roster {
   display: grid;
   gap: 8px;

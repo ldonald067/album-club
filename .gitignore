@@ -5,3 +5,5 @@ data/
 .env.local
 .codex-devserver.out.log
 .codex-devserver.err.log
+.codex-devserver.stdout.log
+.codex-devserver.stderr.log
