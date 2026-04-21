@@ -10,6 +10,8 @@
 
 :root {
   --bg-page: #e8e0d0;
+  --bg-main: #fff;
+  --bg-dark: #1a1a2e;
   --bg-panel: #fefcf5;
   --bg-panel-alt: #f9f5ea;
   --bg-sidebar: #f5f0e3;
@@ -38,6 +40,7 @@ body {
   font-size: 12px;
   color: var(--text-primary);
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 /* Banner */
@@ -186,6 +189,7 @@ body {
   padding: 5px 10px;
   margin-bottom: 15px;
   border-radius: 3px;
+  contain: paint;
   overflow: hidden;
   font-size: 11px;
   color: #554a2e;
@@ -783,8 +787,10 @@ body {
   gap: 10px;
   max-height: 420px;
   min-height: 260px;
+  overscroll-behavior: contain;
   overflow-y: auto;
   padding: 12px;
+  scrollbar-gutter: stable;
 }
 
 .agent-message {
@@ -1523,6 +1529,7 @@ body {
 
 .guess-input-container {
   flex: 1;
+  min-width: 0;
   position: relative;
 }
 
@@ -1532,12 +1539,14 @@ body {
   left: 0;
   right: 0;
   max-height: 200px;
+  overscroll-behavior: contain;
   overflow-y: auto;
   background: #fff;
   border: 1px solid #ccc;
   border-top: none;
   border-radius: 0 0 3px 3px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  scrollbar-gutter: stable;
   z-index: 10;
 }
 
@@ -1674,9 +1683,11 @@ body {
   letter-spacing: 4px;
   color: var(--gold);
   background: var(--bg-dark);
+  overflow-wrap: anywhere;
   padding: 18px;
   border-radius: 6px;
   margin: 12px 0;
+  word-break: break-word;
   text-transform: uppercase;
 }
 
@@ -1768,6 +1779,7 @@ body {
 
 /* ─── Album Cover Carousel ─── */
 .carousel-strip {
+  contain: paint;
   overflow: hidden;
   margin-bottom: 15px;
   padding: 8px 0;
@@ -2007,12 +2019,17 @@ body {
 
 /* ─── Reduced motion ─── */
 @media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+    transition-delay: 0s !important;
+    transition-duration: 0s !important;
   }
 }
 
@@ -2239,13 +2256,22 @@ body {
   .nav-item {
     padding: 8px 8px;
     font-size: 10px;
-    min-height: 36px;
+    min-height: 40px;
     display: inline-flex;
     align-items: center;
   }
 
   .btn-submit {
-    min-height: 40px;
+    min-height: 44px;
+  }
+
+  .guess-input-wrap {
+    flex-direction: column;
+  }
+
+  .guess-input-wrap .btn-submit,
+  .guess-input-wrap .guess-input-container {
+    width: 100%;
   }
 
   .star-lg {
@@ -2308,6 +2334,12 @@ body {
     align-items: stretch;
     flex-direction: column;
   }
+
+  .scramble-display {
+    font-size: 22px;
+    letter-spacing: 2px;
+    padding: 14px 10px;
+  }
 }
 
 @media (max-width: 400px) {
@@ -2319,6 +2351,57 @@ body {
   .banner-est {
     font-size: 9px;
     letter-spacing: 2px;
+  }
+
+  .scramble-display {
+    font-size: 18px;
+    letter-spacing: 1px;
+  }
+}
+
+@media (hover: none) {
+  .nav-item:hover {
+    background: none;
+    color: #8cb4d8;
+  }
+
+  .nav-item.active:hover {
+    background: rgba(201, 162, 39, 0.3);
+    color: #fff;
+  }
+
+  .album-cover-wrap:hover .album-cover {
+    transform: none;
+  }
+
+  .album-cover-wrap:hover .vinyl-disc {
+    animation: none;
+  }
+
+  .listen-btn:hover,
+  .btn-submit:not(:disabled):hover,
+  .playlist-btn:not(:disabled):hover,
+  .versus-btn:not(:disabled):hover,
+  .taste-play-btn:not(:disabled):hover,
+  .bingo-mini:hover {
+    opacity: 1;
+  }
+
+  .agent-avatar-option:hover,
+  .agent-chip:hover:not(:disabled),
+  .agent-citation-link:hover {
+    box-shadow: none;
+    transform: none;
+  }
+
+  .star-lg:hover,
+  .vibe-btn:not(:disabled):hover .vibe-pixel-icon,
+  .carousel-item:hover {
+    transform: none;
+  }
+
+  .carousel-icon:hover img {
+    opacity: 0.7;
   }
 }
 
