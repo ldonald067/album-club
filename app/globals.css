@@ -2227,6 +2227,12 @@ body {
 
 /* ─── Responsive ─── */
 @media (max-width: 600px) {
+  .nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    justify-content: stretch;
+  }
+
   .banner-title {
     font-size: 22px;
   }
@@ -2259,6 +2265,9 @@ body {
     min-height: 40px;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    min-width: 0;
+    text-align: center;
   }
 
   .btn-submit {
