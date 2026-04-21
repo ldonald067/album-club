@@ -9,13 +9,15 @@
     "fetch-albums": "node scripts/fetch-albums.mjs",
     "fetch-covers": "node scripts/fetch-covers.mjs",
     "fetch-lyrics": "node scripts/fetch-lyrics.mjs",
-    "fetch-youtube-ids": "node scripts/fetch-youtube-ids.mjs"
+    "fetch-youtube-ids": "node scripts/fetch-youtube-ids.mjs",
+    "sync-crate-digger-knowledge": "node scripts/sync-crate-digger-knowledge.mjs"
   },
   "dependencies": {
     "@hackernoon/pixel-icon-library": "^1.0.6",
     "better-sqlite3": "^11.7.0",
     "canvas-confetti": "^1.9.4",
     "next": "^15.1.0",
+    "openai": "^6.34.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

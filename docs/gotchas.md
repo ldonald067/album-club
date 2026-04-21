@@ -5,7 +5,7 @@
 - **`allowedDevOrigins`** in `next.config.mjs`: Required to suppress "Cross origin request detected" warnings when dev server runs on `127.0.0.1` vs `localhost`
 - **Stale `.next` cache**: If you see `Cannot find module` or EBUSY errors (especially on OneDrive-synced folders), delete `.next/` and restart: `rm -rf .next && npm run dev`
 - **Path alias**: `@/*` maps to project root via `jsconfig.json`
-- **Build output target**: <55 kB page JS. Currently 51.9 kB + 102 kB shared = 154 kB First Load
+- **Build output target**: <55 kB page JS. Currently 55.1 kB + 102 kB shared = 157 kB First Load
 
 ## React / Hydration
 

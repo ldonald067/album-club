@@ -109,3 +109,15 @@ Shows tomorrow's album emoji + genre + decade (e.g., `🎷 Tomorrow's Album — 
 - **Milestones**: `aotd_milestones_celebrated` → `[3, 7, 14, ...]`
 - **Session state**: `sessionStorage` for welcome-back dismissal (resets per tab)
 - **Animation guards**: `justRevealed`/`justSubmitted` booleans prevent re-animating on reload
+
+## Chat Agent (`CultureChatAgent`)
+
+Separate Listening Booth nav tab for the Crate Digger chat. The client persists the current tab's transcript in `sessionStorage`, stores the user's chat handle/avatar choice in `localStorage`, sends the latest 8 `{ role, content }` messages to `/api/chat`, and caps user input at 500 characters. Prompt chips call the same submit path as the form.
+
+The chat renders as a little forum thread: Crate Digger and the user each have a pixel avatar/profile row, messages render in paragraph blocks instead of one long slab, and the loading state uses the same post layout. The composer includes lightweight forum formatting hints, and chat posts render simple inline markdown for `**bold**`.
+
+User handles are moderated client-side before posting. The handle field blocks reserved/staff-like names, hateful/abusive handles, and unsupported characters; posting is disabled until the handle passes moderation.
+
+Assistant messages can include `citations`, `usedTools`, and `provider`. Citations render as visible source links below a message; tool pills show `Local model` or `Hosted model`, plus `Checked the crates` and `Searched the web` when relevant.
+
+The route owns today's album context, provider selection, curated knowledge access, and any hosted credentials server-side; the client should not send API keys or trusted album metadata.

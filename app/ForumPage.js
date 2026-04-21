@@ -31,6 +31,82 @@ import {
 const MAX_SUGGESTIONS = 5;
 const SHAKE_MS = 400;
 const COPIED_FEEDBACK_MS = 2000;
+const CHAT_MAX_CHARS = 500;
+const CHAT_HISTORY_LIMIT = 12;
+const CHAT_STORAGE_PREFIX = "aotd_crate_digger_chat";
+const CHAT_PROFILE_STORAGE_KEY = "aotd_crate_digger_profile";
+const CHAT_HANDLE_MAX_CHARS = 24;
+
+const CHAT_SUGGESTIONS = [
+  "What should I listen for?",
+  "Connect this album to games.",
+];
+const CHAT_LOADING_COPY = "Flipping through the crates...";
+const CHAT_AVATAR_OPTIONS = [
+  {
+    id: "retro-mac",
+    label: "Mac",
+    src: "/pixel-icons/computers-devices-electronics-vintage-mac.svg",
+  },
+  {
+    id: "walkman",
+    label: "Walkman",
+    src: "/pixel-icons/music-walkman-cassette.svg",
+  },
+  {
+    id: "arcade",
+    label: "Arcade",
+    src: "/pixel-icons/entertainment-events-hobbies-game-machines-arcade-1.svg",
+  },
+  {
+    id: "cat",
+    label: "Cat",
+    src: "/pixel-icons/pet-animals-cat.svg",
+  },
+];
+const DEFAULT_CHAT_PROFILE = {
+  handle: "Guest Listener",
+  avatarId: CHAT_AVATAR_OPTIONS[0].id,
+};
+const CHAT_ALLOWED_HANDLE_PATTERN = /^[\w .'-]+$/i;
+const CHAT_RESERVED_HANDLE_TOKENS = new Set([
+  "cratedigger",
+  "admin",
+  "administrator",
+  "mod",
+  "moderator",
+  "staff",
+  "official",
+  "system",
+]);
+const CHAT_BLOCKED_HANDLE_TOKENS = [
+  "racist",
+  "sexist",
+  "misogyn",
+  "homophob",
+  "transphob",
+  "antisemit",
+  "bigot",
+  "ableist",
+  "nazi",
+  "kkk",
+  "whitepower",
+  "1488",
+  "kill",
+  "lynch",
+  "rape",
+  "murder",
+  "abuse",
+  "slur",
+  "hate",
+];
+const CHAT_PERSONAS = {
+  assistant: {
+    name: "Crate Digger",
+    flair: "Forum Regular",
+    avatarSrc: "/pixel-icons/music-headphones-human.svg",
+  },
+};
 
 /* ─── Pre-lowercased album search index (avoids repeated toLowerCase per keystroke) ─── */
 const ALBUM_SEARCH = ALBUMS.map((a) => ({
@@ -87,6 +163,650 @@ function ShareResultButton({ getText, label = "📋 Share Results" }) {
 }
 
 /** Guess history list — shows previous guesses with ✅/❌ */
+/** Crate Digger chat agent */
+function getInitialChatMessages(album) {
+  return [
+    {
+      role: "assistant",
+      content: `Pull up a chair. Ask me about ${album.title}, soundtrack cousins, pop culture side quests, or what to queue up when this one ends.`,
+      citations: [],
+      provider: "ollama",
+      usedTools: {},
+    },
+  ];
+}
+
+function normalizeChatHandle(value) {
+  return String(value || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, CHAT_HANDLE_MAX_CHARS);
+}
+
+function getChatAvatarOption(avatarId) {
+  return (
+    CHAT_AVATAR_OPTIONS.find((option) => option.id === avatarId) ||
+    CHAT_AVATAR_OPTIONS[0]
+  );
+}
+
+function normalizeChatProfile(rawProfile) {
+  if (!rawProfile || typeof rawProfile !== "object") {
+    return DEFAULT_CHAT_PROFILE;
+  }
+
+  return {
+    handle:
+      normalizeChatHandle(rawProfile.handle) || DEFAULT_CHAT_PROFILE.handle,
+    avatarId: getChatAvatarOption(rawProfile.avatarId).id,
+  };
+}
+
+function moderateChatHandle(value) {
+  const normalized = normalizeChatHandle(value);
+  const compact = normalized.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+  if (!normalized) {
+    return {
+      ok: false,
+      value: DEFAULT_CHAT_PROFILE.handle,
+      reason: "Pick a handle first.",
+    };
+  }
+
+  if (normalized.length < 3) {
+    return {
+      ok: false,
+      value: normalized,
+      reason: "Use at least 3 characters.",
+    };
+  }
+
+  if (!CHAT_ALLOWED_HANDLE_PATTERN.test(normalized)) {
+    return {
+      ok: false,
+      value: normalized,
+      reason: "Use letters, numbers, spaces, periods, apostrophes, underscores, or hyphens.",
+    };
+  }
+
+  if (CHAT_RESERVED_HANDLE_TOKENS.has(compact)) {
+    return {
+      ok: false,
+      value: normalized,
+      reason: "That looks like staff impersonation.",
+    };
+  }
+
+  if (CHAT_BLOCKED_HANDLE_TOKENS.some((token) => compact.includes(token))) {
+    return {
+      ok: false,
+      value: normalized,
+      reason: "Pick a handle without slurs or hate.",
+    };
+  }
+
+  return { ok: true, value: normalized, reason: "" };
+}
+
+function getChatPersona(role, profile = DEFAULT_CHAT_PROFILE) {
+  if (role === "assistant") {
+    return CHAT_PERSONAS.assistant;
+  }
+
+  const currentProfile = normalizeChatProfile(profile);
+  const avatar = getChatAvatarOption(currentProfile.avatarId);
+
+  return {
+    name: currentProfile.handle,
+    flair: "Guest Listener",
+    avatarSrc: avatar.src,
+  };
+}
+
+function getAgentMessageParagraphs(content) {
+  const paragraphs = String(content)
+    .split(/\n{2,}/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
+  return paragraphs.length > 0 ? paragraphs : [String(content).trim()];
+}
+
+const INLINE_MARKDOWN_PATTERN = /(\*\*[^*]+\*\*)/g;
+
+function renderAgentInlineMarkdown(text, keyPrefix) {
+  const nodes = [];
+  let lastIndex = 0;
+  let match;
+  let partIndex = 0;
+  INLINE_MARKDOWN_PATTERN.lastIndex = 0;
+
+  while ((match = INLINE_MARKDOWN_PATTERN.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      nodes.push(
+        <React.Fragment key={`${keyPrefix}-text-${partIndex++}`}>
+          {text.slice(lastIndex, match.index)}
+        </React.Fragment>,
+      );
+    }
+
+    const token = match[0];
+    nodes.push(
+      <strong key={`${keyPrefix}-bold-${partIndex++}`}>
+        {token.slice(2, -2)}
+      </strong>,
+    );
+
+    lastIndex = match.index + token.length;
+  }
+
+  if (lastIndex < text.length) {
+    nodes.push(
+      <React.Fragment key={`${keyPrefix}-text-${partIndex++}`}>
+        {text.slice(lastIndex)}
+      </React.Fragment>,
+    );
+  }
+
+  return nodes.length > 0 ? nodes : [text];
+}
+
+function getSafeAgentCitationUrl(url) {
+  if (typeof url !== "string") return null;
+  if (url.startsWith("https://") || url.startsWith("http://")) return url;
+  if (url.startsWith("/agent-knowledge/")) return url;
+  return null;
+}
+
+function normalizeStoredChatMessages(rawMessages) {
+  if (!Array.isArray(rawMessages)) return null;
+
+  const normalized = rawMessages
+    .map((message) => {
+      if (!message || !["assistant", "user"].includes(message.role)) {
+        return null;
+      }
+      if (typeof message.content !== "string" || !message.content.trim()) {
+        return null;
+      }
+
+      const citations = Array.isArray(message.citations)
+        ? message.citations
+            .map((citation) => ({
+              title:
+                typeof citation.title === "string"
+                  ? citation.title.slice(0, 120)
+                  : "Source",
+              url: getSafeAgentCitationUrl(citation.url)?.slice(0, 400) || null,
+              type: citation.type === "file" ? "file" : "web",
+            }))
+            .slice(0, 6)
+        : [];
+
+      return {
+        role: message.role,
+        content: message.content.slice(0, 1800),
+        citations,
+        usedTools:
+          message.usedTools && typeof message.usedTools === "object"
+            ? {
+                web: message.usedTools.web === true,
+                files: message.usedTools.files === true,
+              }
+            : {},
+        provider:
+          message.provider === "openai" || message.provider === "ollama"
+            ? message.provider
+            : null,
+      };
+    })
+    .filter(Boolean);
+
+  return normalized.length > 0 ? normalized.slice(-CHAT_HISTORY_LIMIT) : null;
+}
+
+function CultureChatAgent({ album }) {
+  const initialMessages = useMemo(() => getInitialChatMessages(album), [album]);
+  const chatStorageKey = useMemo(
+    () => `${CHAT_STORAGE_PREFIX}_${album.key || album.title}`,
+    [album],
+  );
+  const [messages, setMessages] = useState(initialMessages);
+  const [profile, setProfile] = useState(DEFAULT_CHAT_PROFILE);
+  const [draft, setDraft] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [storageReady, setStorageReady] = useState(false);
+  const transcriptRef = useRef(null);
+  const handleModeration = useMemo(
+    () => moderateChatHandle(profile.handle),
+    [profile.handle],
+  );
+  const activeProfile = useMemo(
+    () => ({
+      ...profile,
+      handle: handleModeration.ok
+        ? handleModeration.value
+        : DEFAULT_CHAT_PROFILE.handle,
+    }),
+    [handleModeration, profile],
+  );
+  const userPersona = useMemo(
+    () => getChatPersona("user", activeProfile),
+    [activeProfile],
+  );
+
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem(chatStorageKey);
+      const parsed = stored ? JSON.parse(stored) : null;
+      setMessages(normalizeStoredChatMessages(parsed) || initialMessages);
+    } catch {
+      setMessages(initialMessages);
+    } finally {
+      setStorageReady(true);
+    }
+  }, [chatStorageKey, initialMessages]);
+
+  useEffect(() => {
+    try {
+      const storedProfile = localStorage.getItem(CHAT_PROFILE_STORAGE_KEY);
+      const parsedProfile = storedProfile ? JSON.parse(storedProfile) : null;
+      setProfile(normalizeChatProfile(parsedProfile));
+    } catch {
+      setProfile(DEFAULT_CHAT_PROFILE);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!storageReady) return;
+    try {
+      sessionStorage.setItem(
+        chatStorageKey,
+        JSON.stringify(messages.slice(-CHAT_HISTORY_LIMIT)),
+      );
+    } catch {}
+  }, [chatStorageKey, messages, storageReady]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        CHAT_PROFILE_STORAGE_KEY,
+        JSON.stringify({
+          ...profile,
+          handle: handleModeration.ok
+            ? handleModeration.value
+            : DEFAULT_CHAT_PROFILE.handle,
+        }),
+      );
+    } catch {}
+  }, [handleModeration, profile]);
+
+  useEffect(() => {
+    const transcript = transcriptRef.current;
+    if (transcript) {
+      transcript.scrollTop = transcript.scrollHeight;
+    }
+  }, [messages, loading]);
+
+  async function sendMessage(presetText) {
+    const text = (presetText || draft).trim().slice(0, CHAT_MAX_CHARS);
+    if (!text || loading) return;
+    if (!handleModeration.ok) {
+      setError(handleModeration.reason);
+      return;
+    }
+
+    const userMessage = { role: "user", content: text };
+    const nextMessages = [...messages, userMessage].slice(-8);
+    const outboundMessages = nextMessages.map(({ role, content }) => ({
+      role,
+      content,
+    }));
+
+    setMessages(nextMessages);
+    setDraft("");
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: outboundMessages }),
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.error || "The chat agent hit static.");
+      }
+
+      setMessages((current) => [
+        ...current,
+        {
+          role: "assistant",
+          content:
+            typeof data.reply === "string"
+              ? data.reply
+              : "I lost the thread for a second. Try that one more time?",
+          citations: Array.isArray(data.citations)
+            ? data.citations
+                .map((citation) => ({
+                  ...citation,
+                  url: getSafeAgentCitationUrl(citation.url),
+                }))
+                .slice(0, 6)
+            : [],
+          provider:
+            data.provider === "openai" || data.provider === "ollama"
+              ? data.provider
+              : null,
+          usedTools:
+            data.usedTools && typeof data.usedTools === "object"
+              ? data.usedTools
+              : {},
+        },
+      ]);
+    } catch (err) {
+      setError(err.message || "The chat agent is offline right now.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="panel chat-agent-panel">
+      <div className="panel-header">
+        <span>
+          <i className="hn hn-headphones" aria-hidden="true" /> CRATE DIGGER
+          CHAT
+        </span>
+        <span className="panel-header-note">Music / culture / games</span>
+      </div>
+      <div className="panel-body">
+        <p className="agent-intro">
+          Drop a take, ask for a comp, or start a tiny tasteful war about the
+          best soundtrack needle drop.
+        </p>
+
+        <div className="agent-roster" aria-label="Thread regulars">
+          {[
+            { role: "assistant", persona: CHAT_PERSONAS.assistant },
+            { role: "user", persona: userPersona },
+          ].map(({ role, persona }) => (
+            <div key={role} className={`agent-profile ${role}`}>
+              <div className={`agent-avatar-shell ${role}`}>
+                <img
+                  className="agent-avatar"
+                  src={persona.avatarSrc}
+                  alt=""
+                  aria-hidden="true"
+                />
+              </div>
+              <div className="agent-profile-copy">
+                <div className="agent-profile-header">
+                  <span className="agent-profile-name">{persona.name}</span>
+                  <span className="agent-profile-flair">{persona.flair}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="agent-identity-panel">
+          <div className="agent-identity-row">
+            <label className="agent-identity-label" htmlFor="agent-handle">
+              Posting as
+            </label>
+            <input
+              id="agent-handle"
+              className="form-input agent-handle-input"
+              type="text"
+              value={profile.handle}
+              maxLength={CHAT_HANDLE_MAX_CHARS}
+              aria-invalid={!handleModeration.ok}
+              onChange={(e) =>
+                {
+                  setError("");
+                  setProfile((current) => ({
+                    ...current,
+                    handle:
+                      normalizeChatHandle(e.target.value) ||
+                      DEFAULT_CHAT_PROFILE.handle,
+                  }));
+                }
+              }
+            />
+          </div>
+          {!handleModeration.ok && (
+            <div className="agent-moderation-note" role="status">
+              {handleModeration.reason}
+            </div>
+          )}
+          <div className="agent-avatar-picker" aria-label="Choose your avatar">
+            {CHAT_AVATAR_OPTIONS.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                className={`agent-avatar-option${
+                  profile.avatarId === option.id ? " active" : ""
+                }`}
+                aria-pressed={profile.avatarId === option.id}
+                onClick={() => {
+                  setError("");
+                  setProfile((current) => ({
+                    ...current,
+                    avatarId: option.id,
+                  }));
+                }}
+              >
+                <span className="agent-avatar-shell user">
+                  <img
+                    className="agent-avatar"
+                    src={option.src}
+                    alt=""
+                    aria-hidden="true"
+                  />
+                </span>
+                <span className="agent-avatar-option-label">{option.label}</span>
+              </button>
+            ))}
+          </div>
+          <div className="agent-format-note">
+            Formatting: <strong>**bold**</strong>
+          </div>
+        </div>
+
+        <div className="agent-suggestions" aria-label="Prompt ideas">
+          {CHAT_SUGGESTIONS.map((prompt) => (
+            <button
+              key={prompt}
+              type="button"
+              className="agent-chip"
+              onClick={() => sendMessage(prompt)}
+              disabled={loading || !handleModeration.ok}
+            >
+              {prompt}
+            </button>
+          ))}
+        </div>
+
+        <div
+          className="agent-transcript"
+          ref={transcriptRef}
+          aria-live="polite"
+        >
+          {messages.map((message, index) => {
+            const persona = getChatPersona(message.role, activeProfile);
+
+            return (
+              <div
+                key={`${message.role}-${index}`}
+                className={`agent-message ${message.role}`}
+              >
+                <div className={`agent-avatar-shell ${message.role}`}>
+                  <img
+                    className="agent-avatar"
+                    src={persona.avatarSrc}
+                    alt=""
+                    aria-hidden="true"
+                  />
+                </div>
+                <div className="agent-post">
+                  <div className="agent-message-meta">
+                    <div className="agent-message-label">{persona.name}</div>
+                    <div className="agent-message-flair">{persona.flair}</div>
+                  </div>
+                  <div className="agent-message-text">
+                    {getAgentMessageParagraphs(message.content).map(
+                      (paragraph, paragraphIndex) => (
+                        <p key={paragraphIndex}>
+                          {renderAgentInlineMarkdown(
+                            paragraph,
+                            `${message.role}-${index}-${paragraphIndex}`,
+                          )}
+                        </p>
+                      ),
+                    )}
+                  </div>
+                  {(message.provider ||
+                    (message.usedTools &&
+                      (message.usedTools.web || message.usedTools.files))) && (
+                    <div className="agent-tool-row" aria-label="Tools used">
+                      {message.provider === "ollama" && (
+                        <span className="agent-tool-pill">Local model</span>
+                      )}
+                      {message.provider === "openai" && (
+                        <span className="agent-tool-pill">Hosted model</span>
+                      )}
+                      {message.usedTools.files && (
+                        <span className="agent-tool-pill">
+                          Checked the crates
+                        </span>
+                      )}
+                      {message.usedTools.web && (
+                        <span className="agent-tool-pill">Searched the web</span>
+                      )}
+                    </div>
+                  )}
+                  {message.citations && message.citations.length > 0 && (
+                    <div className="agent-citations">
+                      <span className="agent-citations-label">Sources:</span>
+                      {message.citations.map((citation, citationIndex) =>
+                        citation.url ? (
+                          <a
+                            key={`${citation.url}-${citationIndex}`}
+                            className="agent-citation-link"
+                            href={citation.url}
+                            target={
+                              citation.url.startsWith("http")
+                                ? "_blank"
+                                : undefined
+                            }
+                            rel={
+                              citation.url.startsWith("http")
+                                ? "noopener noreferrer"
+                                : undefined
+                            }
+                          >
+                            {citation.title || "Source"}
+                          </a>
+                        ) : (
+                          <span
+                            key={`${citation.title}-${citationIndex}`}
+                            className="agent-citation-link as-text"
+                          >
+                            {citation.title || "Source"}
+                          </span>
+                        ),
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+          {loading && (
+            <div className="agent-message assistant">
+              <div className="agent-avatar-shell assistant">
+                <img
+                  className="agent-avatar"
+                  src={CHAT_PERSONAS.assistant.avatarSrc}
+                  alt=""
+                  aria-hidden="true"
+                />
+              </div>
+              <div className="agent-post">
+                <div className="agent-message-meta">
+                  <div className="agent-message-label">
+                    {CHAT_PERSONAS.assistant.name}
+                  </div>
+                  <div className="agent-message-flair">
+                    {CHAT_PERSONAS.assistant.flair}
+                  </div>
+                </div>
+                <div className="agent-message-text agent-thinking">
+                  <p>{CHAT_LOADING_COPY}</p>
+                </div>
+                <div className="agent-tool-row" aria-label="Available tools">
+                  <span className="agent-tool-pill">Local model</span>
+                  <span className="agent-tool-pill">Checking crates</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {error && (
+          <div className="submit-error" role="alert">
+            {error}
+          </div>
+        )}
+
+        <form
+          className="agent-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            sendMessage();
+          }}
+        >
+          <label className="sr-only" htmlFor="agent-message">
+            Message Crate Digger
+          </label>
+          <textarea
+            id="agent-message"
+            className="form-input agent-input"
+            value={draft}
+            maxLength={CHAT_MAX_CHARS}
+            rows={3}
+            placeholder="Ask about samples, scenes, lore, recs, boss-fight music..."
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+              }
+            }}
+          />
+          <div className="agent-form-footer">
+            <span className="agent-count">
+              {draft.length}/{CHAT_MAX_CHARS}
+            </span>
+            <button
+              type="submit"
+              className="btn-submit"
+              disabled={loading || !draft.trim() || !handleModeration.ok}
+            >
+              {loading ? "Posting..." : "Post Reply"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+/** Guess history list */
 function GuessHistory({ guesses, checkFn }) {
   return (
     <div className="guess-history">
@@ -3619,6 +4339,11 @@ export default function ForumPage({ album, dateString }) {
         <nav className="nav">
           {[
             { key: "home", icon: "hn hn-home", label: "Home" },
+            {
+              key: "agent",
+              icon: "hn hn-headphones",
+              label: "Listening Booth",
+            },
             { key: "archive", icon: "hn hn-calender", label: "Archive" },
             { key: "stats", icon: "hn hn-trending", label: "Stats" },
             { key: "bingo", icon: "hn hn-star", label: "Bingo" },
@@ -4017,6 +4742,7 @@ export default function ForumPage({ album, dateString }) {
         )}
 
         {activeSection === "archive" && <ArchiveSection />}
+        {activeSection === "agent" && <CultureChatAgent album={album} />}
         {activeSection === "stats" && <StatsSection />}
         {activeSection === "bingo" && <BingoSection />}
         {activeSection === "faq" && <FAQSection />}

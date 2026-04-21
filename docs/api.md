@@ -9,7 +9,7 @@ Two layers of protection, both using in-memory Maps:
 - **IP resolution**: `getRealIp()` prefers `x-real-ip` (set by Vercel/Netlify, not spoofable), falls back to `x-forwarded-for`
 - **Cleanup**: Deterministic `setInterval` every 60s purges stale entries from both maps. Additionally, probabilistic cleanup (~1% of requests) and size-based cleanup (>1000 IPs) run inline
 - **Date validation**: `isValidDateKey()` validates `YYYY-MM-DD` format, real calendar date, not in the future
-- All POST routes reject `content-length > 1024`
+- Vote/game POST routes reject bodies over 1024 characters. `/api/chat` allows 4096 characters so it can carry short conversation context.
 
 ## Database (`lib/db.js`)
 
@@ -54,3 +54,19 @@ Shared endpoint for Album vs Album and Blind Taste Test. `?type=` param: `versus
 ### GET `/api/stats`
 
 Aggregate site statistics (total ratings, avg rating, albums rated, top vibes, puzzle stats). 5-minute double cache (route + db layer).
+
+### POST `/api/chat`
+
+Server-only Crate Digger chat route with provider switching.
+
+Body: `{ messages }` where `messages` is an array of recent `{ role, content }` items. Roles are limited to `"user"` and `"assistant"`, the route keeps the last 8 messages, each message is capped at 700 characters, and total body size is capped at 4096 characters.
+
+Response: `{ reply, citations, usedTools, enabledTools, provider }`. `citations` contains web URLs or local knowledge-pack URLs, `usedTools` marks whether web search or knowledge-pack lookup actually ran, and `provider` is `"ollama"` or `"openai"`.
+
+Rate limits: 12 requests/minute and 25 requests/day per IP via the shared in-memory limiter. The route adds today's album context server-side and does not trust client-provided album metadata.
+
+Safety behavior: the route returns a brief boundary reply for requests that try to generate or endorse hateful content (for example racist or sexist jokes/insults). The agent prompt also tells Crate Digger to acknowledge that it is a model, not a person, and to admit uncertainty instead of pretending it knows everything.
+
+Default provider: local Ollama (`CRATE_DIGGER_PROVIDER=ollama`, `OLLAMA_MODEL=gemma3:4b`, `OLLAMA_HOST=http://127.0.0.1:11434`). In Ollama mode, the route uses the local knowledge pack from `public/agent-knowledge/*.md` and does not perform live web search.
+
+Optional hosted provider: OpenAI (`CRATE_DIGGER_PROVIDER=openai`). In OpenAI mode, web search is available with `tool_choice: "auto"`, and file search is added when `OPENAI_VECTOR_STORE_ID` exists. Run `npm run sync-crate-digger-knowledge` with `OPENAI_API_KEY` to create/refresh the vector store.
