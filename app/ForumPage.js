@@ -318,6 +318,73 @@ function getSafeAgentCitationUrl(url) {
   return null;
 }
 
+function reportRecoverableClientIssue(context, error) {
+  if (process.env.NODE_ENV !== "production") {
+    console.warn(`[ForumPage] ${context}`, error);
+  }
+}
+
+function readStoredJson(storage, key) {
+  try {
+    const raw = storage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch (error) {
+    reportRecoverableClientIssue(`Failed to read "${key}"`, error);
+    return null;
+  }
+}
+
+function writeStoredJson(storage, key, value) {
+  try {
+    storage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch (error) {
+    reportRecoverableClientIssue(`Failed to write "${key}"`, error);
+    return false;
+  }
+}
+
+function normalizeAgentCitations(citations) {
+  return Array.isArray(citations)
+    ? citations
+        .map((citation) => ({
+          title:
+            typeof citation.title === "string"
+              ? citation.title.slice(0, 120)
+              : "Source",
+          url: getSafeAgentCitationUrl(citation.url)?.slice(0, 400) || null,
+          type: citation.type === "file" ? "file" : "web",
+        }))
+        .slice(0, 6)
+    : [];
+}
+
+function normalizeAgentUsedTools(usedTools) {
+  return usedTools && typeof usedTools === "object"
+    ? {
+        web: usedTools.web === true,
+        files: usedTools.files === true,
+      }
+    : {};
+}
+
+function normalizeAgentProvider(provider) {
+  return provider === "openai" || provider === "ollama" ? provider : null;
+}
+
+function createAssistantChatMessage(data) {
+  return {
+    role: "assistant",
+    content:
+      typeof data?.reply === "string"
+        ? data.reply
+        : "I lost the thread for a second. Try that one more time?",
+    citations: normalizeAgentCitations(data?.citations),
+    provider: normalizeAgentProvider(data?.provider),
+    usedTools: normalizeAgentUsedTools(data?.usedTools),
+  };
+}
+
 function normalizeStoredChatMessages(rawMessages) {
   if (!Array.isArray(rawMessages)) return null;
 
@@ -330,39 +397,37 @@ function normalizeStoredChatMessages(rawMessages) {
         return null;
       }
 
-      const citations = Array.isArray(message.citations)
-        ? message.citations
-            .map((citation) => ({
-              title:
-                typeof citation.title === "string"
-                  ? citation.title.slice(0, 120)
-                  : "Source",
-              url: getSafeAgentCitationUrl(citation.url)?.slice(0, 400) || null,
-              type: citation.type === "file" ? "file" : "web",
-            }))
-            .slice(0, 6)
-        : [];
-
       return {
         role: message.role,
         content: message.content.slice(0, 1800),
-        citations,
-        usedTools:
-          message.usedTools && typeof message.usedTools === "object"
-            ? {
-                web: message.usedTools.web === true,
-                files: message.usedTools.files === true,
-              }
-            : {},
-        provider:
-          message.provider === "openai" || message.provider === "ollama"
-            ? message.provider
-            : null,
+        citations: normalizeAgentCitations(message.citations),
+        usedTools: normalizeAgentUsedTools(message.usedTools),
+        provider: normalizeAgentProvider(message.provider),
       };
     })
     .filter(Boolean);
 
   return normalized.length > 0 ? normalized.slice(-CHAT_HISTORY_LIMIT) : null;
+}
+
+function getStoredChatMessages(chatStorageKey, initialMessages) {
+  const storedMessages = readStoredJson(sessionStorage, chatStorageKey);
+  return normalizeStoredChatMessages(storedMessages) || initialMessages;
+}
+
+function getStoredChatProfile() {
+  return normalizeChatProfile(
+    readStoredJson(localStorage, CHAT_PROFILE_STORAGE_KEY),
+  );
+}
+
+function getSafeChatProfile(profile, handleModeration) {
+  return normalizeChatProfile({
+    ...profile,
+    handle: handleModeration.ok
+      ? handleModeration.value
+      : DEFAULT_CHAT_PROFILE.handle,
+  });
 }
 
 function CultureChatAgent({ album }) {
@@ -377,70 +442,44 @@ function CultureChatAgent({ album }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [storageReady, setStorageReady] = useState(false);
+  const [profileReady, setProfileReady] = useState(false);
   const transcriptRef = useRef(null);
   const handleModeration = useMemo(
     () => moderateChatHandle(profile.handle),
     [profile.handle],
   );
-  const activeProfile = useMemo(
-    () => ({
-      ...profile,
-      handle: handleModeration.ok
-        ? handleModeration.value
-        : DEFAULT_CHAT_PROFILE.handle,
-    }),
+  const safeProfile = useMemo(
+    () => getSafeChatProfile(profile, handleModeration),
     [handleModeration, profile],
   );
   const userPersona = useMemo(
-    () => getChatPersona("user", activeProfile),
-    [activeProfile],
+    () => getChatPersona("user", safeProfile),
+    [safeProfile],
   );
 
   useEffect(() => {
-    try {
-      const stored = sessionStorage.getItem(chatStorageKey);
-      const parsed = stored ? JSON.parse(stored) : null;
-      setMessages(normalizeStoredChatMessages(parsed) || initialMessages);
-    } catch {
-      setMessages(initialMessages);
-    } finally {
-      setStorageReady(true);
-    }
+    setMessages(getStoredChatMessages(chatStorageKey, initialMessages));
+    setStorageReady(true);
   }, [chatStorageKey, initialMessages]);
 
   useEffect(() => {
-    try {
-      const storedProfile = localStorage.getItem(CHAT_PROFILE_STORAGE_KEY);
-      const parsedProfile = storedProfile ? JSON.parse(storedProfile) : null;
-      setProfile(normalizeChatProfile(parsedProfile));
-    } catch {
-      setProfile(DEFAULT_CHAT_PROFILE);
-    }
+    setProfile(getStoredChatProfile());
+    setProfileReady(true);
   }, []);
 
   useEffect(() => {
     if (!storageReady) return;
-    try {
-      sessionStorage.setItem(
-        chatStorageKey,
-        JSON.stringify(messages.slice(-CHAT_HISTORY_LIMIT)),
-      );
-    } catch {}
+    writeStoredJson(
+      sessionStorage,
+      chatStorageKey,
+      messages.slice(-CHAT_HISTORY_LIMIT),
+    );
   }, [chatStorageKey, messages, storageReady]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(
-        CHAT_PROFILE_STORAGE_KEY,
-        JSON.stringify({
-          ...profile,
-          handle: handleModeration.ok
-            ? handleModeration.value
-            : DEFAULT_CHAT_PROFILE.handle,
-        }),
-      );
-    } catch {}
-  }, [handleModeration, profile]);
+    if (!profileReady) return;
+    writeStoredJson(localStorage, CHAT_PROFILE_STORAGE_KEY, safeProfile);
+  }, [profileReady, safeProfile]);
 
   useEffect(() => {
     const transcript = transcriptRef.current;
@@ -483,29 +522,7 @@ function CultureChatAgent({ album }) {
 
       setMessages((current) => [
         ...current,
-        {
-          role: "assistant",
-          content:
-            typeof data.reply === "string"
-              ? data.reply
-              : "I lost the thread for a second. Try that one more time?",
-          citations: Array.isArray(data.citations)
-            ? data.citations
-                .map((citation) => ({
-                  ...citation,
-                  url: getSafeAgentCitationUrl(citation.url),
-                }))
-                .slice(0, 6)
-            : [],
-          provider:
-            data.provider === "openai" || data.provider === "ollama"
-              ? data.provider
-              : null,
-          usedTools:
-            data.usedTools && typeof data.usedTools === "object"
-              ? data.usedTools
-              : {},
-        },
+        createAssistantChatMessage(data),
       ]);
     } catch (err) {
       setError(err.message || "The chat agent is offline right now.");
@@ -637,7 +654,7 @@ function CultureChatAgent({ album }) {
           aria-live="polite"
         >
           {messages.map((message, index) => {
-            const persona = getChatPersona(message.role, activeProfile);
+            const persona = getChatPersona(message.role, safeProfile);
 
             return (
               <div
