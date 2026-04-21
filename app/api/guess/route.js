@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { addGuessStat, getGuessStats } from "@/lib/db";
 import { getPuzzleKey, getTodayKey } from "@/lib/albums";
+import { getPublicRouteError, readJsonBody } from "@/lib/api-helpers";
 import { checkRateLimit, checkDailyLimit, getRealIp } from "@/lib/rate-limit";
 
 // Cache per game type
@@ -25,7 +26,7 @@ export async function GET(request) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
     const { searchParams } = new URL(request.url);
-    const type = searchParams.get("type") || "puzzle";
+    const type = (searchParams.get("type") || "puzzle").trim().toLowerCase();
     if (!VALID_TYPES.includes(type)) {
       return NextResponse.json({ error: "Invalid type" }, { status: 400 });
     }
@@ -40,10 +41,13 @@ export async function GET(request) {
     guessCaches[type] = { key, data: stats, time: now };
     return NextResponse.json({ stats });
   } catch (error) {
-    console.error("GET /api/guess error:", error);
+    const publicError = getPublicRouteError(error, "Failed to load stats");
+    if (publicError.status >= 500) {
+      console.error("GET /api/guess error:", error);
+    }
     return NextResponse.json(
-      { error: "Failed to load stats" },
-      { status: 500 },
+      { error: publicError.message },
+      { status: publicError.status },
     );
   }
 }
@@ -56,22 +60,12 @@ export async function POST(request) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
 
-    // Body size guard: check actual body size, not spoofable content-length
-    let body;
-    try {
-      const text = await request.text();
-      if (text.length > 1024) {
-        return NextResponse.json(
-          { error: "Request too large" },
-          { status: 413 },
-        );
-      }
-      body = JSON.parse(text);
-    } catch {
-      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
-    }
+    const body = await readJsonBody(request, { maxChars: 1024 });
     const { attempts, solved, type: rawType } = body;
-    const type = rawType || "puzzle";
+    const type =
+      typeof rawType === "string" && rawType.trim()
+        ? rawType.trim().toLowerCase()
+        : "puzzle";
     if (!VALID_TYPES.includes(type)) {
       return NextResponse.json({ error: "Invalid type" }, { status: 400 });
     }
@@ -116,10 +110,13 @@ export async function POST(request) {
     guessCaches[type] = { key: puzzleKey, data: stats, time: Date.now() };
     return NextResponse.json({ stats });
   } catch (error) {
-    console.error("POST /api/guess error:", error);
+    const publicError = getPublicRouteError(error, "Failed to save stats");
+    if (publicError.status >= 500) {
+      console.error("POST /api/guess error:", error);
+    }
     return NextResponse.json(
-      { error: "Failed to save stats" },
-      { status: 500 },
+      { error: publicError.message },
+      { status: publicError.status },
     );
   }
 }

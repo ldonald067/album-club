@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { addVibe, getVibeDistribution } from "@/lib/db";
 import { getTodayKey, VIBES } from "@/lib/albums";
+import { getPublicRouteError, readJsonBody } from "@/lib/api-helpers";
 import {
   checkRateLimit,
   checkDailyLimit,
@@ -30,10 +31,13 @@ export async function GET(request) {
     vibeCache = { key, data, time: now };
     return NextResponse.json(data);
   } catch (error) {
-    console.error("GET /api/vibe error:", error);
+    const publicError = getPublicRouteError(error, "Failed to load vibes");
+    if (publicError.status >= 500) {
+      console.error("GET /api/vibe error:", error);
+    }
     return NextResponse.json(
-      { error: "Failed to load vibes" },
-      { status: 500 },
+      { error: publicError.message },
+      { status: publicError.status },
     );
   }
 }
@@ -54,30 +58,23 @@ export async function POST(request) {
       );
     }
 
-    // Body size guard: check actual body size, not spoofable content-length
-    let body;
-    try {
-      const text = await request.text();
-      if (text.length > 1024) {
-        return NextResponse.json(
-          { error: "Request too large" },
-          { status: 413 },
-        );
-      }
-      body = JSON.parse(text);
-    } catch {
-      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
-    }
+    const body = await readJsonBody(request, { maxChars: 1024 });
     const { vibes } = body;
     if (!Array.isArray(vibes) || vibes.length === 0 || vibes.length > 3) {
       return NextResponse.json({ error: "Pick 1-3 vibes" }, { status: 400 });
     }
 
     // Deduplicate before validation so ["Chill","Chill","Chill"] becomes ["Chill"]
-    const uniqueVibes = [...new Set(vibes)];
+    const uniqueVibes = [
+      ...new Set(
+        vibes.map((value) =>
+          typeof value === "string" ? value.trim() : value,
+        ),
+      ),
+    ];
     const validLabels = VIBES.map((v) => v.label);
     for (const v of uniqueVibes) {
-      if (!validLabels.includes(v)) {
+      if (typeof v !== "string" || !validLabels.includes(v)) {
         return NextResponse.json({ error: "Invalid vibe" }, { status: 400 });
       }
     }
@@ -91,10 +88,13 @@ export async function POST(request) {
     vibeCache = { key: albumKey, data, time: Date.now() };
     return NextResponse.json(data);
   } catch (error) {
-    console.error("POST /api/vibe error:", error);
+    const publicError = getPublicRouteError(error, "Failed to save vibes");
+    if (publicError.status >= 500) {
+      console.error("POST /api/vibe error:", error);
+    }
     return NextResponse.json(
-      { error: "Failed to save vibes" },
-      { status: 500 },
+      { error: publicError.message },
+      { status: publicError.status },
     );
   }
 }

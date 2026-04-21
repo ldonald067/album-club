@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { addMatchupVote, getMatchupDistribution } from "@/lib/db";
 import { getTodayKey } from "@/lib/albums";
+import { getPublicRouteError, readJsonBody } from "@/lib/api-helpers";
 import { checkRateLimit, checkDailyLimit, getRealIp } from "@/lib/rate-limit";
 
 const VALID_TYPES = ["versus", "taste"];
@@ -16,7 +17,7 @@ export async function GET(request) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
     const { searchParams } = new URL(request.url);
-    const type = searchParams.get("type") || "versus";
+    const type = (searchParams.get("type") || "versus").trim().toLowerCase();
     if (!VALID_TYPES.includes(type)) {
       return NextResponse.json({ error: "Invalid type" }, { status: 400 });
     }
@@ -31,10 +32,16 @@ export async function GET(request) {
     matchupCaches[type] = { key, data, time: now };
     return NextResponse.json(data);
   } catch (error) {
-    console.error("GET /api/matchup error:", error);
+    const publicError = getPublicRouteError(
+      error,
+      "Failed to load matchup votes",
+    );
+    if (publicError.status >= 500) {
+      console.error("GET /api/matchup error:", error);
+    }
     return NextResponse.json(
-      { error: "Failed to load matchup votes" },
-      { status: 500 },
+      { error: publicError.message },
+      { status: publicError.status },
     );
   }
 }
@@ -54,40 +61,38 @@ export async function POST(request) {
       );
     }
 
-    let body;
-    try {
-      const text = await request.text();
-      if (text.length > 1024) {
-        return NextResponse.json(
-          { error: "Request too large" },
-          { status: 413 },
-        );
-      }
-      body = JSON.parse(text);
-    } catch {
-      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
-    }
+    const body = await readJsonBody(request, { maxChars: 1024 });
     const { type, pick } = body;
-    if (!VALID_TYPES.includes(type)) {
+    const normalizedType =
+      typeof type === "string" ? type.trim().toLowerCase() : "";
+    if (!VALID_TYPES.includes(normalizedType)) {
       return NextResponse.json({ error: "Invalid type" }, { status: 400 });
     }
-    if (pick !== "A" && pick !== "B") {
+    const normalizedPick =
+      typeof pick === "string" ? pick.trim().toUpperCase() : "";
+    if (normalizedPick !== "A" && normalizedPick !== "B") {
       return NextResponse.json(
         { error: "Pick must be A or B" },
         { status: 400 },
       );
     }
 
-    const key = `${type}-${getTodayKey()}`;
-    addMatchupVote(key, pick);
+    const key = `${normalizedType}-${getTodayKey()}`;
+    addMatchupVote(key, normalizedPick);
     const data = getMatchupDistribution(key);
-    matchupCaches[type] = { key, data, time: Date.now() };
+    matchupCaches[normalizedType] = { key, data, time: Date.now() };
     return NextResponse.json(data);
   } catch (error) {
-    console.error("POST /api/matchup error:", error);
+    const publicError = getPublicRouteError(
+      error,
+      "Failed to save matchup vote",
+    );
+    if (publicError.status >= 500) {
+      console.error("POST /api/matchup error:", error);
+    }
     return NextResponse.json(
-      { error: "Failed to save matchup vote" },
-      { status: 500 },
+      { error: publicError.message },
+      { status: publicError.status },
     );
   }
 }

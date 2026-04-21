@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { addPlaylistVote, getPlaylistDistribution } from "@/lib/db";
 import { getTodayKey } from "@/lib/albums";
+import { getPublicRouteError, readJsonBody } from "@/lib/api-helpers";
 import {
   checkRateLimit,
   checkDailyLimit,
@@ -30,10 +31,16 @@ export async function GET(request) {
     playlistCache = { key, data, time: now };
     return NextResponse.json(data);
   } catch (error) {
-    console.error("GET /api/playlist error:", error);
+    const publicError = getPublicRouteError(
+      error,
+      "Failed to load playlist votes",
+    );
+    if (publicError.status >= 500) {
+      console.error("GET /api/playlist error:", error);
+    }
     return NextResponse.json(
-      { error: "Failed to load playlist votes" },
-      { status: 500 },
+      { error: publicError.message },
+      { status: publicError.status },
     );
   }
 }
@@ -53,19 +60,7 @@ export async function POST(request) {
       );
     }
 
-    let body;
-    try {
-      const text = await request.text();
-      if (text.length > 1024) {
-        return NextResponse.json(
-          { error: "Request too large" },
-          { status: 413 },
-        );
-      }
-      body = JSON.parse(text);
-    } catch {
-      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
-    }
+    const body = await readJsonBody(request, { maxChars: 1024 });
     const { vote } = body;
     if (typeof vote !== "boolean") {
       return NextResponse.json(
@@ -80,10 +75,16 @@ export async function POST(request) {
     playlistCache = { key: albumKey, data, time: Date.now() };
     return NextResponse.json(data);
   } catch (error) {
-    console.error("POST /api/playlist error:", error);
+    const publicError = getPublicRouteError(
+      error,
+      "Failed to save playlist vote",
+    );
+    if (publicError.status >= 500) {
+      console.error("POST /api/playlist error:", error);
+    }
     return NextResponse.json(
-      { error: "Failed to save playlist vote" },
-      { status: 500 },
+      { error: publicError.message },
+      { status: publicError.status },
     );
   }
 }

@@ -6,16 +6,20 @@ Two layers of protection, both using in-memory Maps:
 
 - **Per-minute**: `checkRateLimit(ip)` — 30 req/min sliding window per IP, hard cap at 2000 tracked IPs
 - **Per-day**: `checkDailyLimit(ip, endpoint)` — max 3 submissions per IP per endpoint per day, hard cap at 20k entries
-- **IP resolution**: `getRealIp()` prefers `x-real-ip` (set by Vercel/Netlify, not spoofable), falls back to `x-forwarded-for`
+- **IP resolution**: `getRealIp()` prefers `x-real-ip` (set by Vercel/Netlify, not spoofable), falls back to the first valid `x-forwarded-for` hop, normalizes IPv4/IPv6 formats, and ignores junk header values instead of trusting them
 - **Cleanup**: Deterministic `setInterval` every 60s purges stale entries from both maps. Additionally, probabilistic cleanup (~1% of requests) and size-based cleanup (>1000 IPs) run inline
 - **Date validation**: `isValidDateKey()` validates `YYYY-MM-DD` format, real calendar date, not in the future
 - Vote/game POST routes reject bodies over 1024 characters. `/api/chat` allows 4096 characters so it can carry short conversation context.
+- POST routes now require the parsed JSON body to be an object. Arrays / primitives get a clean `400`.
 
 ## Database (`lib/db.js`)
 
 - **SQLite** via better-sqlite3, WAL mode, singleton connection
+- **Busy timeout**: `busy_timeout = 5000` reduces transient lock failures under overlapping writes
 - **Prepared statements** cached at module scope (14 statements, created once on first `getDb()` call)
 - **Covering indexes** on all query patterns: `(album_key, rating)`, `(album_key, vibe)`, `(puzzle_key, attempts, solved)`, `(album_key, vote)`, `(matchup_key, pick)`
+
+Routes translate SQLite lock/open/corruption errors into safe public responses (`503` with retry language) instead of exposing raw internals.
 
 For caching details, see `docs/performance.md`.
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { getSiteStats } from "@/lib/db";
+import { getPublicRouteError } from "@/lib/api-helpers";
 import { checkRateLimit, getRealIp } from "@/lib/rate-limit";
 
 let statsRouteCache = { data: null, time: 0 };
@@ -21,10 +22,13 @@ export async function GET() {
     statsRouteCache = { data: stats, time: now };
     return NextResponse.json(stats);
   } catch (error) {
-    console.error("GET /api/stats error:", error);
+    const publicError = getPublicRouteError(error, "Failed to load stats");
+    if (publicError.status >= 500) {
+      console.error("GET /api/stats error:", error);
+    }
     return NextResponse.json(
-      { error: "Failed to load stats" },
-      { status: 500 },
+      { error: publicError.message },
+      { status: publicError.status },
     );
   }
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { getTodayAlbum } from "@/lib/albums";
+import { getPublicRouteError, readJsonBody } from "@/lib/api-helpers";
 import { checkRateLimit, checkDailyLimit, getRealIp } from "@/lib/rate-limit";
 import {
   createCrateDiggerResponse,
@@ -87,19 +88,7 @@ export async function POST(request) {
       );
     }
 
-    let body;
-    try {
-      const text = await request.text();
-      if (text.length > MAX_BODY_CHARS) {
-        return NextResponse.json(
-          { error: "Request too large" },
-          { status: 413 },
-        );
-      }
-      body = JSON.parse(text);
-    } catch {
-      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
-    }
+    const body = await readJsonBody(request, { maxChars: MAX_BODY_CHARS });
 
     const messages = normalizeMessages(body.messages);
     if (!messages || messages.length === 0) {
@@ -137,30 +126,17 @@ export async function POST(request) {
       headers: NO_STORE_HEADERS,
     });
   } catch (error) {
-    console.error("POST /api/chat error:", error);
-    if (
-      typeof error?.code === "string" &&
-      /^(CHAT|OLLAMA|OPENAI)_/.test(error.code)
-    ) {
-      return NextResponse.json(
-        { error: error.message || "Failed to reach the chat agent" },
-        {
-          status: error.status || 503,
-          headers: NO_STORE_HEADERS,
-        },
-      );
-    }
-
-    if (error?.status) {
-      return NextResponse.json(
-        { error: "The chat agent hit static. Try again in a minute." },
-        { status: 502, headers: NO_STORE_HEADERS },
-      );
+    const publicError = getPublicRouteError(
+      error,
+      "Failed to reach the chat agent",
+    );
+    if (publicError.status >= 500) {
+      console.error("POST /api/chat error:", error);
     }
 
     return NextResponse.json(
-      { error: "Failed to reach the chat agent" },
-      { status: 500, headers: NO_STORE_HEADERS },
+      { error: publicError.message },
+      { status: publicError.status, headers: NO_STORE_HEADERS },
     );
   }
 }

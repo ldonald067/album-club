@@ -26,6 +26,11 @@ import {
   getVersusPair,
   getTastePair,
 } from "@/lib/albums";
+import {
+  CHAT_HANDLE_MAX_CHARS,
+  moderateChatHandle,
+  normalizeChatHandle,
+} from "@/lib/chat-moderation";
 
 /* ─── Constants ─── */
 const MAX_SUGGESTIONS = 5;
@@ -35,7 +40,6 @@ const CHAT_MAX_CHARS = 500;
 const CHAT_HISTORY_LIMIT = 12;
 const CHAT_STORAGE_PREFIX = "aotd_crate_digger_chat";
 const CHAT_PROFILE_STORAGE_KEY = "aotd_crate_digger_profile";
-const CHAT_HANDLE_MAX_CHARS = 24;
 
 const CHAT_SUGGESTIONS = [
   "What should I listen for?",
@@ -68,38 +72,6 @@ const DEFAULT_CHAT_PROFILE = {
   handle: "Guest Listener",
   avatarId: CHAT_AVATAR_OPTIONS[0].id,
 };
-const CHAT_ALLOWED_HANDLE_PATTERN = /^[\w .'-]+$/i;
-const CHAT_RESERVED_HANDLE_TOKENS = new Set([
-  "cratedigger",
-  "admin",
-  "administrator",
-  "mod",
-  "moderator",
-  "staff",
-  "official",
-  "system",
-]);
-const CHAT_BLOCKED_HANDLE_TOKENS = [
-  "racist",
-  "sexist",
-  "misogyn",
-  "homophob",
-  "transphob",
-  "antisemit",
-  "bigot",
-  "ableist",
-  "nazi",
-  "kkk",
-  "whitepower",
-  "1488",
-  "kill",
-  "lynch",
-  "rape",
-  "murder",
-  "abuse",
-  "slur",
-  "hate",
-];
 const CHAT_PERSONAS = {
   assistant: {
     name: "Crate Digger",
@@ -176,13 +148,6 @@ function getInitialChatMessages(album) {
   ];
 }
 
-function normalizeChatHandle(value) {
-  return String(value || "")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, CHAT_HANDLE_MAX_CHARS);
-}
-
 function getChatAvatarOption(avatarId) {
   return (
     CHAT_AVATAR_OPTIONS.find((option) => option.id === avatarId) ||
@@ -200,53 +165,6 @@ function normalizeChatProfile(rawProfile) {
       normalizeChatHandle(rawProfile.handle) || DEFAULT_CHAT_PROFILE.handle,
     avatarId: getChatAvatarOption(rawProfile.avatarId).id,
   };
-}
-
-function moderateChatHandle(value) {
-  const normalized = normalizeChatHandle(value);
-  const compact = normalized.toLowerCase().replace(/[^a-z0-9]/g, "");
-
-  if (!normalized) {
-    return {
-      ok: false,
-      value: DEFAULT_CHAT_PROFILE.handle,
-      reason: "Pick a handle first.",
-    };
-  }
-
-  if (normalized.length < 3) {
-    return {
-      ok: false,
-      value: normalized,
-      reason: "Use at least 3 characters.",
-    };
-  }
-
-  if (!CHAT_ALLOWED_HANDLE_PATTERN.test(normalized)) {
-    return {
-      ok: false,
-      value: normalized,
-      reason: "Use letters, numbers, spaces, periods, apostrophes, underscores, or hyphens.",
-    };
-  }
-
-  if (CHAT_RESERVED_HANDLE_TOKENS.has(compact)) {
-    return {
-      ok: false,
-      value: normalized,
-      reason: "That looks like staff impersonation.",
-    };
-  }
-
-  if (CHAT_BLOCKED_HANDLE_TOKENS.some((token) => compact.includes(token))) {
-    return {
-      ok: false,
-      value: normalized,
-      reason: "Pick a handle without slurs or hate.",
-    };
-  }
-
-  return { ok: true, value: normalized, reason: "" };
 }
 
 function getChatPersona(role, profile = DEFAULT_CHAT_PROFILE) {
@@ -469,7 +387,10 @@ function CultureChatAgent({ album }) {
   const [profileReady, setProfileReady] = useState(false);
   const transcriptRef = useRef(null);
   const handleModeration = useMemo(
-    () => moderateChatHandle(profile.handle),
+    () =>
+      moderateChatHandle(profile.handle, {
+        defaultHandle: DEFAULT_CHAT_PROFILE.handle,
+      }),
     [profile.handle],
   );
   const safeProfile = useMemo(

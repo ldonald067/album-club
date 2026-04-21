@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { addRating, getRatingDistribution } from "@/lib/db";
 import { getTodayKey } from "@/lib/albums";
+import { getPublicRouteError, readJsonBody } from "@/lib/api-helpers";
 import {
   checkRateLimit,
   checkDailyLimit,
@@ -30,10 +31,13 @@ export async function GET(request) {
     rateCache = { key, data, time: now };
     return NextResponse.json(data);
   } catch (error) {
-    console.error("GET /api/rate error:", error);
+    const publicError = getPublicRouteError(error, "Failed to load ratings");
+    if (publicError.status >= 500) {
+      console.error("GET /api/rate error:", error);
+    }
     return NextResponse.json(
-      { error: "Failed to load ratings" },
-      { status: 500 },
+      { error: publicError.message },
+      { status: publicError.status },
     );
   }
 }
@@ -54,20 +58,7 @@ export async function POST(request) {
       );
     }
 
-    // Body size guard: check actual body size, not spoofable content-length
-    let body;
-    try {
-      const text = await request.text();
-      if (text.length > 1024) {
-        return NextResponse.json(
-          { error: "Request too large" },
-          { status: 413 },
-        );
-      }
-      body = JSON.parse(text);
-    } catch {
-      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
-    }
+    const body = await readJsonBody(request, { maxChars: 1024 });
     const { rating } = body;
     if (
       typeof rating !== "number" ||
@@ -87,10 +78,13 @@ export async function POST(request) {
     rateCache = { key: albumKey, data, time: Date.now() };
     return NextResponse.json(data);
   } catch (error) {
-    console.error("POST /api/rate error:", error);
+    const publicError = getPublicRouteError(error, "Failed to save rating");
+    if (publicError.status >= 500) {
+      console.error("POST /api/rate error:", error);
+    }
     return NextResponse.json(
-      { error: "Failed to save rating" },
-      { status: 500 },
+      { error: publicError.message },
+      { status: publicError.status },
     );
   }
 }
