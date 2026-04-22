@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo, memo } from "react";
+import dynamic from "next/dynamic";
 import {
   getListenUrl,
   getTodayKey,
@@ -79,6 +80,17 @@ const CHAT_PERSONAS = {
     avatarSrc: "/pixel-icons/music-headphones-human.svg",
   },
 };
+const SoundtrackCornerFallback = dynamic(
+  () => import("./SoundtrackCornerFallback"),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="agent-intro">
+        Opening Soundtrack Corner...
+      </p>
+    ),
+  },
+);
 
 /* ─── Pre-lowercased album search index (avoids repeated toLowerCase per keystroke) ─── */
 const ALBUM_SEARCH = ALBUMS.map((a) => ({
@@ -510,6 +522,29 @@ function CultureChatAgent({ album }) {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (chatUnavailable) {
+    return (
+      <div className="panel chat-agent-panel">
+        <div className="panel-header">
+          <span>
+            <i className="hn hn-headphones" aria-hidden="true" /> SOUNDTRACK
+            CORNER
+          </span>
+          <span className="panel-header-note">Game / film / TV</span>
+        </div>
+        <div className="panel-body">
+          <SoundtrackCornerFallback
+            album={album}
+            reason={
+              chatStatus.reason ||
+              "Chat Booth is offline on this deployment right now."
+            }
+          />
+        </div>
+      </div>
+    );
   }
 
   return (

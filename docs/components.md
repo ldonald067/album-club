@@ -122,4 +122,6 @@ On mount, the client requests `GET /api/chat` to learn whether the deployment ac
 
 Assistant messages can include `citations`, `usedTools`, and `provider`. Citations render as visible source links below a message; tool pills show `Local model` or `Hosted model`, plus `Checked the crates` and `Searched the web` when relevant. The loading state mirrors the server-advertised provider/tool availability instead of assuming local Ollama.
 
+When chat is unavailable, the tab now swaps to **Soundtrack Corner** instead of leaving a disabled quasi-chat UI in place. The fallback gives three deterministic comparison cards (game / film / TV), a short "listen for" list, and a few archive recommendations picked from the local album set.
+
 The route owns today's album context, provider selection, curated knowledge access, and any hosted credentials server-side; the client should not send API keys or trusted album metadata.
