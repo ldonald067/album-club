@@ -4831,8 +4831,17 @@ export default function ForumPage({ album, dateString }) {
                     <img
                       src={CAROUSEL_ICONS[i].src}
                       alt=""
+                      width={24}
+                      height={24}
                       draggable={false}
                       loading="lazy"
+                      decoding="async"
+                      style={{
+                        width: 24,
+                        height: 24,
+                        display: "block",
+                        imageRendering: "pixelated",
+                      }}
                     />
                   </span>
                 )}
@@ -4854,8 +4863,17 @@ export default function ForumPage({ album, dateString }) {
                     <img
                       src={CAROUSEL_ICONS[i].src}
                       alt=""
+                      width={24}
+                      height={24}
                       draggable={false}
                       loading="lazy"
+                      decoding="async"
+                      style={{
+                        width: 24,
+                        height: 24,
+                        display: "block",
+                        imageRendering: "pixelated",
+                      }}
                     />
                   </span>
                 )}
