@@ -9,6 +9,16 @@ export default function SoundtrackCornerFallback({ album, reason }) {
   return (
     <div className="soundtrack-corner">
       <p className="agent-intro">{corner.intro}</p>
+      <div className="soundtrack-corner-actions">
+        <a
+          href={corner.listenNow.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="listen-btn guess-listen-btn soundtrack-listen-btn"
+        >
+          {corner.listenNow.label}
+        </a>
+      </div>
       {reason && (
         <div className="agent-status-note" role="status">
           {reason}
@@ -31,6 +41,20 @@ export default function SoundtrackCornerFallback({ album, reason }) {
       </div>
       <div className="soundtrack-corner-note">{corner.bridgeNote}</div>
       <div className="soundtrack-corner-section">
+        <div className="soundtrack-section-title">
+          {corner.extraAnglesHeading}
+        </div>
+        <div className="soundtrack-angle-grid">
+          {corner.extraAngles.map((angle) => (
+            <div key={angle.key} className="soundtrack-angle-card">
+              <div className="soundtrack-angle-label">{angle.label}</div>
+              <div className="soundtrack-angle-title">{angle.title}</div>
+              <p className="soundtrack-angle-copy">{angle.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="soundtrack-corner-section">
         <div className="soundtrack-section-title">{corner.listenForHeading}</div>
         <ul className="soundtrack-list">
           {corner.listenFor.map((item) => (
@@ -42,6 +66,9 @@ export default function SoundtrackCornerFallback({ album, reason }) {
         <div className="soundtrack-section-title">
           {corner.recommendationsHeading}
         </div>
+        <p className="soundtrack-recommendations-intro">
+          {corner.recommendationsIntro}
+        </p>
         <div className="soundtrack-recommendations">
           {corner.recommendations.map((recommendation) => (
             <div
@@ -56,8 +83,19 @@ export default function SoundtrackCornerFallback({ album, reason }) {
                   {recommendation.title}
                 </div>
                 <div className="soundtrack-recommendation-meta">
-                  {recommendation.artist} · {recommendation.year}
+                  {recommendation.artist} - {recommendation.year}
                 </div>
+                <p className="soundtrack-recommendation-reason">
+                  {recommendation.reason}
+                </p>
+                <a
+                  href={recommendation.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="soundtrack-recommendation-link"
+                >
+                  {recommendation.cta}
+                </a>
               </div>
             </div>
           ))}
