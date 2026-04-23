@@ -124,4 +124,6 @@ Assistant messages can include `citations`, `usedTools`, and `provider`. Citatio
 
 When chat is unavailable, the tab now swaps to **Soundtrack Corner** instead of leaving a disabled quasi-chat UI in place. The fallback gives album-specific game / film / TV scene cards, two rotating extra angles (for example boss-fight energy or best-fit game studio), a short "listen for" list, and a clickable "listen next" recommendation row with one-line reasons plus YouTube links for today's album and each follow-up pick.
 
+Most albums still use the deterministic generator in `lib/soundtrack-corner.js`, but a shortlist of marquee records now has hand-authored overrides in `lib/soundtrack-corner-data.js` so the biggest canonical albums feel curated instead of procedural.
+
 The route owns today's album context, provider selection, curated knowledge access, and any hosted credentials server-side; the client should not send API keys or trusted album metadata.
