@@ -24,6 +24,29 @@ For each marquee or cult-favorite album, try to capture:
 3. What scene language fits it
 4. What three albums make good "listen next" moves
 
+## Editorial Lane
+
+Run this in small, deliberate batches instead of treating the whole catalog like one giant writing sprint.
+
+1. Run `npm run soundtrack-corner-report`.
+2. Pick 4-8 albums from the uncovered priority list, aiming for range across decade, genre, and scene language.
+3. Gather at least:
+   - one review, retrospective, or interview
+   - one fan thread, usually Reddit
+4. Distill the sources into:
+   - recurring motifs
+   - emotional contradiction
+   - production texture
+   - scene vocabulary
+   - three good "listen next" moves from the local catalog
+5. Add or update:
+   - notes in this file
+   - the override in `lib/soundtrack-corner-data.js`
+6. Run `npm run build`.
+7. Re-run `npm run soundtrack-corner-report` to confirm coverage moved in the right direction.
+
+Working rule: prefer depth over raw count, but keep pushing the curated tier outward in batches so Soundtrack Corner does not become "special for 12 records and generic for everything else."
+
 ## Album Notes
 
 ### Radiohead - OK Computer
@@ -240,3 +263,128 @@ Sources:
 Sources:
 - [r/hiphopheads 25 years later thread](https://www.reddit.com/r/hiphopheads/comments/16v1pxe/discussion_outkast_aquemini_25_years_later/)
 - [OutKast retrospective mention of Aquemini](https://pitchfork.com/features/article/9253-atlanta-to-atlantis-an-outkast-retrospective/)
+
+### Cocteau Twins - Heaven or Las Vegas
+
+- Critics tend to frame it as the Cocteau Twins' most radiant and accessible record, but the better takeaway is that the brightness still has ache inside it.
+- Fan language often goes straight to memory and transport: desert drives, tears, newborn rooms, light coming through windows, impossible softness.
+- Good Soundtrack Corner move: keep it luminous and intimate, not vague. This is dream-pop with a human pulse, not abstract wallpaper.
+- Strong Soundtrack Corner lane:
+  - neon tenderness
+  - love scene with open sky
+  - memory glowing at the edges
+  - joy trying not to jinx itself
+
+Sources:
+- [Pitchfork review](https://pitchfork.com/reviews/albums/19526-cocteau-twins-blue-bell-knollheaven-or-las-vegas/)
+- [r/vinyl thread](https://www.reddit.com/r/vinyl/comments/1jee1rb)
+- [r/90sAlternative thread](https://www.reddit.com/r/90sAlternative/comments/1aj46c8)
+
+### Slowdive - Souvlaki
+
+- Critics and fans both reach for language about immersion, floating, and altered physical space; it is less "rock album" than total atmosphere.
+- Reddit is useful here because listeners keep comparing the record to a world you enter rather than songs you rank.
+- Good corrective: this album is not sleepy in a passive way. The strongest descriptions keep its narcotic beauty and its mass at the same time.
+- Strong Soundtrack Corner lane:
+  - underwater road movie
+  - floating level with weight
+  - private fog bank
+  - moonlit overpass melancholy
+
+Sources:
+- [Albumism retrospective](https://albumism.com/features/slowdive-souvlaki-turns-30-anniversary-retrospective)
+- [r/Slowdive thread](https://www.reddit.com/r/Slowdive/comments/yz00ee)
+- [r/shoegaze comparison thread](https://www.reddit.com/r/shoegaze/comments/1r1nki9/which_album_do_you_think_is_better_souvlaki_or/)
+
+### Sufjan Stevens - Illinois
+
+- Critical framing emphasizes scale, detail, and a strange balance of pageantry and grief. It is big, but it earns the bigness through specificity.
+- One especially useful note from reviews: the album often feels less like geography than spirit, with landmarks, tragedies, jokes, and parades all living in the same patchwork.
+- Fan memory tends to treat it as an indie rite of passage, which is helpful because the record should feel communal and mythic, not merely quaint.
+- Strong Soundtrack Corner lane:
+  - Midwestern pageant with a bruise under it
+  - map of America made from horn lines and side roads
+  - parade route to a heartbreak scene
+  - earnestness scaled up until it becomes surreal
+
+Sources:
+- [Pitchfork review](https://pitchfork.com/reviews/albums/7514-illinois/)
+- [r/indieheads thread mentioning Illinois' staying power](https://www.reddit.com/r/indieheads/comments/hoa1xd)
+
+### The Smiths - The Queen Is Dead
+
+- Critics return to the tension between wit and longing, with Marr's beauty turning Morrissey's exile and melodrama into something graceful instead of merely bitter.
+- Fan threads are useful mostly for emphasis: people keep arguing about sequencing and favorite tracks because the record still feels alive, not embalmed.
+- Strong Soundtrack Corner language should preserve both the humor and the ache. This is not dour miserabilism; it is stylish, wounded, and alert.
+- Strong Soundtrack Corner lane:
+  - rainy wit in motion
+  - bus-window longing
+  - outsider comedy with actual consequences
+  - jangling elegance under social discomfort
+
+Sources:
+- [Pitchfork review](https://pitchfork.com/reviews/albums/the-smiths-the-queen-is-dead/)
+- [r/thesmiths sequencing thread](https://www.reddit.com/r/thesmiths/comments/1hoy194)
+- [r/thesmiths daily song thread](https://www.reddit.com/r/thesmiths/comments/1flmx71)
+
+### DJ Shadow - Endtroducing.....
+
+- Critics often talk about the record as spiritual, cinematic, and foundational, but the most useful takeaway is how personal its sample collage feels.
+- Reddit adds range here: people remember hearing it while driving, chilling out, getting into crate-digger music, or realizing instrumental hip-hop could feel narrative.
+- Strong Soundtrack Corner copy should keep the solitude and movement. This is headphone-travel music with dust on it.
+- Strong Soundtrack Corner lane:
+  - freeway after midnight
+  - crate-digger detective board
+  - memory collage as plot engine
+  - motion through emotional debris
+
+Sources:
+- [Pitchfork review](https://pitchfork.com/reviews/albums/2377-endtroducing-deluxe-edition/)
+- [r/Music thread](https://www.reddit.com/r/Music/comments/f3hlt/dj_shadows_endtroducing_is_still_one_of_my_all/)
+- [r/LetsTalkMusic thread](https://www.reddit.com/r/LetsTalkMusic/comments/13kz5uu)
+
+### Madvillain - Madvillainy
+
+- Critics stress the chemistry: Madlib's chopped, bass-heavy weirdness and DOOM's compressed, hyper-quotable villain language snapping together.
+- Fan threads are especially valuable here because people describe the album as a rite of passage, a brain-rewiring first listen, and a record that keeps rewarding repeat plays.
+- Strong Soundtrack Corner writing should stay nimble and mischievous. The record is dense, but it is also funny, fast, and charismatic.
+- Strong Soundtrack Corner lane:
+  - comic-panel caper
+  - puzzle-box city
+  - supervillain downtime
+  - cheap apartment genius with x-ray vision
+
+Sources:
+- [Pitchfork review](https://pitchfork.com/reviews/albums/5579-madvillainy/)
+- [r/hiphopheads 20 years later thread](https://www.reddit.com/r/hiphopheads/comments/1blj4su)
+
+### Kendrick Lamar - To Pimp a Butterfly
+
+- Critics emphasize the album as theatrical, chaotic, mournful, and guided by a very strong authorial hand rather than a loose pile of statements.
+- The best fan discussions treat it as both a technical marvel and an emotional argument about fame, community, shame, joy, and responsibility.
+- Good Soundtrack Corner move: make room for the jazz/funk motion and the social pressure. This should feel like a city and a conscience arguing at once.
+- Strong Soundtrack Corner lane:
+  - civic fever dream
+  - neighborhood epic with ghosts in it
+  - triumph interrupted by self-interrogation
+  - public spectacle under private pressure
+
+Sources:
+- [Pitchfork review](https://pitchfork.com/reviews/albums/20390-to-pimp-a-butterfly/)
+- [r/hiphopheads release discussion](https://www.reddit.com/r/hiphopheads/comments/2za8nw/discussion_kendrick_lamar_to_pimp_a_butterfly/)
+- [r/hiphopheads 10 years later thread](https://www.reddit.com/r/hiphopheads/comments/1jbmp5r/discussion_kendrick_lamar_to_pimp_a_butterfly_10/)
+
+### Bjork - Vespertine
+
+- Critics and fans both frame it as inward, crystalline, and intimate, especially in contrast with the wider-open force of Homogenic.
+- Reddit is useful here because listeners naturally reach for images of winter rooms, music boxes, whispered desire, and an almost over-detailed tenderness.
+- The most useful contradiction is that it sounds tiny and luxurious at once. Keep the scale close, but do not make it slight.
+- Strong Soundtrack Corner lane:
+  - snow-globe intimacy
+  - whispered cathedral
+  - domestic space becoming sacred
+  - desire rendered in frost and glass
+
+Sources:
+- [Pitchfork review](https://pitchfork.com/reviews/albums/727-vespertine/)
+- [r/bjork fan review](https://www.reddit.com/r/bjork/comments/1s37fom/reviews_of_an_old_fan_pt8_vespertine/)

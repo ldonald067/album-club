@@ -128,4 +128,6 @@ Most albums still use the deterministic generator in `lib/soundtrack-corner.js`,
 
 Authoring notes for those overrides live in `docs/soundtrack-corner-research.md`, which collects paraphrased review/interview patterns plus Reddit fan associations for future tuning without copying source prose into runtime content.
 
+Use `npm run soundtrack-corner-report` to see how many albums currently have curated overrides, how much of the recognizable/priority pool is covered, and which priority albums are still good next candidates.
+
 The route owns today's album context, provider selection, curated knowledge access, and any hosted credentials server-side; the client should not send API keys or trusted album metadata.

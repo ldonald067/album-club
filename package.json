@@ -10,7 +10,8 @@
     "fetch-covers": "node scripts/fetch-covers.mjs",
     "fetch-lyrics": "node scripts/fetch-lyrics.mjs",
     "fetch-youtube-ids": "node scripts/fetch-youtube-ids.mjs",
-    "sync-crate-digger-knowledge": "node scripts/sync-crate-digger-knowledge.mjs"
+    "sync-crate-digger-knowledge": "node scripts/sync-crate-digger-knowledge.mjs",
+    "soundtrack-corner-report": "node scripts/soundtrack-corner-report.mjs"
   },
   "dependencies": {
     "@hackernoon/pixel-icon-library": "^1.0.6",
