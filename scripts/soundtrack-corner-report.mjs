@@ -38,7 +38,7 @@ const PRIORITY_KEYS = [
   "Sonic Youth::Daydream Nation",
   "Pixies::Doolittle",
   "The Avalanches::Since I Left You",
-  "David Bowie::Low",
+  "Joy Division::Unknown Pleasures",
   "Talking Heads::Remain in Light",
 ];
 

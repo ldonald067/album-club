@@ -388,3 +388,84 @@ Sources:
 Sources:
 - [Pitchfork review](https://pitchfork.com/reviews/albums/727-vespertine/)
 - [r/bjork fan review](https://www.reddit.com/r/bjork/comments/1s37fom/reviews_of_an_old_fan_pt8_vespertine/)
+
+### Neutral Milk Hotel - In the Aeroplane Over the Sea
+
+- Critics tend to frame it as a singular cult artifact: lo-fi, ecstatic, fragile, and somehow myth-sized despite the ragged presentation.
+- Fan responses keep circling the same thing in less polished language: people do not just admire this album, they get rearranged by it.
+- Good Soundtrack Corner move: do not over-intellectualize it. The right lane is homemade apocalypse, carnival brass, grief, innocence, and emotional overexposure.
+- Strong Soundtrack Corner lane:
+  - bedroom mythmaking
+  - parade through the wreckage
+  - ecstatic heartbreak with tape hiss on it
+  - handmade world ending and beginning at once
+
+Sources:
+- [Pitchfork review](https://pitchfork.com/reviews/albums/5758-in-the-aeroplane-over-the-sea/)
+- [Pitchfork artists reflect feature](https://pitchfork.com/features/article/6784-neutral-milk-hotels-in-the-aeroplane-over-the-sea/)
+- [r/neutralmilkhotel first-love thread](https://www.reddit.com/r/neutralmilkhotel/comments/1j1cdfz)
+- [r/neutralmilkhotel why-is-it-great thread](https://www.reddit.com/r/neutralmilkhotel/comments/1ex0qss)
+
+### Sonic Youth - Daydream Nation
+
+- Critics frame it as a synthesis record: underground noise, art-rock ambition, indie melody, and youth-culture sprawl finally clicking into one statement.
+- Fan threads are useful because they make clear the album's scale matters almost as much as its songs. People talk about it as a journey, a landscape, a whole environment.
+- Good writing note: keep the grandeur and the street-level grime together. This is not sterile art music; it is city-static music with skate shoes on.
+- Strong Soundtrack Corner lane:
+  - downtown sprawl at midnight
+  - feedback skyline
+  - art-school open world
+  - guitar noise that somehow feels like forward motion
+
+Sources:
+- [Pitchfork review](https://pitchfork.com/reviews/albums/10326-daydream-nation-deluxe-edition/)
+- [r/sonicyouth favorite-album thread](https://www.reddit.com/r/sonicyouth/comments/1hvyrs4)
+- [r/LetsTalkMusic context thread](https://www.reddit.com/r/LetsTalkMusic/comments/1qhdn7o/context_for_sonic_youths_daydream_nation/)
+
+### Pixies - Doolittle
+
+- The most useful critical framing is contrast: the record is hookier and more polished than Surfer Rosa, but still full of menace, weirdness, lust, religion, and cartoon violence.
+- Fan shorthand tends to focus on specific images and eruptions rather than some one-note mood, which is helpful. This album should feel jumpy and packed with scenes.
+- Good Soundtrack Corner move: keep it wiry, funny, a little feral, and willing to turn from pop grace to goblin behavior in a second.
+- Strong Soundtrack Corner lane:
+  - roadside weirdness
+  - comic-book danger
+  - surf-pop with teeth
+  - a beautiful chorus followed by a bad idea
+
+Sources:
+- [Pitchfork catalog review](https://pitchfork.com/reviews/albums/19282-pixies-catalogue/)
+- [Melophobe retrospective](https://www.melophobemusic.com/post/pixies-doolittle-retrospective-review)
+- [r/thepixies retrospective thread](https://www.reddit.com/r/thepixies/comments/11pn788)
+
+### The Avalanches - Since I Left You
+
+- Critics tend to underline the unbelievable sample construction, but the more helpful writing note is that the album feels buoyant, romantic, and social rather than merely clever.
+- Reddit helps here because people describe real use cases: parties, drives, weddings, "wait what is this?" moments. That accessibility matters.
+- Good Soundtrack Corner move: treat it as motion, collage, and communal lift. It is intricate, but it should still feel like an invitation.
+- Strong Soundtrack Corner lane:
+  - pop paradise made of scraps
+  - airport montage with confetti in it
+  - summer memory machine
+  - dancing through a crate-digger daydream
+
+Sources:
+- [Pitchfork review](https://pitchfork.com/reviews/albums/385-since-i-left-you/)
+- [r/theavalanches daily song thread](https://www.reddit.com/r/theavalanches/comments/1k7dsqj)
+- [r/indieheads anniversary thread](https://www.reddit.com/r/indieheads/comments/1p87r1r/the_avalanches_released_since_i_left_you_25_years/)
+- [r/electronicmusic thread](https://www.reddit.com/r/electronicmusic/comments/dkd94g/the_avalanches_since_i_left_you/)
+
+### Talking Heads - Remain in Light
+
+- Critics still frame it as a thrilling collision of artifice, Afrobeat-informed rhythm, weirdness, and body-first immediacy.
+- Fan conversations add a useful sequencing note: people often describe the album as a gradient, starting with manic burst and ending in something denser and eerier.
+- Good Soundtrack Corner move: make it kinetic and uncanny. This is brainy dance music, but the dance part cannot get lost.
+- Strong Soundtrack Corner lane:
+  - municipal fever dream
+  - ritual in fluorescent light
+  - movement as philosophy
+  - ecstatic confusion with impeccable rhythm
+
+Sources:
+- [Pitchfork review](https://pitchfork.com/reviews/albums/talking-heads-remain-in-light/)
+- [r/talkingheads concept-discussion thread](https://www.reddit.com/r/talkingheads/comments/1rwf73t/i_think_remain_in_light_is_a_concept_album/)
