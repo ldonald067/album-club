@@ -549,3 +549,82 @@ Sources:
 - [Pitchfork review](https://pitchfork.com/reviews/albums/13449-the-stone-roses/)
 - [Guardian readers on 30 years of The Stone Roses](https://www.theguardian.com/music/2019/may/02/this-felt-like-the-sound-of-manchester-readers-on-30-years-of-the-stone-roses)
 - [r/indieheads album club thread](https://www.reddit.com/r/indieheads/comments/11eez79)
+
+### The Strokes - Is This It
+
+- Critics and fans alike frame it as a debut that somehow arrived already fully formed: concise, stylish, and weirdly timeless despite being so tied to a specific moment.
+- Reddit is useful because listeners keep describing not just influence but atmosphere: youth, city nights, effortless cool, and guitar interplay that makes the whole album feel in motion.
+- Good Soundtrack Corner move: keep the sleekness, but do not make it glossy. This is downtown casualness with a pulse, not luxury.
+- Strong Soundtrack Corner lane:
+  - late-night lower-Manhattan cool
+  - cigarettes, sneakers, and very good guitar lines
+  - romantic detachment with enough warmth to sting
+  - youth as a city texture
+
+Sources:
+- [Pitchfork review](https://pitchfork.com/reviews/albums/7537-is-this-it/)
+- [GQ retrospective](https://www.gq.com/story/the-strokes-retrospective)
+- [r/TheStrokes discussion](https://www.reddit.com/r/TheStrokes/comments/n796en)
+
+### Arcade Fire - Funeral
+
+- Critic framing keeps coming back to collective grief becoming communal lift: neighborhood songs, personal loss, and a huge emotional architecture that still feels homemade.
+- Fan threads are excellent here because people describe it in life-period terms, not just music terms. The album attaches itself to seasons, friendships, adolescence ending, and real transitions.
+- Good Soundtrack Corner move: keep the pageantry and the ache together. This should feel anthemic, but never impersonal.
+- Strong Soundtrack Corner lane:
+  - suburban exodus with torches
+  - neighborhood mythology under pressure
+  - grief turning into group momentum
+  - youthful catastrophe lit like a bonfire
+
+Sources:
+- [Pitchfork review](https://pitchfork.com/reviews/albums/452-funeral/)
+- [r/LetsTalkMusic discussion](https://www.reddit.com/r/LetsTalkMusic/comments/kvdubj)
+- [r/arcadefire what makes it special thread](https://www.reddit.com/r/arcadefire/comments/1jdp8tv)
+
+### The Clash - London Calling
+
+- Critics and fans both emphasize the same thing: the record's greatness comes from refusing to stay only punk, opening itself to rockabilly, reggae, pop, soul, and pure rock-and-roll force.
+- Good fan shorthand is that it feels like a bridge between eras, which is perfect for Soundtrack Corner because it suggests motion, ambition, and a whole historical crossroads in one record.
+- Strong Soundtrack Corner language should keep the apocalypse and the fun together. This album parties, but it also knows the building might be on fire.
+- Strong Soundtrack Corner lane:
+  - end-times block party
+  - train-station revolution
+  - punk with a wider passport
+  - dance floor under civil unrest
+
+Sources:
+- [Pitchfork anniversary review](https://pitchfork.com/reviews/albums/1490-london-calling-25th-anniversary-legacy-edition/)
+- [r/fantanoforever London Calling thread](https://www.reddit.com/r/fantanoforever/comments/1q64tdp)
+- [r/GenX memory thread](https://www.reddit.com/r/GenX/comments/1jd9ppp)
+
+### Kate Bush - Hounds of Love
+
+- Critics tend to treat this as Bush's perfect marriage of accessibility and total authorship: huge songs on one side, strange conceptual immersion on the other.
+- Fan threads are especially useful for how vividly people talk about The Ninth Wave. They describe the back half almost like a film or survival hallucination.
+- Good Soundtrack Corner move: keep the record's pop immediacy, but let the storm and imagination stay large. This is art-pop that still knows how to hit.
+- Strong Soundtrack Corner lane:
+  - weather with narrative intent
+  - pop songs opening into a survival vision
+  - feminine power under supernatural pressure
+  - waves, woods, and impossible conviction
+
+Sources:
+- [Pitchfork review](https://pitchfork.com/reviews/albums/21964-hounds-of-love/)
+- [r/LetsTalkMusic essay](https://www.reddit.com/r/LetsTalkMusic/comments/o3kmun)
+- [r/katebush Hounds of Love thread](https://www.reddit.com/r/katebush/comments/15nmysg)
+
+### Daft Punk - Discovery
+
+- Critics frame it as a pivot from harder house into something more melodic, pop-facing, and emotionally open without losing the duo's production rigor.
+- Fan threads make an important point for Soundtrack Corner: this album is not just "fun dance music." People talk about how it moves between party energy and genuine dreaminess.
+- Good Soundtrack Corner move: keep the chrome and the joy, but remember that a lot of its staying power comes from warmth and wistfulness.
+- Strong Soundtrack Corner lane:
+  - chrome-night celebration
+  - roller-rink futurism
+  - dance floor with a sentimental core
+  - robots learning nostalgia
+
+Sources:
+- [Pitchfork review](https://pitchfork.com/reviews/albums/2134-discovery/)
+- [r/DaftPunk favorite-album thread](https://www.reddit.com/r/DaftPunk/comments/1hpxatg)

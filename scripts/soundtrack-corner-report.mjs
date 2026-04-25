@@ -43,14 +43,17 @@ const PRIORITY_KEYS = [
 ];
 
 const EDITORIAL_QUEUE_KEYS = [
+  "The Strokes::Is This It",
+  "Arcade Fire::Funeral",
+  "The Clash::London Calling",
+  "Kate Bush::Hounds of Love",
+  "Daft Punk::Discovery",
+  "Radiohead::The Bends",
+  "Radiohead::In Rainbows",
   "The Velvet Underground::The Velvet Underground & Nico",
   "Wilco::Yankee Hotel Foxtrot",
   "Animal Collective::Merriweather Post Pavilion",
   "The Stone Roses::The Stone Roses",
-  "David Bowie::Low",
-  "The Cure::Pornography",
-  "Wire::Pink Flag",
-  "The Strokes::Is This It",
 ];
 
 function readJson(filePath) {
