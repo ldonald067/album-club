@@ -114,7 +114,7 @@ Shows tomorrow's album emoji + genre + decade (e.g., `🎷 Tomorrow's Album — 
 
 Separate Chat Booth nav tab for the Crate Digger chat. The client persists the current tab's transcript in `sessionStorage`, stores the user's chat handle/avatar choice in `localStorage`, sends the latest 8 `{ role, content }` messages to `/api/chat`, and caps user input at 500 characters. Prompt chips call the same submit path as the form.
 
-The chat renders as a little forum thread: Crate Digger and the user each have a pixel avatar/profile row, messages render in paragraph blocks instead of one long slab, and the loading state uses the same post layout. The composer includes lightweight forum formatting hints, and chat posts render simple inline markdown for `**bold**`.
+The chat renders as a little forum thread: Crate Digger and the user each have a pixel avatar/profile row, messages render in paragraph blocks instead of one long slab, and the loading state uses the same post layout. A small thread card at the top anchors the current album plus provider/tool readiness, prompt chips now read more like real conversation starters, and the composer makes the Enter vs Shift+Enter behavior explicit. Chat posts render simple inline markdown for `**bold**`.
 
 User handles are moderated client-side before posting. The handle field blocks reserved/staff-like names, hateful/abusive handles, and unsupported characters; posting is disabled until the handle passes moderation. The moderation helper normalizes separators, common leetspeak, and diacritics before checking for slurs/hate symbols, so obvious evasions like spaced-out or `n1gg3r`-style handles are rejected too.
 

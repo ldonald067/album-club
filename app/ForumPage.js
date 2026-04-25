@@ -43,10 +43,13 @@ const CHAT_STORAGE_PREFIX = "aotd_crate_digger_chat";
 const CHAT_PROFILE_STORAGE_KEY = "aotd_crate_digger_profile";
 
 const CHAT_SUGGESTIONS = [
-  "What should I listen for?",
-  "Connect this album to games.",
+  "What should I listen for on this one?",
+  "Give me three albums to play after this.",
+  "Connect this album to a game.",
+  "What movie or TV scene fits this record?",
+  "Give me a slightly snobby take.",
+  "Why does this album matter?",
 ];
-const CHAT_LOADING_COPY = "Flipping through the crates...";
 const CHAT_AVATAR_OPTIONS = [
   {
     id: "retro-mac",
@@ -152,12 +155,99 @@ function getInitialChatMessages(album) {
   return [
     {
       role: "assistant",
-      content: `Pull up a chair. Ask me about ${album.title}, soundtrack cousins, pop culture side quests, or what to queue up when this one ends.`,
+      content: `We're on **${album.title}** today.\n\nHit me for listening cues, follow-up albums, soundtrack pairings, context, or an unnecessary but sincere opinion.`,
       citations: [],
       provider: null,
       usedTools: {},
     },
   ];
+}
+
+function getChatProviderLabel(provider) {
+  if (provider === "openai") return "Hosted chat ready";
+  if (provider === "ollama") return "Local chat ready";
+  return "Booth warming up";
+}
+
+function getChatThreadMeta(chatStatus) {
+  const items = [getChatProviderLabel(chatStatus.provider)];
+
+  if (chatStatus.enabledTools.files) {
+    items.push("Crate notes on hand");
+  }
+  if (chatStatus.enabledTools.web) {
+    items.push("Web fact-check ready");
+  }
+
+  items.push("Session lives in this tab");
+
+  return items;
+}
+
+function getLatestUserChatMessage(messages) {
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    if (messages[index]?.role === "user") {
+      return String(messages[index].content || "");
+    }
+  }
+  return "";
+}
+
+function getChatLoadingState(messages, chatStatus) {
+  const latestText = getLatestUserChatMessage(messages).toLowerCase();
+
+  if (
+    chatStatus.enabledTools.web &&
+    /(recent|news|today|latest|true|real|actually|release date|when|did|source|chart|controvers|rumor)/.test(
+      latestText,
+    )
+  ) {
+    return {
+      title: "Cross-checking that one",
+      detail: "Pulling a fresh source so this doesn't turn into forum folklore.",
+    };
+  }
+
+  if (
+    /(recommend|what next|listen next|after this|three albums|similar|queue|play next|comp)/.test(
+      latestText,
+    )
+  ) {
+    return {
+      title: "Digging for the right comp",
+      detail: chatStatus.enabledTools.files
+        ? "Checking the crates for picks that actually belong in the same conversation."
+        : "Trying not to hand you three cousins wearing the same jacket.",
+    };
+  }
+
+  if (/(game|games|movie|film|tv|show|scene|soundtrack|boss fight)/.test(latestText)) {
+    return {
+      title: "Cueing the scene",
+      detail: "Matching the record to a setting, not just yelling 'vibes' and clocking out.",
+    };
+  }
+
+  if (/(why|matter|context|history|era|scene|influence|legacy)/.test(latestText)) {
+    return {
+      title: "Putting some context on it",
+      detail: "Lining up the era, the scene, and the part people still argue about.",
+    };
+  }
+
+  if (/(hot take|snobby|overrated|underrated|argue|debate|case)/.test(latestText)) {
+    return {
+      title: "Sharpening the take",
+      detail: "Keeping it spicy without becoming a YouTube comments section.",
+    };
+  }
+
+  return {
+    title: "Flipping through the crates",
+    detail: chatStatus.enabledTools.files
+      ? "Checking notes, rabbit holes, and a decent follow-up angle."
+      : "Thinking it through before I start talking nonsense.",
+  };
 }
 
 function getChatAvatarOption(avatarId) {
@@ -385,6 +475,7 @@ function getSafeChatProfile(profile, handleModeration) {
 
 function CultureChatAgent({ album }) {
   const initialMessages = useMemo(() => getInitialChatMessages(album), [album]);
+  const chatSuggestions = useMemo(() => CHAT_SUGGESTIONS.slice(0, 6), []);
   const chatStorageKey = useMemo(
     () => `${CHAT_STORAGE_PREFIX}_${album.key || album.title}`,
     [album],
@@ -414,6 +505,11 @@ function CultureChatAgent({ album }) {
     [safeProfile],
   );
   const chatUnavailable = chatStatus.ready && !chatStatus.available;
+  const threadMeta = useMemo(() => getChatThreadMeta(chatStatus), [chatStatus]);
+  const loadingState = useMemo(
+    () => getChatLoadingState(messages, chatStatus),
+    [chatStatus, messages],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -561,6 +657,29 @@ function CultureChatAgent({ album }) {
           Drop a take, ask for a comp, or start a tiny tasteful war about the
           best soundtrack needle drop.
         </p>
+        <div className="agent-thread-card">
+          <div className="agent-thread-kicker">Now spinning in the booth</div>
+          <div className="agent-thread-title">
+            {album.title}
+            <span>{album.artist}</span>
+          </div>
+          <p className="agent-thread-copy">
+            Best for quick reactions, recommendation chains, soundtrack side
+            quests, and the occasional mildly snarky fact-check.
+          </p>
+          <div className="agent-thread-meta" aria-label="Chat booth details">
+            {threadMeta.map((item) => (
+              <span
+                key={item}
+                className={`agent-thread-chip${
+                  item === "Session lives in this tab" ? " subtle" : ""
+                }`}
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
         {chatUnavailable && (
           <div className="agent-status-note" role="status">
             {chatStatus.reason ||
@@ -656,18 +775,26 @@ function CultureChatAgent({ album }) {
           </div>
         </div>
 
-        <div className="agent-suggestions" aria-label="Prompt ideas">
-          {CHAT_SUGGESTIONS.map((prompt) => (
-            <button
-              key={prompt}
-              type="button"
-              className="agent-chip"
-              onClick={() => sendMessage(prompt)}
-              disabled={loading || chatUnavailable || !handleModeration.ok}
-            >
-              {prompt}
-            </button>
-          ))}
+        <div className="agent-suggestions-panel">
+          <div className="agent-suggestions-header">
+            <div className="agent-suggestions-title">Jump in with</div>
+            <div className="agent-suggestions-copy">
+              Quick starters if you don't feel like writing the cold open.
+            </div>
+          </div>
+          <div className="agent-suggestions" aria-label="Prompt ideas">
+            {chatSuggestions.map((prompt) => (
+              <button
+                key={prompt}
+                type="button"
+                className="agent-chip"
+                onClick={() => sendMessage(prompt)}
+                disabled={loading || chatUnavailable || !handleModeration.ok}
+              >
+                {prompt}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div
@@ -785,7 +912,15 @@ function CultureChatAgent({ album }) {
                   </div>
                 </div>
                 <div className="agent-message-text agent-thinking">
-                  <p>{CHAT_LOADING_COPY}</p>
+                  <p className="agent-thinking-line">
+                    {loadingState.title}
+                    <span className="agent-thinking-dots" aria-hidden="true">
+                      <span />
+                      <span />
+                      <span />
+                    </span>
+                  </p>
+                  <p className="agent-thinking-detail">{loadingState.detail}</p>
                 </div>
                 {(chatStatus.provider ||
                   chatStatus.enabledTools.files ||
@@ -837,7 +972,7 @@ function CultureChatAgent({ album }) {
             placeholder={
               chatUnavailable
                 ? "Chat Booth is offline on this deployment right now."
-                : "Ask about samples, scenes, lore, recs, boss-fight music..."
+                : "Ask about recs, scenes, samples, lore, soundtrack logic, or a tiny hot take..."
             }
             disabled={chatUnavailable}
             onChange={(e) => setDraft(e.target.value)}
@@ -849,9 +984,14 @@ function CultureChatAgent({ album }) {
             }}
           />
           <div className="agent-form-footer">
-            <span className="agent-count">
-              {draft.length}/{CHAT_MAX_CHARS}
-            </span>
+            <div className="agent-form-meta">
+              <span className="agent-count">
+                {draft.length}/{CHAT_MAX_CHARS}
+              </span>
+              <span className="agent-composer-note">
+                Enter posts. Shift+Enter makes a new line.
+              </span>
+            </div>
             <button
               type="submit"
               className="btn-submit"
