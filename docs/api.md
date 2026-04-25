@@ -73,6 +73,8 @@ Safety behavior: the route returns a brief boundary reply for requests that try 
 
 Reply shaping: the agent prompt now switches between lightweight reply modes based on the latest user turn (for example fact-check, recommendation, comparison, soundtrack/game bridge, debate, context, or chatty thread reply). This keeps answers shorter, less repetitive, and better matched to what the user actually asked.
 
+Knowledge routing: local knowledge-file selection is now mode-aware too. Recommendation questions prefer recommendation/artist-arc notes, soundtrack questions prefer game/screen bridge files, context questions prefer scene/artist notes, and debate-style prompts prefer forum/debate guidance. The goal is to make local-mode answers feel more informed instead of just more verbose.
+
 Development default: local Ollama (`CRATE_DIGGER_PROVIDER=ollama`, `OLLAMA_MODEL=gemma3:4b`, `OLLAMA_HOST=http://127.0.0.1:11434`). In Ollama mode, the route uses the local knowledge pack from `public/agent-knowledge/*.md` and does not perform live web search.
 
 Production behavior: the route does **not** default to localhost Ollama. If `CRATE_DIGGER_PROVIDER` / `AI_PROVIDER` is unset, production prefers hosted OpenAI when `OPENAI_API_KEY` exists, otherwise it will use Ollama only when `OLLAMA_HOST` points at a real remote/self-hosted Ollama server. If neither is configured, `/api/chat` returns a clean unavailable state instead of trying `127.0.0.1`.
