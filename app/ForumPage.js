@@ -30,6 +30,7 @@ import {
 import {
   CHAT_HANDLE_MAX_CHARS,
   moderateChatHandle,
+  moderateChatPrompt,
   normalizeChatHandle,
 } from "@/lib/chat-moderation";
 
@@ -428,6 +429,19 @@ function createAssistantChatMessage(data) {
   };
 }
 
+function createLocalBoundaryChatMessage(reply) {
+  return createAssistantChatMessage({
+    reply,
+    citations: [
+      {
+        type: "file",
+        title: "Safety And Limits",
+        url: "/agent-knowledge/safety-and-limits.md",
+      },
+    ],
+  });
+}
+
 function normalizeStoredChatMessages(rawMessages) {
   if (!Array.isArray(rawMessages)) return null;
 
@@ -571,7 +585,8 @@ function CultureChatAgent({ album }) {
   }, [messages, loading]);
 
   async function sendMessage(presetText) {
-    const text = (presetText || draft).trim().slice(0, CHAT_MAX_CHARS);
+    const promptModeration = moderateChatPrompt(presetText || draft);
+    const text = promptModeration.value.trim().slice(0, CHAT_MAX_CHARS);
     if (!text || loading) return;
     if (chatUnavailable) {
       setError(
@@ -582,6 +597,24 @@ function CultureChatAgent({ album }) {
     }
     if (!handleModeration.ok) {
       setError(handleModeration.reason);
+      return;
+    }
+
+    if (!promptModeration.ok) {
+      if (!promptModeration.reply) {
+        setError(promptModeration.reason);
+        return;
+      }
+
+      setMessages((current) =>
+        [
+          ...current,
+          { role: "user", content: text },
+          createLocalBoundaryChatMessage(promptModeration.reply),
+        ].slice(-CHAT_HISTORY_LIMIT),
+      );
+      setDraft("");
+      setError("");
       return;
     }
 
@@ -4015,7 +4048,7 @@ function StatsSection() {
 const FAQ_ITEMS = [
   {
     q: "How does the daily album work?",
-    a: `Every day at midnight UTC, a new album is selected from our rotation of ${ALBUMS.length}+ albums. The selection uses a seeded shuffle — the same date always shows the same album, but the order feels random. You'll see everything from classic rock to lofi mixes to obscure deep cuts.`,
+    a: `Every day at midnight UTC, the club flips to one album from a ${ALBUMS.length}-record rotation. The shuffle is seeded, so the same date always lands on the same pick, but the order still feels pleasantly unruly. It is meant to bounce between canon, curveballs, and records that deserve a second argument.`,
   },
   {
     q: "What is Rate & Reveal?",
@@ -4031,7 +4064,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Do I need an account?",
-    a: "Nope. Everything is anonymous. Your participation is tracked locally in your browser so you can only rate/vibe/guess once per day, but we never collect accounts, emails, or personal data.",
+    a: "No. It stays anonymous on purpose. Your browser remembers whether you already rated, vibed, or guessed today, but the site does not ask for accounts, inboxes, or a little origin story first.",
   },
   {
     q: "When does the album change?",
@@ -4039,7 +4072,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "What kind of albums are in the rotation?",
-    a: "A wide mix: classic albums, deep cuts, lofi mixes, DJ sets, ambient compilations, bedroom pop, soundtracks, live sessions, vaporwave, and international music. We aim for variety over mainstream hits.",
+    a: "A broad, slightly opinionated mix: all-timers, deep cuts, DJ sets, ambient records, mixtape-adjacent oddities, bedroom-pop essentials, soundtracks, live sessions, vaporwave, and plenty that is not in the usual canon starter pack. Variety matters more here than prestige.",
   },
 ];
 
@@ -5050,7 +5083,8 @@ export default function ForumPage({ album, dateString }) {
           <div className="panel-body greenhouse-body">
             <p className="activity-prompt" style={{ textAlign: "center" }}>
               Take a break between albums. Decorate a cozy greenhouse — no
-              goals, no timer, just vibes.
+              score to chase, no timer breathing down your neck, just a little
+              room to exhale.
             </p>
             <div className="greenhouse-widget">
               <iframe

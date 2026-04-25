@@ -69,7 +69,7 @@ Response: `{ reply, citations, usedTools, enabledTools, provider }`. `citations`
 
 Rate limits: 12 requests/minute and 25 requests/day per IP via the shared in-memory limiter. The route adds today's album context server-side and does not trust client-provided album metadata.
 
-Safety behavior: the route returns a brief boundary reply for requests that try to generate or endorse hateful content (for example racist or sexist jokes/insults). The agent prompt also tells Crate Digger to acknowledge that it is a model, not a person, and to admit uncertainty instead of pretending it knows everything.
+Safety behavior: the route returns a brief boundary reply for requests that try to generate or endorse hateful content (for example racist or sexist jokes/insults). The latest user prompt is now checked through a shared moderation helper on both the client and the server, so obvious hateful asks get a consistent boundary even if client-side checks are bypassed. The agent prompt also tells Crate Digger to acknowledge that it is a model, not a person, and to admit uncertainty instead of pretending it knows everything.
 
 Reply shaping: the agent prompt now switches between lightweight reply modes based on the latest user turn (for example fact-check, recommendation, comparison, soundtrack/game bridge, debate, context, or chatty thread reply). This keeps answers shorter, less repetitive, and better matched to what the user actually asked.
 

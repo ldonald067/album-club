@@ -118,6 +118,8 @@ The chat renders as a little forum thread: Crate Digger and the user each have a
 
 User handles are moderated client-side before posting. The handle field blocks reserved/staff-like names, hateful/abusive handles, and unsupported characters; posting is disabled until the handle passes moderation. The moderation helper normalizes separators, common leetspeak, and diacritics before checking for slurs/hate symbols, so obvious evasions like spaced-out or `n1gg3r`-style handles are rejected too.
 
+The chat composer also preflights the latest prompt through the same moderation layer. Clear hateful requests now get an immediate in-thread Crate Digger boundary reply with a safety-note citation instead of disappearing into a vague error or quietly hitting the model.
+
 On mount, the client requests `GET /api/chat` to learn whether the deployment actually has a working chat provider. If the route reports `available: false`, the tab shows a warm status note, disables prompt chips/composer submit, and avoids the fake-broken "looks alive until you click" behavior.
 
 Assistant messages can include `citations`, `usedTools`, and `provider`. Citations render as visible source links below a message; tool pills show `Local model` or `Hosted model`, plus `Checked the crates` and `Searched the web` when relevant. The loading state mirrors the server-advertised provider/tool availability instead of assuming local Ollama.
