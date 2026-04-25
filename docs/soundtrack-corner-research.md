@@ -469,3 +469,83 @@ Sources:
 Sources:
 - [Pitchfork review](https://pitchfork.com/reviews/albums/talking-heads-remain-in-light/)
 - [r/talkingheads concept-discussion thread](https://www.reddit.com/r/talkingheads/comments/1rwf73t/i_think_remain_in_light_is_a_concept_album/)
+
+### Joy Division - Unknown Pleasures
+
+- Critics and listeners both keep returning to the same alchemy: punk bones, bass-led propulsion, Martin Hannett atmosphere, and a kind of cold vastness that still feels bodily.
+- Fan language tends to treat the album less as "sad music" than as a haunted environment people keep wandering back into.
+- Good Soundtrack Corner move: keep the noir, distance, and pulse together. This should feel urban, severe, and strangely alive rather than merely bleak.
+- Strong Soundtrack Corner lane:
+  - empty street with voltage in it
+  - neon dread
+  - industrial night ritual
+  - bassline as flashlight
+
+Sources:
+- [Pitchfork review bundle](https://pitchfork.com/reviews/albums/11624-unknown-pleasurescloserstill/)
+- [r/JoyDivision mysticism thread](https://www.reddit.com/r/JoyDivision/comments/vodkuv)
+- [r/vinyl post on Unknown Pleasures](https://www.reddit.com/r/vinyl/comments/1i920da)
+
+### Wilco - Yankee Hotel Foxtrot
+
+- Critics and fans both treat the album as a reinvention record: traditional songcraft being torn open by noise, uncertainty, and strange new space.
+- Reddit is useful here because people explain both sides of the appeal: some hear a subdued vibes record, while devotees describe melodies hiding inside collapse and static.
+- Good Soundtrack Corner move: keep the Midwestern tenderness, but let the disorientation stay in frame. It should feel like quiet beauty surviving civic and private disrepair.
+- Strong Soundtrack Corner lane:
+  - downtown aftermath in winter light
+  - love song under public static
+  - lonely skyline with machinery humming underneath
+  - gentle voice inside structural damage
+
+Sources:
+- [Pitchfork review](https://pitchfork.com/reviews/albums/8676-yankee-hotel-foxtrot/)
+- [r/LetsTalkMusic thread](https://www.reddit.com/r/LetsTalkMusic/comments/1it2619)
+- [r/wilco favorite album thread](https://www.reddit.com/r/wilco/comments/n6rmw5)
+
+### The Velvet Underground - The Velvet Underground & Nico
+
+- Critics and fans both emphasize how unlike its era it still sounds: raw, droning, literate, urban, and quietly confrontational.
+- Reddit is especially useful for scene language here. People talk about stumbling home at sunrise, sketchy glamour, all-night drift, and the record's total refusal to behave.
+- Good Soundtrack Corner move: do not reduce it to "influential classic." The right lane is art-school street realism, menace, boredom, desire, and cool that feels slightly dangerous.
+- Strong Soundtrack Corner lane:
+  - downtown at 4 a.m.
+  - gallery walls and bad decisions
+  - monochrome glamour with a needle in it
+  - city mythology before the myth calcified
+
+Sources:
+- [Pitchfork deluxe review](https://pitchfork.com/reviews/albums/17129-the-velvet-underground-nico/)
+- [r/LetsTalkMusic discussion](https://www.reddit.com/r/LetsTalkMusic/comments/jr6tow)
+- [r/askmusic thread](https://www.reddit.com/r/askmusic/comments/1qn0btw/why_is_the_velvet_underground_nico_considered_a/)
+
+### Animal Collective - Merriweather Post Pavilion
+
+- Critics frame it as the band finding a middle ground between their weirder instincts and genuine pop immediacy without sanding off what makes them strange.
+- Fan threads help because they talk about it as a full-album experience: transitions, communal rush, softness, and bigness built from synthetic means without feeling cold.
+- Good Soundtrack Corner move: keep it ecstatic and lush, but also human. This is digital-pop wonder that still wants bodies in the room.
+- Strong Soundtrack Corner lane:
+  - neon communal bliss
+  - boardwalk future-pop
+  - synth confetti with real feeling
+  - affectionate overstimulation
+
+Sources:
+- [Pitchfork review](https://pitchfork.com/reviews/albums/12518-merriweather-post-pavilion/)
+- [r/AnimalCollective first-listen thread](https://www.reddit.com/r/AnimalCollective/comments/1lw2hlc)
+- [r/AnimalCollective lore thread](https://www.reddit.com/r/AnimalCollective/comments/1j2ipfu/whats_the_lorestory_behind_merriweather_post/)
+
+### The Stone Roses - The Stone Roses
+
+- Critical framing tends to emphasize the album as a crossroads record: baggy grooves, jangle, psych color, and big hooks turning into a whole scene.
+- Fan discussion is useful because people do not just call it great; they remember where it hit them and how unlike anything else it felt at the time.
+- Good Soundtrack Corner move: keep the swagger warm and open-air. This should feel like a city record for people who think afternoons can still become mythic.
+- Strong Soundtrack Corner lane:
+  - sunlit revolution
+  - sneakers on wet pavement
+  - youth culture in bloom
+  - dance groove wearing guitar music's clothes
+
+Sources:
+- [Pitchfork review](https://pitchfork.com/reviews/albums/13449-the-stone-roses/)
+- [Guardian readers on 30 years of The Stone Roses](https://www.theguardian.com/music/2019/may/02/this-felt-like-the-sound-of-manchester-readers-on-30-years-of-the-stone-roses)
+- [r/indieheads album club thread](https://www.reddit.com/r/indieheads/comments/11eez79)

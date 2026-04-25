@@ -42,6 +42,17 @@ const PRIORITY_KEYS = [
   "Talking Heads::Remain in Light",
 ];
 
+const EDITORIAL_QUEUE_KEYS = [
+  "The Velvet Underground::The Velvet Underground & Nico",
+  "Wilco::Yankee Hotel Foxtrot",
+  "Animal Collective::Merriweather Post Pavilion",
+  "The Stone Roses::The Stone Roses",
+  "David Bowie::Low",
+  "The Cure::Pornography",
+  "Wire::Pink Flag",
+  "The Strokes::Is This It",
+];
+
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
@@ -80,6 +91,11 @@ const uncoveredPriorityAlbums = PRIORITY_KEYS.filter(
 )
   .map((key) => albumByKey.get(key))
   .filter(Boolean);
+const uncoveredEditorialAlbums = EDITORIAL_QUEUE_KEYS.filter(
+  (key) => !overrideKeys.has(key),
+)
+  .map((key) => albumByKey.get(key))
+  .filter(Boolean);
 
 const decadeCoverage = coveredAlbums.reduce((accumulator, album) => {
   const decade = getDecadeLabel(album.year);
@@ -111,11 +127,16 @@ for (const [decade, count] of Object.entries(decadeCoverage).sort()) {
   console.log(`- ${decade}: ${count}`);
 }
 
-if (uncoveredPriorityAlbums.length > 0) {
+if (uncoveredPriorityAlbums.length > 0 || uncoveredEditorialAlbums.length > 0) {
   console.log("");
   console.log("Next editorial candidates:");
 
-  for (const album of uncoveredPriorityAlbums.slice(0, 8)) {
+  const candidates =
+    uncoveredPriorityAlbums.length > 0
+      ? uncoveredPriorityAlbums
+      : uncoveredEditorialAlbums;
+
+  for (const album of candidates.slice(0, 8)) {
     console.log(`- ${album.artist} - ${album.title} (${album.year}, ${album.genre})`);
   }
 }
