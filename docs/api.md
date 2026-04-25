@@ -71,6 +71,8 @@ Rate limits: 12 requests/minute and 25 requests/day per IP via the shared in-mem
 
 Safety behavior: the route returns a brief boundary reply for requests that try to generate or endorse hateful content (for example racist or sexist jokes/insults). The agent prompt also tells Crate Digger to acknowledge that it is a model, not a person, and to admit uncertainty instead of pretending it knows everything.
 
+Reply shaping: the agent prompt now switches between lightweight reply modes based on the latest user turn (for example fact-check, recommendation, comparison, soundtrack/game bridge, debate, context, or chatty thread reply). This keeps answers shorter, less repetitive, and better matched to what the user actually asked.
+
 Development default: local Ollama (`CRATE_DIGGER_PROVIDER=ollama`, `OLLAMA_MODEL=gemma3:4b`, `OLLAMA_HOST=http://127.0.0.1:11434`). In Ollama mode, the route uses the local knowledge pack from `public/agent-knowledge/*.md` and does not perform live web search.
 
 Production behavior: the route does **not** default to localhost Ollama. If `CRATE_DIGGER_PROVIDER` / `AI_PROVIDER` is unset, production prefers hosted OpenAI when `OPENAI_API_KEY` exists, otherwise it will use Ollama only when `OLLAMA_HOST` points at a real remote/self-hosted Ollama server. If neither is configured, `/api/chat` returns a clean unavailable state instead of trying `127.0.0.1`.
