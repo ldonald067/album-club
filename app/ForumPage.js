@@ -17,7 +17,7 @@ import {
   getCoverPuzzleAlbum,
   getScrambleAlbum,
   getHeardleAlbum,
-  getLyricPuzzleAlbum,
+  pickRotatingPoolAlbum,
   scrambleArtist,
   getBingoCard,
   getMonthMatches,
@@ -89,11 +89,7 @@ const SoundtrackCornerFallback = dynamic(
   () => import("./SoundtrackCornerFallback"),
   {
     ssr: false,
-    loading: () => (
-      <p className="agent-intro">
-        Opening Soundtrack Corner...
-      </p>
-    ),
+    loading: () => <p className="agent-intro">Opening Soundtrack Corner...</p>,
   },
 );
 
@@ -206,7 +202,8 @@ function getChatLoadingState(messages, chatStatus) {
   ) {
     return {
       title: "Cross-checking that one",
-      detail: "Pulling a fresh source so this doesn't turn into forum folklore.",
+      detail:
+        "Pulling a fresh source so this doesn't turn into forum folklore.",
     };
   }
 
@@ -230,18 +227,24 @@ function getChatLoadingState(messages, chatStatus) {
   ) {
     return {
       title: "Zooming in on the parts",
-      detail: "Pulling apart the arrangement so this lands on actual music, not floating adjectives.",
+      detail:
+        "Pulling apart the arrangement so this lands on actual music, not floating adjectives.",
     };
   }
 
-  if (/(why|matter|context|history|era|scene|influence|legacy)/.test(latestText)) {
+  if (
+    /(why|matter|context|history|era|scene|influence|legacy)/.test(latestText)
+  ) {
     return {
       title: "Putting some context on it",
-      detail: "Lining up the era, the scene, and the part people still argue about.",
+      detail:
+        "Lining up the era, the scene, and the part people still argue about.",
     };
   }
 
-  if (/(hot take|snobby|overrated|underrated|argue|debate|case)/.test(latestText)) {
+  if (
+    /(hot take|snobby|overrated|underrated|argue|debate|case)/.test(latestText)
+  ) {
     return {
       title: "Sharpening the take",
       detail: "Keeping it spicy without becoming a YouTube comments section.",
@@ -661,10 +664,7 @@ function CultureChatAgent({ album }) {
         throw new Error(data.error || "The chat agent hit static.");
       }
 
-      setMessages((current) => [
-        ...current,
-        createAssistantChatMessage(data),
-      ]);
+      setMessages((current) => [...current, createAssistantChatMessage(data)]);
     } catch (err) {
       setError(err.message || "The chat agent is offline right now.");
     } finally {
@@ -775,17 +775,15 @@ function CultureChatAgent({ album }) {
               value={profile.handle}
               maxLength={CHAT_HANDLE_MAX_CHARS}
               aria-invalid={!handleModeration.ok}
-              onChange={(e) =>
-                {
-                  setError("");
-                  setProfile((current) => ({
-                    ...current,
-                    handle:
-                      normalizeChatHandle(e.target.value) ||
-                      DEFAULT_CHAT_PROFILE.handle,
-                  }));
-                }
-              }
+              onChange={(e) => {
+                setError("");
+                setProfile((current) => ({
+                  ...current,
+                  handle:
+                    normalizeChatHandle(e.target.value) ||
+                    DEFAULT_CHAT_PROFILE.handle,
+                }));
+              }}
             />
           </div>
           {!handleModeration.ok && (
@@ -818,7 +816,9 @@ function CultureChatAgent({ album }) {
                     aria-hidden="true"
                   />
                 </span>
-                <span className="agent-avatar-option-label">{option.label}</span>
+                <span className="agent-avatar-option-label">
+                  {option.label}
+                </span>
               </button>
             ))}
           </div>
@@ -903,7 +903,9 @@ function CultureChatAgent({ album }) {
                         </span>
                       )}
                       {message.usedTools.web && (
-                        <span className="agent-tool-pill">Searched the web</span>
+                        <span className="agent-tool-pill">
+                          Searched the web
+                        </span>
                       )}
                     </div>
                   )}
@@ -1077,6 +1079,17 @@ function GuessHistory({ guesses, checkFn }) {
           <span>{checkFn(g) ? "✅" : "❌"}</span>
         </div>
       ))}
+    </div>
+  );
+}
+
+function ActivityStatusNote({ children, tone = "default" }) {
+  return (
+    <div
+      className={`activity-status-note${tone !== "default" ? ` ${tone}` : ""}`}
+      role="status"
+    >
+      {children}
     </div>
   );
 }
@@ -1479,7 +1492,7 @@ function RateReveal({ albumKey }) {
       </div>
       <div className="panel-body rate-input">
         <p className="activity-prompt">
-          Rate this album, then see what everyone else thinks. No take-backs.
+          Pick your number, lock it in, then see where the room landed.
         </p>
         <div className="star-row">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
@@ -2272,7 +2285,7 @@ function VibeCheck({ albumKey }) {
       <div className="panel-body">
         {!submitted && (
           <p className="activity-prompt">
-            What vibes did this album give you? Pick up to 3.
+            Pick up to 3 moods that actually fit the record.
           </p>
         )}
         {submitted && topVibeData && (
@@ -2519,8 +2532,7 @@ function GuessGame() {
             className="activity-prompt"
             style={{ margin: "0 0 8px", fontSize: "11px" }}
           >
-            Guess a mystery album from the rotation. Wrong guesses reveal more
-            clues!
+            Start broad, then tighten up. Every miss turns over another clue.
           </p>
         )}
         {/* Clues */}
@@ -2649,7 +2661,7 @@ function GuessGame() {
 /* ─── Cover Art Challenge ─── */
 const BLUR_LEVELS = [2, 1.5, 1, 0.5, 0];
 
-function CoverChallenge() {
+function CoverChallenge({ fallbackNote = null }) {
   const todayKey = getTodayKey();
   const puzzleAlbum = useMemo(() => getCoverPuzzleAlbum(), []);
 
@@ -2750,6 +2762,9 @@ function CoverChallenge() {
         </span>
       </div>
       <div className="panel-body">
+        {fallbackNote ? (
+          <ActivityStatusNote>{fallbackNote}</ActivityStatusNote>
+        ) : null}
         <p className="activity-prompt" style={{ textAlign: "center" }}>
           Can you identify the album from its blurred cover art? Each wrong
           guess clears the blur a little more.
@@ -3002,8 +3017,20 @@ function HeardleGame() {
     }
   };
 
-  // If no YouTube ID, fall back to Cover Challenge
-  if (!hasYouTube) return <CoverChallenge />;
+  // If no YouTube ID, make the fallback explicit instead of silently swapping modes
+  if (!hasYouTube) {
+    return (
+      <CoverChallenge
+        fallbackNote={
+          <>
+            <strong>Heardle switched formats.</strong> Today&apos;s puzzle album
+            does not have a stable YouTube source in the rotation yet, so this
+            slot rolls over to Cover Art Challenge.
+          </>
+        }
+      />
+    );
+  }
 
   const isCorrectGuess = (g) =>
     g.toLowerCase() === puzzleAlbum.title.toLowerCase();
@@ -3025,8 +3052,8 @@ function HeardleGame() {
       </div>
       <div className="panel-body">
         <p className="activity-prompt" style={{ textAlign: "center" }}>
-          Listen to progressively longer clips and guess the album. You get{" "}
-          {clipLength}s this round.
+          The intro gets longer every round. Hold your nerve or let the{" "}
+          {clipLength}s clip give you one more clue.
         </p>
 
         {/* Hidden YouTube player */}
@@ -3134,7 +3161,7 @@ function HeardleGame() {
 /* ─── Lyric Fill-in-the-Blank ─── */
 function LyricGame() {
   const todayKey = getTodayKey();
-  const puzzleAlbum = useMemo(() => getLyricPuzzleAlbum(), []);
+  const [puzzleAlbum, setPuzzleAlbum] = useState(null);
   const [lyrics, setLyrics] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -3150,18 +3177,30 @@ function LyricGame() {
   useEffect(() => {
     import("@/lib/lyrics.json")
       .then((mod) => {
-        const key =
-          `${puzzleAlbum.artist} - ${puzzleAlbum.title}`.toLowerCase();
         const data = mod.default || mod;
-        // Find matching lyrics (case-insensitive key match)
-        const match = Object.entries(data).find(
-          ([k]) => k.toLowerCase() === key,
+        const lyricKeys = new Set(
+          Object.keys(data).map((key) => key.toLowerCase()),
         );
-        if (match) setLyrics(match[1]);
+        const lyricPool = ALBUMS.filter(
+          (album) =>
+            album.recognizable &&
+            lyricKeys.has(`${album.artist} - ${album.title}`.toLowerCase()),
+        );
+        const lyricAlbum = pickRotatingPoolAlbum(
+          lyricPool,
+          new Date().getFullYear() * 37 + 11,
+        );
+
+        setPuzzleAlbum(lyricAlbum);
+        setLyrics(
+          lyricAlbum
+            ? data[`${lyricAlbum.artist} - ${lyricAlbum.title}`] || null
+            : null,
+        );
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [puzzleAlbum]);
+  }, []);
 
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_lyric_${todayKey}`);
@@ -3177,8 +3216,20 @@ function LyricGame() {
       .catch(() => {});
   }, [todayKey]);
 
-  // If no lyrics available, fall back to Cover Challenge
-  if (!loading && !lyrics) return <CoverChallenge />;
+  // If no lyrics are available, fall back with a clear explanation.
+  if (!loading && (!lyrics || !puzzleAlbum)) {
+    return (
+      <CoverChallenge
+        fallbackNote={
+          <>
+            <strong>Lyric Challenge took the day off.</strong> We do not have a
+            clean lyric pull for today&apos;s rotating pick, so this slot swaps
+            to Cover Art Challenge instead.
+          </>
+        }
+      />
+    );
+  }
   if (loading) {
     return (
       <div className="panel">
@@ -3191,7 +3242,7 @@ function LyricGame() {
           className="panel-body"
           style={{ textAlign: "center", padding: 30 }}
         >
-          Loading...
+          Pulling a lyric line from the crates...
         </div>
       </div>
     );
@@ -3320,7 +3371,8 @@ function LyricGame() {
       </div>
       <div className="panel-body">
         <p className="activity-prompt" style={{ textAlign: "center" }}>
-          Fill in the missing word(s) from this lyric. You have 4 attempts.
+          Fill in the missing word or phrase. Four swings, then the answer
+          drops.
         </p>
 
         {/* Lyric display */}
@@ -3556,7 +3608,8 @@ function ScrambleGame() {
       </div>
       <div className="panel-body">
         <p className="activity-prompt">
-          Unscramble the artist name and guess the album.
+          Unscramble the artist, then name the album before the extra clues do
+          the heavy lifting.
         </p>
 
         {/* Scrambled artist name */}
@@ -3946,7 +3999,9 @@ function StatsSection() {
           </span>
         </div>
         <div className="panel-body">
-          <p className="activity-prompt">Loading stats...</p>
+          <p className="activity-prompt stats-state-copy">
+            Adding up the room, the puzzle board, and the long game...
+          </p>
         </div>
       </div>
     );
@@ -3961,7 +4016,10 @@ function StatsSection() {
           </span>
         </div>
         <div className="panel-body">
-          <p className="activity-prompt">Could not load statistics.</p>
+          <ActivityStatusNote tone="error">
+            The stats board is taking a breather. Give it another shot in a
+            minute.
+          </ActivityStatusNote>
         </div>
       </div>
     );
@@ -3981,15 +4039,12 @@ function StatsSection() {
           </span>
         </div>
         <div className="panel-body">
-          {stats.totalRatings === 0 && (
-            <p
-              className="activity-prompt"
-              style={{ textAlign: "center", marginBottom: 12 }}
-            >
-              No ratings yet — be the first! Head to <strong>Home</strong> and
-              rate today&apos;s album.
-            </p>
-          )}
+          {stats.totalRatings === 0 ? (
+            <ActivityStatusNote tone="subtle">
+              Fresh sheet today. Be the first to rate the album and wake the
+              board up.
+            </ActivityStatusNote>
+          ) : null}
           <div className="stats-grid">
             <div className="stat-card">
               <div className="stat-num">{stats.totalRatings}</div>
@@ -5101,9 +5156,9 @@ export default function ForumPage({ album, dateString }) {
           </div>
           <div className="panel-body greenhouse-body">
             <p className="activity-prompt" style={{ textAlign: "center" }}>
-              Take a break between albums. Decorate a cozy greenhouse — no
-              score to chase, no timer breathing down your neck, just a little
-              room to exhale.
+              Take a break between albums. Decorate a cozy greenhouse — no score
+              to chase, no timer breathing down your neck, just a little room to
+              exhale.
             </p>
             <div className="greenhouse-widget">
               <iframe

@@ -1,7 +1,12 @@
-import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { getTodayAlbum } from "@/lib/albums";
-import { getPublicRouteError, readJsonBody } from "@/lib/api-helpers";
+import {
+  getPublicRouteError,
+  getSecondsUntilNextUtcDay,
+  jsonNoStore,
+  jsonRateLimited,
+  readJsonBody,
+} from "@/lib/api-helpers";
 import { checkRateLimit, checkDailyLimit, getRealIp } from "@/lib/rate-limit";
 import {
   createCrateDiggerResponse,
@@ -14,8 +19,6 @@ export const dynamic = "force-dynamic";
 const MAX_BODY_CHARS = 4096;
 const MAX_MESSAGES = 8;
 const MAX_MESSAGE_CHARS = 700;
-const NO_STORE_HEADERS = { "Cache-Control": "no-store" };
-
 function normalizeMessages(rawMessages) {
   if (!Array.isArray(rawMessages)) return null;
 
@@ -51,9 +54,8 @@ function toPublicChatStatus(status) {
 export async function GET() {
   const status = toPublicChatStatus(getCrateDiggerRuntimeStatus());
 
-  return NextResponse.json(status, {
+  return jsonNoStore(status, {
     status: status.available ? 200 : 503,
-    headers: NO_STORE_HEADERS,
   });
 }
 
@@ -62,14 +64,13 @@ export async function POST(request) {
     const runtimeStatus = getCrateDiggerRuntimeStatus();
 
     if (!runtimeStatus.available) {
-      return NextResponse.json(
+      return jsonNoStore(
         {
           error: runtimeStatus.reason,
           ...toPublicChatStatus(runtimeStatus),
         },
         {
           status: 503,
-          headers: NO_STORE_HEADERS,
         },
       );
     }
@@ -78,29 +79,25 @@ export async function POST(request) {
     const ip = getRealIp(hdrs);
 
     if (!checkRateLimit(ip, 12, 60000)) {
-      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+      return jsonRateLimited();
     }
 
     if (!checkDailyLimit(ip, "chat", 25)) {
-      return NextResponse.json(
-        { error: "Daily chat limit reached" },
-        { status: 429 },
-      );
+      return jsonRateLimited("Daily chat limit reached", {
+        retryAfter: getSecondsUntilNextUtcDay(),
+      });
     }
 
     const body = await readJsonBody(request, { maxChars: MAX_BODY_CHARS });
 
     const messages = normalizeMessages(body.messages);
     if (!messages || messages.length === 0) {
-      return NextResponse.json(
-        { error: "Messages are required" },
-        { status: 400 },
-      );
+      return jsonNoStore({ error: "Messages are required" }, { status: 400 });
     }
 
     const hasUserMessage = messages.some((message) => message.role === "user");
     if (!hasUserMessage) {
-      return NextResponse.json(
+      return jsonNoStore(
         { error: "A user message is required" },
         { status: 400 },
       );
@@ -116,15 +113,13 @@ export async function POST(request) {
     });
 
     if (!data.reply) {
-      return NextResponse.json(
+      return jsonNoStore(
         { error: "The chat agent did not send a reply." },
         { status: 502 },
       );
     }
 
-    return NextResponse.json(data, {
-      headers: NO_STORE_HEADERS,
-    });
+    return jsonNoStore(data);
   } catch (error) {
     const publicError = getPublicRouteError(
       error,
@@ -134,9 +129,9 @@ export async function POST(request) {
       console.error("POST /api/chat error:", error);
     }
 
-    return NextResponse.json(
+    return jsonNoStore(
       { error: publicError.message },
-      { status: publicError.status, headers: NO_STORE_HEADERS },
+      { status: publicError.status },
     );
   }
 }

@@ -14,6 +14,10 @@ Clipboard copy button with "Copied!" feedback. `getText` returns the share strin
 
 Renders guess attempt list with correct/wrong styling. `checkFn` defaults to exact title match, but LyricGame passes a custom `isCorrectGuess` that normalizes whitespace/punctuation.
 
+### `ActivityStatusNote({ children, tone })`
+
+Small inline status callout for authored loading/error/fallback states. Used for game detours and stats empty/error copy so those states feel like part of the site instead of generic placeholders.
+
 ### `AlbumAutocomplete({ guesses, currentGuess, onGuessChange, onSubmit, shaking, inputRef })`
 
 Filterable album dropdown with keyboard navigation. Uses `ALBUM_SEARCH` (pre-lowercased index). Excluded set (already-guessed titles) is computed internally from `guesses`. Used by GuessGame, CoverChallenge, HeardleGame, ScrambleGame. LyricGame uses free-text input instead. Dropdown escapes `.panel` container (panel has no `overflow: hidden`).
@@ -126,10 +130,14 @@ Assistant messages can include `citations`, `usedTools`, and `provider`. Citatio
 
 When chat is unavailable, the tab now swaps to **Soundtrack Corner** instead of leaving a disabled quasi-chat UI in place. The fallback gives album-specific game / film / TV scene cards, two rotating extra angles (for example boss-fight energy or best-fit game studio), a short "listen for" list, and a clickable "listen next" recommendation row with one-line reasons plus YouTube links for today's album and each follow-up pick.
 
+Heardle and Lyric Challenge no longer fail over silently. If a game slot has to roll over, the user now sees a clear note explaining why Cover Art Challenge appeared. Lyric Challenge also picks from the lyric-backed subset first, so the fallback should be noticeably rarer instead of feeling random.
+
 Most albums still use the deterministic generator in `lib/soundtrack-corner.js`, but a shortlist of marquee records and cult favorites now has hand-authored overrides in `lib/soundtrack-corner-data.js` so the biggest canonical albums feel curated instead of procedural.
 
 Authoring notes for those overrides live in `docs/soundtrack-corner-research.md`, which collects paraphrased review/interview patterns plus Reddit fan associations for future tuning without copying source prose into runtime content.
 
 Use `npm run soundtrack-corner-report` to see how many albums currently have curated overrides, how much of the recognizable/priority pool is covered, and which priority albums are still good next candidates.
+
+Use `npm run eval-site` for the broader Batch 6 pass: chat scope checks, album-pool variety summary, game-source coverage, soundtrack coverage, and a handful of UI/API guardrails.
 
 The route owns today's album context, provider selection, curated knowledge access, and any hosted credentials server-side; the client should not send API keys or trusted album metadata.

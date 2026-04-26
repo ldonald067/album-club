@@ -11,6 +11,7 @@ Two layers of protection, both using in-memory Maps:
 - **Date validation**: `isValidDateKey()` validates `YYYY-MM-DD` format, real calendar date, not in the future
 - Vote/game POST routes reject bodies over 1024 characters. `/api/chat` allows 4096 characters so it can carry short conversation context.
 - POST routes now require the parsed JSON body to be an object. Arrays / primitives get a clean `400`.
+- Public JSON routes now respond through shared helpers in `lib/api-helpers.js`, which add `Cache-Control: no-store` everywhere and `Retry-After` headers on `429` responses so browsers and clients do not cache stale vote/chat data.
 
 ## Database (`lib/db.js`)
 
@@ -45,7 +46,7 @@ Vibes must be 1-3 valid labels (deduplicated server-side against VIBES list). GE
 | lyric    | 4            |
 | scramble | 5            |
 
-Daily limits are per game type (`guess-${type}`). Attempts must be integer 1-maxAttempts, solved is boolean, unsolved must have attempts=maxAttempts.
+Daily limits are per game type (`guess-${type}`). Attempts must be integer 1-maxAttempts, solved is boolean, unsolved must have attempts=maxAttempts. `429` responses now include `Retry-After`, and all responses opt out of browser caching.
 
 ### POST/GET `/api/playlist`
 
@@ -57,7 +58,7 @@ Shared endpoint for Album vs Album and Blind Taste Test. `?type=` param: `versus
 
 ### GET `/api/stats`
 
-Aggregate site statistics (total ratings, avg rating, albums rated, top vibes, puzzle stats). 5-minute double cache (route + db layer).
+Aggregate site statistics (total ratings, avg rating, albums rated, top vibes, puzzle stats). 5-minute double cache (route + db layer), but the HTTP response itself is `no-store` so clients always revalidate instead of hanging onto old totals.
 
 ### POST `/api/chat`
 
@@ -67,7 +68,7 @@ Body: `{ messages }` where `messages` is an array of recent `{ role, content }` 
 
 Response: `{ reply, citations, usedTools, enabledTools, provider }`. `citations` contains web URLs or local knowledge-pack URLs, `usedTools` marks whether web search or knowledge-pack lookup actually ran, and `provider` is `"ollama"` or `"openai"`.
 
-Rate limits: 12 requests/minute and 25 requests/day per IP via the shared in-memory limiter. The route adds today's album context server-side and does not trust client-provided album metadata.
+Rate limits: 12 requests/minute and 25 requests/day per IP via the shared in-memory limiter. The route adds today's album context server-side and does not trust client-provided album metadata. Burst and daily `429`s now send `Retry-After` so the client can back off intelligently.
 
 Safety behavior: the route returns a brief boundary reply for requests that try to generate or endorse hateful content (for example racist or sexist jokes/insults). The latest user prompt is now checked through a shared moderation helper on both the client and the server, so obvious hateful asks get a consistent boundary even if client-side checks are bypassed. The same shared layer now redirects clearly off-topic film / TV / game / celebrity chatter back toward music, because Crate Digger is intentionally scoped to music material. The agent prompt also tells Crate Digger to acknowledge that it is a model, not a person, and to admit uncertainty instead of pretending it knows everything.
 

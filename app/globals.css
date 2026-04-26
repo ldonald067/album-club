@@ -473,6 +473,35 @@ body {
   font-style: italic;
 }
 
+.activity-status-note {
+  background: #fff7d8;
+  border: 1px solid #d9c878;
+  border-radius: 4px;
+  color: #6a5a12;
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 0 0 12px;
+  padding: 8px 10px;
+}
+
+.activity-status-note.error {
+  background: #fff0ea;
+  border-color: #d8a69a;
+  color: #8a3a2f;
+}
+
+.activity-status-note.subtle {
+  background: #f7f3e8;
+  border-color: var(--border-light);
+  color: #6b6253;
+}
+
+.stats-state-copy {
+  margin: 0 auto;
+  max-width: 420px;
+  text-align: center;
+}
+
 .activity-footer {
   display: flex;
   justify-content: space-between;
