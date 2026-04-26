@@ -57,6 +57,8 @@
 npm run fetch-covers         # MusicBrainz/iTunes cover art
 npm run fetch-lyrics         # Genius API lyric lines (needs GENIUS_ACCESS_TOKEN)
 npm run fetch-youtube-ids    # YouTube Data API (needs YOUTUBE_API_KEY, 100/day free)
+npm run soundtrack-corner-report  # Curated Soundtrack Corner coverage snapshot
+npm run sync-crate-digger-knowledge # Refresh hosted Crate Digger knowledge store
 npm run eval-agent           # Crate Digger scope / moderation / quality checklist
 npm run eval-site            # Whole-site quality pass: albums, games, soundtrack, UI/API guardrails
 ```

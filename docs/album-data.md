@@ -26,7 +26,7 @@
 - **Color must be unique** — no two albums share the same hex
 - **Emoji must be unique** — single codepoint only (no flags 🇫🇷, ZWJ ❤️‍🔥, or keycaps 3️⃣)
 - **`recognizable: true`** only for albums a general listener could guess from clues. Niche/experimental = false
-- **`youtubeId` coverage is intentionally partial (~31%)** — many albums are mixtapes, lofi compilations, DJ sets, or niche releases without official YouTube uploads. This is expected and not a data quality issue. The Heardle and Blind Taste Test games are designed to work with the ~126 album subset that has IDs
+- **`youtubeId` coverage is intentionally partial across the full 403-album catalog (~31%)**: many albums are mixtapes, lofi compilations, DJ sets, or niche releases without obvious full-album uploads. That is expected. The current recognizable pool is fully covered, which keeps Heardle and Blind Taste Test on stable daily picks.
 - **`image` must not be null** — fetch via MusicBrainz/iTunes before committing. All 403 currently populated
 - **No duplicates** — check artist+title before adding. Run `/add-album` skill for validation
 - After renaming an album, set `image` to `null` and re-run fetch-covers to get correct artwork
@@ -52,10 +52,12 @@ Seeded shuffle (mulberry32 PRNG + Fisher-Yates) keyed by year. Same date = same 
 
 ## External APIs
 
-All optional — site runs without them, games fall back to Cover Art Challenge.
+All optional: the site runs without them, and missing media sources now degrade gracefully. Heardle / Lyric Challenge can roll over to Cover Art Challenge with an explicit note instead of failing silently.
 
 - **MusicBrainz + Cover Art Archive**: Free (no key), primary source for album cover art
 - **iTunes Search API**: Free (no key), fallback for cover art
 - **Last.fm**: `LASTFM_API_KEY=xxx npm run fetch-covers` — legacy cover art fetcher
 - **Genius**: `GENIUS_ACCESS_TOKEN=xxx npm run fetch-lyrics` — lyric lines for recognizable albums
 - **YouTube Data API v3**: `YOUTUBE_API_KEY=xxx npm run fetch-youtube-ids` — video IDs for Heardle game (free tier: 100 searches/day)
+
+Use `npm run eval-site` for a quick read on pool spread, recognizable/source coverage, and how healthy the game + soundtrack data layers are before a bigger content pass.

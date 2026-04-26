@@ -1,10 +1,10 @@
 # Components & Features
 
-ForumPage.js is a single client component (~4100 lines) containing all UI. Shared components are defined at the top of the file, game components in the middle, and the main render at the bottom.
+ForumPage.js is a single client component (~4900 lines) containing most of the UI. Shared components are defined at the top of the file, game components in the middle, and the main render at the bottom.
 
 ## Shared Components
 
-Three extracted components eliminate duplication across all 5 games + RateReveal + VibeCheck:
+Four small shared components eliminate duplication across the core game/activity flows:
 
 ### `ShareResultButton({ getText, label })`
 
