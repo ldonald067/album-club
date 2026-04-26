@@ -124,7 +124,7 @@ User handles are moderated client-side before posting. The handle field blocks r
 
 The chat composer also preflights the latest prompt through the same moderation layer. Clear hateful requests now get an immediate in-thread Crate Digger boundary reply with a safety-note citation instead of disappearing into a vague error or quietly hitting the model. Clearly off-topic prompts about general film / TV / games / celebrity chatter get an in-thread redirect back to music instead of going out of lane.
 
-On mount, the client requests `GET /api/chat` to learn whether the deployment actually has a working chat provider. If the route reports `available: false`, the tab shows a warm status note, disables prompt chips/composer submit, and avoids the fake-broken "looks alive until you click" behavior.
+On mount, the client requests `GET /api/chat` to learn whether the deployment actually has a working chat provider. If the route reports `available: false`, the tab shows a warm status note, disables prompt chips/composer submit, and avoids the fake-broken "looks alive until you click" behavior. In local Ollama mode, that status now includes a small health check too, so the booth falls back when nothing is actually listening on the configured host instead of pretending chat is ready.
 
 Assistant messages can include `citations`, `usedTools`, and `provider`. Citations render as visible source links below a message; tool pills show `Local model` or `Hosted model`, plus `Checked the crates` and `Searched the web` when relevant. The loading state mirrors the server-advertised provider/tool availability instead of assuming local Ollama.
 

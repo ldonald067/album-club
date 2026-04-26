@@ -10,7 +10,7 @@ import {
 import { checkRateLimit, checkDailyLimit, getRealIp } from "@/lib/rate-limit";
 import {
   createCrateDiggerResponse,
-  getCrateDiggerRuntimeStatus,
+  getCrateDiggerRuntimeStatusWithHealthCheck,
 } from "@/lib/crate-digger-agent";
 
 export const runtime = "nodejs";
@@ -52,7 +52,9 @@ function toPublicChatStatus(status) {
 }
 
 export async function GET() {
-  const status = toPublicChatStatus(getCrateDiggerRuntimeStatus());
+  const status = toPublicChatStatus(
+    await getCrateDiggerRuntimeStatusWithHealthCheck(),
+  );
 
   return jsonNoStore(status, {
     status: status.available ? 200 : 503,
@@ -61,7 +63,7 @@ export async function GET() {
 
 export async function POST(request) {
   try {
-    const runtimeStatus = getCrateDiggerRuntimeStatus();
+    const runtimeStatus = await getCrateDiggerRuntimeStatusWithHealthCheck();
 
     if (!runtimeStatus.available) {
       return jsonNoStore(

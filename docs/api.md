@@ -80,6 +80,8 @@ Development default: local Ollama (`CRATE_DIGGER_PROVIDER=ollama`, `OLLAMA_MODEL
 
 Production behavior: the route does **not** default to localhost Ollama. If `CRATE_DIGGER_PROVIDER` / `AI_PROVIDER` is unset, production prefers hosted OpenAI when `OPENAI_API_KEY` exists, otherwise it will use Ollama only when `OLLAMA_HOST` points at a real remote/self-hosted Ollama server. If neither is configured, `/api/chat` returns a clean unavailable state instead of trying `127.0.0.1`.
 
+Availability check: the public `GET /api/chat` status route now does a quick Ollama health probe before advertising local chat as available. That keeps development and previews from showing a fake-live Chat Booth when `127.0.0.1:11434` is configured in theory but nothing is actually listening.
+
 Optional hosted provider: OpenAI (`CRATE_DIGGER_PROVIDER=openai`). In OpenAI mode, web search is available with `tool_choice: "auto"`, and file search is added when `OPENAI_VECTOR_STORE_ID` exists. Run `npm run sync-crate-digger-knowledge` with `OPENAI_API_KEY` to create/refresh the vector store.
 
 ### GET `/api/chat`
