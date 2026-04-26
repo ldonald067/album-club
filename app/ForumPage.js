@@ -29,6 +29,7 @@ import {
 } from "@/lib/albums";
 import {
   CHAT_HANDLE_MAX_CHARS,
+  getChatScopeBoundary,
   moderateChatHandle,
   moderateChatPrompt,
   normalizeChatHandle,
@@ -46,8 +47,8 @@ const CHAT_PROFILE_STORAGE_KEY = "aotd_crate_digger_profile";
 const CHAT_SUGGESTIONS = [
   "What should I listen for on this one?",
   "Give me three albums to play after this.",
-  "Connect this album to a game.",
-  "What movie or TV scene fits this record?",
+  "What makes the production work?",
+  "Who else does this album point toward?",
   "Give me a slightly snobby take.",
   "Why does this album matter?",
 ];
@@ -156,7 +157,7 @@ function getInitialChatMessages(album) {
   return [
     {
       role: "assistant",
-      content: `We're on **${album.title}** today.\n\nHit me for listening cues, follow-up albums, soundtrack pairings, context, or an unnecessary but sincere opinion.`,
+      content: `We're on **${album.title}** today.\n\nHit me for listening cues, follow-up albums, production talk, scene context, or an unnecessary but sincere opinion.`,
       citations: [],
       provider: null,
       usedTools: {},
@@ -222,10 +223,14 @@ function getChatLoadingState(messages, chatStatus) {
     };
   }
 
-  if (/(game|games|movie|film|tv|show|scene|soundtrack|boss fight)/.test(latestText)) {
+  if (
+    /(production|mix|arrangement|drums|bass|guitar|synth|keys|piano|vocals?|lyrics|hook|chorus|verse|melody|harmony|riff|texture|sound design)/.test(
+      latestText,
+    )
+  ) {
     return {
-      title: "Cueing the scene",
-      detail: "Matching the record to a setting, not just yelling 'vibes' and clocking out.",
+      title: "Zooming in on the parts",
+      detail: "Pulling apart the arrangement so this lands on actual music, not floating adjectives.",
     };
   }
 
@@ -586,6 +591,7 @@ function CultureChatAgent({ album }) {
 
   async function sendMessage(presetText) {
     const promptModeration = moderateChatPrompt(presetText || draft);
+    const scopeBoundary = getChatScopeBoundary(presetText || draft);
     const text = promptModeration.value.trim().slice(0, CHAT_MAX_CHARS);
     if (!text || loading) return;
     if (chatUnavailable) {
@@ -611,6 +617,19 @@ function CultureChatAgent({ album }) {
           ...current,
           { role: "user", content: text },
           createLocalBoundaryChatMessage(promptModeration.reply),
+        ].slice(-CHAT_HISTORY_LIMIT),
+      );
+      setDraft("");
+      setError("");
+      return;
+    }
+
+    if (!scopeBoundary.inScope) {
+      setMessages((current) =>
+        [
+          ...current,
+          { role: "user", content: text },
+          createAssistantChatMessage({ reply: scopeBoundary.reply }),
         ].slice(-CHAT_HISTORY_LIMIT),
       );
       setDraft("");
@@ -683,12 +702,12 @@ function CultureChatAgent({ album }) {
           <i className="hn hn-headphones" aria-hidden="true" /> CRATE DIGGER
           CHAT
         </span>
-        <span className="panel-header-note">Music / culture / games</span>
+        <span className="panel-header-note">Albums / artists / production</span>
       </div>
       <div className="panel-body">
         <p className="agent-intro">
-          Drop a take, ask for a comp, or start a tiny tasteful war about the
-          best soundtrack needle drop.
+          Drop a take, ask for a comp, or start a tiny tasteful war about
+          whether the hook carries the whole thing.
         </p>
         <div className="agent-thread-card">
           <div className="agent-thread-kicker">Now spinning in the booth</div>
@@ -697,8 +716,8 @@ function CultureChatAgent({ album }) {
             <span>{album.artist}</span>
           </div>
           <p className="agent-thread-copy">
-            Best for quick reactions, recommendation chains, soundtrack side
-            quests, and the occasional mildly snarky fact-check.
+            Best for quick reactions, recommendation chains, production talk,
+            scene context, and the occasional mildly snarky fact-check.
           </p>
           <div className="agent-thread-meta" aria-label="Chat booth details">
             {threadMeta.map((item) => (
@@ -1005,7 +1024,7 @@ function CultureChatAgent({ album }) {
             placeholder={
               chatUnavailable
                 ? "Chat Booth is offline on this deployment right now."
-                : "Ask about recs, scenes, samples, lore, soundtrack logic, or a tiny hot take..."
+                : "Ask about recs, lyrics, production, scene history, or a tiny hot take..."
             }
             disabled={chatUnavailable}
             onChange={(e) => setDraft(e.target.value)}

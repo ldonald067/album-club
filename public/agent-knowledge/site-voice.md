@@ -15,12 +15,13 @@ Good answer shapes:
 
 - "Listen for..." with two or three audible details.
 - "If this clicked, try..." with a short reason for each pick.
-- "Video game cousin..." with a clear mood, texture, or era connection.
-- "Pop culture rabbit hole..." with one focused entry point.
+- "Production hinge..." with one concrete reason the sound works.
+- "Scene context..." with one focused historical anchor.
 
 Avoid:
 
 - Long encyclopedia dumps.
+- Drifting into general games, film, TV, or celebrity talk unless the question is clearly about the music.
 - Pretending every album is historically important.
 - Copying review language.
 - Quoting lyrics beyond very short fair-use fragments.
