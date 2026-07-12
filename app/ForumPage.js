@@ -1542,8 +1542,9 @@ function getPlaylistStreak() {
   let skipStreak = 0;
   const today = new Date();
   for (let i = 0; i < 60; i++) {
-    const d = new Date(today);
-    d.setDate(d.getDate() - i);
+    // Exact 24h steps land on consecutive UTC days (setDate is local and
+    // can skip a UTC day across DST shifts)
+    const d = new Date(today.getTime() - i * 86400000);
     const key = d.toISOString().split("T")[0];
     const val = localStorage.getItem(`aotd_playlist_${key}`);
     if (!val) break;
@@ -1564,8 +1565,9 @@ function getPlaylistStreak() {
 
 /** Compute monthly playlist add rate from localStorage */
 function getMonthlyAddRate() {
+  // UTC to match the aotd_playlist_<key> dates, which come from getTodayKey()
   const now = new Date();
-  const monthPrefix = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const monthPrefix = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
   let added = 0;
   let total = 0;
   for (let i = 0; i < localStorage.length; i++) {
@@ -3188,7 +3190,7 @@ function LyricGame() {
         );
         const lyricAlbum = pickRotatingPoolAlbum(
           lyricPool,
-          new Date().getFullYear() * 37 + 11,
+          new Date().getUTCFullYear() * 37 + 11,
         );
 
         setPuzzleAlbum(lyricAlbum);
@@ -3920,12 +3922,12 @@ function ArchiveSection() {
       month: "short",
       day: "numeric",
       year: "numeric",
+      timeZone: "UTC",
     });
     const result = [];
     const today = new Date();
     for (let i = 1; i <= 30; i++) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
+      const date = new Date(today.getTime() - i * 86400000);
       const album = getAlbumForDate(date);
       result.push({ ...album, dateStr: fmt.format(date) });
     }
@@ -4152,10 +4154,14 @@ const FAQ_ITEMS = [
 
 /** Shared bingo data hook — used by BingoSection and BingoMini */
 function useBingoData() {
+  // UTC to match the daily rotation and album keys
   const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth() + 1;
-  const monthName = now.toLocaleString("en-US", { month: "long" });
+  const year = now.getUTCFullYear();
+  const month = now.getUTCMonth() + 1;
+  const monthName = now.toLocaleString("en-US", {
+    month: "long",
+    timeZone: "UTC",
+  });
   const card = useMemo(() => getBingoCard(year, month), [year, month]);
   const matched = useMemo(() => getMonthMatches(year, month), [year, month]);
   const matchCount = card.filter(
@@ -4471,8 +4477,7 @@ function updateStreak(todayKey) {
   const streak = getStreak();
   if (streak.lastDate === todayKey) return streak; // already counted today
 
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterday = new Date(Date.now() - 86400000);
   const yesterdayKey = yesterday.toISOString().split("T")[0];
 
   const newCount = streak.lastDate === yesterdayKey ? streak.count + 1 : 1;
@@ -4505,8 +4510,7 @@ export default function ForumPage({ album, dateString }) {
 
   // Tomorrow's album for teaser (genre only)
   const tomorrowAlbum = useMemo(() => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrow = new Date(Date.now() + 86400000);
     return getAlbumForDate(tomorrow);
   }, []);
 
