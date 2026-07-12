@@ -59,12 +59,6 @@ export async function POST(request) {
       return jsonRateLimited();
     }
 
-    if (!checkDailyLimit(ip, "matchup")) {
-      return jsonRateLimited("Daily matchup vote limit reached", {
-        retryAfter: getSecondsUntilNextUtcDay(),
-      });
-    }
-
     const body = await readJsonBody(request, { maxChars: 1024 });
     const { type, pick } = body;
     const normalizedType =
@@ -76,6 +70,13 @@ export async function POST(request) {
       typeof pick === "string" ? pick.trim().toUpperCase() : "";
     if (normalizedPick !== "A" && normalizedPick !== "B") {
       return jsonNoStore({ error: "Pick must be A or B" }, { status: 400 });
+    }
+
+    // After validation so malformed requests don't consume the daily quota
+    if (!checkDailyLimit(ip, "matchup")) {
+      return jsonRateLimited("Daily matchup vote limit reached", {
+        retryAfter: getSecondsUntilNextUtcDay(),
+      });
     }
 
     const key = `${normalizedType}-${getTodayKey()}`;

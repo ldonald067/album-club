@@ -55,13 +55,6 @@ export async function POST(request) {
       return jsonRateLimited();
     }
 
-    // Daily vote cap: 3 ratings per IP per day
-    if (!checkDailyLimit(ip, "rate")) {
-      return jsonRateLimited("Daily rating limit reached", {
-        retryAfter: getSecondsUntilNextUtcDay(),
-      });
-    }
-
     const body = await readJsonBody(request, { maxChars: 1024 });
     const { rating } = body;
     if (
@@ -74,6 +67,14 @@ export async function POST(request) {
         { error: "Rating must be an integer 1-10" },
         { status: 400 },
       );
+    }
+
+    // Daily vote cap: 3 ratings per IP per day — checked after validation
+    // so malformed requests don't consume the quota
+    if (!checkDailyLimit(ip, "rate")) {
+      return jsonRateLimited("Daily rating limit reached", {
+        retryAfter: getSecondsUntilNextUtcDay(),
+      });
     }
 
     const albumKey = getTodayKey();

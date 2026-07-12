@@ -58,12 +58,6 @@ export async function POST(request) {
       return jsonRateLimited();
     }
 
-    if (!checkDailyLimit(ip, "playlist")) {
-      return jsonRateLimited("Daily playlist vote limit reached", {
-        retryAfter: getSecondsUntilNextUtcDay(),
-      });
-    }
-
     const body = await readJsonBody(request, { maxChars: 1024 });
     const { vote } = body;
     if (typeof vote !== "boolean") {
@@ -71,6 +65,13 @@ export async function POST(request) {
         { error: "Vote must be true or false" },
         { status: 400 },
       );
+    }
+
+    // After validation so malformed requests don't consume the daily quota
+    if (!checkDailyLimit(ip, "playlist")) {
+      return jsonRateLimited("Daily playlist vote limit reached", {
+        retryAfter: getSecondsUntilNextUtcDay(),
+      });
     }
 
     const albumKey = getTodayKey();

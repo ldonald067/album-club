@@ -52,6 +52,14 @@ function toPublicChatStatus(status) {
 }
 
 export async function GET() {
+  // Rate-limit before the health check — in Ollama mode it makes an
+  // outbound fetch, which must not be reachable unthrottled
+  const hdrs = await headers();
+  const ip = getRealIp(hdrs);
+  if (!checkRateLimit(ip)) {
+    return jsonRateLimited();
+  }
+
   const status = toPublicChatStatus(
     await getCrateDiggerRuntimeStatusWithHealthCheck(),
   );
@@ -63,6 +71,13 @@ export async function GET() {
 
 export async function POST(request) {
   try {
+    const hdrs = await headers();
+    const ip = getRealIp(hdrs);
+
+    if (!checkRateLimit(ip, 12, 60000)) {
+      return jsonRateLimited();
+    }
+
     const runtimeStatus = await getCrateDiggerRuntimeStatusWithHealthCheck();
 
     if (!runtimeStatus.available) {
@@ -75,19 +90,6 @@ export async function POST(request) {
           status: 503,
         },
       );
-    }
-
-    const hdrs = await headers();
-    const ip = getRealIp(hdrs);
-
-    if (!checkRateLimit(ip, 12, 60000)) {
-      return jsonRateLimited();
-    }
-
-    if (!checkDailyLimit(ip, "chat", 25)) {
-      return jsonRateLimited("Daily chat limit reached", {
-        retryAfter: getSecondsUntilNextUtcDay(),
-      });
     }
 
     const body = await readJsonBody(request, { maxChars: MAX_BODY_CHARS });
@@ -103,6 +105,13 @@ export async function POST(request) {
         { error: "A user message is required" },
         { status: 400 },
       );
+    }
+
+    // After validation so malformed requests don't consume the daily quota
+    if (!checkDailyLimit(ip, "chat", 25)) {
+      return jsonRateLimited("Daily chat limit reached", {
+        retryAfter: getSecondsUntilNextUtcDay(),
+      });
     }
 
     const data = await createCrateDiggerResponse({

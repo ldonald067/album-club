@@ -55,13 +55,6 @@ export async function POST(request) {
       return jsonRateLimited();
     }
 
-    // Daily vote cap: 3 vibe submissions per IP per day
-    if (!checkDailyLimit(ip, "vibe")) {
-      return jsonRateLimited("Daily vibe limit reached", {
-        retryAfter: getSecondsUntilNextUtcDay(),
-      });
-    }
-
     const body = await readJsonBody(request, { maxChars: 1024 });
     const { vibes } = body;
     if (!Array.isArray(vibes) || vibes.length === 0 || vibes.length > 3) {
@@ -81,6 +74,14 @@ export async function POST(request) {
       if (typeof v !== "string" || !validLabels.includes(v)) {
         return jsonNoStore({ error: "Invalid vibe" }, { status: 400 });
       }
+    }
+
+    // Daily vote cap: 3 vibe submissions per IP per day — checked after
+    // validation so malformed requests don't consume the quota
+    if (!checkDailyLimit(ip, "vibe")) {
+      return jsonRateLimited("Daily vibe limit reached", {
+        retryAfter: getSecondsUntilNextUtcDay(),
+      });
     }
 
     const albumKey = getTodayKey();

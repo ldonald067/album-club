@@ -75,13 +75,6 @@ export async function POST(request) {
       return jsonNoStore({ error: "Invalid type" }, { status: 400 });
     }
 
-    // Daily vote cap: 3 submissions per IP per game type per day
-    if (!checkDailyLimit(ip, `guess-${type}`)) {
-      return jsonRateLimited("Daily guess limit reached", {
-        retryAfter: getSecondsUntilNextUtcDay(),
-      });
-    }
-
     const maxAttempts = MAX_ATTEMPTS[type];
     if (!maxAttempts) {
       return jsonNoStore({ error: "Invalid type" }, { status: 400 });
@@ -103,6 +96,14 @@ export async function POST(request) {
         { error: "Invalid attempts/solved combination" },
         { status: 400 },
       );
+    }
+
+    // Daily vote cap: 3 submissions per IP per game type per day — checked
+    // after validation so malformed requests don't consume the quota
+    if (!checkDailyLimit(ip, `guess-${type}`)) {
+      return jsonRateLimited("Daily guess limit reached", {
+        retryAfter: getSecondsUntilNextUtcDay(),
+      });
     }
 
     const puzzleKey = resolveKey(type);
