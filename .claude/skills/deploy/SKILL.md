@@ -6,20 +6,19 @@ disable-model-invocation: true
 
 # Deploy
 
-Run a production build, check for errors, and prepare for deployment.
+The live site (https://littlealbumclub.net) runs on Railway and **auto-deploys on every push to `master`**. "Deploying" means verifying the build, then pushing.
 
 ## Steps
 
 1. Run `npm run build` and capture output
-2. If the build fails, show the errors and stop
+2. If the build fails, show the errors and stop — do NOT push
 3. If the build succeeds, report the build output (page sizes, bundle info)
-4. Ask the user which platform to deploy to (Vercel, Netlify, or manual)
-5. For Vercel: run `npx vercel --prod` (requires Vercel CLI login)
-6. For Netlify: run `npx netlify deploy --prod --dir=.next` (requires Netlify CLI login)
-7. For manual: just confirm the build is ready in `.next/`
+4. Confirm with the user, then push to `master` (or merge the PR) — Railway picks it up automatically
+5. After the deploy, smoke-test https://littlealbumclub.net (page loads, today's album renders, rate/vibe respond)
 
 ## Notes
 
-- The SQLite database (`data/aotd.db`) is created at runtime — it does not need to be deployed
+- GitHub Actions also runs `npm ci` + `npm run build` on PRs and pushes to `master`
+- The SQLite database (`data/aotd.db`) is created at runtime — it lives on the Railway volume, not in the repo
 - The `data/` directory must be writable on the deployment target
-- For serverless platforms, better-sqlite3 requires a Node.js runtime (not edge)
+- better-sqlite3 requires a Node.js runtime (not edge)

@@ -22,7 +22,6 @@
 
 ## Data
 
-- **Empty `app/api/reviews/` directory**: Placeholder, no route file inside — don't reference in imports
 - **Lyrics data quality**: `fetch-lyrics.mjs` uses Genius search which can return wrong-artist songs, non-English translations, or album credits. After fetching, audit `lyrics.json` for: wrong language, duplicate lyrics across albums, lyrics from wrong artists
 - **Carousel duplication**: Track content is rendered twice (two `.map()` loops) so `translateX(-50%)` creates seamless infinite loop
 - **Seeded permutation cache**: `lib/albums.js` caches shuffle permutations in a Map (5-10 entries per year, negligible)

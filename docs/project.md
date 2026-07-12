@@ -54,6 +54,7 @@
 ## Scripts
 
 ```bash
+npm run fetch-albums         # Grow the album list from Last.fm (needs LASTFM_API_KEY)
 npm run fetch-covers         # MusicBrainz/iTunes cover art
 npm run fetch-lyrics         # Genius API lyric lines (needs GENIUS_ACCESS_TOKEN)
 npm run fetch-youtube-ids    # YouTube Data API (needs YOUTUBE_API_KEY, 100/day free)

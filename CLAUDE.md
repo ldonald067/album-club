@@ -23,11 +23,17 @@ npm run build            # Production build (must pass before committing)
 app/page.js           # Server component — resolves today's album
 app/ForumPage.js      # Client component — all UI, games, retention features
 app/globals.css       # All styling
-app/api/{rate,vibe,guess,stats,playlist,matchup}/  # API routes
+app/api/{rate,vibe,guess,stats,playlist,matchup,chat}/  # API routes
 lib/albums.json       # 403 albums (source of truth)
 lib/albums.js         # Seeded shuffle, game logic, matchup pairing
 lib/db.js             # SQLite queries (singleton, prepared statements)
 lib/rate-limit.js     # IP-based rate limiter
+lib/api-helpers.js    # Shared route validation/error helpers
+lib/crate-digger-agent.js  # Crate Digger chat agent (Ollama/OpenAI providers)
+lib/chat-moderation.js     # Chat guardrails and boundaries
+lib/soundtrack-corner*.js  # Soundtrack Corner generator + curated overrides
+scripts/              # Data fetch + eval tools (see docs/project.md)
+public/agent-knowledge/    # Crate Digger knowledge pack (loaded at runtime)
 ```
 
 ## IMPORTANT: Read docs before starting any task
@@ -46,4 +52,6 @@ Identify which docs are relevant and read them first. Load the full context befo
 
 ## Workflow
 
-After every change: `git add -A && git commit -m "description" && git push`
+**Pushing to `master` deploys production** (Railway auto-deploys — see `docs/project.md`).
+
+After every change: run `npm run build`, and only if it passes: `git add -A && git commit -m "description" && git push`. For risky changes, use a feature branch + PR instead of pushing straight to `master`.

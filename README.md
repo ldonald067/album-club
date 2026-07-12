@@ -4,7 +4,7 @@ A retro forum-style website where a new album is featured every day. Rate it, pi
 
 ## Features
 
-- **Daily Album** — a different album every day from a rotation of 383 curated albums
+- **Daily Album** — a different album every day from a rotation of 403 curated albums
 - **Rate & Reveal** — rate 1-10 and see the community histogram
 - **Vibe Check** — pick 1-3 mood vibes and see what everyone else chose
 - **5 Daily Games** (rotating):
@@ -72,14 +72,14 @@ app/
   page.js              # Server component — resolves today's album
   ForumPage.js         # Client component — all UI and games
   globals.css          # All styling
-  api/                 # rate, vibe, guess, stats, chat routes
+  api/                 # rate, vibe, guess, stats, playlist, matchup, chat routes
 lib/
-  albums.json          # 383 album entries (source of truth)
+  albums.json          # 403 album entries (source of truth)
   albums.js            # Shuffle logic, game helpers, vibes
   lyrics.json          # Lyric lines for ~88 albums
   db.js                # SQLite database
 data/                  # Auto-created, holds aotd.db (gitignored)
-scripts/               # Data fetching tools (covers, lyrics, YouTube IDs)
+scripts/               # Data fetching + eval tools (covers, lyrics, YouTube IDs, site/agent evals)
 public/agent-knowledge/ # Curated Crate Digger knowledge pack
 docs/                  # Developer documentation
 ```

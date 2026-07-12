@@ -19,13 +19,13 @@ Optional: focus area (e.g., "bundle", "rendering", "database", "animations")
 
 - Are any components re-rendering unnecessarily? (state changes in parent causing child re-renders)
 - Are the three activity components (RateReveal, VibeCheck, GuessGame) independently rendered or do they share state that causes cascading updates?
-- Is the autocomplete in GuessGame filtering efficiently? (30 albums is fine, but check the pattern)
+- Is the autocomplete in GuessGame filtering efficiently? (403 albums — check the pattern)
 - Do CSS animations use GPU-accelerated properties (transform, opacity) or expensive ones (width, height, top)?
 
 **Bundle**
 
 - What's the client bundle size? Run `npm run build` and check the output
-- Is `lib/albums.js` (30 albums) being sent to the client? It should be — it's needed for autocomplete
+- Is `lib/albums.json` (403 albums) being sent to the client? It should be — it's needed for autocomplete
 - Are there any unnecessary dependencies being pulled in?
 - Is `better-sqlite3` accidentally bundled for the client? (It's server-only)
 

@@ -39,7 +39,7 @@ Lyric Challenge now picks from the lyric-backed recognizable subset first instea
 
 ## Genre Bingo (`lib/albums.js`)
 
-`BINGO_CATEGORIES_MAP` maps all 211 unique album genres to 24 broad bingo categories (Rock, Hip-Hop, Electronic, Jazz, Folk, Pop, R&B/Soul, Metal, Punk, Ambient, etc.). `getGenreCategory(genre)` does reverse lookup with "Indie / Other" fallback.
+`BINGO_CATEGORIES_MAP` maps most of the 211 unique album genres to 25 broad bingo categories (Rock, Hip-Hop, Electronic, Jazz, Folk, Pop, R&B/Soul, Metal, Punk, Ambient, etc.). `getGenreCategory(genre)` does reverse lookup with "Indie / Other" fallback.
 
 - `getBingoCard(year, month)` — deterministic 5x5 grid using seeded permutation, FREE center at index 12
 - `getMonthMatches(year, month)` — iterates days 1 to current, maps each album's genre to its category

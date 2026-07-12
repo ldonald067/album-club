@@ -61,6 +61,7 @@ Working rule: prefer depth over raw count, but keep pushing the curated tier out
   - beautiful surfaces turning hostile
 
 Sources:
+
 - [Pitchfork retrospective](https://pitchfork.com/features/ok-computer-at-20/10038-exit-music-how-radioheads-ok-computer-destroyed-the-art-pop-album-in-order-to-save-it)
 - [r/Music discussion](https://www.reddit.com/r/Music/comments/1aln7t9/how_is_ok_computer_such_a_good_album_27_years/)
 - [r/radiohead listener thread](https://www.reddit.com/r/radiohead/comments/1mxav3q/my_honest_thoughts_on_ok_computer_after_listening/)
@@ -77,6 +78,7 @@ Sources:
   - glamorous sadness with teeth
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/23079-dummy/)
 - [r/hiphopheads throwback write-up](https://www.reddit.com/r/hiphopheads/comments/k1e5c7)
 - [r/vinyl thread](https://www.reddit.com/r/vinyl/comments/o7sv6e)
@@ -93,6 +95,7 @@ Sources:
   - precision over spectacle
 
 Sources:
+
 - [r/hiphopheads 30 years later thread](https://www.reddit.com/r/hiphopheads/comments/1c7njr1/discussion_nas_illmatic_30_years_later/)
 
 ### Mitski - Be the Cowboy
@@ -107,6 +110,7 @@ Sources:
   - polished pop carrying private panic
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/mitski-be-the-cowboy/)
 - [GoldenPlec review](https://www.goldenplec.com/album-reviews/mitski-be-the-cowboy/)
 - [r/mitski discussion about the album's shape](https://www.reddit.com/r/mitski/comments/hll3z4)
@@ -122,6 +126,7 @@ Sources:
   - perfect wardrobe, imperfect people
 
 Sources:
+
 - [People on Rumours' enduring appeal](https://people.com/why-fleetwood-mac-rumours-still-captivates-fans-11847750)
 - [Reddit production-focused thread](https://www.reddit.com/r/ToddintheShadow/comments/1kzj1dk/what_do_you_think_of_rumours_by_fleetwood_mac/)
 
@@ -137,6 +142,7 @@ Sources:
   - self-knowledge arriving mid-breakup
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/22035-the-miseducation-of-lauryn-hill)
 - [r/hiphopheads 25 years later thread](https://www.reddit.com/r/hiphopheads/comments/160oxqo/discussion_lauryn_hill_the_miseducation_of_lauryn/)
 
@@ -152,6 +158,7 @@ Sources:
   - emotional directness with formal control
 
 Sources:
+
 - [MusicRadar on Joni and Blue](https://www.musicradar.com/artists/joni-hates-the-word-confessional-as-she-thinks-it-implies-youve-done-something-wrong-brandi-carlile-names-her-favourite-joni-mitchell-album-and-hails-jonis-1971-classic-as-a-record-that-changed-songwriting-forever)
 
 ### Radiohead - Kid A
@@ -165,6 +172,7 @@ Sources:
   - weather as antagonist
 
 Sources:
+
 - [The Review retrospective](https://udreview.com/retrospective-album-review-kid-a/)
 - [Pitchfork review](https://pitchfork.com/reviews/albums/6656-kid-a)
 
@@ -180,6 +188,7 @@ Sources:
   - dream level with a pulse
 
 Sources:
+
 - [Wired love letter](https://www.wired.com/2011/11/my-bloody-valentine-loveless)
 - [r/shoegaze first-listen thread](https://www.reddit.com/r/shoegaze/comments/1i31xjg)
 - [r/shoegaze appreciation thread](https://www.reddit.com/r/shoegaze/comments/14zk941)
@@ -196,6 +205,7 @@ Sources:
   - seduction under surveillance
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/22703-mezzanine/)
 - [Classic Pop review](https://www.classicpopmag.com/reviews/review-massive-attack-mezzanine/)
 - [r/LetsTalkMusic discussion](https://www.reddit.com/r/LetsTalkMusic/comments/d7g2iw)
@@ -213,6 +223,7 @@ Sources:
   - warrior-poet close-up
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/22835-homogenic/)
 - [r/bjork discussion](https://www.reddit.com/r/bjork/comments/17rht68)
 
@@ -228,6 +239,7 @@ Sources:
   - dramatic weather that earns it
 
 Sources:
+
 - [Pitchfork deluxe-edition review](https://pitchfork.com/reviews/albums/14288-disintegration-deluxe-edition/)
 - [r/indieheads discussion](https://www.reddit.com/r/indieheads/comments/ppf9oc)
 - [r/indieheads daily thread note](https://www.reddit.com/r/indieheads/comments/cl634g)
@@ -244,6 +256,7 @@ Sources:
   - map glow and low-stakes revelation
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/223-selected-ambient-works-85-92/)
 - [MusicRadar production piece](https://www.musicradar.com/news/how-aphex-twin-made-saw-85-92)
 - [r/LetsTalkMusic thread](https://www.reddit.com/r/LetsTalkMusic/comments/1lgle0y/selected_ambient_works_8592_by_aphex_twin/)
@@ -261,6 +274,7 @@ Sources:
   - ensemble cast with real geography
 
 Sources:
+
 - [r/hiphopheads 25 years later thread](https://www.reddit.com/r/hiphopheads/comments/16v1pxe/discussion_outkast_aquemini_25_years_later/)
 - [OutKast retrospective mention of Aquemini](https://pitchfork.com/features/article/9253-atlanta-to-atlantis-an-outkast-retrospective/)
 
@@ -276,6 +290,7 @@ Sources:
   - joy trying not to jinx itself
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/19526-cocteau-twins-blue-bell-knollheaven-or-las-vegas/)
 - [r/vinyl thread](https://www.reddit.com/r/vinyl/comments/1jee1rb)
 - [r/90sAlternative thread](https://www.reddit.com/r/90sAlternative/comments/1aj46c8)
@@ -292,6 +307,7 @@ Sources:
   - moonlit overpass melancholy
 
 Sources:
+
 - [Albumism retrospective](https://albumism.com/features/slowdive-souvlaki-turns-30-anniversary-retrospective)
 - [r/Slowdive thread](https://www.reddit.com/r/Slowdive/comments/yz00ee)
 - [r/shoegaze comparison thread](https://www.reddit.com/r/shoegaze/comments/1r1nki9/which_album_do_you_think_is_better_souvlaki_or/)
@@ -308,6 +324,7 @@ Sources:
   - earnestness scaled up until it becomes surreal
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/7514-illinois/)
 - [r/indieheads thread mentioning Illinois' staying power](https://www.reddit.com/r/indieheads/comments/hoa1xd)
 
@@ -323,6 +340,7 @@ Sources:
   - jangling elegance under social discomfort
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/the-smiths-the-queen-is-dead/)
 - [r/thesmiths sequencing thread](https://www.reddit.com/r/thesmiths/comments/1hoy194)
 - [r/thesmiths daily song thread](https://www.reddit.com/r/thesmiths/comments/1flmx71)
@@ -339,6 +357,7 @@ Sources:
   - motion through emotional debris
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/2377-endtroducing-deluxe-edition/)
 - [r/Music thread](https://www.reddit.com/r/Music/comments/f3hlt/dj_shadows_endtroducing_is_still_one_of_my_all/)
 - [r/LetsTalkMusic thread](https://www.reddit.com/r/LetsTalkMusic/comments/13kz5uu)
@@ -355,6 +374,7 @@ Sources:
   - cheap apartment genius with x-ray vision
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/5579-madvillainy/)
 - [r/hiphopheads 20 years later thread](https://www.reddit.com/r/hiphopheads/comments/1blj4su)
 
@@ -370,6 +390,7 @@ Sources:
   - public spectacle under private pressure
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/20390-to-pimp-a-butterfly/)
 - [r/hiphopheads release discussion](https://www.reddit.com/r/hiphopheads/comments/2za8nw/discussion_kendrick_lamar_to_pimp_a_butterfly/)
 - [r/hiphopheads 10 years later thread](https://www.reddit.com/r/hiphopheads/comments/1jbmp5r/discussion_kendrick_lamar_to_pimp_a_butterfly_10/)
@@ -386,6 +407,7 @@ Sources:
   - desire rendered in frost and glass
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/727-vespertine/)
 - [r/bjork fan review](https://www.reddit.com/r/bjork/comments/1s37fom/reviews_of_an_old_fan_pt8_vespertine/)
 
@@ -401,6 +423,7 @@ Sources:
   - handmade world ending and beginning at once
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/5758-in-the-aeroplane-over-the-sea/)
 - [Pitchfork artists reflect feature](https://pitchfork.com/features/article/6784-neutral-milk-hotels-in-the-aeroplane-over-the-sea/)
 - [r/neutralmilkhotel first-love thread](https://www.reddit.com/r/neutralmilkhotel/comments/1j1cdfz)
@@ -418,6 +441,7 @@ Sources:
   - guitar noise that somehow feels like forward motion
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/10326-daydream-nation-deluxe-edition/)
 - [r/sonicyouth favorite-album thread](https://www.reddit.com/r/sonicyouth/comments/1hvyrs4)
 - [r/LetsTalkMusic context thread](https://www.reddit.com/r/LetsTalkMusic/comments/1qhdn7o/context_for_sonic_youths_daydream_nation/)
@@ -434,6 +458,7 @@ Sources:
   - a beautiful chorus followed by a bad idea
 
 Sources:
+
 - [Pitchfork catalog review](https://pitchfork.com/reviews/albums/19282-pixies-catalogue/)
 - [Melophobe retrospective](https://www.melophobemusic.com/post/pixies-doolittle-retrospective-review)
 - [r/thepixies retrospective thread](https://www.reddit.com/r/thepixies/comments/11pn788)
@@ -450,6 +475,7 @@ Sources:
   - dancing through a crate-digger daydream
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/385-since-i-left-you/)
 - [r/theavalanches daily song thread](https://www.reddit.com/r/theavalanches/comments/1k7dsqj)
 - [r/indieheads anniversary thread](https://www.reddit.com/r/indieheads/comments/1p87r1r/the_avalanches_released_since_i_left_you_25_years/)
@@ -467,6 +493,7 @@ Sources:
   - ecstatic confusion with impeccable rhythm
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/talking-heads-remain-in-light/)
 - [r/talkingheads concept-discussion thread](https://www.reddit.com/r/talkingheads/comments/1rwf73t/i_think_remain_in_light_is_a_concept_album/)
 
@@ -482,6 +509,7 @@ Sources:
   - bassline as flashlight
 
 Sources:
+
 - [Pitchfork review bundle](https://pitchfork.com/reviews/albums/11624-unknown-pleasurescloserstill/)
 - [r/JoyDivision mysticism thread](https://www.reddit.com/r/JoyDivision/comments/vodkuv)
 - [r/vinyl post on Unknown Pleasures](https://www.reddit.com/r/vinyl/comments/1i920da)
@@ -498,6 +526,7 @@ Sources:
   - gentle voice inside structural damage
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/8676-yankee-hotel-foxtrot/)
 - [r/LetsTalkMusic thread](https://www.reddit.com/r/LetsTalkMusic/comments/1it2619)
 - [r/wilco favorite album thread](https://www.reddit.com/r/wilco/comments/n6rmw5)
@@ -514,6 +543,7 @@ Sources:
   - city mythology before the myth calcified
 
 Sources:
+
 - [Pitchfork deluxe review](https://pitchfork.com/reviews/albums/17129-the-velvet-underground-nico/)
 - [r/LetsTalkMusic discussion](https://www.reddit.com/r/LetsTalkMusic/comments/jr6tow)
 - [r/askmusic thread](https://www.reddit.com/r/askmusic/comments/1qn0btw/why_is_the_velvet_underground_nico_considered_a/)
@@ -530,6 +560,7 @@ Sources:
   - affectionate overstimulation
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/12518-merriweather-post-pavilion/)
 - [r/AnimalCollective first-listen thread](https://www.reddit.com/r/AnimalCollective/comments/1lw2hlc)
 - [r/AnimalCollective lore thread](https://www.reddit.com/r/AnimalCollective/comments/1j2ipfu/whats_the_lorestory_behind_merriweather_post/)
@@ -546,6 +577,7 @@ Sources:
   - dance groove wearing guitar music's clothes
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/13449-the-stone-roses/)
 - [Guardian readers on 30 years of The Stone Roses](https://www.theguardian.com/music/2019/may/02/this-felt-like-the-sound-of-manchester-readers-on-30-years-of-the-stone-roses)
 - [r/indieheads album club thread](https://www.reddit.com/r/indieheads/comments/11eez79)
@@ -562,6 +594,7 @@ Sources:
   - youth as a city texture
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/7537-is-this-it/)
 - [GQ retrospective](https://www.gq.com/story/the-strokes-retrospective)
 - [r/TheStrokes discussion](https://www.reddit.com/r/TheStrokes/comments/n796en)
@@ -578,6 +611,7 @@ Sources:
   - youthful catastrophe lit like a bonfire
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/452-funeral/)
 - [r/LetsTalkMusic discussion](https://www.reddit.com/r/LetsTalkMusic/comments/kvdubj)
 - [r/arcadefire what makes it special thread](https://www.reddit.com/r/arcadefire/comments/1jdp8tv)
@@ -594,6 +628,7 @@ Sources:
   - dance floor under civil unrest
 
 Sources:
+
 - [Pitchfork anniversary review](https://pitchfork.com/reviews/albums/1490-london-calling-25th-anniversary-legacy-edition/)
 - [r/fantanoforever London Calling thread](https://www.reddit.com/r/fantanoforever/comments/1q64tdp)
 - [r/GenX memory thread](https://www.reddit.com/r/GenX/comments/1jd9ppp)
@@ -610,6 +645,7 @@ Sources:
   - waves, woods, and impossible conviction
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/21964-hounds-of-love/)
 - [r/LetsTalkMusic essay](https://www.reddit.com/r/LetsTalkMusic/comments/o3kmun)
 - [r/katebush Hounds of Love thread](https://www.reddit.com/r/katebush/comments/15nmysg)
@@ -626,5 +662,6 @@ Sources:
   - robots learning nostalgia
 
 Sources:
+
 - [Pitchfork review](https://pitchfork.com/reviews/albums/2134-discovery/)
 - [r/DaftPunk favorite-album thread](https://www.reddit.com/r/DaftPunk/comments/1hpxatg)

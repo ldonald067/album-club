@@ -14,11 +14,10 @@ Optional: number of days to preview (default: 14)
 ## Steps
 
 1. Read `lib/albums.js` to get the `ALBUMS` array and the rotation logic
-2. Calculate the schedule by simulating the date rotation:
-   - For each day from today to today + N:
-     - Compute `dayOfYear % ALBUMS.length` for the featured album
-     - Compute `(dayOfYear * 7 + 13) % ALBUMS.length` for the puzzle album
-     - Flag if featured === puzzle (shouldn't happen, but worth checking)
+2. Calculate the schedule with a small Node script that imports the real logic — do NOT hand-compute formulas:
+   - Featured album: `getAlbumForDate(date)` (a year-seeded permutation, not a raw modulo)
+   - Puzzle album: filter to `recognizable` albums, then apply the `pickRotatingPoolAlbum` logic with seed `year * 31 + 7` (it also avoids colliding with that day's featured album)
+   - Game type: `getGameType(date)` (5-day cycle: guess, cover, lyric, heardle, scramble)
 3. Output a formatted table:
 
 ```
@@ -37,5 +36,5 @@ Mar 1  (Fri)  | OK Computer                 | Aquemini
 ## Notes
 
 - Do NOT modify any files — this skill is read-only
-- The rotation is deterministic: `dayOfYear % ALBUMS.length`
-- Use JavaScript evaluation or manual calculation, don't run the dev server
+- The rotation is deterministic per calendar year: `seededPermutation(ALBUMS.length, year)[dayOfYear % ALBUMS.length]`
+- Use a Node script that imports from `lib/albums.js`, don't run the dev server
