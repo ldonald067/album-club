@@ -55,7 +55,9 @@ export default function SoundtrackCornerFallback({ album, reason }) {
         </div>
       </div>
       <div className="soundtrack-corner-section">
-        <div className="soundtrack-section-title">{corner.listenForHeading}</div>
+        <div className="soundtrack-section-title">
+          {corner.listenForHeading}
+        </div>
         <ul className="soundtrack-list">
           {corner.listenFor.map((item) => (
             <li key={item}>{item}</li>
@@ -75,7 +77,10 @@ export default function SoundtrackCornerFallback({ album, reason }) {
               key={`${recommendation.artist}-${recommendation.title}`}
               className="soundtrack-recommendation"
             >
-              <span className="soundtrack-recommendation-cover" aria-hidden="true">
+              <span
+                className="soundtrack-recommendation-cover"
+                aria-hidden="true"
+              >
                 {recommendation.cover}
               </span>
               <div className="soundtrack-recommendation-copy">

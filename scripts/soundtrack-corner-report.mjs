@@ -140,6 +140,8 @@ if (uncoveredPriorityAlbums.length > 0 || uncoveredEditorialAlbums.length > 0) {
       : uncoveredEditorialAlbums;
 
   for (const album of candidates.slice(0, 8)) {
-    console.log(`- ${album.artist} - ${album.title} (${album.year}, ${album.genre})`);
+    console.log(
+      `- ${album.artist} - ${album.title} (${album.year}, ${album.genre})`,
+    );
   }
 }
