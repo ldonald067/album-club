@@ -1,6 +1,6 @@
 # Album Of The Day Club
 
-Retro forum-style site — new album daily, anonymous rating/vibes/games. Next.js 15 + SQLite.
+Retro forum-style site — new album daily, anonymous rating/vibes/games. Next.js 16 + SQLite.
 
 ## Commands
 
@@ -12,7 +12,7 @@ npm run build            # Production build (must pass before committing)
 
 ## Stack
 
-- **Next.js 15 App Router** — single-page app, server + client components
+- **Next.js 16 App Router** — single-page app, server + client components
 - **SQLite** (better-sqlite3) — WAL mode, auto-creates `data/aotd.db` on first request
 - **No auth** — anonymous interactions, localStorage tracks daily participation
 - **CSS** — all in `globals.css`, retro 2004 forum aesthetic, no Tailwind

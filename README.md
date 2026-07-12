@@ -22,7 +22,7 @@ A retro forum-style website where a new album is featured every day. Rate it, pi
 
 ## Setup
 
-Requires [Node.js](https://nodejs.org/) v18+.
+Requires [Node.js](https://nodejs.org/) v20.9+.
 
 ```bash
 git clone https://github.com/ldonald067/album-club.git
@@ -97,7 +97,7 @@ OPENAI_API_KEY=xxx npm run sync-crate-digger-knowledge  # Optional OpenAI file s
 
 ## Tech Stack
 
-- **Next.js 15** (App Router)
+- **Next.js 16** (App Router)
 - **Ollama** for free local Crate Digger chat by default
 - **OpenAI Responses API** as an optional hosted provider with web search and file search
 - **SQLite** via better-sqlite3
