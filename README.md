@@ -4,7 +4,7 @@ A retro forum-style website where a new album is featured every day. Rate it, pi
 
 ## Features
 
-- **Daily Album** — a different album every day from a rotation of 403 curated albums
+- **Daily Album** — a different album every day from a rotation of 424 curated albums
 - **Rate & Reveal** — rate 1-10 and see the community histogram
 - **Vibe Check** — pick 1-3 mood vibes and see what everyone else chose
 - **5 Daily Games** (rotating):
@@ -42,7 +42,7 @@ app/
   globals.css          # All styling
   api/                 # rate, vibe, guess, stats, playlist, matchup, health routes
 lib/
-  albums.json          # 403 album entries (source of truth)
+  albums.json          # 424 album entries (source of truth)
   albums.js            # Shuffle logic, game helpers, vibes
   lyrics.json          # Lyric lines for ~88 albums
   db.js                # SQLite database

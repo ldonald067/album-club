@@ -2,7 +2,7 @@
 
 ## Source of Truth
 
-`lib/albums.json` — 403 album entries. Each has:
+`lib/albums.json` — 424 album entries. Each has:
 
 | Field          | Type    | Notes                                              |
 | -------------- | ------- | -------------------------------------------------- |
@@ -13,7 +13,7 @@
 | `cover`        | string  | Single emoji, unique across all albums             |
 | `color`        | string  | Hex color, unique across all albums, R+G+B < 600   |
 | `recognizable` | boolean | True if a general listener could guess from clues  |
-| `image`        | string  | Cover art URL (all 403 populated)                  |
+| `image`        | string  | Cover art URL (all 424 populated)                  |
 | `youtubeId`    | string? | YouTube video ID for Heardle/Taste Test (see note) |
 
 ## Quality Rules
@@ -26,8 +26,8 @@
 - **Color must be unique** — no two albums share the same hex
 - **Emoji must be unique** — single codepoint only (no flags 🇫🇷, ZWJ ❤️‍🔥, or keycaps 3️⃣)
 - **`recognizable: true`** only for albums a general listener could guess from clues. Niche/experimental = false
-- **`youtubeId` coverage is intentionally partial across the full 403-album catalog (~31%)**: many albums are mixtapes, lofi compilations, DJ sets, or niche releases without obvious full-album uploads. That is expected. The current recognizable pool is fully covered, which keeps Heardle and Blind Taste Test on stable daily picks.
-- **`image` must not be null** — fetch via MusicBrainz/iTunes before committing. All 403 currently populated
+- **`youtubeId` coverage is intentionally partial across the full 424-album catalog (~32%)**: many albums are mixtapes, lofi compilations, DJ sets, or niche releases without obvious full-album uploads. That is expected. The current recognizable pool is fully covered, which keeps Heardle and Blind Taste Test on stable daily picks.
+- **`image` must not be null** — fetch via MusicBrainz/iTunes before committing. All 424 currently populated
 - **No duplicates** — check artist+title before adding. Run `/add-album` skill for validation
 - After renaming an album, set `image` to `null` and re-run fetch-covers to get correct artwork
 
@@ -39,7 +39,7 @@ Lyric Challenge now picks from the lyric-backed recognizable subset first instea
 
 ## Genre Bingo (`lib/albums.js`)
 
-`BINGO_CATEGORIES_MAP` maps most of the 211 unique album genres to 25 broad bingo categories (Rock, Hip-Hop, Electronic, Jazz, Folk, Pop, R&B/Soul, Metal, Punk, Ambient, etc.). `getGenreCategory(genre)` does reverse lookup with "Indie / Other" fallback.
+`BINGO_CATEGORIES_MAP` maps most of the 223 unique album genres to 25 broad bingo categories (Rock, Hip-Hop, Electronic, Jazz, Folk, Pop, R&B/Soul, Metal, Punk, Ambient, etc.). `getGenreCategory(genre)` does reverse lookup with "Indie / Other" fallback.
 
 - `getBingoCard(year, month)` — deterministic 5x5 grid using seeded permutation, FREE center at index 12
 - `getMonthMatches(year, month)` — iterates days 1 to current, maps each album's genre to its category
@@ -48,7 +48,7 @@ Lyric Challenge now picks from the lyric-backed recognizable subset first instea
 
 ## Daily Rotation
 
-Seeded shuffle (mulberry32 PRNG + Fisher-Yates) keyed by year. Same date = same album globally. Rotates through all 403 albums before repeating.
+Seeded shuffle (mulberry32 PRNG + Fisher-Yates) keyed by year. Same date = same album globally. Rotates through all 424 albums before repeating.
 
 ## External APIs
 

@@ -1,6 +1,6 @@
 # Games
 
-5-game daily rotation via `getGameType()` in `albums.js`: `dayOfYear % 5` → `["guess", "cover", "lyric", "heardle", "scramble"]`. Each game draws from recognizable albums (126 of 403) with different seeds to avoid collisions with the featured album.
+5-game daily rotation via `getGameType()` in `albums.js`: `dayOfYear % 5` → `["guess", "cover", "lyric", "heardle", "scramble"]`. Each game draws from recognizable albums (133 of 424) with different seeds to avoid collisions with the featured album.
 
 ## Guess the Album (6 attempts)
 
@@ -43,7 +43,7 @@ Each game's `saveState()` dispatches `window.dispatchEvent(new Event("aotd-activ
 
 ## Album vs Album
 
-Daily head-to-head: two past albums shown side by side with cover art. User picks their favorite, community vote split shown as percentage bar after voting. Deterministic daily pairing via `getVersusPair()` using seed `year * 83 + 23` — draws from full 403-album catalog, avoids today's featured album. Posts to `/api/matchup` with `type: "versus"`. State: `aotd_versus_{date}`.
+Daily head-to-head: two past albums shown side by side with cover art. User picks their favorite, community vote split shown as percentage bar after voting. Deterministic daily pairing via `getVersusPair()` using seed `year * 83 + 23` — draws from full 424-album catalog, avoids today's featured album. Posts to `/api/matchup` with `type: "versus"`. State: `aotd_versus_{date}`.
 
 ## Blind Taste Test
 

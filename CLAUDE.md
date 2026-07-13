@@ -24,7 +24,7 @@ app/page.js           # Server component — resolves today's album
 app/ForumPage.js      # Client component — all UI, games, retention features
 app/globals.css       # All styling
 app/api/{rate,vibe,guess,stats,playlist,matchup,health}/  # API routes
-lib/albums.json       # 403 albums (source of truth)
+lib/albums.json       # 424 albums (source of truth)
 lib/albums.js         # Seeded shuffle, game logic, matchup pairing
 lib/db.js             # SQLite queries (singleton, prepared statements)
 lib/rate-limit.js     # IP-based rate limiter
