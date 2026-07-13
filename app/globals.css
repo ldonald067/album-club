@@ -1142,6 +1142,21 @@ body {
   margin-top: 0;
 }
 
+.soundtrack-corner-explainer {
+  background: var(--bg-main);
+  border: 1px dashed var(--border-panel);
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.6;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+}
+
+.soundtrack-corner-explainer strong {
+  color: var(--text-primary);
+}
+
 .soundtrack-corner-kicker {
   color: #6d6253;
   font-size: 11px;

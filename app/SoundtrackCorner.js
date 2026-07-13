@@ -168,6 +168,12 @@ export default function SoundtrackCorner({ album, onPlayToday }) {
 
   return (
     <div className="soundtrack-corner">
+      <div className="soundtrack-corner-explainer">
+        <strong>How this works: </strong>every day we take today&apos;s album
+        and ask one question — if this record scored a scene, what scene? Below:
+        three pitches (🎮 game, 🎬 film, 📺 TV), your vote, two bonus angles,
+        what to listen for, and what to spin next. Argue with all of it.
+      </div>
       <p className="agent-intro">{corner.intro}</p>
       <div className="soundtrack-corner-actions">
         <a
