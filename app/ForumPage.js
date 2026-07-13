@@ -147,7 +147,6 @@ function ShareResultButton({ getText, label = "📋 Share Results" }) {
   );
 }
 
-/** Guess history list — shows previous guesses with ✅/❌ */
 /** Crate Digger chat agent */
 function getInitialChatMessages(album) {
   return [
@@ -732,13 +731,6 @@ function CultureChatAgent({ album }) {
             ))}
           </div>
         </div>
-        {chatUnavailable && (
-          <div className="agent-status-note" role="status">
-            {chatStatus.reason ||
-              "Chat Booth is offline on this deployment right now."}
-          </div>
-        )}
-
         <div className="agent-roster" aria-label="Thread regulars">
           {[
             { role: "assistant", persona: CHAT_PERSONAS.assistant },
@@ -841,7 +833,7 @@ function CultureChatAgent({ album }) {
                 type="button"
                 className="agent-chip"
                 onClick={() => sendMessage(prompt)}
-                disabled={loading || chatUnavailable || !handleModeration.ok}
+                disabled={loading || !handleModeration.ok}
               >
                 {prompt}
               </button>
@@ -1023,12 +1015,7 @@ function CultureChatAgent({ album }) {
             value={draft}
             maxLength={CHAT_MAX_CHARS}
             rows={3}
-            placeholder={
-              chatUnavailable
-                ? "Chat Booth is offline on this deployment right now."
-                : "Ask about recs, lyrics, production, scene history, or a tiny hot take..."
-            }
-            disabled={chatUnavailable}
+            placeholder="Ask about recs, lyrics, production, scene history, or a tiny hot take..."
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
@@ -1049,12 +1036,7 @@ function CultureChatAgent({ album }) {
             <button
               type="submit"
               className="btn-submit"
-              disabled={
-                loading ||
-                chatUnavailable ||
-                !draft.trim() ||
-                !handleModeration.ok
-              }
+              disabled={loading || !draft.trim() || !handleModeration.ok}
             >
               {loading ? "Posting..." : "Post Reply"}
             </button>
@@ -2926,15 +2908,21 @@ function HeardleGame() {
     if (window.YT && window.YT.Player) {
       initPlayer();
     } else {
-      const tag = document.createElement("script");
-      tag.src = "https://www.youtube.com/iframe_api";
-      document.head.appendChild(tag);
-      window.onYouTubeIframeAPIReady = initPlayer;
+      // Chain the global callback — BlindTasteTest shares it on heardle days
+      const prev = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => {
+        if (prev) prev();
+        initPlayer();
+      };
+      if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
+        const tag = document.createElement("script");
+        tag.src = "https://www.youtube.com/iframe_api";
+        document.head.appendChild(tag);
+      }
     }
 
     return () => {
       cancelled = true;
-      window.onYouTubeIframeAPIReady = null;
       clearTimeout(timerRef.current);
       if (playerRef.current?.destroy) {
         try {
@@ -3791,8 +3779,17 @@ function YesterdayRecap() {
     const coverRaw = localStorage.getItem(`aotd_cover_${yesterdayKey}`);
     const heardleRaw = localStorage.getItem(`aotd_heardle_${yesterdayKey}`);
     const lyricRaw = localStorage.getItem(`aotd_lyric_${yesterdayKey}`);
+    const scrambleRaw = localStorage.getItem(`aotd_scramble_${yesterdayKey}`);
 
-    if (!rated && !vibed && !guessRaw && !coverRaw && !heardleRaw && !lyricRaw)
+    if (
+      !rated &&
+      !vibed &&
+      !guessRaw &&
+      !coverRaw &&
+      !heardleRaw &&
+      !lyricRaw &&
+      !scrambleRaw
+    )
       return;
     setHasData(true);
 
@@ -3806,7 +3803,7 @@ function YesterdayRecap() {
         data.myVibes = JSON.parse(vibed);
       } catch {}
     }
-    for (const raw of [guessRaw, coverRaw, heardleRaw, lyricRaw]) {
+    for (const raw of [guessRaw, coverRaw, heardleRaw, lyricRaw, scrambleRaw]) {
       if (raw) {
         try {
           data.myGuess = JSON.parse(raw);
