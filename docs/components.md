@@ -120,6 +120,8 @@ Its own nav tab (formerly the Chat Booth — the AI chat was removed in July 202
 
 Below the three cards, `CueVote` asks "where does this one belong tonight?" — one tap on Game / Film / TV, then the community percentages reveal with bars (my pick highlighted) and a copy-to-clipboard share line. Votes POST to `/api/soundtrack`; `aotd_soundtrack_{date}` in localStorage keeps it one-vote-per-day per browser and re-fetches results on reload.
 
+The corner is cross-linked with the daily loop in both directions: `SoundtrackMini` on the home page (BingoMini pattern) teases the vote and flips to "You cast it for X — see the room →" after voting, and the corner ends with a "play today's game" CTA (`onPlayToday`) that names the actual rotation game and jumps back to the home section.
+
 Heardle and Lyric Challenge no longer fail over silently. If a game slot has to roll over, the user now sees a clear note explaining why Cover Art Challenge appeared. Lyric Challenge also picks from the lyric-backed subset first, so the fallback should be noticeably rarer instead of feeling random.
 
 Most albums still use the deterministic generator in `lib/soundtrack-corner.js`, but a shortlist of marquee records and cult favorites now has hand-authored overrides in `lib/soundtrack-corner-data.js` so the biggest canonical albums feel curated instead of procedural.

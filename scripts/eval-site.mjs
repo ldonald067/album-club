@@ -205,6 +205,19 @@ failures += printGuardrail(
   "The corner should always give people somewhere real to go next.",
 );
 failures += printGuardrail(
+  soundtrackCornerSource.includes("Where does this one belong tonight?") &&
+    soundtrackCornerSource.includes("/api/soundtrack") &&
+    soundtrackCornerSource.includes("Share The Verdict"),
+  "Cue vote is wired into the corner",
+  "The vote-then-see-the-room loop is the corner's daily ritual — keep it.",
+);
+failures += printGuardrail(
+  forumSource.includes("SoundtrackMini") &&
+    soundtrackCornerSource.includes("onPlayToday"),
+  "Corner and daily loop cross-link both ways",
+  "Home should tease the corner; the corner should hand people back to today's game.",
+);
+failures += printGuardrail(
   forumSource.includes(
     "Pick your number, lock it in, then see where the room landed.",
   ) &&

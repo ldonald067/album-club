@@ -42,18 +42,22 @@ const PRIORITY_KEYS = [
   "Talking Heads::Remain in Light",
 ];
 
+// Refreshed 2026-07 after the previous queue was fully covered.
+// Picked for recognizability plus decade spread (60s-70s and 2010s-2020s
+// are the thinnest-covered decades).
 const EDITORIAL_QUEUE_KEYS = [
-  "The Strokes::Is This It",
-  "Arcade Fire::Funeral",
-  "The Clash::London Calling",
-  "Kate Bush::Hounds of Love",
-  "Daft Punk::Discovery",
-  "Radiohead::The Bends",
-  "Radiohead::In Rainbows",
-  "The Velvet Underground::The Velvet Underground & Nico",
-  "Wilco::Yankee Hotel Foxtrot",
-  "Animal Collective::Merriweather Post Pavilion",
-  "The Stone Roses::The Stone Roses",
+  "The Beatles::Abbey Road",
+  "The Beach Boys::Pet Sounds",
+  "Stevie Wonder::Songs in the Key of Life",
+  "Pink Floyd::Wish You Were Here",
+  "Talking Heads::Stop Making Sense",
+  "Wu-Tang Clan::Enter the Wu-Tang (36 Chambers)",
+  "Jeff Buckley::Grace",
+  "OutKast::Stankonia",
+  "Frank Ocean::Channel Orange",
+  "Beyoncé::Lemonade",
+  "Lorde::Melodrama",
+  "Fiona Apple::Fetch the Bolt Cutters",
 ];
 
 function readJson(filePath) {
