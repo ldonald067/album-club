@@ -3,7 +3,7 @@
 import React, { useMemo } from "react";
 import { buildSoundtrackCorner } from "@/lib/soundtrack-corner";
 
-export default function SoundtrackCornerFallback({ album, reason }) {
+export default function SoundtrackCorner({ album }) {
   const corner = useMemo(() => buildSoundtrackCorner(album), [album]);
 
   return (
@@ -19,11 +19,6 @@ export default function SoundtrackCornerFallback({ album, reason }) {
           {corner.listenNow.label}
         </a>
       </div>
-      {reason && (
-        <div className="agent-status-note" role="status">
-          {reason}
-        </div>
-      )}
       <div className="soundtrack-corner-kicker">{corner.kicker}</div>
       <div className="soundtrack-corner-grid">
         {corner.cards.map((card) => (

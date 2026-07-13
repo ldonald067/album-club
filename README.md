@@ -18,7 +18,7 @@ A retro forum-style website where a new album is featured every day. Rate it, pi
 - **Yesterday's Recap** — see what the community thought about yesterday's album
 - **Retro Aesthetic** — 2004 forum vibes with pixel art icons and a vinyl record CSS effect
 
-- **Crate Digger Chat** - ask a music, pop culture, and video game-savvy agent running for free on a local model by default
+- **Soundtrack Corner** — today's album reimagined as game / film / TV cue music, with scene cards and "listen next" picks
 
 ## Setup
 
@@ -33,38 +33,6 @@ npm run dev
 
 Open http://localhost:3000. The SQLite database creates itself on first request.
 
-For the free chat agent setup, install [Ollama](https://ollama.com/download), pull a local model, and keep Ollama running:
-
-```bash
-ollama pull gemma3:4b
-npm run dev
-```
-
-Crate Digger defaults to local Ollama mode with:
-
-```bash
-CRATE_DIGGER_PROVIDER=ollama
-OLLAMA_MODEL=gemma3:4b
-OLLAMA_HOST=http://127.0.0.1:11434
-```
-
-If your machine is lighter on RAM, try `OLLAMA_MODEL=gemma3:1b`.
-
-Optional paid/hosted mode: switch to OpenAI explicitly:
-
-```bash
-CRATE_DIGGER_PROVIDER=openai
-OPENAI_API_KEY=sk-...
-OPENAI_MODEL=gpt-5.4-mini
-```
-
-Optional advanced OpenAI retrieval mode:
-
-```bash
-OPENAI_API_KEY=sk-... npm run sync-crate-digger-knowledge
-OPENAI_VECTOR_STORE_ID=vs_...
-```
-
 ## Project Structure
 
 ```
@@ -72,15 +40,14 @@ app/
   page.js              # Server component — resolves today's album
   ForumPage.js         # Client component — all UI and games
   globals.css          # All styling
-  api/                 # rate, vibe, guess, stats, playlist, matchup, chat routes
+  api/                 # rate, vibe, guess, stats, playlist, matchup, health routes
 lib/
   albums.json          # 403 album entries (source of truth)
   albums.js            # Shuffle logic, game helpers, vibes
   lyrics.json          # Lyric lines for ~88 albums
   db.js                # SQLite database
 data/                  # Auto-created, holds aotd.db (gitignored)
-scripts/               # Data fetching + eval tools (covers, lyrics, YouTube IDs, site/agent evals)
-public/agent-knowledge/ # Curated Crate Digger knowledge pack
+scripts/               # Data fetching + eval tools (covers, lyrics, YouTube IDs, site eval)
 docs/                  # Developer documentation
 ```
 
@@ -92,14 +59,11 @@ These populate game data. The site works without them — games fall back to Cov
 LASTFM_API_KEY=xxx npm run fetch-covers        # Album cover art
 GENIUS_ACCESS_TOKEN=xxx npm run fetch-lyrics    # Lyrics for Lyric game
 YOUTUBE_API_KEY=xxx npm run fetch-youtube-ids   # YouTube IDs for Heardle
-OPENAI_API_KEY=xxx npm run sync-crate-digger-knowledge  # Optional OpenAI file search
 ```
 
 ## Tech Stack
 
 - **Next.js 16** (App Router)
-- **Ollama** for free local Crate Digger chat by default
-- **OpenAI Responses API** as an optional hosted provider with web search and file search
 - **SQLite** via better-sqlite3
 - **No auth** — fully anonymous, localStorage for client state
 - **No CSS framework** — hand-written retro CSS

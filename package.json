@@ -13,9 +13,7 @@
     "fetch-covers": "node scripts/fetch-covers.mjs",
     "fetch-lyrics": "node scripts/fetch-lyrics.mjs",
     "fetch-youtube-ids": "node scripts/fetch-youtube-ids.mjs",
-    "sync-crate-digger-knowledge": "node scripts/sync-crate-digger-knowledge.mjs",
     "soundtrack-corner-report": "node scripts/soundtrack-corner-report.mjs",
-    "eval-agent": "node --no-warnings scripts/eval-agent.mjs",
     "eval-site": "node --no-warnings scripts/eval-site.mjs"
   },
   "dependencies": {
@@ -23,7 +21,6 @@
     "better-sqlite3": "^11.7.0",
     "canvas-confetti": "^1.9.4",
     "next": "^16.2.10",
-    "openai": "^6.34.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

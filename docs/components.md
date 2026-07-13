@@ -114,21 +114,9 @@ Shows tomorrow's album emoji + genre + decade (e.g., `🎷 Tomorrow's Album — 
 - **Session state**: `sessionStorage` for welcome-back dismissal (resets per tab)
 - **Animation guards**: `justRevealed`/`justSubmitted` booleans prevent re-animating on reload
 
-## Chat Agent (`CultureChatAgent`)
+## Soundtrack Corner (`SoundtrackCornerPanel` → `app/SoundtrackCorner.js`)
 
-Separate Chat Booth nav tab for the Crate Digger chat. The client persists the current tab's transcript in `sessionStorage`, stores the user's chat handle/avatar choice in `localStorage`, sends the latest 8 `{ role, content }` messages to `/api/chat`, and caps user input at 500 characters. Prompt chips call the same submit path as the form.
-
-The chat renders as a little forum thread: Crate Digger and the user each have a pixel avatar/profile row, messages render in paragraph blocks instead of one long slab, and the loading state uses the same post layout. A small thread card at the top anchors the current album plus provider/tool readiness, prompt chips now read more like real conversation starters, and the composer makes the Enter vs Shift+Enter behavior explicit. Crate Digger is now intentionally music-only: albums, artists, production, lyrics, scenes, credits, and recommendations. Chat posts render simple inline markdown for `**bold**`.
-
-User handles are moderated client-side before posting. The handle field blocks reserved/staff-like names, hateful/abusive handles, and unsupported characters; posting is disabled until the handle passes moderation. The moderation helper normalizes separators, common leetspeak, and diacritics before checking for slurs/hate symbols, so obvious evasions like spaced-out or `n1gg3r`-style handles are rejected too.
-
-The chat composer also preflights the latest prompt through the same moderation layer. Clear hateful requests now get an immediate in-thread Crate Digger boundary reply with a safety-note citation instead of disappearing into a vague error or quietly hitting the model. Clearly off-topic prompts about general film / TV / games / celebrity chatter get an in-thread redirect back to music instead of going out of lane.
-
-On mount, the client requests `GET /api/chat` to learn whether the deployment actually has a working chat provider. If the route reports `available: false`, the tab shows a warm status note, disables prompt chips/composer submit, and avoids the fake-broken "looks alive until you click" behavior. In local Ollama mode, that status now includes a small health check too, so the booth falls back when nothing is actually listening on the configured host instead of pretending chat is ready.
-
-Assistant messages can include `citations`, `usedTools`, and `provider`. Citations render as visible source links below a message; tool pills show `Local model` or `Hosted model`, plus `Checked the crates` and `Searched the web` when relevant. The loading state mirrors the server-advertised provider/tool availability instead of assuming local Ollama.
-
-When chat is unavailable, the tab now swaps to **Soundtrack Corner** instead of leaving a disabled quasi-chat UI in place. The fallback gives album-specific game / film / TV scene cards, two rotating extra angles (for example boss-fight energy or best-fit game studio), a short "listen for" list, and a clickable "listen next" recommendation row with one-line reasons plus YouTube links for today's album and each follow-up pick.
+Its own nav tab (formerly the Chat Booth — the AI chat was removed in July 2026). Renders today's album as game / film / TV cue music: album-specific scene cards, two rotating extra angles (for example boss-fight energy or best-fit game studio), a short "listen for" list, and a clickable "listen next" recommendation row with one-line reasons plus YouTube links for today's album and each follow-up pick. Loaded with `next/dynamic` (`ssr: false`) so its weight stays off the main page.
 
 Heardle and Lyric Challenge no longer fail over silently. If a game slot has to roll over, the user now sees a clear note explaining why Cover Art Challenge appeared. Lyric Challenge also picks from the lyric-backed subset first, so the fallback should be noticeably rarer instead of feeling random.
 
@@ -138,6 +126,4 @@ Authoring notes for those overrides live in `docs/soundtrack-corner-research.md`
 
 Use `npm run soundtrack-corner-report` to see how many albums currently have curated overrides, how much of the recognizable/priority pool is covered, and which priority albums are still good next candidates.
 
-Use `npm run eval-site` for the broader Batch 6 pass: chat scope checks, album-pool variety summary, game-source coverage, soundtrack coverage, and a handful of UI/API guardrails.
-
-The route owns today's album context, provider selection, curated knowledge access, and any hosted credentials server-side; the client should not send API keys or trusted album metadata.
+Use `npm run eval-site` for the broader quality pass: album-pool variety summary, game-source coverage, soundtrack coverage, and a handful of UI/API guardrails.

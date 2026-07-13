@@ -20,12 +20,11 @@ Optional: specific route to audit (e.g., "rate", "vibe", "guess") — defaults t
 - `app/api/guess/route.js` — POST game result stats, GET aggregate stats
 - `app/api/playlist/route.js` — playlist poll votes
 - `app/api/matchup/route.js` — versus matchup picks
-- `app/api/chat/route.js` — Crate Digger chat proxy (LLM provider calls, message caps)
 - `app/api/stats/route.js` — aggregate site stats
+- `app/api/health/route.js` — deploy/commit status probe
 - `lib/db.js` — SQLite queries (check for injection, error handling)
 - `lib/rate-limit.js` — Rate limiter implementation
 - `lib/api-helpers.js` — shared validation/response helpers
-- `lib/chat-moderation.js` — chat input moderation and boundaries
 
 ### Security Checklist
 
