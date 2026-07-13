@@ -67,6 +67,15 @@ async function fireConfetti(options = {}) {
 /** Reusable share button with clipboard copy + "Copied!" feedback */
 function ShareResultButton({ getText, label = "📋 Share Results" }) {
   const btnRef = useRef(null);
+  const flash = (text) => {
+    const btn = btnRef.current;
+    if (btn) {
+      btn.textContent = text;
+      setTimeout(() => {
+        if (btnRef.current) btnRef.current.textContent = label;
+      }, COPIED_FEEDBACK_MS);
+    }
+  };
   return (
     <button
       ref={btnRef}
@@ -74,20 +83,24 @@ function ShareResultButton({ getText, label = "📋 Share Results" }) {
       onClick={() => {
         navigator.clipboard
           .writeText(getText())
-          .then(() => {
-            const btn = btnRef.current;
-            if (btn) {
-              btn.textContent = "Copied!";
-              setTimeout(() => {
-                btn.textContent = label;
-              }, COPIED_FEEDBACK_MS);
-            }
-          })
-          .catch(() => {});
+          .then(() => flash("Copied!"))
+          .catch(() => flash("Copy failed — try selecting manually"));
       }}
     >
       {label}
     </button>
+  );
+}
+
+/** Vote is locked in but community results haven't arrived yet */
+function ResultsPending({ label, onRetry }) {
+  return (
+    <div className="results-pending" role="status">
+      <span>{label}</span>
+      <button type="button" className="results-pending-retry" onClick={onRetry}>
+        Try again
+      </button>
+    </div>
   );
 }
 
@@ -221,6 +234,12 @@ function AlbumAutocomplete({
           role="combobox"
           aria-expanded={showSuggestions && filtered.length > 0}
           aria-autocomplete="list"
+          aria-controls="album-suggestions"
+          aria-activedescendant={
+            suggestionIndex >= 0
+              ? `album-suggestion-${suggestionIndex}`
+              : undefined
+          }
           onKeyDown={(e) => {
             if (
               showSuggestions &&
@@ -255,10 +274,11 @@ function AlbumAutocomplete({
           }}
         />
         {showSuggestions && filtered.length > 0 && (
-          <div className="suggestions" role="listbox">
+          <div className="suggestions" role="listbox" id="album-suggestions">
             {filtered.map((a, i) => (
               <div
                 key={i}
+                id={`album-suggestion-${i}`}
                 className={`suggestion-item${i === suggestionIndex ? " highlighted" : ""}`}
                 role="option"
                 aria-selected={i === suggestionIndex}
@@ -403,16 +423,21 @@ function RateReveal({ albumKey }) {
   const [locking, setLocking] = useState(false);
   const [error, setError] = useState(null);
 
+  const loadResults = () => {
+    fetch("/api/rate")
+      .then((r) => r.json())
+      .then(setResults)
+      .catch(() => {});
+  };
+
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_rated_${albumKey}`);
     if (saved) {
       setMyRating(parseInt(saved));
       setRevealed(true);
-      fetch("/api/rate")
-        .then((r) => r.json())
-        .then(setResults)
-        .catch(() => {});
+      loadResults();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [albumKey]);
 
   const submit = async () => {
@@ -483,11 +508,36 @@ function RateReveal({ albumKey }) {
     };
   };
 
+  // Gate on the local flag, never on the fetch — otherwise a slow/failed GET
+  // re-shows the voting UI to someone who already voted (double-count risk)
+  if (revealed && !results) {
+    return (
+      <div className="panel">
+        <div className="panel-header">
+          <span>
+            <i className="hn hn-star" aria-hidden="true" /> RATE &amp; REVEAL —
+            YOUR RESULTS
+          </span>
+        </div>
+        <div className="panel-body">
+          <ResultsPending
+            label={`Your ${myRating}/10 is locked in — fetching the room's numbers...`}
+            onRetry={loadResults}
+          />
+        </div>
+      </div>
+    );
+  }
+
   if (revealed && results) {
     const maxCount = Math.max(...Object.values(results.distribution), 1);
     const hotTake = getHotTake();
     return (
-      <div className={`panel${justRevealed ? " animate-reveal" : ""}`}>
+      <div
+        className={`panel${justRevealed ? " animate-reveal" : ""}`}
+        role="status"
+        aria-live="polite"
+      >
         <div className="panel-header">
           <span>
             <i className="hn hn-star" aria-hidden="true" /> RATE &amp; REVEAL —
@@ -671,16 +721,21 @@ function PlaylistPoll({ albumKey }) {
   const [justRevealed, setJustRevealed] = useState(false);
   const [error, setError] = useState(null);
 
+  const loadResults = () => {
+    fetch("/api/playlist")
+      .then((r) => r.json())
+      .then(setResults)
+      .catch(() => {});
+  };
+
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_playlist_${albumKey}`);
     if (saved) {
       setMyVote(saved === "yes");
       setSubmitted(true);
-      fetch("/api/playlist")
-        .then((r) => r.json())
-        .then(setResults)
-        .catch(() => {});
+      loadResults();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [albumKey]);
 
   const submit = async (vote) => {
@@ -716,6 +771,17 @@ function PlaylistPoll({ albumKey }) {
     }
   };
 
+  if (submitted && !results) {
+    return (
+      <div className="playlist-poll">
+        <ResultsPending
+          label={`You voted ${myVote ? "Yes" : "Nah"} \u2014 fetching the split...`}
+          onRetry={loadResults}
+        />
+      </div>
+    );
+  }
+
   if (submitted && results) {
     const yesPct =
       results.total > 0 ? Math.round((results.yes / results.total) * 100) : 0;
@@ -729,7 +795,11 @@ function PlaylistPoll({ albumKey }) {
           ? `\ud83e\uddd0 ${skipStreak} skips in a row \u2014 picky listener`
           : null;
     return (
-      <div className={`playlist-poll${justRevealed ? " animate-reveal" : ""}`}>
+      <div
+        className={`playlist-poll${justRevealed ? " animate-reveal" : ""}`}
+        role="status"
+        aria-live="polite"
+      >
         <div className="playlist-question">
           {myVote ? "\ud83c\udfa7" : "\ud83d\udeab"} You voted{" "}
           <strong>{myVote ? "Yes" : "Nah"}</strong>
@@ -812,16 +882,21 @@ const VersusMatchup = memo(function VersusMatchup() {
   const [justRevealed, setJustRevealed] = useState(false);
   const [error, setError] = useState(null);
 
+  const loadResults = () => {
+    fetch("/api/matchup?type=versus")
+      .then((r) => r.json())
+      .then(setResults)
+      .catch(() => {});
+  };
+
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_versus_${todayKey}`);
     if (saved) {
       setMyPick(saved);
       setSubmitted(true);
-      fetch("/api/matchup?type=versus")
-        .then((r) => r.json())
-        .then(setResults)
-        .catch(() => {});
+      loadResults();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [todayKey]);
 
   const submit = async (pick) => {
@@ -874,12 +949,27 @@ const VersusMatchup = memo(function VersusMatchup() {
     </div>
   );
 
+  if (submitted && !results) {
+    return (
+      <div className="versus-matchup">
+        <ResultsPending
+          label={`You picked ${myPick === "A" ? albumA.title : albumB.title} — fetching the room's split...`}
+          onRetry={loadResults}
+        />
+      </div>
+    );
+  }
+
   if (submitted && results) {
     const aPct =
       results.total > 0 ? Math.round((results.a / results.total) * 100) : 50;
     const bPct = 100 - aPct;
     return (
-      <div className={`versus-matchup${justRevealed ? " animate-reveal" : ""}`}>
+      <div
+        className={`versus-matchup${justRevealed ? " animate-reveal" : ""}`}
+        role="status"
+        aria-live="polite"
+      >
         <div className="versus-header">
           &#x2694;&#xFE0F; You picked{" "}
           <strong>{myPick === "A" ? albumA.title : albumB.title}</strong>
@@ -978,16 +1068,21 @@ const BlindTasteTest = memo(function BlindTasteTest() {
   const [readyA, setReadyA] = useState(false);
   const [readyB, setReadyB] = useState(false);
 
+  const loadResults = () => {
+    fetch("/api/matchup?type=taste")
+      .then((r) => r.json())
+      .then(setResults)
+      .catch(() => {});
+  };
+
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_taste_${todayKey}`);
     if (saved) {
       setMyPick(saved);
       setSubmitted(true);
-      fetch("/api/matchup?type=taste")
-        .then((r) => r.json())
-        .then(setResults)
-        .catch(() => {});
+      loadResults();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [todayKey]);
 
   // Load YouTube IFrame API + two players
@@ -1123,12 +1218,27 @@ const BlindTasteTest = memo(function BlindTasteTest() {
     }
   };
 
+  if (submitted && !results) {
+    return (
+      <div className="taste-test">
+        <ResultsPending
+          label={`You picked Clip ${myPick} — fetching the room's split...`}
+          onRetry={loadResults}
+        />
+      </div>
+    );
+  }
+
   if (submitted && results) {
     const aPct =
       results.total > 0 ? Math.round((results.a / results.total) * 100) : 50;
     const bPct = 100 - aPct;
     return (
-      <div className={`taste-test${justRevealed ? " animate-reveal" : ""}`}>
+      <div
+        className={`taste-test${justRevealed ? " animate-reveal" : ""}`}
+        role="status"
+        aria-live="polite"
+      >
         <div className="taste-header">
           &#x1F3A7; The reveal &mdash; you picked{" "}
           <strong>
@@ -1215,7 +1325,7 @@ const BlindTasteTest = memo(function BlindTasteTest() {
           <button
             className={`taste-play-btn${playingA ? " playing" : ""}`}
             onClick={() => playClip("A")}
-            disabled={!readyA}
+            disabled={!readyA || playingA}
           >
             {playingA
               ? "\u23F8 Playing..."
@@ -1229,7 +1339,7 @@ const BlindTasteTest = memo(function BlindTasteTest() {
           <button
             className={`taste-play-btn${playingB ? " playing" : ""}`}
             onClick={() => playClip("B")}
-            disabled={!readyB}
+            disabled={!readyB || playingB}
           >
             {playingB
               ? "\u23F8 Playing..."
@@ -1277,7 +1387,11 @@ function VibeCheck({ albumKey }) {
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_vibed_${albumKey}`);
     if (saved) {
-      setSelected(JSON.parse(saved));
+      try {
+        setSelected(JSON.parse(saved));
+      } catch {
+        setSelected([]);
+      }
       setSubmitted(true);
       fetch("/api/vibe")
         .then((r) => r.json())
@@ -1365,7 +1479,11 @@ function VibeCheck({ albumKey }) {
           </span>
         )}
       </div>
-      <div className="panel-body">
+      <div
+        className="panel-body"
+        role={submitted ? "status" : undefined}
+        aria-live={submitted ? "polite" : undefined}
+      >
         {!submitted && (
           <p className="activity-prompt">
             Pick up to 3 moods that actually fit the record.
@@ -1520,11 +1638,15 @@ function GuessGame() {
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_guess_${todayKey}`);
     if (saved) {
-      const state = JSON.parse(saved);
-      setGuesses(state.guesses);
-      setCluesRevealed(Math.min(state.guesses.length + 2, 6));
-      setGameOver(state.gameOver);
-      setSolved(state.solved);
+      try {
+        const state = JSON.parse(saved);
+        setGuesses(state.guesses);
+        setCluesRevealed(Math.min(state.guesses.length + 2, 6));
+        setGameOver(state.gameOver);
+        setSolved(state.solved);
+      } catch {
+        // Corrupt saved state — start the day fresh
+      }
     }
     fetch("/api/guess")
       .then((r) => r.json())
@@ -1759,10 +1881,14 @@ function CoverChallenge({ fallbackNote = null }) {
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_cover_${todayKey}`);
     if (saved) {
-      const state = JSON.parse(saved);
-      setGuesses(state.guesses);
-      setGameOver(state.gameOver);
-      setSolved(state.solved);
+      try {
+        const state = JSON.parse(saved);
+        setGuesses(state.guesses);
+        setGameOver(state.gameOver);
+        setSolved(state.solved);
+      } catch {
+        // Corrupt saved state — start the day fresh
+      }
     }
     fetch(`/api/guess?type=cover`)
       .then((r) => r.json())
@@ -1970,10 +2096,14 @@ function HeardleGame() {
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_heardle_${todayKey}`);
     if (saved) {
-      const state = JSON.parse(saved);
-      setGuesses(state.guesses);
-      setGameOver(state.gameOver);
-      setSolved(state.solved);
+      try {
+        const state = JSON.parse(saved);
+        setGuesses(state.guesses);
+        setGameOver(state.gameOver);
+        setSolved(state.solved);
+      } catch {
+        // Corrupt saved state — start the day fresh
+      }
     }
     fetch(`/api/guess?type=heardle`)
       .then((r) => r.json())
@@ -2294,10 +2424,14 @@ function LyricGame() {
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_lyric_${todayKey}`);
     if (saved) {
-      const state = JSON.parse(saved);
-      setGuesses(state.guesses);
-      setGameOver(state.gameOver);
-      setSolved(state.solved);
+      try {
+        const state = JSON.parse(saved);
+        setGuesses(state.guesses);
+        setGameOver(state.gameOver);
+        setSolved(state.solved);
+      } catch {
+        // Corrupt saved state — start the day fresh
+      }
     }
     fetch(`/api/guess?type=lyric`)
       .then((r) => r.json())
@@ -2598,10 +2732,14 @@ function ScrambleGame() {
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_scramble_${todayKey}`);
     if (saved) {
-      const state = JSON.parse(saved);
-      setGuesses(state.guesses);
-      setGameOver(state.gameOver);
-      setSolved(state.solved);
+      try {
+        const state = JSON.parse(saved);
+        setGuesses(state.guesses);
+        setGameOver(state.gameOver);
+        setSolved(state.solved);
+      } catch {
+        // Corrupt saved state — start the day fresh
+      }
     }
     fetch(`/api/guess?type=scramble`)
       .then((r) => r.json())
@@ -2747,6 +2885,15 @@ function ScrambleGame() {
               aria-label="Guess the album"
               placeholder="Type an album name..."
               value={currentGuess}
+              role="combobox"
+              aria-expanded={showSuggestions && filtered.length > 0}
+              aria-autocomplete="list"
+              aria-controls="scramble-suggestions"
+              aria-activedescendant={
+                suggestionIndex >= 0
+                  ? `scramble-suggestion-${suggestionIndex}`
+                  : undefined
+              }
               onChange={(e) => {
                 setCurrentGuess(e.target.value);
                 setShowSuggestions(true);
@@ -2774,12 +2921,21 @@ function ScrambleGame() {
               onFocus={() => currentGuess.trim() && setShowSuggestions(true)}
               className={shaking ? "shaking" : ""}
             />
-            <button onClick={submitGuess}>Guess</button>
+            <button onClick={submitGuess} disabled={!currentGuess.trim()}>
+              Guess
+            </button>
             {showSuggestions && filtered.length > 0 && (
-              <div className="suggestions">
+              <div
+                className="suggestions"
+                role="listbox"
+                id="scramble-suggestions"
+              >
                 {filtered.map((a, i) => (
                   <div
                     key={a.title}
+                    id={`scramble-suggestion-${i}`}
+                    role="option"
+                    aria-selected={i === suggestionIndex}
                     className={`suggestion-item${i === suggestionIndex ? " active" : ""}`}
                     onMouseDown={() => {
                       setCurrentGuess(a.title);

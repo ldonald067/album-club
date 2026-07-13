@@ -1254,6 +1254,34 @@ body {
   text-align: center;
 }
 
+/* Vote locked in, community numbers still loading */
+.results-pending {
+  align-items: center;
+  color: var(--text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 11px;
+  gap: 8px;
+  justify-content: center;
+  padding: 12px;
+}
+
+.results-pending-retry {
+  background: none;
+  border: 1px solid var(--border-panel);
+  border-radius: 4px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 4px 10px;
+}
+
+.results-pending-retry:hover {
+  opacity: 0.8;
+}
+
 .soundtrack-card {
   background: #fbf7ef;
   border: 1px solid var(--border-light);

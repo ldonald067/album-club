@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { buildSoundtrackCorner } from "@/lib/soundtrack-corner";
-import { getGameType } from "@/lib/albums";
+import { getGameType, getTodayKey } from "@/lib/albums";
 
 const COPIED_FEEDBACK_MS = 2000;
 
@@ -16,27 +16,37 @@ const GAME_LABELS = {
 
 /** One-tap "where does this cue belong" vote with a community reveal */
 function CueVote({ album, cards }) {
-  const storageKey = `aotd_soundtrack_${album.key || album.title}`;
+  // Keyed by the live UTC date (not the render-frozen album prop) so the
+  // storage key, SoundtrackMini, and the API's album_key always agree —
+  // including in the window right after UTC midnight before a reload.
+  const storageKey = `aotd_soundtrack_${getTodayKey()}`;
   const [myPick, setMyPick] = useState(null);
   const [results, setResults] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [justRevealed, setJustRevealed] = useState(false);
   const [error, setError] = useState(null);
   const shareBtnRef = useRef(null);
+  const submittingRef = useRef(false);
+
+  const loadResults = () => {
+    fetch("/api/soundtrack")
+      .then((r) => r.json())
+      .then(setResults)
+      .catch(() => {});
+  };
 
   useEffect(() => {
     const saved = localStorage.getItem(storageKey);
     if (saved) {
       setMyPick(saved);
-      fetch("/api/soundtrack")
-        .then((r) => r.json())
-        .then(setResults)
-        .catch(() => {});
+      loadResults();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storageKey]);
 
   const submit = async (pick) => {
-    if (submitting) return;
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setSubmitting(true);
     setError(null);
     try {
@@ -57,6 +67,7 @@ function CueVote({ album, cards }) {
       setJustRevealed(true);
     } catch (err) {
       setError(err.message || "Something went wrong.");
+      submittingRef.current = false;
       setSubmitting(false);
     }
   };
@@ -72,11 +83,28 @@ function CueVote({ album, cards }) {
     return `🎧 Soundtrack Corner — ${album.title} by ${album.artist}\nI'd cue it in a ${myCard ? `${myCard.label.toLowerCase()} scene` : "scene"}. The room says: ${roomLine}\nlittlealbumclub.net`;
   };
 
+  if (myPick && !results) {
+    return (
+      <div className="soundtrack-vote" role="status">
+        Vote's in — fetching the room...{" "}
+        <button
+          type="button"
+          className="results-pending-retry"
+          onClick={loadResults}
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
+
   if (myPick && results) {
     const pickedCard = cards.find((card) => card.key === myPick);
     return (
       <div
         className={`soundtrack-vote${justRevealed ? " animate-reveal" : ""}`}
+        role="status"
+        aria-live="polite"
       >
         <div className="soundtrack-vote-prompt">
           You&apos;d cue it in a{" "}
@@ -115,18 +143,21 @@ function CueVote({ album, cards }) {
           ref={shareBtnRef}
           className="btn-submit share-btn"
           onClick={() => {
+            const flash = (text) => {
+              const btn = shareBtnRef.current;
+              if (btn) {
+                btn.textContent = text;
+                setTimeout(() => {
+                  if (shareBtnRef.current) {
+                    shareBtnRef.current.textContent = "📋 Share The Verdict";
+                  }
+                }, COPIED_FEEDBACK_MS);
+              }
+            };
             navigator.clipboard
               .writeText(getShareText())
-              .then(() => {
-                const btn = shareBtnRef.current;
-                if (btn) {
-                  btn.textContent = "Copied!";
-                  setTimeout(() => {
-                    btn.textContent = "📋 Share The Verdict";
-                  }, COPIED_FEEDBACK_MS);
-                }
-              })
-              .catch(() => {});
+              .then(() => flash("Copied!"))
+              .catch(() => flash("Copy failed — try selecting manually"));
           }}
         >
           📋 Share The Verdict
