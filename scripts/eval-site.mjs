@@ -221,6 +221,7 @@ const apiRoutePaths = [
   path.join(rootDir, "app", "api", "playlist", "route.js"),
   path.join(rootDir, "app", "api", "matchup", "route.js"),
   path.join(rootDir, "app", "api", "stats", "route.js"),
+  path.join(rootDir, "app", "api", "soundtrack", "route.js"),
 ];
 const apiSources = apiRoutePaths.map(readText);
 

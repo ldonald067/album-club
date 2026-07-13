@@ -1157,6 +1157,83 @@ body {
   margin-bottom: 10px;
 }
 
+.soundtrack-vote {
+  background: #fbf7ef;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  margin-bottom: 10px;
+  padding: 10px 12px;
+}
+
+.soundtrack-vote-prompt {
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.soundtrack-vote-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.soundtrack-vote-btn {
+  max-width: none;
+}
+
+.soundtrack-vote-results {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.soundtrack-vote-row {
+  align-items: center;
+  display: grid;
+  font-size: 11px;
+  gap: 8px;
+  grid-template-columns: 72px 1fr 64px;
+}
+
+.soundtrack-vote-row.mine .soundtrack-vote-label {
+  font-weight: bold;
+}
+
+.soundtrack-vote-row.mine .soundtrack-vote-bar {
+  background: #5a7a9a;
+}
+
+.soundtrack-vote-bar-wrap {
+  background: var(--bg-main);
+  border: 1px solid var(--border-light);
+  border-radius: 3px;
+  display: block;
+  height: 14px;
+  overflow: hidden;
+}
+
+.soundtrack-vote-bar {
+  background: #9a8a6a;
+  display: block;
+  height: 100%;
+}
+
+.soundtrack-vote-bar.animate-bar {
+  animation: bar-grow 0.6s ease-out;
+}
+
+.soundtrack-vote-count {
+  color: var(--text-muted);
+  text-align: right;
+}
+
+@media (max-width: 480px) {
+  .soundtrack-vote-buttons {
+    flex-direction: column;
+  }
+}
+
 .soundtrack-card {
   background: #fbf7ef;
   border: 1px solid var(--border-light);

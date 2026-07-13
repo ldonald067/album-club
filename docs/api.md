@@ -61,6 +61,10 @@ Shared endpoint for Album vs Album and Blind Taste Test. `?type=` param: `versus
 
 Aggregate site statistics (total ratings, avg rating, albums rated, top vibes, puzzle stats). 5-minute double cache (route + db layer), but the HTTP response itself is `no-store` so clients always revalidate instead of hanging onto old totals.
 
+### POST/GET `/api/soundtrack`
+
+Soundtrack Corner's "where does this cue belong" vote. POST body: `{ pick }` where pick is `"game"`, `"film"`, or `"tv"`. Returns `{ game, film, tv, total }` counts for today's album. GET returns the same distribution (30s in-memory cache, busted on POST). Daily limit 3 per IP (`soundtrack` endpoint key). DB table: `soundtrack_votes` keyed by the daily `album_key`.
+
 ### GET `/api/health`
 
 Deploy/status probe: `{ commit, volumeMounted, uptimeSeconds }`. `commit` is the short Railway commit SHA (`"dev"` locally), `volumeMounted` reports whether `RAILWAY_VOLUME_MOUNT_PATH` is present (i.e. the SQLite volume is attached). Rate-limited like every other route. Used to verify deploys landed and the data volume is still attached.

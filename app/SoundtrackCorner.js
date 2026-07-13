@@ -1,7 +1,157 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { buildSoundtrackCorner } from "@/lib/soundtrack-corner";
+
+const COPIED_FEEDBACK_MS = 2000;
+
+/** One-tap "where does this cue belong" vote with a community reveal */
+function CueVote({ album, cards }) {
+  const storageKey = `aotd_soundtrack_${album.key || album.title}`;
+  const [myPick, setMyPick] = useState(null);
+  const [results, setResults] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [justRevealed, setJustRevealed] = useState(false);
+  const [error, setError] = useState(null);
+  const shareBtnRef = useRef(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(storageKey);
+    if (saved) {
+      setMyPick(saved);
+      fetch("/api/soundtrack")
+        .then((r) => r.json())
+        .then(setResults)
+        .catch(() => {});
+    }
+  }, [storageKey]);
+
+  const submit = async (pick) => {
+    if (submitting) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/soundtrack", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pick }),
+      });
+      if (!res.ok) {
+        const msg = (await res.json().catch(() => ({}))).error;
+        throw new Error(msg || "Failed to submit");
+      }
+      const data = await res.json();
+      localStorage.setItem(storageKey, pick);
+      window.dispatchEvent(new Event("aotd-activity"));
+      setMyPick(pick);
+      setResults(data);
+      setJustRevealed(true);
+    } catch (err) {
+      setError(err.message || "Something went wrong.");
+      setSubmitting(false);
+    }
+  };
+
+  const getShareText = () => {
+    const myCard = cards.find((card) => card.key === myPick);
+    const roomLine = cards
+      .map(
+        (card) =>
+          `${card.icon} ${results.total > 0 ? Math.round((results[card.key] / results.total) * 100) : 0}%`,
+      )
+      .join(" · ");
+    return `🎧 Soundtrack Corner — ${album.title} by ${album.artist}\nI'd cue it in a ${myCard ? `${myCard.label.toLowerCase()} scene` : "scene"}. The room says: ${roomLine}\nlittlealbumclub.net`;
+  };
+
+  if (myPick && results) {
+    const pickedCard = cards.find((card) => card.key === myPick);
+    return (
+      <div
+        className={`soundtrack-vote${justRevealed ? " animate-reveal" : ""}`}
+      >
+        <div className="soundtrack-vote-prompt">
+          You&apos;d cue it in a{" "}
+          <strong>
+            {pickedCard ? pickedCard.label.toLowerCase() : myPick}
+          </strong>{" "}
+          scene. The room so far:
+        </div>
+        <div className="soundtrack-vote-results">
+          {cards.map((card) => {
+            const count = results[card.key] || 0;
+            const pct =
+              results.total > 0 ? Math.round((count / results.total) * 100) : 0;
+            return (
+              <div
+                key={card.key}
+                className={`soundtrack-vote-row${card.key === myPick ? " mine" : ""}`}
+              >
+                <span className="soundtrack-vote-label">
+                  <span aria-hidden="true">{card.icon}</span> {card.label}
+                </span>
+                <span className="soundtrack-vote-bar-wrap">
+                  <span
+                    className={`soundtrack-vote-bar${justRevealed ? " animate-bar" : ""}`}
+                    style={{ width: `${Math.max(pct, 2)}%` }}
+                  />
+                </span>
+                <span className="soundtrack-vote-count">
+                  {pct}% ({count})
+                </span>
+              </div>
+            );
+          })}
+        </div>
+        <button
+          ref={shareBtnRef}
+          className="btn-submit share-btn"
+          onClick={() => {
+            navigator.clipboard
+              .writeText(getShareText())
+              .then(() => {
+                const btn = shareBtnRef.current;
+                if (btn) {
+                  btn.textContent = "Copied!";
+                  setTimeout(() => {
+                    btn.textContent = "📋 Share The Verdict";
+                  }, COPIED_FEEDBACK_MS);
+                }
+              })
+              .catch(() => {});
+          }}
+        >
+          📋 Share The Verdict
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="soundtrack-vote">
+      <div className="soundtrack-vote-prompt">
+        Where does this one belong tonight? One vote, then you see the room.
+      </div>
+      {error && (
+        <p className="submit-error" role="alert">
+          {error}
+        </p>
+      )}
+      <div className="soundtrack-vote-buttons">
+        {cards.map((card) => (
+          <button
+            key={card.key}
+            type="button"
+            className="playlist-btn soundtrack-vote-btn"
+            disabled={submitting}
+            onClick={() => submit(card.key)}
+          >
+            <span aria-hidden="true">{card.icon}</span> {card.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function SoundtrackCorner({ album }) {
   const corner = useMemo(() => buildSoundtrackCorner(album), [album]);
@@ -34,6 +184,7 @@ export default function SoundtrackCorner({ album }) {
           </div>
         ))}
       </div>
+      <CueVote album={album} cards={corner.cards} />
       <div className="soundtrack-corner-note">{corner.bridgeNote}</div>
       <div className="soundtrack-corner-section">
         <div className="soundtrack-section-title">
