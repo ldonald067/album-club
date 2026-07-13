@@ -92,7 +92,7 @@ function ShareResultButton({ getText, label = "📋 Share Results" }) {
 }
 
 /** Soundtrack Corner — today's album as game / film / TV cue music */
-function SoundtrackCornerPanel({ album }) {
+function SoundtrackCornerPanel({ album, onNavigate }) {
   return (
     <div className="panel chat-agent-panel">
       <div className="panel-header">
@@ -103,8 +103,45 @@ function SoundtrackCornerPanel({ album }) {
         <span className="panel-header-note">Game / film / TV</span>
       </div>
       <div className="panel-body">
-        <SoundtrackCorner album={album} />
+        <SoundtrackCorner
+          album={album}
+          onPlayToday={() => {
+            onNavigate("home");
+            window.scrollTo(0, 0);
+          }}
+        />
       </div>
+    </div>
+  );
+}
+
+/** Home-page teaser row for the Soundtrack Corner tab */
+function SoundtrackMini({ onNavigate }) {
+  const todayKey = getTodayKey();
+  const [myPick, setMyPick] = useState(null);
+  useEffect(() => {
+    setMyPick(localStorage.getItem(`aotd_soundtrack_${todayKey}`));
+  }, [todayKey]);
+
+  const open = () => {
+    onNavigate("agent");
+    window.scrollTo(0, 0);
+  };
+
+  return (
+    <div
+      className="bingo-mini corner-mini"
+      onClick={open}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && open()}
+    >
+      <span className="bingo-mini-label">🎧 Soundtrack Corner</span>
+      <span className="bingo-mini-near">
+        {myPick
+          ? `You cast it for ${myPick} — see the room →`
+          : "Game, film, or TV? Cast today's cue →"}
+      </span>
     </div>
   );
 }
@@ -3916,6 +3953,9 @@ export default function ForumPage({ album, dateString }) {
             {/* Bingo mini widget */}
             <BingoMini onNavigate={setActiveSection} />
 
+            {/* Soundtrack Corner teaser */}
+            <SoundtrackMini onNavigate={setActiveSection} />
+
             {/* Yesterday's Recap */}
             <YesterdayRecap />
 
@@ -4117,7 +4157,9 @@ export default function ForumPage({ album, dateString }) {
         )}
 
         {activeSection === "archive" && <ArchiveSection />}
-        {activeSection === "agent" && <SoundtrackCornerPanel album={album} />}
+        {activeSection === "agent" && (
+          <SoundtrackCornerPanel album={album} onNavigate={setActiveSection} />
+        )}
         {activeSection === "stats" && <StatsSection />}
         {activeSection === "bingo" && <BingoSection />}
         {activeSection === "faq" && <FAQSection />}

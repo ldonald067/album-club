@@ -1234,6 +1234,11 @@ body {
   }
 }
 
+.soundtrack-play-cta {
+  margin-top: 14px;
+  text-align: center;
+}
+
 .soundtrack-card {
   background: #fbf7ef;
   border: 1px solid var(--border-light);

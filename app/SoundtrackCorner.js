@@ -2,8 +2,17 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { buildSoundtrackCorner } from "@/lib/soundtrack-corner";
+import { getGameType } from "@/lib/albums";
 
 const COPIED_FEEDBACK_MS = 2000;
+
+const GAME_LABELS = {
+  guess: "Guess the Album",
+  cover: "Cover Art Challenge",
+  lyric: "Lyric Challenge",
+  heardle: "Heardle",
+  scramble: "Artist Scramble",
+};
 
 /** One-tap "where does this cue belong" vote with a community reveal */
 function CueVote({ album, cards }) {
@@ -153,8 +162,9 @@ function CueVote({ album, cards }) {
   );
 }
 
-export default function SoundtrackCorner({ album }) {
+export default function SoundtrackCorner({ album, onPlayToday }) {
   const corner = useMemo(() => buildSoundtrackCorner(album), [album]);
+  const gameLabel = GAME_LABELS[getGameType()] || "today's game";
 
   return (
     <div className="soundtrack-corner">
@@ -252,6 +262,13 @@ export default function SoundtrackCorner({ album }) {
           ))}
         </div>
       </div>
+      {onPlayToday && (
+        <div className="soundtrack-play-cta">
+          <button type="button" className="btn-submit" onClick={onPlayToday}>
+            🎯 Done digging? Play today&apos;s {gameLabel}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
