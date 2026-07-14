@@ -319,6 +319,20 @@ const FORUM_SIGS = [
   "— PixelPunk99 | '128kbps? In this economy?'",
   "— CrateDigger3000 | 'My backlog has a backlog.'",
   "— echo_chamber | 'I don't have a problem, I have a collection.'",
+  "— B_Side_Betty | 'The deep cuts are where they hide the truth.'",
+  "— TrackTwoTruther | 'Track 2 is always the thesis. Always.'",
+  "— sleeve_notes_sam | 'I read the credits like a novel.'",
+  "— MiniDiscMartyr | 'I was right and the format war was rigged.'",
+  "— gatefold_greg | 'Double albums are a lifestyle choice.'",
+  "— hiss_and_pop | 'The crackle is part of the song.'",
+  "— skip_no_tracks | 'Sequencing is sacred. Fight me politely.'",
+  "— Aux_Cord_Aunt | 'Whoever holds the aux holds the room.'",
+  "— midnight_presser | 'Refresh at 00:00 UTC or you're a tourist.'",
+  "— liner_note_lore | 'Every album is a rumor until you've heard it twice.'",
+  "— FirstPressingFran | 'Remasters are apologies. Sometimes accepted.'",
+  "— headphone_hermit | 'Speakers are for sharing. I am not.'",
+  "— the_fade_out_fan | 'Cold endings are a crime of cowardice.'",
+  "— WalkmanWarrior | 'Side A on the way there, Side B on the way back.'",
 ];
 
 /* ─── Visit rank (forum-style) ─── */
