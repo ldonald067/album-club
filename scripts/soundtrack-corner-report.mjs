@@ -42,22 +42,22 @@ const PRIORITY_KEYS = [
   "Talking Heads::Remain in Light",
 ];
 
-// Refreshed 2026-07 after the previous queue was fully covered.
-// Picked for recognizability plus decade spread (60s-70s and 2010s-2020s
-// are the thinnest-covered decades).
+// Refreshed whenever the previous queue is fully covered. Picked for
+// recognizability plus decade spread. Previous rounds (all now covered):
+// the 2026-07 classics batch and the 2026-07 modern batch.
 const EDITORIAL_QUEUE_KEYS = [
-  "The Beatles::Abbey Road",
-  "The Beach Boys::Pet Sounds",
-  "Stevie Wonder::Songs in the Key of Life",
-  "Pink Floyd::Wish You Were Here",
-  "Talking Heads::Stop Making Sense",
-  "Wu-Tang Clan::Enter the Wu-Tang (36 Chambers)",
-  "Jeff Buckley::Grace",
-  "OutKast::Stankonia",
-  "Frank Ocean::Channel Orange",
-  "Beyoncé::Lemonade",
-  "Lorde::Melodrama",
-  "Fiona Apple::Fetch the Bolt Cutters",
+  "David Bowie::The Rise and Fall of Ziggy Stardust",
+  "Bruce Springsteen::Born to Run",
+  "Stevie Wonder::Innervisions",
+  "Miles Davis::Bitches Brew",
+  "A Tribe Called Quest::Midnight Marauders",
+  "The White Stripes::Elephant",
+  "Gorillaz::Demon Days",
+  "LCD Soundsystem::Sound of Silver",
+  "Tyler, the Creator::Igor",
+  "SZA::Ctrl",
+  "Taylor Swift::Folklore",
+  "Beyoncé::Renaissance",
 ];
 
 function readJson(filePath) {
