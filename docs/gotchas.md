@@ -1,5 +1,9 @@
 # Gotchas
 
+## Deployment
+
+- **Railway "Deploy Crashed" on every push (fixed 2026-07)**: Node exits with code 143 on SIGTERM by default, and Railway reports any nonzero exit as a crash when the old container is replaced during a rollout. `instrumentation.js` registers SIGTERM/SIGINT handlers that `process.exit(0)`. If crash notifications return, check that file still exists and verify real health via `/api/health` (`uptimeSeconds` climbing = no crash loop)
+
 ## Next.js / Build
 
 - **`allowedDevOrigins`** in `next.config.mjs`: Required to suppress "Cross origin request detected" warnings when dev server runs on `127.0.0.1` vs `localhost`
