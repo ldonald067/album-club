@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { SOUNDTRACK_OVERRIDES } from "../lib/soundtrack-corner-data.js";
 
 const rootDir = process.cwd();
 
@@ -179,6 +180,48 @@ console.log(
     soundtrackCoveredRecognizable.length / recognizableAlbums.length,
   )})`,
 );
+
+printSection("Override structure");
+{
+  const albumTitles = new Set(albums.map((album) => album.title));
+  const catalogKeys = new Set(
+    albums.map((album) => `${album.artist}::${album.title}`),
+  );
+  const validAngleKeys = new Set([
+    "boss-fight",
+    "needle-drop",
+    "cold-open",
+    "studio-match",
+    "end-credits",
+  ]);
+  const structureProblems = [];
+  for (const [key, override] of Object.entries(SOUNDTRACK_OVERRIDES)) {
+    if (!catalogKeys.has(key)) {
+      structureProblems.push(`key does not match any album: ${key}`);
+    }
+    for (const rec of override.recommendations || []) {
+      if (!albumTitles.has(rec.title)) {
+        structureProblems.push(`rec not in catalog (${key}): ${rec.title}`);
+      }
+    }
+    for (const angle of override.extraAngles || []) {
+      if (!validAngleKeys.has(angle.key) || !angle.title || !angle.body) {
+        structureProblems.push(`bad extra angle (${key}): ${angle.key}`);
+      }
+    }
+    for (const medium of ["game", "film", "tv"]) {
+      if (override.cards && !override.cards[medium]?.body) {
+        structureProblems.push(`missing ${medium} card body (${key})`);
+      }
+    }
+  }
+  structureProblems.forEach((problem) => console.log(`  ! ${problem}`));
+  failures += printGuardrail(
+    structureProblems.length === 0,
+    "Curated overrides are structurally sound",
+    "Bad keys or dangling recommendations silently vanish at runtime — catch them here.",
+  );
+}
 
 printSection("UI and API guardrails");
 failures += printGuardrail(

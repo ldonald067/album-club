@@ -42,22 +42,22 @@ const PRIORITY_KEYS = [
   "Talking Heads::Remain in Light",
 ];
 
-// Refreshed whenever the previous queue is fully covered. Picked for
-// recognizability plus decade spread. Previous rounds (all now covered):
-// the 2026-07 classics batch and the 2026-07 modern batch.
+// Refreshed whenever the previous queue is fully covered. Since 2026-07
+// the queue follows the "Coming up in rotation" air-date sort below, so
+// writing effort lands on albums visitors will see soonest.
 const EDITORIAL_QUEUE_KEYS = [
-  "David Bowie::The Rise and Fall of Ziggy Stardust",
-  "Bruce Springsteen::Born to Run",
-  "Stevie Wonder::Innervisions",
-  "Miles Davis::Bitches Brew",
   "A Tribe Called Quest::Midnight Marauders",
-  "The White Stripes::Elephant",
-  "Gorillaz::Demon Days",
-  "LCD Soundsystem::Sound of Silver",
-  "Tyler, the Creator::Igor",
-  "SZA::Ctrl",
-  "Taylor Swift::Folklore",
+  "Chappell Roan::The Rise and Fall of a Midwest Princess",
+  "Buena Vista Social Club::Buena Vista Social Club",
+  "Clipse::Let God Sort Em Out",
   "Beyoncé::Renaissance",
+  "Jay-Z::The Blueprint",
+  "Brian Eno::Music for Airports",
+  "Bon Iver::For Emma, Forever Ago",
+  "Gorillaz::Plastic Beach",
+  "Weyes Blood::Titanic Rising",
+  "Tyler, the Creator::Chromakopia",
+  "Kendrick Lamar::DAMN.",
 ];
 
 function readJson(filePath) {
@@ -148,4 +148,72 @@ if (uncoveredPriorityAlbums.length > 0 || uncoveredEditorialAlbums.length > 0) {
       `- ${album.artist} - ${album.title} (${album.year}, ${album.genre})`,
     );
   }
+}
+
+/* ── Rotation schedule: which uncovered albums air soonest ──
+   Keep the PRNG/shuffle in sync with lib/albums.js (mulberry32 +
+   Fisher-Yates seeded by UTC year). Writing effort should land on
+   albums visitors will actually see in the next few weeks. */
+
+function mulberry32(seed) {
+  return function () {
+    let t = (seed += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const permutationCache = new Map();
+function seededPermutation(length, seed) {
+  const cacheKey = `${length}:${seed}`;
+  if (permutationCache.has(cacheKey)) return permutationCache.get(cacheKey);
+  const rand = mulberry32(seed);
+  const indices = Array.from({ length }, (_, i) => i);
+  for (let i = indices.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
+  permutationCache.set(cacheKey, indices);
+  return indices;
+}
+
+function daysUntilFeatured(albumIndex, catalogLength) {
+  const now = Date.now();
+  // Two-year horizon covers a full rotation cycle plus the year boundary
+  for (let offset = 0; offset < 800; offset++) {
+    const d = new Date(now + offset * 86400000);
+    const year = d.getUTCFullYear();
+    const start = Date.UTC(year, 0, 0);
+    const dayOfYear = Math.floor((d.getTime() - start) / 86400000);
+    const order = seededPermutation(catalogLength, year);
+    if (order[dayOfYear % catalogLength] === albumIndex) {
+      return { days: offset, date: d.toISOString().slice(0, 10) };
+    }
+  }
+  return null;
+}
+
+const uncoveredRecognizable = albums
+  .map((album, index) => ({ album, index }))
+  .filter(({ album }) => album.recognizable && !overrideKeys.has(getKey(album)))
+  .map(({ album, index }) => ({
+    album,
+    next: daysUntilFeatured(index, albums.length),
+  }))
+  .filter(({ next }) => next)
+  .sort((a, b) => a.next.days - b.next.days);
+
+console.log("");
+console.log("Coming up in rotation (uncovered recognizable):");
+for (const { album, next } of uncoveredRecognizable.slice(0, 15)) {
+  const when =
+    next.days === 0
+      ? "today"
+      : next.days === 1
+        ? "tomorrow"
+        : `in ${next.days} days`;
+  console.log(
+    `- ${next.date} (${when}): ${album.artist} - ${album.title} (${album.year}, ${album.genre})`,
+  );
 }
