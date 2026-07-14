@@ -12,6 +12,32 @@ const GAME_LABELS = {
   scramble: "Artist Scramble",
 };
 
+const CUE_STREAK_LINES = {
+  game: (n) =>
+    `That's ${n} game cues running — the club suspects you're building a level.`,
+  film: (n) =>
+    `That's ${n} film cues running — the club suspects you're location scouting.`,
+  tv: (n) =>
+    `That's ${n} TV cues running — the club suspects you're pitching a limited series.`,
+};
+
+/** Consecutive days (ending today) the same medium was picked */
+function getCueStreak() {
+  const today = new Date();
+  let streakPick = null;
+  let streak = 0;
+  for (let i = 0; i < 30; i++) {
+    const key = new Date(today.getTime() - i * 86400000)
+      .toISOString()
+      .slice(0, 10);
+    const pick = localStorage.getItem(`aotd_soundtrack_${key}`);
+    if (!pick || (streakPick && pick !== streakPick)) break;
+    streakPick = pick;
+    streak++;
+  }
+  return { pick: streakPick, streak };
+}
+
 /** One-tap "where does this cue belong" vote with a community reveal */
 function CueVote({ cards }) {
   // Keyed by the live UTC date (not the render-frozen album prop) so the
@@ -125,6 +151,14 @@ function CueVote({ cards }) {
             );
           })}
         </div>
+        {(() => {
+          const { pick, streak } = getCueStreak();
+          return streak >= 3 && CUE_STREAK_LINES[pick] ? (
+            <div className="soundtrack-vote-streak">
+              {CUE_STREAK_LINES[pick](streak)}
+            </div>
+          ) : null;
+        })()}
       </div>
     );
   }

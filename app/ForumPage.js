@@ -3755,6 +3755,17 @@ function updateStreak(todayKey) {
 }
 
 /* ─── Main Page ─── */
+const SECRET_TAGLINES = [
+  "“One album. One day. A thousand opinions.”",
+  "“Zero ads. Zero logins. One album.”",
+  "“Arguing about music since EST. 2004.”",
+  "“All killer, one filler — you decide which.”",
+  "“The B-side of the internet.”",
+  "“Powered by ForumEngine™ and pure conviction.”",
+  "“Sequenced on purpose. Like all good things.”",
+  "“Your streak misses you already.”",
+];
+
 export default function ForumPage({ album, dateString }) {
   const [activeSection, setActiveSection] = useState("home");
 
@@ -3769,8 +3780,40 @@ export default function ForumPage({ album, dateString }) {
   const [vinylSpinning, setVinylSpinning] = useState(false);
   const [estHover, setEstHover] = useState(false);
   const [forumSig, setForumSig] = useState("");
+  const [taglineIdx, setTaglineIdx] = useState(0);
+  const [eggToast, setEggToast] = useState(null);
 
   const konamiRef = useRef([]);
+  const spinTimerRef = useRef(null);
+  const pageTitleRef = useRef(null);
+
+  // 🎂 Round-number album birthday (UTC year on server and client alike)
+  const albumAge = new Date().getUTCFullYear() - album.year;
+  const isAlbumBirthday = albumAge > 0 && albumAge % 5 === 0;
+
+  const spinVinyl = () => {
+    setVinylSpinning(true);
+    // "Now spinning" tab title while the record turns
+    if (pageTitleRef.current === null) pageTitleRef.current = document.title;
+    document.title = `▶ ${album.title} — now spinning`;
+    clearTimeout(spinTimerRef.current);
+    spinTimerRef.current = setTimeout(() => {
+      setVinylSpinning(false);
+      document.title = pageTitleRef.current;
+    }, 3000);
+
+    // The 33⅓ Club — 33 lifetime spins earns an induction
+    const spins =
+      parseInt(localStorage.getItem("aotd_vinyl_spins") || "0", 10) + 1;
+    localStorage.setItem("aotd_vinyl_spins", String(spins));
+    if (spins === 33) {
+      fireConfetti({ particleCount: 120, spread: 100 });
+      setEggToast(
+        "💿 33 spins — welcome to the 33⅓ RPM Club. Membership is permanent.",
+      );
+      setTimeout(() => setEggToast(null), 5000);
+    }
+  };
 
   const todayKey = getTodayKey();
 
@@ -3914,8 +3957,20 @@ export default function ForumPage({ album, dateString }) {
             {estHover ? "♫ just kidding, est. 2025 ♫" : "♫ EST. 2004 ♫"}
           </div>
           <h1 className="banner-title">💿 Album Of The Day Club 💿</h1>
-          <div className="banner-tagline">
-            &ldquo;One album. One day. A thousand opinions.&rdquo;
+          <div
+            className="banner-tagline"
+            role="button"
+            tabIndex={0}
+            title="Click for an alternate motto"
+            onClick={() =>
+              setTaglineIdx((i) => (i + 1) % SECRET_TAGLINES.length)
+            }
+            onKeyDown={(e) =>
+              e.key === "Enter" &&
+              setTaglineIdx((i) => (i + 1) % SECRET_TAGLINES.length)
+            }
+          >
+            {SECRET_TAGLINES[taglineIdx]}
           </div>
         </div>
         <nav className="nav">
@@ -3950,6 +4005,13 @@ export default function ForumPage({ album, dateString }) {
       {konamiTriggered && (
         <div className="konami-banner">
           You found the secret code! You are a true music nerd.
+        </div>
+      )}
+
+      {/* Easter-egg toast (33⅓ Club and friends) */}
+      {eggToast && (
+        <div className="konami-banner" role="status">
+          {eggToast}
         </div>
       )}
 
@@ -4068,15 +4130,11 @@ export default function ForumPage({ album, dateString }) {
                     role="button"
                     tabIndex={0}
                     aria-label="Spin the vinyl record"
-                    onClick={() => {
-                      setVinylSpinning(true);
-                      setTimeout(() => setVinylSpinning(false), 3000);
-                    }}
+                    onClick={spinVinyl}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
                         e.preventDefault();
-                        setVinylSpinning(true);
-                        setTimeout(() => setVinylSpinning(false), 3000);
+                        spinVinyl();
                       }
                     }}
                     style={{ cursor: "pointer" }}
@@ -4086,6 +4144,11 @@ export default function ForumPage({ album, dateString }) {
                 <div className="album-info">
                   <h2 className="album-title">{album.title}</h2>
                   <div className="album-artist">by {album.artist}</div>
+                  {isAlbumBirthday && (
+                    <div className="album-birthday" title="Round-number year!">
+                      🎂 turns {albumAge} this year
+                    </div>
+                  )}
                   <table className="info-table">
                     <tbody>
                       {[
