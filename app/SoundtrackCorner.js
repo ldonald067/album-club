@@ -4,8 +4,6 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { buildSoundtrackCorner } from "@/lib/soundtrack-corner";
 import { getGameType, getTodayKey } from "@/lib/albums";
 
-const COPIED_FEEDBACK_MS = 2000;
-
 const GAME_LABELS = {
   guess: "Guess the Album",
   cover: "Cover Art Challenge",
@@ -15,7 +13,7 @@ const GAME_LABELS = {
 };
 
 /** One-tap "where does this cue belong" vote with a community reveal */
-function CueVote({ album, cards }) {
+function CueVote({ cards }) {
   // Keyed by the live UTC date (not the render-frozen album prop) so the
   // storage key, SoundtrackMini, and the API's album_key always agree —
   // including in the window right after UTC midnight before a reload.
@@ -25,7 +23,6 @@ function CueVote({ album, cards }) {
   const [submitting, setSubmitting] = useState(false);
   const [justRevealed, setJustRevealed] = useState(false);
   const [error, setError] = useState(null);
-  const shareBtnRef = useRef(null);
   const submittingRef = useRef(false);
 
   const loadResults = () => {
@@ -70,17 +67,6 @@ function CueVote({ album, cards }) {
       submittingRef.current = false;
       setSubmitting(false);
     }
-  };
-
-  const getShareText = () => {
-    const myCard = cards.find((card) => card.key === myPick);
-    const roomLine = cards
-      .map(
-        (card) =>
-          `${card.icon} ${results.total > 0 ? Math.round((results[card.key] / results.total) * 100) : 0}%`,
-      )
-      .join(" · ");
-    return `🎧 Soundtrack Corner — ${album.title} by ${album.artist}\nI'd cue it in a ${myCard ? `${myCard.label.toLowerCase()} scene` : "scene"}. The room says: ${roomLine}\nlittlealbumclub.net`;
   };
 
   if (myPick && !results) {
@@ -139,29 +125,6 @@ function CueVote({ album, cards }) {
             );
           })}
         </div>
-        <button
-          ref={shareBtnRef}
-          className="btn-submit share-btn"
-          onClick={() => {
-            const flash = (text) => {
-              const btn = shareBtnRef.current;
-              if (btn) {
-                btn.textContent = text;
-                setTimeout(() => {
-                  if (shareBtnRef.current) {
-                    shareBtnRef.current.textContent = "📋 Share The Verdict";
-                  }
-                }, COPIED_FEEDBACK_MS);
-              }
-            };
-            navigator.clipboard
-              .writeText(getShareText())
-              .then(() => flash("Copied!"))
-              .catch(() => flash("Copy failed — try selecting manually"));
-          }}
-        >
-          📋 Share The Verdict
-        </button>
       </div>
     );
   }
@@ -231,7 +194,7 @@ export default function SoundtrackCorner({ album, onPlayToday }) {
           </div>
         ))}
       </div>
-      <CueVote album={album} cards={corner.cards} />
+      <CueVote cards={corner.cards} />
       <div className="soundtrack-corner-note">{corner.bridgeNote}</div>
       <div className="soundtrack-corner-section">
         <div className="soundtrack-section-title">

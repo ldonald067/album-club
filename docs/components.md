@@ -118,7 +118,7 @@ Shows tomorrow's album emoji + genre + decade (e.g., `🎷 Tomorrow's Album — 
 
 Its own nav tab (formerly the Chat Booth — the AI chat was removed in July 2026). Renders today's album as game / film / TV cue music: album-specific scene cards, two rotating extra angles (for example boss-fight energy or best-fit game studio), a short "listen for" list, and a clickable "listen next" recommendation row with one-line reasons plus YouTube links for today's album and each follow-up pick. Loaded with `next/dynamic` (`ssr: false`) so its weight stays off the main page.
 
-Below the three cards, `CueVote` asks "where does this one belong tonight?" — one tap on Game / Film / TV, then the community percentages reveal with bars (my pick highlighted) and a copy-to-clipboard share line. Votes POST to `/api/soundtrack`; `aotd_soundtrack_{date}` in localStorage keeps it one-vote-per-day per browser and re-fetches results on reload.
+Below the three cards, `CueVote` asks "where does this one belong tonight?" — one tap on Game / Film / TV, then the community percentages reveal with bars (my pick highlighted). Votes POST to `/api/soundtrack`; `aotd_soundtrack_{date}` in localStorage keeps it one-vote-per-day per browser and re-fetches results on reload.
 
 The corner is cross-linked with the daily loop in both directions: `SoundtrackMini` on the home page (BingoMini pattern) teases the vote and flips to "You cast it for X — see the room →" after voting, and the corner ends with a "play today's game" CTA (`onPlayToday`) that names the actual rotation game and jumps back to the home section.
 

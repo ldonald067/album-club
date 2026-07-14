@@ -249,8 +249,7 @@ failures += printGuardrail(
 );
 failures += printGuardrail(
   soundtrackCornerSource.includes("Where does this one belong tonight?") &&
-    soundtrackCornerSource.includes("/api/soundtrack") &&
-    soundtrackCornerSource.includes("Share The Verdict"),
+    soundtrackCornerSource.includes("/api/soundtrack"),
   "Cue vote is wired into the corner",
   "The vote-then-see-the-room loop is the corner's daily ritual — keep it.",
 );
