@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { SOUNDTRACK_PROFILES } from "../lib/soundtrack-corner-data.js";
 
 const rootDir = process.cwd();
 const albumsPath = path.join(rootDir, "lib", "albums.json");
@@ -132,6 +133,28 @@ console.log("Covered by decade:");
 
 for (const [decade, count] of Object.entries(decadeCoverage).sort()) {
   console.log(`- ${decade}: ${count}`);
+}
+
+/* Albums with no curated override AND no matching genre profile read the
+   blandest — the generator falls back to DEFAULT_PROFILE. New profiles
+   fix dozens at once; keep this list visible. */
+const defaultProfileAlbums = albums.filter(
+  (album) =>
+    !overrideKeys.has(getKey(album)) &&
+    !SOUNDTRACK_PROFILES.some((profile) => profile.match.test(album.genre)),
+);
+const defaultGenreCounts = defaultProfileAlbums.reduce((accumulator, album) => {
+  accumulator[album.genre] = (accumulator[album.genre] || 0) + 1;
+  return accumulator;
+}, {});
+console.log("");
+console.log(
+  `Generator floor: ${defaultProfileAlbums.length}/${albums.length} albums fall to DEFAULT_PROFILE (no override, no genre profile)`,
+);
+for (const [genre, count] of Object.entries(defaultGenreCounts)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 8)) {
+  console.log(`- ${genre}: ${count}`);
 }
 
 if (uncoveredPriorityAlbums.length > 0 || uncoveredEditorialAlbums.length > 0) {
