@@ -126,7 +126,7 @@ Heardle and Lyric Challenge no longer fail over silently. If a game slot has to 
 
 Most albums still use the deterministic generator in `lib/soundtrack-corner.js`, but a shortlist of marquee records and cult favorites now has hand-authored overrides in `lib/soundtrack-corner-data.js` so the biggest canonical albums feel curated instead of procedural.
 
-Authoring notes for those overrides live in `docs/soundtrack-corner-research.md`, which collects paraphrased review/interview patterns plus Reddit fan associations for future tuning without copying source prose into runtime content.
+The authoring pipeline for overrides and generator profiles lives in `docs/soundtrack-corner-research.md` (source policy, schedule-aware batch flow, floor-raising via genre profiles).
 
 Use `npm run soundtrack-corner-report` to see how many albums currently have curated overrides, how much of the recognizable/priority pool is covered, and which priority albums are still good next candidates.
 
