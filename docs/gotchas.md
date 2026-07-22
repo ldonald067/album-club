@@ -28,7 +28,7 @@
 
 - **Lyrics data quality**: `fetch-lyrics.mjs` uses Genius search which can return wrong-artist songs, non-English translations, or album credits. After fetching, audit `lyrics.json` for: wrong language, duplicate lyrics across albums, lyrics from wrong artists
 - **Carousel duplication**: Track content is rendered twice (two `.map()` loops) so `translateX(-50%)` creates seamless infinite loop
-- **Seeded permutation cache**: `lib/albums.js` caches shuffle permutations in a Map (5-10 entries per year, negligible)
+- **Seeded permutation cache**: `lib/albums.js` caches shuffle permutations in a Map. Most seeds are year-based (few entries), but the daily Versus/Taste pairs seed per-day for full-year variety, so the Map grows ~2 entries/day (~730/year, ~1-2 MB of int arrays). Bounded and reset on every deploy — negligible in practice, but not the old "5-10/year"
 - **Adding albums shifts schedule**: Daily rotation uses `dayOfYear % ALBUMS.length` — changing album count shifts which album appears on which day
 
 ## Icons

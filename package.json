@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.8",
-    "prettier": "^3.8.1"
+    "prettier": "^3.8.1",
+    "subset-font": "^2.5.0"
   }
 }

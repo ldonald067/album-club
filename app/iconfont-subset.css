@@ -1,0 +1,54 @@
+/* Self-hosted subset of @hackernoon/pixel-icon-library — only the 11 glyphs
+ * this site actually uses. Generated with subset-font from the package woff2
+ * (948 B vs the full 20 kB face). Regenerate if a new hn-* class is added:
+ * see docs/performance.md. Base rules mirror the vendor iconfont.css. */
+@font-face {
+  font-family: "iconfont";
+  src: url("/fonts/iconfont-subset.woff2") format("woff2");
+  font-display: swap;
+}
+
+.hn {
+  line-height: 1;
+}
+
+.hn:before {
+  font-family: iconfont !important;
+  font-style: normal;
+  font-weight: normal !important;
+  vertical-align: top;
+}
+
+.hn-calender:before {
+  content: "\f16d";
+}
+.hn-envelope:before {
+  content: "\f18e";
+}
+.hn-headphones:before {
+  content: "\f1a4";
+}
+.hn-home:before {
+  content: "\f1a8";
+}
+.hn-music:before {
+  content: "\f1ba";
+}
+.hn-play:before {
+  content: "\f1cd";
+}
+.hn-playlist:before {
+  content: "\f1ce";
+}
+.hn-question:before {
+  content: "\f1d2";
+}
+.hn-sound-on:before {
+  content: "\f1e2";
+}
+.hn-star:before {
+  content: "\f1e7";
+}
+.hn-trending:before {
+  content: "\f1f6";
+}

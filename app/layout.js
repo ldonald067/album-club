@@ -1,6 +1,6 @@
 import Script from "next/script";
 import { Righteous } from "next/font/google";
-import "@hackernoon/pixel-icon-library/fonts/iconfont.css";
+import "./iconfont-subset.css";
 import "./globals.css";
 
 const righteous = Righteous({

@@ -101,3 +101,9 @@ Current: **55.1 kB** page JS, **157 kB** First Load. Target: stay under 55 kB pa
 - `lib/albums.json` (424 albums) is intentionally client-bundled — needed for autocomplete
 - `canvas-confetti` is dynamically imported and cached in `_confetti` variable
 - No code splitting needed — single-page app
+- **Pixel icons are self-hosted as a subset** (`app/iconfont-subset.css` +
+  `public/fonts/iconfont-subset.woff2`, ~1 kB vs the vendor's 20 kB full face).
+  If you add a new `hn-*` class, regenerate: add its codepoint to a subset-font
+  run over `node_modules/@hackernoon/pixel-icon-library/fonts/iconfont.woff2`
+  and add the class to `iconfont-subset.css` (codepoints live in the vendor
+  `iconfont.css`). The vendor package stays a dep only as the glyph source.
