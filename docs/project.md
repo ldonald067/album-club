@@ -6,6 +6,38 @@
 - **Analytics**: https://littlealbumclub.goatcounter.com (GoatCounter, script in `layout.js`)
 - **Contact**: rainbowpudding@littlealbumclub.net (mailto link in footer)
 
+## Database Backups
+
+The community aggregate (all ratings/vibes/votes) lives only on the Railway
+volume at `data/aotd.db`, which is gitignored. Back it up off-volume.
+
+**Mechanism (shipped):** `GET /api/backup` streams a consistent SQLite
+snapshot (better-sqlite3 online backup). It is **inert (404) until you set
+`BACKUP_TOKEN`** in the Railway service. Auth via `Authorization: Bearer
+<token>` or `?token=<token>`; wrong/absent token returns 404. Rate-limited.
+
+**To turn it on:**
+
+1. Railway service → Variables → add `BACKUP_TOKEN` = a long random string.
+2. GitHub repo → Settings → Secrets → Actions → add `BACKUP_TOKEN` (same value)
+   and `BACKUP_URL` = `https://littlealbumclub.net/api/backup`.
+3. That's it. `.github/workflows/backup.yml` runs daily at 06:00 UTC (and on
+   manual dispatch), pulls the snapshot, and keeps it as a GitHub artifact for
+   90 days. It skips cleanly until both secrets exist.
+
+Manual pull anytime:
+
+```bash
+curl -H "Authorization: Bearer $BACKUP_TOKEN" \
+  https://littlealbumclub.net/api/backup -o aotd-$(date +%F).db
+```
+
+**Upgrade path (continuous, point-in-time):** for zero-loss replication rather
+than daily snapshots, add [Litestream](https://litestream.io) streaming the WAL
+to S3-compatible storage (Cloudflare R2 / Backblaze B2 / S3). That needs a
+storage bucket + credentials and a container change (run `litestream replicate
+-exec "npm start"`), so it's a deliberate deploy-pipeline step, not wired yet.
+
 ## Repository
 
 - **GitHub**: https://github.com/ldonald067/album-club (public)

@@ -1,0 +1,41 @@
+name: Backup DB
+
+# Pulls a consistent SQLite snapshot off the Railway volume and keeps it as a
+# GitHub artifact. Requires two repo secrets:
+#   BACKUP_URL   e.g. https://littlealbumclub.net/api/backup
+#   BACKUP_TOKEN the same value set as BACKUP_TOKEN in the Railway service
+# The workflow is inert until both secrets exist (it skips with a notice).
+
+on:
+  schedule:
+    - cron: "0 6 * * *" # daily at 06:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull database snapshot
+        env:
+          BACKUP_URL: ${{ secrets.BACKUP_URL }}
+          BACKUP_TOKEN: ${{ secrets.BACKUP_TOKEN }}
+        run: |
+          if [ -z "$BACKUP_URL" ] || [ -z "$BACKUP_TOKEN" ]; then
+            echo "::notice::BACKUP_URL / BACKUP_TOKEN not set — skipping backup."
+            exit 0
+          fi
+          curl -fsS --retry 3 --retry-delay 5 \
+            -H "Authorization: Bearer $BACKUP_TOKEN" \
+            -o aotd-backup.db "$BACKUP_URL"
+          # Sanity check: real SQLite files start with "SQLite format 3".
+          head -c 16 aotd-backup.db | grep -q "SQLite format 3" \
+            || { echo "::error::Downloaded file is not a SQLite database"; exit 1; }
+          ls -la aotd-backup.db
+
+      - name: Upload snapshot artifact
+        if: ${{ hashFiles('aotd-backup.db') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: aotd-db-${{ github.run_id }}
+          path: aotd-backup.db
+          retention-days: 90
