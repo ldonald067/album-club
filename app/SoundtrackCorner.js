@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { buildSoundtrackCorner } from "@/lib/soundtrack-corner";
 import { getGameType, getTodayKey } from "@/lib/albums";
+import { loadJson } from "@/lib/safe-fetch";
 
 const GAME_LABELS = {
   guess: "Guess the Album",
@@ -52,10 +53,9 @@ function CueVote({ cards }) {
   const submittingRef = useRef(false);
 
   const loadResults = () => {
-    fetch("/api/soundtrack")
-      .then((r) => r.json())
+    loadJson("/api/soundtrack")
       .then(setResults)
-      .catch(() => {});
+      .catch(() => setResults(null));
   };
 
   useEffect(() => {

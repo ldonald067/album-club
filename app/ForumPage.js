@@ -27,6 +27,7 @@ import {
   getVersusPair,
   getTastePair,
 } from "@/lib/albums";
+import { loadJson } from "@/lib/safe-fetch";
 
 /* ─── Constants ─── */
 const MAX_SUGGESTIONS = 5;
@@ -438,10 +439,9 @@ function RateReveal({ albumKey }) {
   const [error, setError] = useState(null);
 
   const loadResults = () => {
-    fetch("/api/rate")
-      .then((r) => r.json())
+    loadJson("/api/rate")
       .then(setResults)
-      .catch(() => {});
+      .catch(() => setResults(null));
   };
 
   useEffect(() => {
@@ -736,10 +736,9 @@ function PlaylistPoll({ albumKey }) {
   const [error, setError] = useState(null);
 
   const loadResults = () => {
-    fetch("/api/playlist")
-      .then((r) => r.json())
+    loadJson("/api/playlist")
       .then(setResults)
-      .catch(() => {});
+      .catch(() => setResults(null));
   };
 
   useEffect(() => {
@@ -897,10 +896,9 @@ const VersusMatchup = memo(function VersusMatchup() {
   const [error, setError] = useState(null);
 
   const loadResults = () => {
-    fetch("/api/matchup?type=versus")
-      .then((r) => r.json())
+    loadJson("/api/matchup?type=versus")
       .then(setResults)
-      .catch(() => {});
+      .catch(() => setResults(null));
   };
 
   useEffect(() => {
@@ -1083,10 +1081,9 @@ const BlindTasteTest = memo(function BlindTasteTest() {
   const [readyB, setReadyB] = useState(false);
 
   const loadResults = () => {
-    fetch("/api/matchup?type=taste")
-      .then((r) => r.json())
+    loadJson("/api/matchup?type=taste")
       .then(setResults)
-      .catch(() => {});
+      .catch(() => setResults(null));
   };
 
   useEffect(() => {
@@ -1398,6 +1395,12 @@ function VibeCheck({ albumKey }) {
   const [atLimit, setAtLimit] = useState(false);
   const [error, setError] = useState(null);
 
+  const loadResults = () => {
+    loadJson("/api/vibe")
+      .then(setResults)
+      .catch(() => setResults(null));
+  };
+
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_vibed_${albumKey}`);
     if (saved) {
@@ -1407,11 +1410,9 @@ function VibeCheck({ albumKey }) {
         setSelected([]);
       }
       setSubmitted(true);
-      fetch("/api/vibe")
-        .then((r) => r.json())
-        .then(setResults)
-        .catch(() => {});
+      loadResults();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [albumKey]);
 
   const toggle = (label) => {
@@ -1477,6 +1478,27 @@ function VibeCheck({ albumKey }) {
   const topVibeData = topVibe
     ? VIBES.find((v) => v.label === topVibe[0])
     : null;
+
+  // Voted, community numbers still loading (or a load failed) — offer retry
+  // instead of a misleading all-zero results view (matches the siblings)
+  if (submitted && !results) {
+    return (
+      <div className="panel">
+        <div className="panel-header">
+          <span>
+            <i className="hn hn-headphones" aria-hidden="true" /> VIBE CHECK —
+            RESULTS
+          </span>
+        </div>
+        <div className="panel-body">
+          <ResultsPending
+            label="Your vibes are in — fetching the room..."
+            onRetry={loadResults}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`panel${justSubmitted ? " animate-reveal" : ""}`}>
@@ -1662,8 +1684,7 @@ function GuessGame() {
         // Corrupt saved state — start the day fresh
       }
     }
-    fetch("/api/guess")
-      .then((r) => r.json())
+    loadJson("/api/guess")
       .then((d) => setStats(d.stats))
       .catch(() => {});
   }, [todayKey]);
@@ -1904,8 +1925,7 @@ function CoverChallenge({ fallbackNote = null }) {
         // Corrupt saved state — start the day fresh
       }
     }
-    fetch(`/api/guess?type=cover`)
-      .then((r) => r.json())
+    loadJson(`/api/guess?type=cover`)
       .then((d) => setStats(d.stats))
       .catch(() => {});
   }, [todayKey]);
@@ -2119,8 +2139,7 @@ function HeardleGame() {
         // Corrupt saved state — start the day fresh
       }
     }
-    fetch(`/api/guess?type=heardle`)
-      .then((r) => r.json())
+    loadJson(`/api/guess?type=heardle`)
       .then((d) => setStats(d.stats))
       .catch(() => {});
   }, [todayKey]);
@@ -2447,8 +2466,7 @@ function LyricGame() {
         // Corrupt saved state — start the day fresh
       }
     }
-    fetch(`/api/guess?type=lyric`)
-      .then((r) => r.json())
+    loadJson(`/api/guess?type=lyric`)
       .then((d) => setStats(d.stats))
       .catch(() => {});
   }, [todayKey]);
@@ -2755,8 +2773,7 @@ function ScrambleGame() {
         // Corrupt saved state — start the day fresh
       }
     }
-    fetch(`/api/guess?type=scramble`)
-      .then((r) => r.json())
+    loadJson(`/api/guess?type=scramble`)
       .then((d) => setStats(d.stats))
       .catch(() => {});
   }, [todayKey]);
@@ -3083,12 +3100,8 @@ function YesterdayRecap() {
 
     // Fetch community data
     Promise.all([
-      fetch(`/api/rate?key=${yesterdayKey}`)
-        .then((r) => r.json())
-        .catch(() => null),
-      fetch(`/api/vibe?key=${yesterdayKey}`)
-        .then((r) => r.json())
-        .catch(() => null),
+      loadJson(`/api/rate?key=${yesterdayKey}`).catch(() => null),
+      loadJson(`/api/vibe?key=${yesterdayKey}`).catch(() => null),
     ]).then(([rateData, vibeData]) => {
       data.communityAvg = rateData?.average ?? null;
       data.communityTotal = rateData?.total ?? 0;
@@ -3249,8 +3262,7 @@ function StatsSection() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/stats")
-      .then((r) => r.json())
+    loadJson("/api/stats")
       .then((data) => {
         setStats(data);
         setLoading(false);
@@ -3829,6 +3841,18 @@ export default function ForumPage({ album, dateString }) {
     return computePersonalStats();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allDone]);
+
+  // Reload at UTC midnight so a long-open tab rolls to the new day cleanly.
+  // Fixes the whole stale-memo class: album, puzzle/pair, gameType and the
+  // localStorage keys all re-derive together instead of drifting apart.
+  useEffect(() => {
+    const now = new Date();
+    const msToMidnight =
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1) -
+      now.getTime();
+    const t = setTimeout(() => window.location.reload(), msToMidnight + 1500);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     // Visit rank tracking
