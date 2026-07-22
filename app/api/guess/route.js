@@ -9,13 +9,14 @@ import {
   readJsonBody,
 } from "@/lib/api-helpers";
 import { checkRateLimit, checkDailyLimit, getRealIp } from "@/lib/rate-limit";
+import {
+  VALID_GUESS_TYPES as VALID_TYPES,
+  validateGuessSubmission,
+} from "@/lib/guess-validation";
 
 // Cache per game type
 const guessCaches = {};
 const CACHE_TTL = 30000;
-
-const VALID_TYPES = ["puzzle", "cover", "heardle", "lyric", "scramble"];
-const MAX_ATTEMPTS = { puzzle: 6, cover: 5, heardle: 6, lyric: 4, scramble: 5 };
 
 function resolveKey(type) {
   const today = getTodayKey();
@@ -66,37 +67,11 @@ export async function POST(request) {
     }
 
     const body = await readJsonBody(request, { maxChars: 1024 });
-    const { attempts, solved, type: rawType } = body;
-    const type =
-      typeof rawType === "string" && rawType.trim()
-        ? rawType.trim().toLowerCase()
-        : "puzzle";
-    if (!VALID_TYPES.includes(type)) {
-      return jsonNoStore({ error: "Invalid type" }, { status: 400 });
+    const validation = validateGuessSubmission(body);
+    if (!validation.ok) {
+      return jsonNoStore({ error: validation.error }, { status: 400 });
     }
-
-    const maxAttempts = MAX_ATTEMPTS[type];
-    if (!maxAttempts) {
-      return jsonNoStore({ error: "Invalid type" }, { status: 400 });
-    }
-    if (
-      typeof attempts !== "number" ||
-      !Number.isInteger(attempts) ||
-      attempts < 1 ||
-      attempts > maxAttempts
-    ) {
-      return jsonNoStore({ error: "Invalid attempts" }, { status: 400 });
-    }
-    if (typeof solved !== "boolean") {
-      return jsonNoStore({ error: "Invalid solved value" }, { status: 400 });
-    }
-    // Logical consistency: if not solved, attempts must be max
-    if (!solved && attempts !== maxAttempts) {
-      return jsonNoStore(
-        { error: "Invalid attempts/solved combination" },
-        { status: 400 },
-      );
-    }
+    const { type, attempts, solved } = validation;
 
     // Daily vote cap: 3 submissions per IP per game type per day — checked
     // after validation so malformed requests don't consume the quota
