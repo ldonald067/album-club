@@ -36,10 +36,11 @@ scripts/              # Data fetch + eval tools (see docs/project.md)
 
 ## IMPORTANT: Read docs before starting any task
 
-Identify which docs are relevant and read them first. Load the full context before making changes.
+**New session? Read `docs/STATUS.md` first** — current state, what shipped, open items, and action needed (e.g. backups). Then identify which docs below are relevant and read them before making changes.
 
 | Task involves...       | Read first            |
 | ---------------------- | --------------------- |
+| Where things stand     | `docs/STATUS.md`      |
 | Games or puzzles       | `docs/games.md`       |
 | API routes or database | `docs/api.md`         |
 | UI components or state | `docs/components.md`  |
