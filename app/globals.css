@@ -1507,7 +1507,7 @@ body {
 .listen-btn:focus-visible,
 .suggestion-item:focus-visible,
 .playlist-btn:focus-visible,
-.bingo-mini:focus-visible,
+.mini-teaser:focus-visible,
 .versus-btn:focus-visible,
 .taste-play-btn:focus-visible,
 .agent-chip:focus-visible,
@@ -2942,8 +2942,9 @@ body {
   .playlist-btn:not(:disabled):hover,
   .versus-btn:not(:disabled):hover,
   .taste-play-btn:not(:disabled):hover,
-  .bingo-mini:hover {
+  .mini-teaser:hover {
     opacity: 1;
+    transform: none;
   }
 
   .agent-avatar-option:hover,
@@ -3306,6 +3307,8 @@ body {
 .versus-card {
   flex: 1;
   max-width: 150px;
+  display: flex;
+  flex-direction: column;
   border: 2px solid var(--border-panel);
   border-radius: 4px;
   padding: 8px;
@@ -3336,6 +3339,9 @@ body {
 }
 
 .versus-info {
+  /* flex:1 absorbs slack so the Pick button pins to the card bottom —
+     keeps buttons aligned when genres wrap to different heights */
+  flex: 1;
   font-size: 10px;
   color: var(--text-primary);
   line-height: 1.3;
@@ -3347,7 +3353,7 @@ body {
 }
 
 .versus-btn {
-  margin-top: 6px;
+  margin-top: auto;
   padding: 10px 12px;
   min-height: 44px;
   border: 2px solid var(--border-panel);
@@ -3521,35 +3527,64 @@ body {
   box-shadow: 0 0 6px rgba(90, 154, 90, 0.4);
 }
 
-/* ─── Bingo Mini Widget ─── */
-.bingo-mini {
-  border: 1px solid var(--border-panel);
-  border-radius: 4px;
-  padding: 10px 12px;
-  margin-bottom: 12px;
-  background: var(--bg-panel);
+/* ─── Mini teaser cards (Bingo / Soundtrack Corner on home) ─── */
+.mini-teaser {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border-panel);
+  border-left: 4px solid var(--accent-color, #5a7a9a);
+  border-radius: 6px;
+  background: var(--bg-panel);
   cursor: pointer;
-  transition: opacity 0.15s;
-  gap: 8px;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
 }
 
-.bingo-mini:hover {
-  opacity: 0.8;
+.mini-teaser:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
 }
 
-.bingo-mini-label {
-  font-size: 11px;
+.mini-teaser-icon {
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.mini-teaser-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.mini-teaser-title {
+  font-size: 12px;
   font-weight: bold;
   color: var(--text-primary);
+  letter-spacing: 0.02em;
 }
 
-.bingo-mini-near {
+.mini-teaser-sub {
   font-size: 10px;
-  color: #a07810;
+  color: var(--text-muted);
+}
+
+.mini-teaser-chevron {
+  font-size: 24px;
   font-weight: bold;
+  color: var(--accent-color, var(--text-muted));
+  flex-shrink: 0;
+  transition: transform 0.12s ease;
+}
+
+.mini-teaser:hover .mini-teaser-chevron {
+  transform: translateX(3px);
 }
 
 /* ─── Genre Bingo ─── */

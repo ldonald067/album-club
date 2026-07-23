@@ -143,20 +143,16 @@ function SoundtrackMini({ onNavigate }) {
   };
 
   return (
-    <div
-      className="bingo-mini corner-mini"
-      onClick={open}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => e.key === "Enter" && open()}
-    >
-      <span className="bingo-mini-label">🎧 Soundtrack Corner</span>
-      <span className="bingo-mini-near">
-        {myPick
-          ? `You cast it for ${myPick} — see the room →`
-          : "Game, film, or TV? Cast today's cue →"}
-      </span>
-    </div>
+    <MiniTeaser
+      icon="🎧"
+      title="Soundtrack Corner"
+      subtitle={
+        myPick
+          ? `You cast it for ${myPick} — see the room`
+          : "Game, film, or TV? Cast today's cue"
+      }
+      onOpen={open}
+    />
   );
 }
 
@@ -832,8 +828,8 @@ function PlaylistPoll({ albumKey }) {
           </div>
         </div>
         <div className="playlist-labels">
-          <span>\ud83c\udfa7 Add it ({results.yes})</span>
-          <span>\ud83d\udeab Skip it ({results.no})</span>
+          <span>🎧 Add it ({results.yes})</span>
+          <span>🚫 Skip it ({results.no})</span>
         </div>
         {(streakMsg || monthRate.total >= 2) && (
           <div className="playlist-meta">
@@ -3466,27 +3462,48 @@ function useBingoData() {
   };
 }
 
-function BingoMini({ onNavigate }) {
-  const { matchCount, hasBingo, nearLines } = useBingoData();
-  const nearMsg =
-    nearLines.length > 0
-      ? `1 away from ${nearLines.length > 1 ? `${nearLines.length} lines` : "a line"}! Need: ${nearLines[0].missing}`
-      : null;
+function MiniTeaser({ icon, title, subtitle, onOpen }) {
   return (
     <div
-      className="bingo-mini"
-      onClick={() => onNavigate("bingo")}
+      className="mini-teaser"
+      onClick={onOpen}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => e.key === "Enter" && onNavigate("bingo")}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onOpen();
+        }
+      }}
     >
-      <span className="bingo-mini-label">
-        {hasBingo ? "\ud83c\udf89 BINGO!" : `\u2b50 Bingo: ${matchCount}/25`}
+      <span className="mini-teaser-icon" aria-hidden="true">
+        {icon}
       </span>
-      {nearMsg && !hasBingo && (
-        <span className="bingo-mini-near">{nearMsg}</span>
-      )}
+      <div className="mini-teaser-text">
+        <span className="mini-teaser-title">{title}</span>
+        <span className="mini-teaser-sub">{subtitle}</span>
+      </div>
+      <span className="mini-teaser-chevron" aria-hidden="true">
+        \u203a
+      </span>
     </div>
+  );
+}
+
+function BingoMini({ onNavigate }) {
+  const { matchCount, hasBingo, nearLines } = useBingoData();
+  const subtitle = hasBingo
+    ? "You lined up 5 \u2014 come see the board"
+    : nearLines.length > 0
+      ? `One away! Need ${nearLines[0].missing} for a line`
+      : `${matchCount}/25 genres lit this month`;
+  return (
+    <MiniTeaser
+      icon={hasBingo ? "\ud83c\udf89" : "\u2b50"}
+      title={hasBingo ? "BINGO!" : "Genre Bingo"}
+      subtitle={subtitle}
+      onOpen={() => onNavigate("bingo")}
+    />
   );
 }
 
@@ -3557,13 +3574,11 @@ function BingoSection() {
           Genres light up as they appear this month. Get 5 in a row for BINGO!
         </p>
         {hasBingo && (
-          <div className="bingo-win">
-            \ud83c\udf89 BINGO! You got 5 in a row!
-          </div>
+          <div className="bingo-win">🎉 BINGO! You got 5 in a row!</div>
         )}
         {!hasBingo && nearLines.length > 0 && (
           <div className="bingo-near">
-            \ud83d\udd25 Almost there! Need{" "}
+            🔥 Almost there! Need{" "}
             {nearLines
               .slice(0, 2)
               .map((l) => <strong key={l.type + l.index}>{l.missing}</strong>)
