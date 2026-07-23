@@ -33,11 +33,12 @@ Node 22) runs `npm test` then `npm run build`.
   `RAILWAY_VOLUME_MOUNT_PATH`. Data survives deploys (verified).
 - **Deploy "crashed" notifications:** fixed — `instrumentation.js` exits 0 on
   SIGTERM. If they return, check that file; confirm health via `/api/health`.
-- **Backups — ACTION NEEDED (2 min):** `GET /api/backup` is built but **inert
-  until you set `BACKUP_TOKEN`** in Railway + add `BACKUP_TOKEN` and
-  `BACKUP_URL` as GitHub Actions secrets. Then `.github/workflows/backup.yml`
-  keeps daily snapshots as 90-day artifacts. Steps in `docs/project.md`.
-  Litestream is the documented continuous-replication upgrade (not wired).
+- **Backups — DONE (2026-07-23):** `BACKUP_TOKEN` is set in Railway and as a
+  GitHub Actions secret (alongside `BACKUP_URL`). `GET /api/backup` verified
+  live (404 without token, 200 SQLite snapshot with it, integrity `ok`);
+  `.github/workflows/backup.yml` ran green and stored a 90-day artifact. Daily
+  at 06:00 UTC from here on. Litestream is the documented continuous-replication
+  upgrade (not wired).
 
 ## Recent work (this stretch of sessions)
 
@@ -61,7 +62,7 @@ Node 22) runs `npm test` then `npm run build`.
 
 ## Open items / next steps
 
-1. **Set `BACKUP_TOKEN`** (see above) — highest-value remaining action.
+1. ~~**Set `BACKUP_TOKEN`**~~ — DONE 2026-07-23 (see "Operational facts").
 2. **Soundtrack Corner to 100%:** ~50 recognizable albums left, ~4 batches.
    Run `npm run soundtrack-corner-report`, write the top of the "Coming up in
    rotation" list (air-date-sorted) in the house voice, validate via
