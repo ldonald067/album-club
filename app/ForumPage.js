@@ -3484,7 +3484,7 @@ function MiniTeaser({ icon, title, subtitle, onOpen }) {
         <span className="mini-teaser-sub">{subtitle}</span>
       </div>
       <span className="mini-teaser-chevron" aria-hidden="true">
-        \u203a
+        ›
       </span>
     </div>
   );

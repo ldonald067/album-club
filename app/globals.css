@@ -3164,7 +3164,6 @@ body {
   flex: 1;
   max-width: 150px;
   padding: 10px 12px;
-  min-height: 44px;
   border: 2px solid var(--border-panel);
   border-radius: 4px;
   background: var(--bg-main);
@@ -3355,7 +3354,6 @@ body {
 .versus-btn {
   margin-top: auto;
   padding: 10px 12px;
-  min-height: 44px;
   border: 2px solid var(--border-panel);
   border-radius: 4px;
   background: var(--bg-main);
@@ -3459,7 +3457,6 @@ body {
 .taste-play-btn {
   width: 100%;
   padding: 10px 10px;
-  min-height: 44px;
   border: 2px solid var(--border-panel);
   border-radius: 4px;
   background: var(--bg-main);
@@ -3483,6 +3480,17 @@ body {
 .taste-play-btn.playing {
   border-color: #c9a227;
   box-shadow: 0 0 8px rgba(201, 162, 39, 0.4);
+}
+
+/* Touch devices get the 44px tap target; on desktop these action buttons are
+   sized by their own padding so they don't dwarf their 11px labels. Declared
+   after the base rules so it wins regardless of source order. */
+@media (pointer: coarse) {
+  .versus-btn,
+  .playlist-btn,
+  .taste-play-btn {
+    min-height: 44px;
+  }
 }
 
 .taste-heard {
