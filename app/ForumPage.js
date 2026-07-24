@@ -3613,7 +3613,7 @@ function BingoSection() {
         </div>
         <div style={{ textAlign: "center", marginTop: 8 }}>
           <ShareResultButton
-            label="\ud83d\udccb Share Bingo"
+            label="📋 Share Bingo"
             getText={getShareText}
           />
         </div>
