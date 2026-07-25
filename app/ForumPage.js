@@ -19,11 +19,6 @@ import {
   getHeardleAlbum,
   pickRotatingPoolAlbum,
   scrambleArtist,
-  getBingoCard,
-  getMonthMatches,
-  checkBingo,
-  getGenreCategory,
-  getNearBingoLines,
   getVersusPair,
   getTastePair,
 } from "@/lib/albums";
@@ -3426,42 +3421,6 @@ const FAQ_ITEMS = [
   },
 ];
 
-/** Shared bingo data hook — used by BingoSection and BingoMini */
-function useBingoData() {
-  // UTC to match the daily rotation and album keys
-  const now = new Date();
-  const year = now.getUTCFullYear();
-  const month = now.getUTCMonth() + 1;
-  const monthName = now.toLocaleString("en-US", {
-    month: "long",
-    timeZone: "UTC",
-  });
-  const card = useMemo(() => getBingoCard(year, month), [year, month]);
-  const matched = useMemo(() => getMonthMatches(year, month), [year, month]);
-  const matchCount = card.filter(
-    (c) => c.free || matched.has(c.category),
-  ).length;
-  const hasBingo = useMemo(() => checkBingo(card, matched), [card, matched]);
-  const nearLines = useMemo(
-    () => getNearBingoLines(card, matched),
-    [card, matched],
-  );
-  // Today's genre category for highlighting
-  const todayAlbum = useMemo(() => getAlbumForDate(new Date()), []);
-  const todayCategory = getGenreCategory(todayAlbum.genre);
-  return {
-    year,
-    month,
-    monthName,
-    card,
-    matched,
-    matchCount,
-    hasBingo,
-    nearLines,
-    todayCategory,
-  };
-}
-
 function MiniTeaser({ icon, title, subtitle, onOpen }) {
   return (
     <div
@@ -3486,138 +3445,6 @@ function MiniTeaser({ icon, title, subtitle, onOpen }) {
       <span className="mini-teaser-chevron" aria-hidden="true">
         ›
       </span>
-    </div>
-  );
-}
-
-function BingoMini({ onNavigate }) {
-  const { matchCount, hasBingo, nearLines } = useBingoData();
-  const subtitle = hasBingo
-    ? "You lined up 5 \u2014 come see the board"
-    : nearLines.length > 0
-      ? `One away! Need ${nearLines[0].missing} for a line`
-      : `${matchCount}/25 genres lit this month`;
-  return (
-    <MiniTeaser
-      icon={hasBingo ? "\ud83c\udf89" : "\u2b50"}
-      title={hasBingo ? "BINGO!" : "Genre Bingo"}
-      subtitle={subtitle}
-      onOpen={() => onNavigate("bingo")}
-    />
-  );
-}
-
-function BingoSection() {
-  const {
-    year,
-    month,
-    monthName,
-    card,
-    matched,
-    matchCount,
-    hasBingo,
-    nearLines,
-    todayCategory,
-  } = useBingoData();
-
-  useEffect(() => {
-    if (hasBingo) {
-      const celebrated = localStorage.getItem(
-        `aotd_bingo_celebrated_${year}-${month}`,
-      );
-      if (!celebrated) {
-        fireConfetti({ particleCount: 100, spread: 80 });
-        localStorage.setItem(`aotd_bingo_celebrated_${year}-${month}`, "1");
-      }
-    }
-  }, [hasBingo, year, month]);
-
-  // Cells that are part of a near-bingo line (for subtle highlight)
-  const nearCells = useMemo(() => {
-    const s = new Set();
-    for (const line of nearLines) {
-      for (const ci of line.cells) s.add(ci);
-    }
-    return s;
-  }, [nearLines]);
-
-  const getShareText = () => {
-    const lines = [`Genre Bingo \u2014 ${monthName} ${year}`];
-    for (let r = 0; r < 5; r++) {
-      let row = "";
-      for (let c = 0; c < 5; c++) {
-        const cell = card[r * 5 + c];
-        if (cell.free) row += "\u2b50";
-        else if (matched.has(cell.category)) row += "\ud83d\udfe9";
-        else row += "\u2b1c";
-      }
-      lines.push(row);
-    }
-    lines.push(`${matchCount}/25 matched${hasBingo ? " \u2014 BINGO!" : ""}`);
-    lines.push(window.location.origin);
-    return lines.join("\n");
-  };
-
-  return (
-    <div className="panel">
-      <div className="panel-header">
-        <span>
-          <i className="hn hn-star" aria-hidden="true" /> GENRE BINGO &mdash;{" "}
-          {monthName.toUpperCase()}
-        </span>
-        <span style={{ fontSize: "10px", fontWeight: "normal", opacity: 0.7 }}>
-          {matchCount}/25
-        </span>
-      </div>
-      <div className="panel-body">
-        <p className="activity-prompt" style={{ textAlign: "center" }}>
-          Genres light up as they appear this month. Get 5 in a row for BINGO!
-        </p>
-        {hasBingo && (
-          <div className="bingo-win">🎉 BINGO! You got 5 in a row!</div>
-        )}
-        {!hasBingo && nearLines.length > 0 && (
-          <div className="bingo-near">
-            🔥 Almost there! Need{" "}
-            {nearLines
-              .slice(0, 2)
-              .map((l) => <strong key={l.type + l.index}>{l.missing}</strong>)
-              .reduce(
-                (acc, el, i) => (i === 0 ? [el] : [...acc, " or ", el]),
-                [],
-              )}{" "}
-            for bingo
-          </div>
-        )}
-        <div className="bingo-grid">
-          {card.map((cell, i) => {
-            const isMatched = cell.free || matched.has(cell.category);
-            const isToday = !cell.free && cell.category === todayCategory;
-            const isNear = nearCells.has(i) && !isMatched;
-            return (
-              <div
-                key={i}
-                className={`bingo-cell${isMatched ? " matched" : ""}${cell.free ? " free" : ""}${isToday && isMatched ? " today" : ""}${isNear ? " near" : ""}`}
-                title={
-                  isToday
-                    ? "Today's genre!"
-                    : isNear
-                      ? "1 away from bingo!"
-                      : undefined
-                }
-              >
-                {cell.free ? "\u2b50" : cell.category}
-              </div>
-            );
-          })}
-        </div>
-        <div style={{ textAlign: "center", marginTop: 8 }}>
-          <ShareResultButton
-            label="📋 Share Bingo"
-            getText={getShareText}
-          />
-        </div>
-      </div>
     </div>
   );
 }
@@ -4022,7 +3849,6 @@ export default function ForumPage({ album, dateString }) {
             },
             { key: "archive", icon: "hn hn-calender", label: "Archive" },
             { key: "stats", icon: "hn hn-trending", label: "Stats" },
-            { key: "bingo", icon: "hn hn-star", label: "Bingo" },
             { key: "faq", icon: "hn hn-question", label: "FAQ" },
           ].map((item) => (
             <button
@@ -4221,9 +4047,6 @@ export default function ForumPage({ album, dateString }) {
 
             {/* Blind Taste Test */}
             <BlindTasteTest />
-
-            {/* Bingo mini widget */}
-            <BingoMini onNavigate={setActiveSection} />
 
             {/* Soundtrack Corner teaser */}
             <SoundtrackMini onNavigate={setActiveSection} />
@@ -4433,7 +4256,6 @@ export default function ForumPage({ album, dateString }) {
           <SoundtrackCornerPanel album={album} onNavigate={setActiveSection} />
         )}
         {activeSection === "stats" && <StatsSection />}
-        {activeSection === "bingo" && <BingoSection />}
         {activeSection === "faq" && <FAQSection />}
 
         {/* Album + pixel icon carousel */}

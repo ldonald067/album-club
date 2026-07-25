@@ -3535,7 +3535,7 @@ body {
   box-shadow: 0 0 6px rgba(90, 154, 90, 0.4);
 }
 
-/* ─── Mini teaser cards (Bingo / Soundtrack Corner on home) ─── */
+/* ─── Mini teaser cards (Soundtrack Corner on home) ─── */
 .mini-teaser {
   display: flex;
   align-items: center;
@@ -3593,83 +3593,6 @@ body {
 
 .mini-teaser:hover .mini-teaser-chevron {
   transform: translateX(3px);
-}
-
-/* ─── Genre Bingo ─── */
-.bingo-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 3px;
-  max-width: 380px;
-  margin: 0 auto;
-}
-
-.bingo-cell {
-  aspect-ratio: 1;
-  border: 1px solid var(--border-panel);
-  border-radius: 3px;
-  font-size: 9px;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3px;
-  background: var(--bg-main);
-  color: var(--text-muted);
-  word-break: break-word;
-  line-height: 1.1;
-  transition: opacity 0.2s;
-}
-
-.bingo-cell.matched {
-  background: rgba(90, 154, 90, 0.25);
-  color: var(--text-primary);
-  font-weight: bold;
-  border-color: #5a9a5a;
-}
-
-.bingo-cell.matched.today {
-  background: rgba(90, 154, 90, 0.45);
-  border-color: #3a8a3a;
-  box-shadow: 0 0 4px rgba(90, 154, 90, 0.5);
-}
-
-.bingo-cell.near {
-  border-color: #d4a017;
-  border-style: dashed;
-  color: #a07810;
-}
-
-.bingo-cell.free {
-  background: rgba(255, 215, 0, 0.2);
-  font-size: 16px;
-  border-color: #b8a040;
-}
-
-.bingo-win {
-  text-align: center;
-  font-size: 14px;
-  font-weight: bold;
-  color: #a07810;
-  margin-bottom: 8px;
-  animation: pulse-glow 1.5s ease-in-out infinite;
-}
-
-.bingo-near {
-  text-align: center;
-  font-size: 11px;
-  color: #a07810;
-  margin-bottom: 8px;
-}
-
-@keyframes pulse-glow {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
 }
 
 /* ─── EST hover easter egg ─── */

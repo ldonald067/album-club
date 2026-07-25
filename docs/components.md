@@ -47,20 +47,6 @@ After submitting vibes, shows a pill for each selected vibe with the community a
 
 Binary "add or skip" vote with lock-in animation (500ms pulsing button), confetti on vote, and animated split bar showing yes/no percentages. Posts to `/api/playlist`. After voting, shows streak tracking ("5 adds in a row") and monthly add rate ("8/12 added"). State tracked via `aotd_playlist_{date}` in localStorage. Helper functions: `getPlaylistStreak()` scans backward up to 60 days, `getMonthlyAddRate()` counts current month.
 
-## Genre Bingo
-
-### `BingoMini({ onNavigate })`
-
-Home page widget showing match count and near-bingo status. Clickable — navigates to Bingo tab via `onNavigate("bingo")`. Has `role="button"` and `tabIndex={0}` for keyboard accessibility.
-
-### `BingoSection()`
-
-Full 5x5 bingo grid for the current month. Each cell is a genre category. Matched cells highlighted green, today's genre has enhanced glow, near-bingo cells have dashed gold border. Shows "Almost there!" message when 4/5 in a line. Confetti on first bingo per month (tracked in `aotd_bingo_celebrated_{month}`). Share button copies emoji grid to clipboard.
-
-### `useBingoData()`
-
-Shared hook between BingoMini and BingoSection. Returns `{ card, matched, hasBingo, nearLines }`. Uses `getBingoCard()`, `getMonthMatches()`, `checkBingo()`, `getNearBingoLines()` from `lib/albums.js`.
-
 ## Album vs Album (`VersusMatchup`)
 
 Daily head-to-head matchup. Shows two album covers side by side with title/artist/year/genre info and "Pick this one" buttons. After voting, shows community vote split as animated percentage bar (blue-A vs pink-B). Confetti on vote. Uses `renderCard(album, side, btn)` helper for DRY card rendering. Posts to `/api/matchup` with `type: "versus"`. State: `aotd_versus_{date}`.
@@ -120,7 +106,7 @@ Its own nav tab (formerly the Chat Booth — the AI chat was removed in July 202
 
 Below the three cards, `CueVote` asks "where does this one belong tonight?" — one tap on Game / Film / TV, then the community percentages reveal with bars (my pick highlighted). Votes POST to `/api/soundtrack`; `aotd_soundtrack_{date}` in localStorage keeps it one-vote-per-day per browser and re-fetches results on reload.
 
-The corner is cross-linked with the daily loop in both directions: `SoundtrackMini` on the home page (BingoMini pattern) teases the vote and flips to "You cast it for X — see the room →" after voting, and the corner ends with a "play today's game" CTA (`onPlayToday`) that names the actual rotation game and jumps back to the home section.
+The corner is cross-linked with the daily loop in both directions: `SoundtrackMini` on the home page (a `MiniTeaser` row) teases the vote and flips to "You cast it for X — see the room →" after voting, and the corner ends with a "play today's game" CTA (`onPlayToday`) that names the actual rotation game and jumps back to the home section.
 
 Heardle and Lyric Challenge no longer fail over silently. If a game slot has to roll over, the user now sees a clear note explaining why Cover Art Challenge appeared. Lyric Challenge also picks from the lyric-backed subset first, so the fallback should be noticeably rarer instead of feeling random.
 

@@ -37,15 +37,6 @@
 
 Lyric Challenge now picks from the lyric-backed recognizable subset first instead of choosing from the full recognizable pool and hoping a lyric entry exists. That makes the game steadier and turns Cover Art Challenge into a rarer fallback instead of a random-feeling swap.
 
-## Genre Bingo (`lib/albums.js`)
-
-`BINGO_CATEGORIES_MAP` maps most of the 223 unique album genres to 25 broad bingo categories (Rock, Hip-Hop, Electronic, Jazz, Folk, Pop, R&B/Soul, Metal, Punk, Ambient, etc.). `getGenreCategory(genre)` does reverse lookup with "Indie / Other" fallback.
-
-- `getBingoCard(year, month)` — deterministic 5x5 grid using seeded permutation, FREE center at index 12
-- `getMonthMatches(year, month)` — iterates days 1 to current, maps each album's genre to its category
-- `checkBingo(card, matched)` — checks rows, cols, and both diagonals for 5-in-a-row
-- `getNearBingoLines(card, matched)` — finds lines that are 4/5 complete, returns `{ type, index, missing, cells }`
-
 ## Daily Rotation
 
 Seeded shuffle (mulberry32 PRNG + Fisher-Yates) keyed by year. Same date = same album globally. Rotates through all 424 albums before repeating.
