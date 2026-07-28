@@ -45,13 +45,13 @@ Node 22) runs `npm test` then `npm run build`.
 - **Genre Bingo removed (2026-07-28).** The board was derived purely from the
   calendar — cells were non-interactive `div`s and `getMonthMatches()` read only
   the date, so progress was identical whether or not anyone ever visited.
-  **Deliberately not replaced:** a design panel produced a strong candidate
-  (Crate Order — order five sleeves oldest→newest), it was built and working,
-  and it was then cut on the judgement that the home page already carries enough
-  per-visit activity (Rate/Vibe, Playlist Poll, Album vs Album, Blind Taste Test,
-  the rotating daily game, Soundtrack Corner) for a ~90-second visit. The built
-  version is preserved in `git stash` ("Crate Order (built, then cut …)") if it
-  is ever wanted — nothing else references it.
+  **Deliberately not replaced, and don't revisit it.** A replacement game was
+  designed and built, then cut and deleted outright on the judgement that the
+  home page already carries enough per-visit activity (Rate/Vibe, Playlist Poll,
+  Album vs Album, Blind Taste Test, the rotating daily game, Soundtrack Corner)
+  for a ~90-second visit. The standing conclusion is that this site is
+  over-featured rather than under-featured: the bar for adding a seventh
+  activity is that it beats improving the six that exist.
 - **Zero-traffic honesty:** Album vs Album drew a 100%/0% bar labelled `(1)`/`(0)`
   for a lone voter and Vibe said "You and 100% felt X". Both now hold the split
   back until a second voter exists. Note `vibes` stores one row per _mood_, not
@@ -69,7 +69,7 @@ Node 22) runs `npm test` then `npm run build`.
   recognizable pool)**. Share button was removed by request.
 - **Catalog:** 424 albums through 2026 (added acclaimed 2025/26 releases +
   human-made YouTube sets). All images populated; emoji/colors unique.
-- **Landing polish:** fixed two literal-escape JSX bugs (bare JSX text *and* a
+- **Landing polish:** fixed two literal-escape JSX bugs (bare JSX text _and_ a
   JSX attribute — escapes decode in neither), right-sized the versus/playlist/
   taste action buttons so their declared padding sets the height with the 44px
   tap target reapplied under `(pointer: coarse)`, aligned Album-vs-Album buttons,
