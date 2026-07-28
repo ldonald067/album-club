@@ -982,28 +982,39 @@ const VersusMatchup = memo(function VersusMatchup() {
           <span className="versus-vs">VS</span>
           {renderCard(albumB, "B")}
         </div>
-        <div className="matchup-bar-wrap">
-          <div
-            className={`matchup-bar-a${justRevealed ? " animate-bar" : ""}`}
-            style={{ width: `${aPct}%` }}
-          >
-            {aPct > 15 && `${aPct}%`}
+        {/* One vote is your own — a 100%/0% split against "(1)" and "(0)"
+            reads as a dead room rather than a result. */}
+        {results.total > 1 ? (
+          <>
+            <div className="matchup-bar-wrap">
+              <div
+                className={`matchup-bar-a${justRevealed ? " animate-bar" : ""}`}
+                style={{ width: `${aPct}%` }}
+              >
+                {aPct > 15 && `${aPct}%`}
+              </div>
+              <div
+                className={`matchup-bar-b${justRevealed ? " animate-bar" : ""}`}
+                style={{ width: `${bPct}%` }}
+              >
+                {bPct > 15 && `${bPct}%`}
+              </div>
+            </div>
+            <div className="matchup-labels">
+              <span>
+                {albumA.title} ({results.a})
+              </span>
+              <span>
+                {albumB.title} ({results.b})
+              </span>
+            </div>
+          </>
+        ) : (
+          <div className="matchup-alone">
+            First one in today. Come back later and see whether the room backs
+            you up.
           </div>
-          <div
-            className={`matchup-bar-b${justRevealed ? " animate-bar" : ""}`}
-            style={{ width: `${bPct}%` }}
-          >
-            {bPct > 15 && `${bPct}%`}
-          </div>
-        </div>
-        <div className="matchup-labels">
-          <span>
-            {albumA.title} ({results.a})
-          </span>
-          <span>
-            {albumB.title} ({results.b})
-          </span>
-        </div>
+        )}
       </div>
     );
   }
@@ -1469,6 +1480,11 @@ function VibeCheck({ albumKey }) {
   const topVibeData = topVibe
     ? VIBES.find((v) => v.label === topVibe[0])
     : null;
+  // The vibes table stores one row per mood, not per person, so total can't be
+  // read as a headcount. Your own submission accounts for exactly
+  // selected.length of those rows — anything beyond it means someone else
+  // weighed in. Below that, percentages would just be your picks restated.
+  const roomHasOthers = !!results && results.total > selected.length;
 
   // Voted, community numbers still loading (or a load failed) — offer retry
   // instead of a misleading all-zero results view (matches the siblings)
@@ -1516,7 +1532,7 @@ function VibeCheck({ albumKey }) {
             Pick up to 3 moods that actually fit the record.
           </p>
         )}
-        {submitted && topVibeData && (
+        {submitted && topVibeData && roomHasOthers && (
           <div className="vibe-narrative">
             <img
               src={topVibeData.icon}
@@ -1529,7 +1545,8 @@ function VibeCheck({ albumKey }) {
             </span>
           </div>
         )}
-        {submitted && results?.distribution && results.total > 0 && (
+        {/* "You and 100% felt Dreamy" is just you, restated. Needs a room. */}
+        {submitted && results?.distribution && roomHasOthers && (
           <div className="vibe-agreement">
             {selected.map((s) => {
               const count = results.distribution[s] || 0;
@@ -1541,6 +1558,13 @@ function VibeCheck({ albumKey }) {
                 </span>
               );
             })}
+          </div>
+        )}
+        {submitted && results && !roomHasOthers && (
+          <div className="vibe-agreement">
+            <span className="vibe-agree-item">
+              You're first to call it today.
+            </span>
           </div>
         )}
         <div className="vibe-grid">
