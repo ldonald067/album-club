@@ -42,6 +42,20 @@ Node 22) runs `npm test` then `npm run build`.
 
 ## Recent work (this stretch of sessions)
 
+- **Genre Bingo removed (2026-07-28).** The board was derived purely from the
+  calendar — cells were non-interactive `div`s and `getMonthMatches()` read only
+  the date, so progress was identical whether or not anyone ever visited.
+  **Deliberately not replaced:** a design panel produced a strong candidate
+  (Crate Order — order five sleeves oldest→newest), it was built and working,
+  and it was then cut on the judgement that the home page already carries enough
+  per-visit activity (Rate/Vibe, Playlist Poll, Album vs Album, Blind Taste Test,
+  the rotating daily game, Soundtrack Corner) for a ~90-second visit. The built
+  version is preserved in `git stash` ("Crate Order (built, then cut …)") if it
+  is ever wanted — nothing else references it.
+- **Zero-traffic honesty:** Album vs Album drew a 100%/0% bar labelled `(1)`/`(0)`
+  for a lone voter and Vibe said "You and 100% felt X". Both now hold the split
+  back until a second voter exists. Note `vibes` stores one row per _mood_, not
+  per person, so `results.total` is not a headcount.
 - **Independent multi-agent review** (Opus/ultracode) produced a ranked report;
   its top 5 are all shipped: off-volume backup, the fetch crash class + error
   boundary, node:test + CI, cross-midnight fix (UTC-midnight reload), and the
@@ -55,8 +69,11 @@ Node 22) runs `npm test` then `npm run build`.
   recognizable pool)**. Share button was removed by request.
 - **Catalog:** 424 albums through 2026 (added acclaimed 2025/26 releases +
   human-made YouTube sets). All images populated; emoji/colors unique.
-- **Landing polish:** fixed literal-emoji JSX bug, aligned Album-vs-Album
-  buttons, replaced sparse bingo/soundtrack rows with richer MiniTeaser cards.
+- **Landing polish:** fixed two literal-escape JSX bugs (bare JSX text *and* a
+  JSX attribute — escapes decode in neither), right-sized the versus/playlist/
+  taste action buttons so their declared padding sets the height with the 44px
+  tap target reapplied under `(pointer: coarse)`, aligned Album-vs-Album buttons,
+  richer MiniTeaser cards.
 - **Easter eggs:** 33⅓ Club (33 vinyl spins), secret taglines, album-birthday
   badge, cue-streak whispers, now-spinning tab title. Konami code pre-existing.
 
