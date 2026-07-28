@@ -1,14 +1,14 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-07-22.
+session. Last updated: 2026-07-28.
 
 ## What this is
 
 Album Of The Day Club — a retro-2004-forum daily-album site. Live at
 https://littlealbumclub.net on Railway (auto-deploys on push to `master`).
 Next.js 16 + React 19 + SQLite (better-sqlite3, WAL). No auth, anonymous,
-localStorage for client state. One-page app: `app/ForumPage.js` (~5.4k lines,
+localStorage for client state. One-page app: `app/ForumPage.js` (~4.4k lines,
 all UI/games) + `app/SoundtrackCorner.js`. See `CLAUDE.md` and `docs/` for the
 domain-specific deep dives (games, api, components, album-data, performance,
 gotchas, project, soundtrack-corner-research).
