@@ -1561,11 +1561,16 @@ function VibeCheck({ albumKey }) {
               aria-hidden="true"
             />
             <span>
-              Top Vibe: <strong>{topVibeData.label}</strong> — {topVibePct}%
+              Top Vibe: <strong>{topVibeData.label}</strong> — {topVibePct}% of
+              today&apos;s vibes
             </span>
           </div>
         )}
-        {/* "You and 100% felt Dreamy" is just you, restated. Needs a room. */}
+        {/* "You and 100% felt Dreamy" is just you, restated. Needs a room.
+            The percentage is a share of vibes cast, NOT of people: the vibes
+            table stores one row per mood and everyone picks up to three, so a
+            mood chosen unanimously reads as ~33%. The copy says what the number
+            actually measures rather than implying a headcount we can't take. */}
         {submitted && results?.distribution && roomHasOthers && (
           <div className="vibe-agreement">
             {selected.map((s) => {
@@ -1574,7 +1579,8 @@ function VibeCheck({ albumKey }) {
               const v = VIBES.find((vb) => vb.label === s);
               return (
                 <span key={s} className="vibe-agree-item">
-                  {v?.emoji} You and <strong>{pct}%</strong> felt {s}
+                  {v?.emoji} {s} — <strong>{pct}%</strong>
+                  {" of today's vibes"}
                 </span>
               );
             })}
