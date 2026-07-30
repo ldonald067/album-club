@@ -51,6 +51,25 @@ async function searchGenius(query) {
   return (await res.json()).response.hits;
 }
 
+// Albums with no sung words. Genius will happily return *something* for these —
+// a song that name-checks the artist, or an unrelated track — so they have to be
+// excluded by name. Every entry here was previously imported wrong.
+const NO_LYRICS = new Set([
+  "Miles Davis - Kind of Blue",
+  "John Coltrane - A Love Supreme",
+  "Brian Eno - Music for Airports",
+  "DJ Shadow - Endtroducing.....",
+]);
+
+// Genius hosts fan translations as their own pages; they match the artist and
+// end in -lyrics like any other, and produce entries in the wrong language.
+const TRANSLATION_URL =
+  /traduccion|traducciones|traduzione|traducao|ubersetzung|ubersetzungen|перевод|translation/i;
+
+// Liner-note and credits pages masquerading as lyrics.
+const CREDITS_LINE =
+  /written by|performed by|produced by|mixed by|engineered by|photo:|\(BMI\)|\(ASCAP\)|c\/o |courtesy of|under (?:exclusive )?licen[cs]e/i;
+
 /** Filter search hits to actual songs with lyrics by the correct artist */
 function filterSongHits(hits, artistName) {
   const artistLower = artistName.toLowerCase();
@@ -64,6 +83,13 @@ function filterSongHits(hits, artistName) {
     if (r.lyrics_state !== "complete") return false;
     // URL should end in -lyrics (actual song pages)
     if (!r.url.endsWith("-lyrics")) return false;
+    // Reject translation pages — they pass every other check
+    if (
+      TRANSLATION_URL.test(r.url) ||
+      TRANSLATION_URL.test(r.full_title || "")
+    ) {
+      return false;
+    }
     // MUST match artist — check primary_artist and featured artists
     const hitArtist = (r.primary_artist?.name || "").toLowerCase();
     const hitFull = (r.full_title || "").toLowerCase();
@@ -114,6 +140,11 @@ function extractGoodLines(lyricsText) {
         !l.match(/^You might also like/) &&
         !l.match(/^See .* Live/) &&
         !l.match(/^Get tickets/) &&
+        !CREDITS_LINE.test(l) &&
+        // The game blanks words longer than 3 characters; a line with fewer
+        // than two of them can't produce a two-blank puzzle.
+        l.split(" ").filter((w) => w.replace(/[^a-zA-Z]/g, "").length > 3)
+          .length >= 2 &&
         l.split(" ").length >= 3,
     );
 
@@ -139,6 +170,10 @@ let failed = 0;
 for (const album of recognizable) {
   const key = `${album.artist} - ${album.title}`;
   if (lyrics[key]) {
+    skipped++;
+    continue;
+  }
+  if (NO_LYRICS.has(key)) {
     skipped++;
     continue;
   }
