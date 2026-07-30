@@ -2530,14 +2530,18 @@ function LyricGame() {
     .filter((x) => x.w.length > 3);
 
   const seed = dayOfYear * 997 + puzzleAlbum.title.length;
-  const blankIdx1 =
-    blankableIndices.length > 0
-      ? blankableIndices[seed % blankableIndices.length].i
-      : 0;
-  const blankIdx2 =
-    blankableIndices.length > 1
-      ? blankableIndices[(seed + 7) % blankableIndices.length].i
+  const blankCount = blankableIndices.length;
+  const firstSlot = blankCount > 0 ? seed % blankCount : 0;
+  // Offset the second blank by 1..blankCount-1 so it can never land on the
+  // first. A fixed +7 stride collided whenever a line had exactly 7 blankable
+  // words — 7 % 7 === 0 — silently turning a two-blank puzzle into a one-blank
+  // one, which affected 35 of the stored lines.
+  const secondSlot =
+    blankCount > 1
+      ? (firstSlot + 1 + (seed % (blankCount - 1))) % blankCount
       : -1;
+  const blankIdx1 = blankCount > 0 ? blankableIndices[firstSlot].i : 0;
+  const blankIdx2 = secondSlot >= 0 ? blankableIndices[secondSlot].i : -1;
 
   const blankedWords = words.map((w, i) => {
     if (i === blankIdx1 || (i === blankIdx2 && blankIdx2 !== blankIdx1)) {
