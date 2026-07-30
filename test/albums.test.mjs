@@ -10,6 +10,7 @@ import {
   getPuzzleAlbum,
   getVersusPair,
   getTastePair,
+  pickRotatingPoolAlbum,
 } from "../lib/albums.js";
 
 const GAME_TYPES = ["guess", "cover", "lyric", "heardle", "scramble"];
@@ -88,4 +89,24 @@ test("versus/taste pairs are two distinct albums", () => {
   // Taste pool is YouTube-backed.
   const taste = getTastePair();
   assert.ok(taste.albumA.youtubeId && taste.albumB.youtubeId);
+});
+
+// The sampler must not let pool size interact with the game cadence. Indexing on
+// dayOfYear sampled the pool at a stride of 5, so a pool whose size shared that
+// factor silently lost most of its variety (80 albums -> 16 a year). Indexing on
+// the appearance ordinal makes the pool size irrelevant.
+test("pickRotatingPoolAlbum returns a pool member for cadence-divisible pools", () => {
+  for (const size of [80, 133, 135, 140]) {
+    const pool = Array.from({ length: size }, (_, i) => ({
+      title: `T${i}`,
+      artist: `A${i}`,
+    }));
+    const picked = pickRotatingPoolAlbum(pool, 12345, { avoidToday: false });
+    assert.ok(pool.includes(picked), `size ${size}: pick not from pool`);
+  }
+});
+
+test("an empty or invalid pool yields null rather than throwing", () => {
+  assert.equal(pickRotatingPoolAlbum([], 1), null);
+  assert.equal(pickRotatingPoolAlbum(null, 1), null);
 });
