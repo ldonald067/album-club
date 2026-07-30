@@ -358,6 +358,8 @@ body {
   z-index: 1;
   box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
   transition: transform 0.4s ease;
+  /* the flip is a double-tap; don't let mobile treat it as zoom */
+  touch-action: manipulation;
 }
 
 @keyframes vinylSpin {
@@ -367,6 +369,28 @@ body {
   to {
     transform: translateX(15px) rotate(360deg);
   }
+}
+
+/* ⌁ Runout Groove — flipped to side B, so it turns the other way, slower */
+@keyframes vinylSpinReverse {
+  from {
+    transform: translateX(15px) rotate(360deg);
+  }
+  to {
+    transform: translateX(15px) rotate(0deg);
+  }
+}
+
+.runout-etching {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  opacity: 0.85;
+  margin-top: 6px;
+  text-align: center;
+  /* faint, like something scratched rather than printed */
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 @keyframes vinylIntro {
@@ -2968,6 +2992,11 @@ body {
 /* ─── Vinyl click-to-spin ─── */
 .vinyl-disc.spinning {
   animation: vinylSpin 0.8s linear infinite !important;
+}
+
+/* Flipped to side B — reverses and slows. Must beat .spinning in the cascade. */
+.vinyl-disc.spinning.flipped {
+  animation: vinylSpinReverse 1.4s linear infinite !important;
 }
 
 /* ─── Konami code banner ─── */

@@ -397,6 +397,18 @@ function incrementVisitCount(todayKey) {
 }
 
 /* ─── Konami Code detector ─── */
+// ⌁ Matrix etchings scratched into a record's runout groove, revealed by
+// flipping it. Real pressings carry these; engineers have hidden jokes in them
+// since the 60s.
+const RUNOUT_ETCHINGS = [
+  "PLAY LOUD OR NOT AT ALL",
+  "IF YOU CAN READ THIS YOU ARE TOO CLOSE",
+  "TRACK 2 KNOWS WHAT IT DID",
+  "PRESSED WHILE THE ROOM ARGUED",
+  "NO FILLER WAS HARMED",
+  "RETURN TO SLEEVE WHEN DONE",
+];
+
 // 💿 Shown in the tab title while you're away — the club doesn't stop for you
 const AWAY_TITLES = [
   "💿 still spinning — AOTD",
@@ -3668,6 +3680,7 @@ export default function ForumPage({ album, dateString }) {
   const [welcomeBack, setWelcomeBack] = useState(null);
   const [konamiTriggered, setKonamiTriggered] = useState(false);
   const [vinylSpinning, setVinylSpinning] = useState(false);
+  const [vinylFlipped, setVinylFlipped] = useState(false);
   const [estHover, setEstHover] = useState(false);
   const [forumSig, setForumSig] = useState("");
   const [taglineIdx, setTaglineIdx] = useState(0);
@@ -3676,21 +3689,43 @@ export default function ForumPage({ album, dateString }) {
   const konamiRef = useRef([]);
   const spinTimerRef = useRef(null);
   const pageTitleRef = useRef(null);
+  const lastSpinAtRef = useRef(0);
 
   // 🎂 Round-number album birthday (UTC year on server and client alike)
   const albumAge = new Date().getUTCFullYear() - album.year;
   const isAlbumBirthday = albumAge > 0 && albumAge % 5 === 0;
 
   const spinVinyl = () => {
+    // ⌁ The Runout Groove — spin it again while it's still turning and you
+    // flip the record, revealing the matrix etching scratched into the runout.
+    const now = Date.now();
+    const isFlip = now - lastSpinAtRef.current < 400;
+    lastSpinAtRef.current = now;
+
     setVinylSpinning(true);
+    setVinylFlipped(isFlip);
     // "Now spinning" tab title while the record turns
     if (pageTitleRef.current === null) pageTitleRef.current = document.title;
     document.title = `▶ ${album.title} — now spinning`;
     clearTimeout(spinTimerRef.current);
     spinTimerRef.current = setTimeout(() => {
       setVinylSpinning(false);
+      setVinylFlipped(false);
       document.title = pageTitleRef.current;
     }, 3000);
+
+    if (isFlip) {
+      // The flip is the same gesture continued, not a second spin — counting it
+      // would make the 33⅓ Club farmable by double-clicking.
+      if (!localStorage.getItem("aotd_runout_seen")) {
+        localStorage.setItem("aotd_runout_seen", "1");
+        setEggToast(
+          "💿 You flipped it. Side B is where the album stops performing.",
+        );
+        setTimeout(() => setEggToast(null), 5000);
+      }
+      return;
+    }
 
     // The 33⅓ Club — 33 lifetime spins earns an induction
     const spins =
@@ -3704,6 +3739,14 @@ export default function ForumPage({ album, dateString }) {
       setTimeout(() => setEggToast(null), 5000);
     }
   };
+
+  // Deterministic per album, so a record always carries the same scratch and a
+  // regular slowly learns them.
+  const runoutEtching =
+    RUNOUT_ETCHINGS[
+      (album.year + album.title.length + album.artist.length) %
+        RUNOUT_ETCHINGS.length
+    ];
 
   const todayKey = getTodayKey();
 
@@ -4063,7 +4106,9 @@ export default function ForumPage({ album, dateString }) {
                     )}
                   </div>
                   <div
-                    className={`vinyl-disc${vinylSpinning ? " spinning" : ""}`}
+                    className={`vinyl-disc${vinylSpinning ? " spinning" : ""}${
+                      vinylFlipped ? " flipped" : ""
+                    }`}
                     role="button"
                     tabIndex={0}
                     aria-label="Spin the vinyl record"
@@ -4084,6 +4129,12 @@ export default function ForumPage({ album, dateString }) {
                   {isAlbumBirthday && (
                     <div className="album-birthday" title="Round-number year!">
                       🎂 turns {albumAge} this year
+                    </div>
+                  )}
+                  {vinylFlipped && (
+                    <div className="runout-etching" role="status">
+                      ⌁ RUNOUT · AOTD-{album.year}-B · &ldquo;{runoutEtching}
+                      &rdquo;
                     </div>
                   )}
                   <table className="info-table">
