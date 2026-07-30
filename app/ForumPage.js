@@ -1426,13 +1426,34 @@ function VibeCheck({ albumKey }) {
   useEffect(() => {
     const saved = localStorage.getItem(`aotd_vibed_${albumKey}`);
     if (saved) {
+      // roomHasOthers subtracts selected.length from the row count, so a bad
+      // restore doesn't just lose your picks — it makes a lone voter look like
+      // a crowd. Only trust a well-formed 1-3 entry list of real vibe labels.
+      let restored = null;
       try {
-        setSelected(JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        const labels = VIBES.map((v) => v.label);
+        if (
+          Array.isArray(parsed) &&
+          parsed.length >= 1 &&
+          parsed.length <= 3 &&
+          new Set(parsed).size === parsed.length &&
+          parsed.every((v) => labels.includes(v))
+        ) {
+          restored = parsed;
+        }
       } catch {
-        setSelected([]);
+        restored = null;
       }
-      setSubmitted(true);
-      loadResults();
+      if (restored) {
+        setSelected(restored);
+        setSubmitted(true);
+        loadResults();
+      } else {
+        // Unreadable participation record — start clean rather than report a
+        // room we can't actually measure.
+        localStorage.removeItem(`aotd_vibed_${albumKey}`);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [albumKey]);
