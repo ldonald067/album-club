@@ -291,6 +291,82 @@ failures += printGuardrail(
   "429s should consistently send no-store headers and Retry-After guidance.",
 );
 
+// ─── Catalog data guardrails ───
+
+// Read the cadence out of lib/albums.js rather than hardcoding 5, so this keeps
+// working if the game rotation ever grows or shrinks.
+const albumsSource = readText(path.join(rootDir, "lib", "albums.js"));
+const gameTypesMatch = albumsSource.match(/const GAME_TYPES = \[([^\]]*)\]/);
+const cadence = gameTypesMatch
+  ? gameTypesMatch[1].split(",").filter((entry) => entry.trim()).length
+  : 0;
+
+const gcd = (a, b) => (b === 0 ? a : gcd(b, a % b));
+const gamePools = [
+  ["recognizable (guess/cover/scramble)", recognizableAlbums.length],
+  ["lyric", albumsWithLyrics.length],
+  ["heardle", albumsWithYoutube.length],
+];
+// Guard the mechanism, not the arithmetic. A pool size sharing a factor with the
+// cadence is only harmful while the sampler indexes on dayOfYear — that samples
+// the pool at a stride of `cadence` and silently collapses variety to
+// pool/cadence (80 albums would give 16 a year). Indexing by appearance ordinal
+// removes the coupling, so what must never regress is the ordinal indexing.
+const samplerUsesOrdinal =
+  /const ordinal = Math\.floor\(getDayOfYear\(\)/.test(albumsSource) &&
+  /order\[ordinal % pool\.length\]/.test(albumsSource);
+const coupledPools = gamePools.filter(
+  ([, size]) => size > 0 && cadence > 0 && gcd(size, cadence) > 1,
+);
+failures += printGuardrail(
+  samplerUsesOrdinal,
+  "Daily-game sampler indexes by appearance ordinal",
+  samplerUsesOrdinal
+    ? `Pool size cannot interact with cadence ${cadence}.${
+        coupledPools.length
+          ? ` (${coupledPools.map(([n, s]) => `${n}=${s}`).join(", ")} share a factor with it, which is now harmless.)`
+          : ""
+      }`
+    : `pickRotatingPoolAlbum looks like it indexes on dayOfYear again — that samples each pool at a stride of ${cadence}, so any pool sharing a factor with it loses most of its variety.`,
+);
+
+const colorCounts = new Map();
+const emojiCounts = new Map();
+for (const album of albums) {
+  const color = (album.color || "").toLowerCase();
+  colorCounts.set(color, (colorCounts.get(color) || 0) + 1);
+  emojiCounts.set(album.cover, (emojiCounts.get(album.cover) || 0) + 1);
+}
+const dupColors = [...colorCounts].filter(([, n]) => n > 1);
+const dupEmoji = [...emojiCounts].filter(([, n]) => n > 1);
+failures += printGuardrail(
+  dupColors.length === 0 && dupEmoji.length === 0,
+  "Album accent colors and cover emoji are unique",
+  dupColors.length || dupEmoji.length
+    ? `Repeated colors: ${dupColors.map(([c]) => c).join(", ") || "none"}. Repeated emoji: ${dupEmoji.map(([e]) => e).join(", ") || "none"}.`
+    : `All ${albums.length} albums carry a distinct color and emoji.`,
+);
+
+// The lyric game blanks words longer than three characters and needs two of
+// them to make a two-blank puzzle.
+const blankable = (line) =>
+  line.split(" ").filter((word) => word.replace(/[^a-zA-Z]/g, "").length > 3)
+    .length;
+const weakLyricLines = [];
+for (const [key, value] of Object.entries(lyrics)) {
+  const lines = Array.isArray(value) ? value : value.lines || [];
+  for (const line of lines) {
+    if (blankable(line) < 2) weakLyricLines.push(`${key}: "${line}"`);
+  }
+}
+failures += printGuardrail(
+  weakLyricLines.length === 0,
+  "Every lyric line can carry two blanks",
+  weakLyricLines.length
+    ? `${weakLyricLines.length} line(s) have fewer than two blankable words, e.g. ${weakLyricLines[0]}`
+    : "All stored lyric lines have at least two words long enough to blank.",
+);
+
 printSection("Manual checklist");
 [
   "Check the forum at 375px wide and make sure the activity cards still breathe.",
