@@ -397,6 +397,14 @@ function incrementVisitCount(todayKey) {
 }
 
 /* ─── Konami Code detector ─── */
+// 💿 Shown in the tab title while you're away — the club doesn't stop for you
+const AWAY_TITLES = [
+  "💿 still spinning — AOTD",
+  "💿 nobody paused it — AOTD",
+  "💿 side A, unattended — AOTD",
+  "💿 the room kept talking — AOTD",
+];
+
 const KONAMI_CODE = [
   "ArrowUp",
   "ArrowUp",
@@ -3804,10 +3812,46 @@ export default function ForumPage({ album, dateString }) {
     window.addEventListener("aotd-activity", onActivity);
     // Fallback poll for edge cases (tab regain focus, etc.)
     const interval = setInterval(checkDone, 10000);
+
+    // 💿 Still Spinning — tab away and the club keeps playing without you.
+    // Text only, so it lands the same for reduced-motion and screen-reader
+    // users. The line is fixed for the day so it reads as the room's state
+    // rather than a slot machine.
+    let awaySince = 0;
+    const onVisibility = () => {
+      if (document.hidden) {
+        // A pending spin-restore would otherwise clobber the hidden title
+        clearTimeout(spinTimerRef.current);
+        setVinylSpinning(false);
+        if (pageTitleRef.current === null)
+          pageTitleRef.current = document.title;
+        awaySince = Date.now();
+        document.title = AWAY_TITLES[getDayOfYear() % AWAY_TITLES.length];
+      } else {
+        if (pageTitleRef.current !== null) {
+          document.title = pageTitleRef.current;
+        }
+        const awayMs = awaySince ? Date.now() - awaySince : 0;
+        awaySince = 0;
+        // Only for a real listening-length absence, and only ever once
+        if (awayMs >= 15 * 60000 && !localStorage.getItem("aotd_away_seen")) {
+          localStorage.setItem("aotd_away_seen", "1");
+          setEggToast(
+            `You were gone ${Math.round(awayMs / 60000)} minutes. The needle rode the locked groove the whole time. No judgement.`,
+          );
+          setTimeout(() => setEggToast(null), 6000);
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
     return () => {
       clearInterval(interval);
       window.removeEventListener("aotd-activity", onActivity);
       window.removeEventListener("keydown", handleKey);
+      document.removeEventListener("visibilitychange", onVisibility);
+      // Never leave the away-title behind on unmount
+      if (pageTitleRef.current !== null) document.title = pageTitleRef.current;
     };
   }, [todayKey]);
 
