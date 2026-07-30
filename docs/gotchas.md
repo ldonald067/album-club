@@ -11,6 +11,12 @@
 - **Path alias**: `@/*` maps to project root via `jsconfig.json`
 - **Build output target**: <55 kB page JS. Currently 55.1 kB + 102 kB shared = 157 kB First Load
 
+## JSX text
+
+- **Escapes do not decode in bare JSX text**: `›` written as JSX text ships those six characters to the page. Use the real character. This shipped twice.
+- **Escapes do not decode in JSX attribute values either**: `label="📋 Share"` also ships verbatim, because attribute quotes are not a JS string literal. `label={"📋 Share"}` (inside braces) does decode. A grep for escapes must cover both forms
+- **JSX can eat a leading space** before text that follows an element when that text contains an HTML entity: `<strong>{pct}%</strong> of today&apos;s vibes` rendered as `71%of`. Prettier collapses a `{" "}` fix back onto one line, so put the whole run in an expression: `{" of today's vibes"}`
+
 ## React / Hydration
 
 - **Hydration**: Random values (online count, guest count, forum signatures) must init in `useEffect`, never in `useState` initializer — otherwise SSR/client mismatch
@@ -26,7 +32,9 @@
 
 ## Data
 
-- **Lyrics data quality**: `fetch-lyrics.mjs` uses Genius search which can return wrong-artist songs, non-English translations, or album credits. After fetching, audit `lyrics.json` for: wrong language, duplicate lyrics across albums, lyrics from wrong artists
+- **Lyrics data quality**: Genius search returns wrong-artist songs, fan translation pages, and liner-note credits. This warning existed and was not enforced, and 8 of 88 entries turned out wrong — including a rap verse containing a racial slur filed under Miles Davis' _Kind of Blue_, an instrumental record. `fetch-lyrics.mjs` now enforces four guards (instrumental denylist, translation-page URL/title filter, credits-line filter, minimum two blankable words). **Still audit the results after any fetch** — the guards catch the known failure shapes, not novelty
+- **Never index a per-game pool by `dayOfYear`**: each game airs every `GAME_TYPES.length` days, so `order[dayOfYear % pool.length]` samples the pool at that stride and collapses annual variety to `pool/cadence` whenever the two share a factor — a pool of 80 shows 16 albums a year instead of 73, silently. `pickRotatingPoolAlbum` indexes by _appearance ordinal_ for this reason, and `npm run eval-site` fails if that regresses
+- **`results.total` from `/api/vibe` is not a headcount**: the `vibes` table stores one row per mood and everyone picks up to three, so a mood chosen unanimously reads as ~33%. Neither `vibes` nor `matchup_votes` has a voter column or uniqueness constraint, so neither total counts people (see `docs/STATUS.md` open item 3)
 - **Carousel duplication**: Track content is rendered twice (two `.map()` loops) so `translateX(-50%)` creates seamless infinite loop
 - **Seeded permutation cache**: `lib/albums.js` caches shuffle permutations in a Map. Most seeds are year-based (few entries), but the daily Versus/Taste pairs seed per-day for full-year variety, so the Map grows ~2 entries/day (~730/year, ~1-2 MB of int arrays). Bounded and reset on every deploy — negligible in practice, but not the old "5-10/year"
 - **Adding albums shifts schedule**: Daily rotation uses `dayOfYear % ALBUMS.length` — changing album count shifts which album appears on which day
@@ -41,6 +49,8 @@
 
 - **Konami code**: `↑↑↓↓←→←→BA` triggers confetti + vinyl spin animation
 - **Vinyl disc**: Click to toggle spin, CSS uses multiple `radial-gradient` layers
+- **Runout Groove**: click the vinyl again within 400ms and it flips — reverse spin plus a per-album matrix etching. The flip deliberately does **not** increment `aotd_vinyl_spins`; counting it would make the 33⅓ Club farmable by double-clicking
+- **Still Spinning**: `visibilitychange` swaps the tab title while you're away, restoring it on return. Registered inside the existing keydown/activity effect so it shares that cleanup, and it clears any pending vinyl spin-restore first or the 3s timer overwrites the away title
 - **EST hover**: Hover over timestamp shows timezone tooltip
 - **Forum signatures**: Random retro forum signature at bottom, set in `useEffect`
 - **Visit ranks**: localStorage tracks visit count, displays rank badge in info-bar (7 tiers)

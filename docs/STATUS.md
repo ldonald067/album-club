@@ -52,52 +52,53 @@ Node 22) runs `npm test` then `npm run build`.
   for a ~90-second visit. The standing conclusion is that this site is
   over-featured rather than under-featured: the bar for adding a seventh
   activity is that it beats improving the six that exist.
-- **Catalog data repair (2026-07-30).** 8 of 88 lyric entries were not from the
-  album they were filed under — most seriously _Kind of Blue_, an instrumental
-  jazz record, served a rap verse containing a racial slur. Purged, with four
-  ingest guards added to `scripts/fetch-lyrics.mjs` (instrumental denylist,
-  translation-page filter, credits filter, minimum blankable words) so a re-run
-  can't reimport them. Also fixed: a duplicate album colour, 24 lyric lines too
-  short to blank, and the lyric blank-stride collision that silently halved the
-  puzzle on any line with exactly 7 blankable words. Three new `eval-site`
-  guardrails cover all of it.
-- **Sampler:** `pickRotatingPoolAlbum` now indexes by appearance ordinal, not
-  `dayOfYear`. See the gotcha below — this is load-bearing.
-- **Easter eggs:** Still Spinning (tab-away title) and the Runout Groove
-  (double-click the vinyl for a per-album matrix etching).
-- **Zero-traffic honesty:** Album vs Album drew a 100%/0% bar labelled `(1)`/`(0)`
-  for a lone voter and Vibe said "You and 100% felt X". Both now hold the split
-  back until a second voter exists. Note `vibes` stores one row per _mood_, not
-  per person, so `results.total` is not a headcount.
-- **Independent multi-agent review** (Opus/ultracode) produced a ranked report;
-  its top 5 are all shipped: off-volume backup, the fetch crash class + error
-  boundary, node:test + CI, cross-midnight fix (UTC-midnight reload), and the
-  even-stride pair repeats + pixel-icon subset.
-- **Crash class:** all GET loaders go through `lib/safe-fetch.js` `loadJson()`
-  (throws on non-2xx / `{error}` bodies) so a 429/503 can't poison state;
-  `app/error.js` is the route error boundary.
-- **Soundtrack Corner:** cue vote (game/film/TV → community reveal), explainer,
-  home teaser + play-today CTA, year-rotated extra angles, 3 new genre profiles
-  (generator floor 110→23 albums), and **86 curated overrides (62.4% of the
-  recognizable pool)**. Share button was removed by request.
-- **Catalog:** 424 albums through 2026 (added acclaimed 2025/26 releases +
-  human-made YouTube sets). All images populated; emoji/colors unique.
-- **Landing polish:** fixed two literal-escape JSX bugs (bare JSX text _and_ a
-  JSX attribute — escapes decode in neither), right-sized the versus/playlist/
-  taste action buttons so their declared padding sets the height with the 44px
-  tap target reapplied under `(pointer: coarse)`, aligned Album-vs-Album buttons,
-  richer MiniTeaser cards.
-- **Easter eggs:** 33⅓ Club (33 vinyl spins), secret taglines, album-birthday
-  badge, cue-streak whispers, now-spinning tab title. Konami code pre-existing.
+- **Data repair (2026-07-30).** 8 of 88 lyric entries were not from the album
+  they were filed under — most seriously _Kind of Blue_, an instrumental jazz
+  record, served a rap verse containing a racial slur. Purged; `fetch-lyrics.mjs`
+  now enforces four ingest guards. Also fixed: a duplicate album colour, 24
+  unblankable lyric lines, and a blank-stride collision that silently halved the
+  lyric puzzle. Three new `eval-site` guardrails cover all of it, and the sampler
+  moved to appearance-ordinal indexing (load-bearing — see `docs/gotchas.md`).
+- **Zero-traffic honesty.** Album vs Album drew a 100%/0% bar labelled
+  `(1)`/`(0)` for a lone voter and Vibe claimed a share of _people_ it cannot
+  measure. Both now hold back until a second voter exists, and the vibe copy
+  states what its number really is.
+- **Easter eggs.** Still Spinning (tab-away title) and the Runout Groove
+  (double-click the vinyl) joined the 33⅓ Club, secret taglines,
+  album-birthday badge, cue-streak whispers, and the Konami code.
+- **Housekeeping.** Two literal-escape JSX bugs fixed, action buttons right-sized
+  with the tap target moved to `(pointer: coarse)`, and ~550 lines of dead CSS
+  removed from the retired chat agent.
+- **Earlier in this stretch:** a multi-agent review whose top 5 all shipped
+  (off-volume backup, the `loadJson()` crash class + error boundary, node:test +
+  CI, the UTC-midnight reload, even-stride pair repeats + icon subset);
+  Soundtrack Corner's cue vote, explainer, teaser and 86 curated overrides
+  (62.4% of the recognizable pool); and the catalog reaching 424 albums with all
+  images populated and unique emoji/colours.
 
 ## Open items / next steps
 
 1. ~~**Set `BACKUP_TOKEN`**~~ — DONE 2026-07-23 (see "Operational facts").
-2. **Soundtrack Corner to 100%:** ~50 recognizable albums left, ~4 batches.
+2. **Refill the lyric pool — needs your Genius token.** The pool is 80 after the
+   purge; **49 recognizable albums have no entry** (Abbey Road, Illmatic, Blue,
+   Illinois…), plus 4 genuine instrumentals that are denylisted and should stay
+   that way. The four ingest guards are in place, so a re-run cannot reimport the
+   old garbage, but Genius can still return a plausible-but-wrong song that no
+   guard catches. Run and then **audit the diff by eye** — budget an hour:
+
+   ```bash
+   GENIUS_ACCESS_TOKEN=xxx npm run fetch-lyrics && npm run eval-site
+   ```
+
+   `eval-site` will fail if any imported line can't carry two blanks. Pool size
+   no longer needs to avoid multiples of 5 — the ordinal sampler made that
+   irrelevant.
+
+3. **Soundtrack Corner to 100%:** ~50 recognizable albums left, ~4 batches.
    Run `npm run soundtrack-corner-report`, write the top of the "Coming up in
    rotation" list (air-date-sorted) in the house voice, validate via
    `npm run eval-site`. Pipeline documented in `docs/soundtrack-corner-research.md`.
-3. **Deferred by decision — community gates count rows, not people.**
+4. **Deferred by decision — community gates count rows, not people.**
    Neither `matchup_votes` nor `vibes` has a voter column or a uniqueness
    constraint, and `checkDailyLimit` allows 3 submissions per IP per endpoint
    per day, so one person can produce several rows: two tabs opened before
@@ -113,7 +114,7 @@ Node 22) runs `npm test` then `npm run build`.
    multi-tab path. Found by `/adversarial-review` on `0b2f76e`; the two cheaper
    findings from that review (percentage denominator, restore validation) are
    fixed.
-4. **Un-fixed review findings (lower severity, all in the review report):**
+5. **Un-fixed review findings (lower severity, all in the review report):**
    - `lib/api-helpers.js` chunked-body size bypass (MED) — precheck only fires
      with a Content-Length header.
    - HeardleGame leaves its clip timer running on a non-final wrong guess;
@@ -127,30 +128,19 @@ Node 22) runs `npm test` then `npm run build`.
      (latent).
    - A11y: footer + some small text below AA contrast; some `role="button"`
      divs handle Enter but not Space.
-5. **Suggested features (from the review, not built):** "Predict the Crowd"
+6. **Suggested features (from the review, not built):** "Predict the Crowd"
    (guess the room's average before reveal), "Divisive Meter", Streak Freeze,
    "The Verdict" one-tap critical tag. Deliberately avoid: freeform shoutbox,
    real leaderboards.
 
 ## Gotchas worth knowing
 
-- `lib/albums.js` imports JSON with `with { type: "json" }` so Node's test
-  runner can load it. All date math is UTC.
-- Permutation cache grows ~2 entries/day now (per-day Versus/Taste seeds);
-  bounded, resets per deploy.
-- Emoji in **bare JSX text** must be real characters, not `\uXXXX` escapes
-  (those only decode inside JS strings). The same applies to **JSX attribute
-  values** — `label="📋 Share"` ships the escape verbatim, because
-  attribute quotes are not a JS string literal either.
-- **JSX can eat a leading space** in text that follows an element when that text
-  contains an HTML entity: `<strong>{pct}%</strong> of today&apos;s vibes`
-  rendered as `71%of`. Prettier collapses a `{" "}` fix back onto one line, so
-  put the whole run in an expression: `{" of today's vibes"}`.
-- **Never index a per-game pool by `dayOfYear`.** Each game airs every
-  `GAME_TYPES.length` days, so `dayOfYear % pool.length` samples the pool at that
-  stride and collapses annual variety to `pool/cadence` whenever the two share a
-  factor — a pool of 80 would show 16 albums a year instead of 73, silently.
-  `pickRotatingPoolAlbum` indexes by appearance ordinal for this reason, and
-  `npm run eval-site` fails if that regresses.
-- `results.total` on the vibe endpoint is a count of **mood rows, not people** —
-  everyone picks up to three. It cannot be read as a headcount.
+Full list lives in `docs/gotchas.md` — read it before touching JSX text, the
+game samplers, or the lyric data. The three most expensive ones:
+
+- **Escapes never decode in JSX** — not in bare text, not in attribute values.
+  Use real characters. This shipped twice.
+- **Never index a per-game pool by `dayOfYear`** — it collapses annual variety
+  whenever the pool size shares a factor with the rotation cadence.
+  `pickRotatingPoolAlbum` uses the appearance ordinal; `eval-site` guards it.
+- **Vote totals count rows, not people** — see open item 3.

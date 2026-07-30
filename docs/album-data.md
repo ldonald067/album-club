@@ -33,13 +33,17 @@
 
 ## Lyrics Data
 
-`lib/lyrics.json` stores 5-8 lyric lines per album, keyed by `"artist - title"`. ~88 entries. Populated via `npm run fetch-lyrics` (Genius API). Lines filtered for quality (>15 chars, <120 chars, no metadata, no section headers).
+`lib/lyrics.json` stores 3-8 lyric lines per album, keyed by `"artist - title"`. **80 entries** (88 minus 8 purged as wrong — see `docs/gotchas.md`). Populated via `npm run fetch-lyrics` (Genius API, needs `GENIUS_ACCESS_TOKEN`). 49 recognizable albums still have no entry, so a refill is the obvious next data job.
+
+Lines are filtered on ingest: >15 and <120 chars, no metadata or section headers, no liner-note credits, not from a translation page, and **at least two words over 3 characters** — the game blanks two words, and a line without two blankable ones silently degrades to a single blank.
 
 Lyric Challenge now picks from the lyric-backed recognizable subset first instead of choosing from the full recognizable pool and hoping a lyric entry exists. That makes the game steadier and turns Cover Art Challenge into a rarer fallback instead of a random-feeling swap.
 
 ## Daily Rotation
 
 Seeded shuffle (mulberry32 PRNG + Fisher-Yates) keyed by year. Same date = same album globally. Rotates through all 424 albums before repeating.
+
+**The per-game sampler is different and the difference matters.** `pickRotatingPoolAlbum` indexes by _appearance ordinal_ — how many times that game has aired — not by `dayOfYear`. Indexing on the day samples the pool at a stride of `GAME_TYPES.length`, which collapses a pool sharing that factor to `pool/cadence` distinct albums a year (a pool of 80 gives 16, not 73) with no visible symptom. `npm run eval-site` fails if this regresses.
 
 ## External APIs
 
