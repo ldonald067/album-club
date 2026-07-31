@@ -51,6 +51,36 @@ async function searchGenius(query) {
   return (await res.json()).response.hits;
 }
 
+/**
+ * The search endpoint ranks by popularity and carries no album field, so a
+ * search for "<artist> <album>" happily returns the artist's biggest hit from
+ * some other record. Only /songs/:id knows the album, so ask it.
+ * Returns the album name, or null for singles and lookup failures.
+ */
+async function fetchSongAlbum(songId) {
+  const res = await fetch(`https://api.genius.com/songs/${songId}`, {
+    headers: { Authorization: `Bearer ${TOKEN}` },
+  });
+  if (!res.ok) return null;
+  const song = (await res.json()).response?.song;
+  return song?.album?.name ?? null;
+}
+
+/** Loose title match — tolerates "(Deluxe)", punctuation, and casing drift. */
+function albumTitlesMatch(a, b) {
+  const norm = (s) =>
+    String(s || "")
+      .toLowerCase()
+      .replace(/\((deluxe|remaster(ed)?|expanded|anniversary)[^)]*\)/g, "")
+      .replace(/\[[^\]]*\]/g, "")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+  const x = norm(a);
+  const y = norm(b);
+  if (!x || !y) return false;
+  return x === y || x.startsWith(y) || y.startsWith(x);
+}
+
 // Albums with no sung words. Genius will happily return *something* for these —
 // a song that name-checks the artist, or an unrelated track — so they have to be
 // excluded by name. Every entry here was previously imported wrong.
@@ -186,13 +216,10 @@ for (const album of recognizable) {
     let songHits = filterSongHits(hits, album.artist);
     await sleep(500);
 
-    // Strategy 2: if no songs found, search just the artist name
-    if (songHits.length === 0) {
-      console.log(`  Trying artist-only search...`);
-      hits = await searchGenius(album.artist);
-      songHits = filterSongHits(hits, album.artist);
-      await sleep(500);
-    }
+    // No artist-only fallback. Searching the bare artist name returns their
+    // most popular song by definition, which is how four different Kendrick
+    // albums once ended up filed under "Not Like Us". A miss is fine; a
+    // confidently wrong entry is not.
 
     if (songHits.length === 0) {
       console.log(`  ✗ No song results found`);
@@ -200,11 +227,22 @@ for (const album of recognizable) {
       continue;
     }
 
-    // Try up to 3 song hits until we get good lines
+    // Try up to 5 song hits until one is genuinely from this album
     let gotLines = null;
-    for (let i = 0; i < Math.min(3, songHits.length); i++) {
+    for (let i = 0; i < Math.min(5, songHits.length); i++) {
       const hit = songHits[i];
       console.log(`  Trying: ${hit.result.full_title}`);
+
+      // Verify album membership before spending a lyrics fetch on it
+      const songAlbum = await fetchSongAlbum(hit.result.id);
+      await sleep(400);
+      if (!albumTitlesMatch(songAlbum, album.title)) {
+        console.log(
+          `    ↳ skip — Genius files this under ${songAlbum ? `"${songAlbum}"` : "no album (single)"}`,
+        );
+        continue;
+      }
+
       const lines = await tryHit(hit);
       if (lines.length >= 3) {
         gotLines = lines;
