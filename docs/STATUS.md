@@ -59,8 +59,10 @@ Node 22) runs `npm test` then `npm run build`.
   unblankable lyric lines, and a blank-stride collision that silently halved the
   lyric puzzle. Five new `eval-site` guardrails cover all of it, and the sampler
   moved to appearance-ordinal indexing (load-bearing — see `docs/gotchas.md`).
-  Refilled 2026-07-31 to 86 entries once the fetcher was taught to verify album
-  membership — the first attempt returned 24 entries of which ~5 were right.
+  Refilled 2026-07-31 to **122 of 133 (91.7%)**. Took three attempts: the first
+  returned 24 entries of which ~5 were right, because Genius ranks by popularity;
+  the fix that actually worked was sourcing tracklists from MusicBrainz and
+  looking up those songs directly.
 - **Zero-traffic honesty.** Album vs Album drew a 100%/0% bar labelled
   `(1)`/`(0)` for a lone voter and Vibe claimed a share of _people_ it cannot
   measure. Both now hold back until a second voter exists, and the vibe copy
