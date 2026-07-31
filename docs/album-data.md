@@ -33,7 +33,7 @@
 
 ## Lyrics Data
 
-`lib/lyrics.json` stores 3-8 lyric lines per album, keyed by `"artist - title"`. **80 entries** (88 minus 8 purged as wrong — see `docs/gotchas.md`). Populated via `npm run fetch-lyrics` (Genius API, needs `GENIUS_ACCESS_TOKEN`). 49 recognizable albums still have no entry, so a refill is the obvious next data job.
+`lib/lyrics.json` stores 3-8 lyric lines per album, keyed by `"artist - title"`. **86 entries**. Populated via `npm run fetch-lyrics` (Genius API, needs `GENIUS_ACCESS_TOKEN`). Roughly 47 recognizable albums still have no entry — mostly ones whose songs Genius files under a compilation or as singles, which the album check now refuses rather than guessing at.
 
 Lines are filtered on ingest: >15 and <120 chars, no metadata or section headers, no liner-note credits, not from a translation page, and **at least two words over 3 characters** — the game blanks two words, and a line without two blankable ones silently degrades to a single blank.
 

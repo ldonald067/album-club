@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-07-30.
+session. Last updated: 2026-07-31.
 
 ## What this is
 
@@ -57,8 +57,10 @@ Node 22) runs `npm test` then `npm run build`.
   record, served a rap verse containing a racial slur. Purged; `fetch-lyrics.mjs`
   now enforces four ingest guards. Also fixed: a duplicate album colour, 24
   unblankable lyric lines, and a blank-stride collision that silently halved the
-  lyric puzzle. Three new `eval-site` guardrails cover all of it, and the sampler
+  lyric puzzle. Five new `eval-site` guardrails cover all of it, and the sampler
   moved to appearance-ordinal indexing (load-bearing — see `docs/gotchas.md`).
+  Refilled 2026-07-31 to 86 entries once the fetcher was taught to verify album
+  membership — the first attempt returned 24 entries of which ~5 were right.
 - **Zero-traffic honesty.** Album vs Album drew a 100%/0% bar labelled
   `(1)`/`(0)` for a lone voter and Vibe claimed a share of _people_ it cannot
   measure. Both now hold back until a second voter exists, and the vibe copy
@@ -79,20 +81,13 @@ Node 22) runs `npm test` then `npm run build`.
 ## Open items / next steps
 
 1. ~~**Set `BACKUP_TOKEN`**~~ — DONE 2026-07-23 (see "Operational facts").
-2. **Refill the lyric pool — needs your Genius token.** The pool is 80 after the
-   purge; **49 recognizable albums have no entry** (Abbey Road, Illmatic, Blue,
-   Illinois…), plus 4 genuine instrumentals that are denylisted and should stay
-   that way. The four ingest guards are in place, so a re-run cannot reimport the
-   old garbage, but Genius can still return a plausible-but-wrong song that no
-   guard catches. Run and then **audit the diff by eye** — budget an hour:
-
-   ```bash
-   GENIUS_ACCESS_TOKEN=xxx npm run fetch-lyrics && npm run eval-site
-   ```
-
-   `eval-site` will fail if any imported line can't carry two blanks. Pool size
-   no longer needs to avoid multiples of 5 — the ordinal sampler made that
-   irrelevant.
+2. **Lyric pool — refilled 2026-07-31, 80 → 86.** Further growth is possible
+   but low-yield: the remaining ~47 recognizable albums are mostly ones Genius
+   files under a compilation or as a single, which `fetch-lyrics.mjs` now
+   refuses rather than guessing at. Re-run any time with
+   `GENIUS_ACCESS_TOKEN=xxx npm run fetch-lyrics && npm run eval-site`, and
+   **still read `git diff lib/lyrics.json` before committing** — the guards
+   catch the known failure shapes, not novelty.
 
 3. **Soundtrack Corner to 100%:** ~50 recognizable albums left, ~4 batches.
    Run `npm run soundtrack-corner-report`, write the top of the "Coming up in
