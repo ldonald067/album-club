@@ -3575,6 +3575,29 @@ const COZY_GAMES = [
     playUrl: "https://pixelfun.littlealbumclub.net/",
     featured: true,
   },
+  {
+    id: "peggys-post",
+    title: "Peggy's Post",
+    byline: "digitarium",
+    blurb:
+      "Sort the mail, mind the stamps, keep the little post office ticking.",
+    embedId: 2048296,
+  },
+  {
+    id: "beach-simulator",
+    title: "Pixel Island's Beach Simulator",
+    byline: "Pixel Island",
+    blurb:
+      "A shoreline that asks nothing of you. Watch the tide, stay a while.",
+    embedId: 4801550,
+  },
+  {
+    id: "tiny-toy-theatre",
+    title: "The Tiny Toy Theatre Imagination Kit",
+    byline: "bibliomancer",
+    blurb: "A pocket stage and a box of players. Make something up.",
+    embedId: 4805776,
+  },
 ];
 
 function CozyVibesSection() {
