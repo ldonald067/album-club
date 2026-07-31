@@ -42,7 +42,7 @@ test/                 # node:test — run with `npm test`
 
 ## IMPORTANT: Read docs before starting any task
 
-**New session? Read `docs/STATUS.md` first** — current state, what shipped, open items, and standing decisions (including features deliberately *not* built). Then identify which docs below are relevant and read them before making changes.
+**New session? Read `docs/STATUS.md` first** — current state, what shipped, open items, and standing decisions (including features deliberately _not_ built). Then identify which docs below are relevant and read them before making changes.
 
 | Task involves...       | Read first            |
 | ---------------------- | --------------------- |

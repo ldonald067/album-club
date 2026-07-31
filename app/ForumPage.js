@@ -30,7 +30,9 @@ const SHAKE_MS = 400;
 const COPIED_FEEDBACK_MS = 2000;
 const SoundtrackCorner = dynamic(() => import("./SoundtrackCorner"), {
   ssr: false,
-  loading: () => <p className="soundtrack-intro">Opening Soundtrack Corner...</p>,
+  loading: () => (
+    <p className="soundtrack-intro">Opening Soundtrack Corner...</p>
+  ),
 });
 
 /* ─── Pre-lowercased album search index (avoids repeated toLowerCase per keystroke) ─── */
