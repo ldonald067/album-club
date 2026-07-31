@@ -47,6 +47,23 @@ After submitting vibes, shows a pill for each selected vibe with the community a
 
 Binary "add or skip" vote with lock-in animation (500ms pulsing button), confetti on vote, and animated split bar showing yes/no percentages. Posts to `/api/playlist`. After voting, shows streak tracking ("5 adds in a row") and monthly add rate ("8/12 added"). State tracked via `aotd_playlist_{date}` in localStorage. Helper functions: `getPlaylistStreak()` scans backward up to 60 days, `getMonthlyAddRate()` counts current month.
 
+## Cozy Vibes (`CozyVibesSection`, `CozyMini`)
+
+Own nav tab, not a home-page panel — the home page already renders ~25 blocks and a game iframe is the heaviest thing that could go on it. These are the anti-activity (no score, no timer), so they don't compete with the daily loop; a `MiniTeaser` row on home links across, same pattern as Soundtrack Corner.
+
+Games live in the `COZY_GAMES` array. **Adding one is a single entry.**
+
+- `featured: true` → full 620px playable frame (520px under 640px wide). Currently just the self-hosted Night Desk Terrarium at `pixelfun.littlealbumclub.net`.
+- otherwise → itch.io compact card via `embedId`, the number in itch's embed URL (Share → Embed on the game's page), **not** the URL slug. The card only loads the game on click and already opens itch in a new tab, so several cost little.
+
+The shelf and its credit line don't render at all when no card games exist.
+
+Three things about the featured embed that should not be "tidied":
+
+- `src` points at `/embed.html`, a ~4.8 KB poster. The site root pulls ~9 MB on load.
+- `allow="autoplay; fullscreen"` is required for the ambience audio; without it it fails silently.
+- **No `sandbox` attribute.** Without `allow-same-origin` it would cut the game off from browser storage and silently break saved scenes.
+
 ## Album vs Album (`VersusMatchup`)
 
 Daily head-to-head matchup. Shows two album covers side by side with title/artist/year/genre info and "Pick this one" buttons. After voting, shows community vote split as animated percentage bar (blue-A vs pink-B). Confetti on vote. Uses `renderCard(album, side, btn)` helper for DRY card rendering. Posts to `/api/matchup` with `type: "versus"`. State: `aotd_versus_{date}`.

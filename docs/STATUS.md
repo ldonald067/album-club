@@ -63,6 +63,12 @@ Node 22) runs `npm test` then `npm run build`.
   returned 24 entries of which ~5 were right, because Genius ranks by popularity;
   the fix that actually worked was sourcing tracklists from MusicBrainz and
   looking up those songs directly.
+- **Cozy Vibes (2026-07-31).** jsmonzani's Greenhouse embed removed — that panel
+  no longer hosts their game, so the byline went with it. Replaced by a Cozy
+  Vibes tab holding the self-hosted Night Desk Terrarium sandbox plus three
+  itch.io cards. Moved off the home page deliberately: that page carries ~25
+  blocks and this is the heaviest thing on it. Adding a game is one entry in
+  `COZY_GAMES` — see `docs/components.md`.
 - **Zero-traffic honesty.** Album vs Album drew a 100%/0% bar labelled
   `(1)`/`(0)` for a lone voter and Vibe claimed a share of _people_ it cannot
   measure. Both now hold back until a second voter exists, and the vibe copy

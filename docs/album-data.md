@@ -37,7 +37,7 @@
 
 The fetcher asks **MusicBrainz** (free, no key) for the album's real tracklist, then looks up those exact songs on Genius. A track MusicBrainz places on the album is on the album, so a title+artist match needs no further checking — this routes around Genius's album metadata, which is missing or wrong for much of the catalogue and was the hard ceiling on coverage.
 
-**Four albums can never have lyrics** and are denylisted: *Kind of Blue*, *A Love Supreme*, *Music for Airports*, *Endtroducing.....* — all instrumental. Chasing them is what produced a rap verse on a Miles Davis record.
+**Four albums can never have lyrics** and are denylisted: _Kind of Blue_, _A Love Supreme_, _Music for Airports_, _Endtroducing....._ — all instrumental. Chasing them is what produced a rap verse on a Miles Davis record.
 
 Lines are filtered on ingest: >15 and <120 chars, no metadata or section headers, no liner-note credits, not from a translation page, and **at least two words over 3 characters** — the game blanks two words, and a line without two blankable ones silently degrades to a single blank.
 
