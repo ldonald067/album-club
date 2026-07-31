@@ -10,7 +10,7 @@ import {
 } from "@/lib/api-helpers";
 import { checkRateLimit, checkDailyLimit, getRealIp } from "@/lib/rate-limit";
 import {
-  VALID_GUESS_TYPES as VALID_TYPES,
+  VALID_GUESS_TYPES,
   validateGuessSubmission,
 } from "@/lib/guess-validation";
 
@@ -33,7 +33,7 @@ export async function GET(request) {
     }
     const { searchParams } = new URL(request.url);
     const type = (searchParams.get("type") || "puzzle").trim().toLowerCase();
-    if (!VALID_TYPES.includes(type)) {
+    if (!VALID_GUESS_TYPES.includes(type)) {
       return jsonNoStore({ error: "Invalid type" }, { status: 400 });
     }
 

@@ -202,7 +202,7 @@ export default function SoundtrackCorner({ album, onPlayToday }) {
         three pitches (🎮 game, 🎬 film, 📺 TV), your vote, two bonus angles,
         what to listen for, and what to spin next. Argue with all of it.
       </div>
-      <p className="agent-intro">{corner.intro}</p>
+      <p className="soundtrack-intro">{corner.intro}</p>
       <div className="soundtrack-corner-actions">
         <a
           href={corner.listenNow.href}

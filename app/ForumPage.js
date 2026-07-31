@@ -30,7 +30,7 @@ const SHAKE_MS = 400;
 const COPIED_FEEDBACK_MS = 2000;
 const SoundtrackCorner = dynamic(() => import("./SoundtrackCorner"), {
   ssr: false,
-  loading: () => <p className="agent-intro">Opening Soundtrack Corner...</p>,
+  loading: () => <p className="soundtrack-intro">Opening Soundtrack Corner...</p>,
 });
 
 /* ─── Pre-lowercased album search index (avoids repeated toLowerCase per keystroke) ─── */
@@ -103,7 +103,7 @@ function ResultsPending({ label, onRetry }) {
 /** Soundtrack Corner — today's album as game / film / TV cue music */
 function SoundtrackCornerPanel({ album, onNavigate }) {
   return (
-    <div className="panel chat-agent-panel">
+    <div className="panel">
       <div className="panel-header">
         <span>
           <i className="hn hn-headphones" aria-hidden="true" /> SOUNDTRACK
@@ -133,7 +133,7 @@ function SoundtrackMini({ onNavigate }) {
   }, [todayKey]);
 
   const open = () => {
-    onNavigate("agent");
+    onNavigate("soundtrack");
     window.scrollTo(0, 0);
   };
 
@@ -1920,11 +1920,11 @@ function GuessGame() {
                 <div className="attempt-chart-title">Solve Distribution</div>
                 {[1, 2, 3, 4, 5, 6].map((n) => {
                   const count = stats.attemptDist[n] || 0;
-                  const maxAttempts = Math.max(
+                  const maxCount = Math.max(
                     ...Object.values(stats.attemptDist),
                     1,
                   );
-                  const pct = maxAttempts > 0 ? (count / maxAttempts) * 100 : 0;
+                  const pct = maxCount > 0 ? (count / maxCount) * 100 : 0;
                   const isYou = solved && guesses.length === n;
                   return (
                     <div key={n} className="attempt-row">
@@ -4013,7 +4013,7 @@ export default function ForumPage({ album, dateString }) {
           {[
             { key: "home", icon: "hn hn-home", label: "Home" },
             {
-              key: "agent",
+              key: "soundtrack",
               icon: "hn hn-headphones",
               label: "Soundtrack Corner",
             },
@@ -4430,7 +4430,7 @@ export default function ForumPage({ album, dateString }) {
         )}
 
         {activeSection === "archive" && <ArchiveSection />}
-        {activeSection === "agent" && (
+        {activeSection === "soundtrack" && (
           <SoundtrackCornerPanel album={album} onNavigate={setActiveSection} />
         )}
         {activeSection === "stats" && <StatsSection />}
