@@ -81,13 +81,13 @@ Node 22) runs `npm test` then `npm run build`.
 ## Open items / next steps
 
 1. ~~**Set `BACKUP_TOKEN`**~~ — DONE 2026-07-23 (see "Operational facts").
-2. **Lyric pool — refilled 2026-07-31, 80 → 86.** Further growth is possible
-   but low-yield: the remaining ~47 recognizable albums are mostly ones Genius
-   files under a compilation or as a single, which `fetch-lyrics.mjs` now
-   refuses rather than guessing at. Re-run any time with
-   `GENIUS_ACCESS_TOKEN=xxx npm run fetch-lyrics && npm run eval-site`, and
-   **still read `git diff lib/lyrics.json` before committing** — the guards
-   catch the known failure shapes, not novelty.
+2. ~~**Refill the lyric pool**~~ — DONE 2026-07-31, 80 → **122 of 133
+   (91.7%)**. The remaining 11 are 4 instrumentals that can never have lyrics
+   plus 7 Genius won't resolve (Abbey Road, VU & Nico, Homework, both Jay-Z,
+   Souvlaki, Bitches Brew). That is 94.6% of the achievable ceiling; the rest
+   would need hand-curation. **Always read `git diff lib/lyrics.json` before
+   committing a refill** — the guards catch the known failure shapes, not
+   novelty.
 
 3. **Soundtrack Corner to 100%:** ~50 recognizable albums left, ~4 batches.
    Run `npm run soundtrack-corner-report`, write the top of the "Coming up in

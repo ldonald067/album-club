@@ -33,7 +33,11 @@
 
 ## Lyrics Data
 
-`lib/lyrics.json` stores 3-8 lyric lines per album, keyed by `"artist - title"`. **86 entries**. Populated via `npm run fetch-lyrics` (Genius API, needs `GENIUS_ACCESS_TOKEN`). Roughly 47 recognizable albums still have no entry — mostly ones whose songs Genius files under a compilation or as singles, which the album check now refuses rather than guessing at.
+`lib/lyrics.json` stores 3-8 lyric lines per album, keyed by `"artist - title"`. **122 entries — 91.7% of recognizable albums, 94.6% of the achievable ceiling.** Populated via `npm run fetch-lyrics` (Genius API, needs `GENIUS_ACCESS_TOKEN`).
+
+The fetcher asks **MusicBrainz** (free, no key) for the album's real tracklist, then looks up those exact songs on Genius. A track MusicBrainz places on the album is on the album, so a title+artist match needs no further checking — this routes around Genius's album metadata, which is missing or wrong for much of the catalogue and was the hard ceiling on coverage.
+
+**Four albums can never have lyrics** and are denylisted: *Kind of Blue*, *A Love Supreme*, *Music for Airports*, *Endtroducing.....* — all instrumental. Chasing them is what produced a rap verse on a Miles Davis record.
 
 Lines are filtered on ingest: >15 and <120 chars, no metadata or section headers, no liner-note credits, not from a translation page, and **at least two words over 3 characters** — the game blanks two words, and a line without two blankable ones silently degrades to a single blank.
 
