@@ -1951,16 +1951,21 @@ body {
   border-top: 1px solid var(--border-inner);
 }
 
+/* One per row, not a grid. itch's widget drops its cover thumbnail below a
+   width threshold and falls back to a text-only "narrow" layout — a 360px
+   two-up grid squeezed it past that line and lost every game's artwork, which
+   is the whole point of a card. 552px is the widget's own design width, and
+   what the previous embed here used. */
 .cozy-shelf {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
   gap: 14px;
-  justify-content: center;
 }
 
 .cozy-card {
-  flex: 1 1 300px;
-  max-width: 360px;
+  width: 100%;
+  max-width: 552px;
   padding: 10px;
   border: 1px solid var(--border-light);
   border-radius: 8px;
@@ -1991,7 +1996,7 @@ body {
   }
 
   .cozy-card {
-    flex: 1 1 100%;
+    max-width: 100%;
   }
 }
 
