@@ -526,10 +526,13 @@ function RateReveal({ albumKey }) {
         text: `Bigger fan \u2014 you went ${myRating} vs the crowd's ${avg}`,
         cls: "hot",
       };
+    // Rated 1-4 below the crowd. That's a divergence, same as "Bigger fan" in
+    // the other direction, so it takes the same orange styling \u2014 "crowd" is the
+    // green badge reserved for actually agreeing with the room.
     return {
       emoji: "\ud83e\uddd0",
       text: `Tough critic \u2014 you went ${myRating} vs the crowd's ${avg}`,
-      cls: "crowd",
+      cls: "hot",
     };
   };
 
