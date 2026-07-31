@@ -1860,9 +1860,20 @@ body {
   }
 }
 
-/* ─── Cozy Vibes ─── */
+/* ─── Cozy Vibes ───
+   This tab runs warmer than the rest of the site on purpose. Its centrepiece is
+   a night scene, and a dark canvas dropped straight onto the standard cream
+   panel reads as a broken embed rather than an invitation — so the surround is
+   lamp-lit and the darkness is framed as something you're looking into. */
 .cozy-body {
-  padding: 15px;
+  padding: 18px 15px 20px;
+  background:
+    radial-gradient(
+      120% 80% at 50% 0%,
+      rgba(201, 162, 39, 0.09) 0%,
+      transparent 60%
+    ),
+    linear-gradient(to bottom, #fffdf6, var(--bg-panel-alt));
 }
 
 .cozy-game-title {
@@ -1893,10 +1904,24 @@ body {
   margin-bottom: 18px;
 }
 
+/* A lit sill around the dark canvas: warm rule above, amber glow behind, and a
+   caption underneath. Turns "black rectangle" into "window at night". */
+.cozy-window {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 10px;
+  border-radius: 10px;
+  background: linear-gradient(
+    to bottom,
+    rgba(201, 162, 39, 0.16),
+    rgba(201, 162, 39, 0.05)
+  );
+  box-shadow: 0 2px 14px rgba(201, 162, 39, 0.18);
+}
+
 /* The self-hosted sandbox is the game itself, not a store card — its controls
    sit under the canvas, so a short frame would clip them. */
 .cozy-frame {
-  max-width: 720px;
   margin: 0 auto;
 }
 
@@ -1906,6 +1931,14 @@ body {
   border: none;
   border-radius: 6px;
   display: block;
+}
+
+.cozy-sill {
+  font-size: 10px;
+  font-style: italic;
+  color: var(--text-muted);
+  text-align: center;
+  padding-top: 8px;
 }
 
 .cozy-shelf-label {
@@ -1928,6 +1961,11 @@ body {
 .cozy-card {
   flex: 1 1 300px;
   max-width: 360px;
+  padding: 10px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  background: var(--bg-panel);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 /* itch.io's compact widget — a store card that only loads the game on click,

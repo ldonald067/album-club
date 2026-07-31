@@ -3560,6 +3560,13 @@ function MiniTeaser({ icon, title, subtitle, onOpen }) {
 // anti-activity — no score, no timer — so they get their own room rather than
 // competing with the daily loop.
 
+// itch.io's widget honours colour params, so the cards can be dressed in the
+// site's own palette instead of arriving as black rectangles on a cream page.
+// These are the literal values of --bg-panel / --text-primary / --text-link /
+// --border-light; the widget is a third-party iframe and can't read our CSS vars.
+const ITCH_THEME =
+  "bg_color=fefcf5&fg_color=333333&link_color=2a4570&border_color=c4b998";
+
 // Add a game by appending here. `embedId` is the number in itch.io's embed URL
 // (Share → Embed on the game's page), NOT the game's own URL slug.
 const COZY_GAMES = [
@@ -3624,13 +3631,21 @@ function CozyVibesSection() {
               <span className="cozy-byline">{game.byline}</span>
             </div>
             <p className="cozy-blurb">{game.blurb}</p>
-            <div className="cozy-frame">
-              <iframe
-                src={game.embedUrl}
-                title={`${game.title} — a cozy pixel sandbox`}
-                allow="autoplay; fullscreen"
-                loading="lazy"
-              />
+            {/* The sandbox is a night scene, so it loads dark. Framed like a
+                lit window rather than left as a black rectangle on a cream
+                page, with a caption so the darkness reads as intent. */}
+            <div className="cozy-window">
+              <div className="cozy-frame">
+                <iframe
+                  src={game.embedUrl}
+                  title={`${game.title} — a cozy pixel sandbox`}
+                  allow="autoplay; fullscreen"
+                  loading="lazy"
+                />
+              </div>
+              <div className="cozy-sill">
+                🕯️ It&apos;s night in there. Click to light the lamp.
+              </div>
             </div>
             <div style={{ textAlign: "center", marginTop: 8 }}>
               <a
@@ -3661,7 +3676,7 @@ function CozyVibesSection() {
                   {game.blurb && <p className="cozy-blurb">{game.blurb}</p>}
                   <div className="cozy-card-frame">
                     <iframe
-                      src={`https://itch.io/embed/${game.embedId}?dark=true`}
+                      src={`https://itch.io/embed/${game.embedId}?${ITCH_THEME}`}
                       title={`${game.title} by ${game.byline} on itch.io`}
                       loading="lazy"
                     />
