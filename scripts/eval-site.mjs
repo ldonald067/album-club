@@ -359,6 +359,41 @@ for (const [key, value] of Object.entries(lyrics)) {
     if (blankable(line) < 2) weakLyricLines.push(`${key}: "${line}"`);
   }
 }
+// A repeated line is dead weight: the game shows one line per airing, so
+// storing the same chorus twice just narrows the variety when an album recurs.
+const repeatedLineEntries = [];
+const crossAlbumPayloads = new Map();
+for (const [key, value] of Object.entries(lyrics)) {
+  const lines = Array.isArray(value) ? value : value.lines || [];
+  if (new Set(lines).size !== lines.length) repeatedLineEntries.push(key);
+  const fingerprint = lines.join("\n");
+  if (fingerprint) {
+    crossAlbumPayloads.set(
+      fingerprint,
+      (crossAlbumPayloads.get(fingerprint) || []).concat(key),
+    );
+  }
+}
+const sharedPayloads = [...crossAlbumPayloads.values()].filter(
+  (keys) => keys.length > 1,
+);
+failures += printGuardrail(
+  repeatedLineEntries.length === 0,
+  "No lyric entry repeats the same line",
+  repeatedLineEntries.length
+    ? `${repeatedLineEntries.length} entr(y/ies) store a duplicate line, e.g. ${repeatedLineEntries[0]}`
+    : "Every stored line within an entry is distinct.",
+);
+// Two albums sharing identical lyrics means the fetcher matched the wrong song
+// for at least one of them — the signature of a popularity-ranked search result.
+failures += printGuardrail(
+  sharedPayloads.length === 0,
+  "No two albums share the same lyrics",
+  sharedPayloads.length
+    ? `${sharedPayloads.length} payload(s) reused across albums: ${sharedPayloads[0].join(" / ")}`
+    : "Every album's lyric block is unique to it.",
+);
+
 failures += printGuardrail(
   weakLyricLines.length === 0,
   "Every lyric line can carry two blanks",

@@ -178,11 +178,26 @@ function extractGoodLines(lyricsText) {
         l.split(" ").length >= 3,
     );
 
-  // Pick up to 8 varied lines (skip consecutive to get spread)
+  // Pick up to 8 varied lines (skip consecutive to get spread). Deduplicate:
+  // the game picks one line per airing, so storing a repeated chorus line eight
+  // times just means the same puzzle every time. Real songs repeat far more
+  // than the wrong-album results we used to get, so this only started to matter
+  // once album verification began returning the right song.
+  const seen = new Set();
   const selected = [];
   const step = Math.max(2, Math.floor(lines.length / 8));
   for (let i = 0; i < lines.length && selected.length < 8; i += step) {
-    selected.push(lines[i]);
+    const line = lines[i];
+    if (seen.has(line)) continue;
+    seen.add(line);
+    selected.push(line);
+  }
+  // Backfill from any remaining unseen lines if the stride landed on repeats
+  for (const line of lines) {
+    if (selected.length >= 8) break;
+    if (seen.has(line)) continue;
+    seen.add(line);
+    selected.push(line);
   }
   return selected;
 }
