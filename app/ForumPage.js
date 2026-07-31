@@ -1738,6 +1738,11 @@ function GuessGame() {
     if (saved) {
       try {
         const state = JSON.parse(saved);
+        // JSON.parse only rejects malformed text. Well-formed JSON of the wrong
+        // shape (an older build's format, a partial write) would set guesses to
+        // undefined and crash render — and the error boundary's "Try again"
+        // re-reads the same key, so the page stays broken until UTC midnight.
+        if (!Array.isArray(state.guesses)) return;
         setGuesses(state.guesses);
         setCluesRevealed(Math.min(state.guesses.length + 2, 6));
         setGameOver(state.gameOver);
@@ -1980,6 +1985,11 @@ function CoverChallenge({ fallbackNote = null }) {
     if (saved) {
       try {
         const state = JSON.parse(saved);
+        // JSON.parse only rejects malformed text. Well-formed JSON of the wrong
+        // shape (an older build's format, a partial write) would set guesses to
+        // undefined and crash render — and the error boundary's "Try again"
+        // re-reads the same key, so the page stays broken until UTC midnight.
+        if (!Array.isArray(state.guesses)) return;
         setGuesses(state.guesses);
         setGameOver(state.gameOver);
         setSolved(state.solved);
@@ -2194,6 +2204,11 @@ function HeardleGame() {
     if (saved) {
       try {
         const state = JSON.parse(saved);
+        // JSON.parse only rejects malformed text. Well-formed JSON of the wrong
+        // shape (an older build's format, a partial write) would set guesses to
+        // undefined and crash render — and the error boundary's "Try again"
+        // re-reads the same key, so the page stays broken until UTC midnight.
+        if (!Array.isArray(state.guesses)) return;
         setGuesses(state.guesses);
         setGameOver(state.gameOver);
         setSolved(state.solved);
@@ -2521,6 +2536,11 @@ function LyricGame() {
     if (saved) {
       try {
         const state = JSON.parse(saved);
+        // JSON.parse only rejects malformed text. Well-formed JSON of the wrong
+        // shape (an older build's format, a partial write) would set guesses to
+        // undefined and crash render — and the error boundary's "Try again"
+        // re-reads the same key, so the page stays broken until UTC midnight.
+        if (!Array.isArray(state.guesses)) return;
         setGuesses(state.guesses);
         setGameOver(state.gameOver);
         setSolved(state.solved);
@@ -2832,6 +2852,11 @@ function ScrambleGame() {
     if (saved) {
       try {
         const state = JSON.parse(saved);
+        // JSON.parse only rejects malformed text. Well-formed JSON of the wrong
+        // shape (an older build's format, a partial write) would set guesses to
+        // undefined and crash render — and the error boundary's "Try again"
+        // re-reads the same key, so the page stays broken until UTC midnight.
+        if (!Array.isArray(state.guesses)) return;
         setGuesses(state.guesses);
         setGameOver(state.gameOver);
         setSolved(state.solved);
