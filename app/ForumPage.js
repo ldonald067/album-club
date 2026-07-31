@@ -3554,6 +3554,120 @@ function MiniTeaser({ icon, title, subtitle, onOpen }) {
   );
 }
 
+// ─── Cozy Vibes ───
+// Deliberately not on the home page: that page already renders ~25 blocks, and
+// game iframes are the heaviest thing we could put there. These are the
+// anti-activity — no score, no timer — so they get their own room rather than
+// competing with the daily loop.
+
+// Add a game by appending here. `embedId` is the number in itch.io's embed URL
+// (Share → Embed on the game's page), NOT the game's own URL slug.
+const COZY_GAMES = [
+  {
+    id: "pixelfun",
+    title: "Night Desk Terrarium",
+    byline: "made in-house",
+    blurb:
+      "Pour sand and water, light a hearth, grow moss and moonlit flowers. Saves your scene.",
+    // Self-hosted, so this one gets a full playable frame. The src is the
+    // poster page — pointing at the site root would pull ~9 MB on page load.
+    embedUrl: "https://pixelfun.littlealbumclub.net/embed.html",
+    playUrl: "https://pixelfun.littlealbumclub.net/",
+    featured: true,
+  },
+];
+
+function CozyVibesSection() {
+  const featured = COZY_GAMES.filter((g) => g.featured);
+  const cards = COZY_GAMES.filter((g) => !g.featured);
+
+  return (
+    <div className="panel">
+      <div className="panel-header">
+        <span>
+          <i className="hn hn-play" aria-hidden="true" /> COZY VIBES
+        </span>
+      </div>
+      <div className="panel-body cozy-body">
+        <p className="activity-prompt" style={{ textAlign: "center" }}>
+          Somewhere to sit between albums. No score to chase, no timer breathing
+          down your neck, just a little room to exhale.
+        </p>
+
+        {featured.map((game) => (
+          <div key={game.id} className="cozy-featured">
+            <div className="cozy-game-title">
+              {game.title}
+              <span className="cozy-byline">{game.byline}</span>
+            </div>
+            <p className="cozy-blurb">{game.blurb}</p>
+            <div className="cozy-frame">
+              <iframe
+                src={game.embedUrl}
+                title={`${game.title} — a cozy pixel sandbox`}
+                allow="autoplay; fullscreen"
+                loading="lazy"
+              />
+            </div>
+            <div style={{ textAlign: "center", marginTop: 8 }}>
+              <a
+                href={game.playUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="listen-btn"
+                style={{ fontSize: 11, padding: "8px 16px" }}
+              >
+                <i className="hn hn-play" aria-hidden="true" /> Play in New Tab
+              </a>
+            </div>
+          </div>
+        ))}
+
+        {cards.length > 0 && (
+          <>
+            <div className="cozy-shelf-label">More on the shelf</div>
+            <div className="cozy-shelf">
+              {cards.map((game) => (
+                <div key={game.id} className="cozy-card">
+                  <div className="cozy-game-title">
+                    {game.title}
+                    {game.byline && (
+                      <span className="cozy-byline">by {game.byline}</span>
+                    )}
+                  </div>
+                  {game.blurb && <p className="cozy-blurb">{game.blurb}</p>}
+                  <div className="cozy-card-frame">
+                    <iframe
+                      src={`https://itch.io/embed/${game.embedId}?dark=true`}
+                      title={`${game.title} by ${game.byline} on itch.io`}
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="cozy-credit">
+              Shelf games are hosted on itch.io by their creators — clicking a
+              card loads it from there.
+            </p>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function CozyMini({ onNavigate }) {
+  return (
+    <MiniTeaser
+      icon="🕯️"
+      title="Cozy Vibes"
+      subtitle="Somewhere to sit between albums"
+      onOpen={() => onNavigate("cozy")}
+    />
+  );
+}
+
 function FAQSection() {
   return (
     <div className="panel">
@@ -4019,6 +4133,7 @@ export default function ForumPage({ album, dateString }) {
               icon: "hn hn-headphones",
               label: "Soundtrack Corner",
             },
+            { key: "cozy", icon: "hn hn-play", label: "Cozy Vibes" },
             { key: "archive", icon: "hn hn-calender", label: "Archive" },
             { key: "stats", icon: "hn hn-trending", label: "Stats" },
             { key: "faq", icon: "hn hn-question", label: "FAQ" },
@@ -4231,6 +4346,10 @@ export default function ForumPage({ album, dateString }) {
             {/* Soundtrack Corner teaser */}
             <SoundtrackMini onNavigate={setActiveSection} />
 
+            {/* Cozy Vibes teaser — the game itself lives on its own tab so the
+                home page doesn't carry a game iframe */}
+            <CozyMini onNavigate={setActiveSection} />
+
             {/* Yesterday's Recap */}
             <YesterdayRecap />
 
@@ -4431,6 +4550,7 @@ export default function ForumPage({ album, dateString }) {
           </>
         )}
 
+        {activeSection === "cozy" && <CozyVibesSection />}
         {activeSection === "archive" && <ArchiveSection />}
         {activeSection === "soundtrack" && (
           <SoundtrackCornerPanel album={album} onNavigate={setActiveSection} />
@@ -4505,58 +4625,6 @@ export default function ForumPage({ album, dateString }) {
                 )}
               </React.Fragment>
             ))}
-          </div>
-        </div>
-
-        {/* Greenhouse game */}
-        <div className="panel">
-          <div className="panel-header">
-            <span>
-              <i className="hn hn-play" aria-hidden="true" /> CHILL ZONE — THE
-              GREENHOUSE
-            </span>
-            <span
-              style={{
-                fontSize: "10px",
-                fontWeight: "normal",
-                opacity: 0.7,
-              }}
-            >
-              by{" "}
-              <a
-                href="https://jsmonzani.itch.io/the-greenhouse"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: "inherit" }}
-              >
-                jsmonzani
-              </a>
-            </span>
-          </div>
-          <div className="panel-body greenhouse-body">
-            <p className="activity-prompt" style={{ textAlign: "center" }}>
-              Take a break between albums. Decorate a cozy greenhouse — no score
-              to chase, no timer breathing down your neck, just a little room to
-              exhale.
-            </p>
-            <div className="greenhouse-widget">
-              <iframe
-                src="https://itch.io/embed/2089404?dark=true"
-                title="The Greenhouse by jsmonzani on itch.io"
-                loading="lazy"
-              />
-            </div>
-            <div style={{ textAlign: "center", marginTop: 8 }}>
-              <a
-                href="https://jsmonzani.itch.io/the-greenhouse"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="listen-btn"
-                style={{ fontSize: 11, padding: "8px 16px" }}
-              >
-                <i className="hn hn-play" aria-hidden="true" /> Play in New Tab
-              </a>
-            </div>
           </div>
         </div>
 
