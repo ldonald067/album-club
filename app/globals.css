@@ -1084,6 +1084,9 @@ body {
   margin-bottom: 12px;
 }
 
+/* .hot-take-hot / .hot-take-crowd are applied as `hot-take-${cls}` in
+   ForumPage.js, so a literal grep for these names finds nothing. They are live.
+   Do not delete them as unused. */
 .hot-take-hot {
   background: rgba(201, 100, 39, 0.15);
   border: 1px solid rgba(201, 100, 39, 0.3);
@@ -2782,6 +2785,8 @@ body {
   padding: 0 2px;
 }
 
+/* SHARED: VersusMatchup and BlindTasteTest. The versus-* name predates the
+   taste test reusing it — check both before changing or deleting. */
 .versus-cover {
   width: 100px;
   height: 100px;
@@ -2790,6 +2795,7 @@ body {
   margin-bottom: 6px;
 }
 
+/* SHARED: VersusMatchup and BlindTasteTest. */
 .versus-info {
   /* flex:1 absorbs slack so the Pick button pins to the card bottom —
      keeps buttons aligned when genres wrap to different heights */
@@ -2804,6 +2810,8 @@ body {
   font-size: 9px;
 }
 
+/* SHARED: VersusMatchup's "Pick this one" and BlindTasteTest's clip-vote
+   buttons. Grepping "versus" alone will not show you the taste-test callers. */
 .versus-btn {
   margin-top: auto;
   padding: 10px 12px;

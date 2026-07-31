@@ -39,6 +39,14 @@
 - **Seeded permutation cache**: `lib/albums.js` caches shuffle permutations in a Map. Most seeds are year-based (few entries), but the daily Versus/Taste pairs seed per-day for full-year variety, so the Map grows ~2 entries/day (~730/year, ~1-2 MB of int arrays). Bounded and reset on every deploy — negligible in practice, but not the old "5-10/year"
 - **Adding albums shifts schedule**: Daily rotation uses `dayOfYear % ALBUMS.length` — changing album count shifts which album appears on which day
 
+## CSS classes: before you call one "unused"
+
+Two traps, both hit during the 2026-07 dead-CSS removal:
+
+- **Some classes are built dynamically and are invisible to grep.** `.hot-take-hot` / `.hot-take-crowd` only ever appear as `` `hot-take-${cls}` ``. A "which classes are referenced in JS?" sweep reports them as dead. They are annotated in `globals.css`; check for template-literal class construction (``className={`x-${y}`}``) before deleting anything
+- **Some classes are shared across features whose names don't say so.** `.versus-btn`, `.versus-cover` and `.versus-info` are used by Blind Taste Test as well as Album vs Album. They are annotated at their definitions with the full consumer list. **The convention: if a name is a lie, rename it; if it's merely incomplete, annotate it at the definition.** A rename can't fix this anyway — any single name for a shared thing under-describes it, and the rename costs a large diff across rendered output that no test verifies
+- **The `/* Chat agent */` block was a third trap** — it was mislabelled and contained all the live Soundtrack Corner styling, so a range delete would have destroyed a working feature. Removed rule-by-rule instead. Section comments are not to be trusted as boundaries
+
 ## Icons
 
 - **Pixel icon SVGs are black** (`fill="#000000"`): Render as black pixel art silhouettes. Use `image-rendering: pixelated` CSS for crisp edges
