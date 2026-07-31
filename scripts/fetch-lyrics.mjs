@@ -3,9 +3,16 @@
  * Fetch lyrics for recognizable albums from Genius API.
  * Usage: GENIUS_ACCESS_TOKEN=xxx node scripts/fetch-lyrics.mjs
  *
- * Strategy: Search for "artist" to find their top songs, then try
- * multiple songs until we get good lyrics. Falls back to searching
- * "artist album_title" filtered to actual songs only.
+ * Strategy, in order:
+ *   1. Ask MusicBrainz (free, no key) for the album's real tracklist, then look
+ *      up those exact songs on Genius. A track MusicBrainz places on the album
+ *      is on the album, so a title+artist match needs no further verification.
+ *   2. Fall back to searching "artist album_title", accepting a hit only if
+ *      Genius's own /songs/:id agrees on the album name.
+ *
+ * There is deliberately NO artist-only search: Genius ranks by popularity, so
+ * that returns the artist's biggest hit regardless of album. It once filed one
+ * song under four different Kendrick records.
  *
  * Stores results in lib/lyrics.json.
  * Skips albums that already have lyrics data.
@@ -64,6 +71,55 @@ async function fetchSongAlbum(songId) {
   if (!res.ok) return null;
   const song = (await res.json()).response?.song;
   return song?.album?.name ?? null;
+}
+
+/**
+ * Ask MusicBrainz which songs are actually on this album. Free, no key.
+ * This is what makes high coverage possible: Genius's own album metadata is
+ * unreliable and its search ranks by popularity, but if MusicBrainz says a track
+ * is on the record, then finding that exact track on Genius yields lyrics that
+ * are by definition from that record.
+ * Returns [] when the album isn't found — callers fall back to album search.
+ */
+async function fetchTracklist(artist, albumTitle) {
+  const headers = { "User-Agent": "AlbumOfTheDayClub/1.0" };
+  const query = encodeURIComponent(
+    `release:"${albumTitle}" AND artist:"${artist}"`,
+  );
+  try {
+    const searchRes = await fetch(
+      `https://musicbrainz.org/ws/2/release/?query=${query}&fmt=json&limit=1`,
+      { headers },
+    );
+    if (!searchRes.ok) return [];
+    const release = (await searchRes.json()).releases?.[0];
+    if (!release?.id) return [];
+    await sleep(1100); // MusicBrainz asks for <=1 request/second
+    const fullRes = await fetch(
+      `https://musicbrainz.org/ws/2/release/${release.id}?inc=recordings&fmt=json`,
+      { headers },
+    );
+    if (!fullRes.ok) return [];
+    const media = (await fullRes.json()).media || [];
+    return media
+      .flatMap((disc) => (disc.tracks || []).map((t) => t.title))
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
+/** Strict-ish song title match, so we don't accept a differently-named song. */
+function songTitlesMatch(a, b) {
+  const norm = (s) =>
+    String(s || "")
+      .toLowerCase()
+      .replace(/\((feat|ft|with|remix|live|demo)[^)]*\)/g, "")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+  const x = norm(a);
+  const y = norm(b);
+  return !!x && !!y && x === y;
 }
 
 /** Loose title match — tolerates "(Deluxe)", punctuation, and casing drift. */
@@ -226,7 +282,51 @@ for (const album of recognizable) {
   try {
     console.log(`Searching: ${key}`);
 
-    // Strategy 1: search "artist album_title" and filter to songs
+    // Strategy 1 (primary): ask MusicBrainz what's on the record, then look up
+    // those exact songs. A track named by MusicBrainz IS on the album, so a
+    // title+artist match on Genius needs no further album verification — which
+    // matters because Genius's album field is missing or wrong for a lot of the
+    // catalog, and that was the ceiling on coverage.
+    let gotLines = null;
+    let matchedVia = null;
+    const tracklist = await fetchTracklist(album.artist, album.title);
+    await sleep(1100);
+    if (tracklist.length) {
+      console.log(`  MusicBrainz: ${tracklist.length} tracks`);
+      // Skip intros/interludes/skits — usually spoken or instrumental
+      const candidates = tracklist.filter(
+        (t) => !/^(intro|outro|interlude|skit|prelude|reprise)\b/i.test(t),
+      );
+      for (const track of candidates.slice(0, 6)) {
+        const trackHits = filterSongHits(
+          await searchGenius(`${album.artist} ${track}`),
+          album.artist,
+        );
+        await sleep(500);
+        const exact = trackHits.find((h) =>
+          songTitlesMatch(h.result.title, track),
+        );
+        if (!exact) continue;
+        console.log(`  Trying track: ${exact.result.full_title}`);
+        const lines = await tryHit(exact);
+        if (lines.length >= 3) {
+          gotLines = lines;
+          matchedVia = `track "${track}"`;
+          break;
+        }
+        await sleep(300);
+      }
+    }
+
+    if (gotLines) {
+      lyrics[key] = { lines: gotLines, source: "genius" };
+      console.log(`  ✓ ${gotLines.length} lines via ${matchedVia}`);
+      fetched++;
+      await sleep(500);
+      continue;
+    }
+
+    // Strategy 2 (fallback): search "artist album_title" and verify the album
     let hits = await searchGenius(`${album.artist} ${album.title}`);
     let songHits = filterSongHits(hits, album.artist);
     await sleep(500);
@@ -243,7 +343,6 @@ for (const album of recognizable) {
     }
 
     // Try up to 5 song hits until one is genuinely from this album
-    let gotLines = null;
     for (let i = 0; i < Math.min(5, songHits.length); i++) {
       const hit = songHits[i];
       console.log(`  Trying: ${hit.result.full_title}`);
