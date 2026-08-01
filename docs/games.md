@@ -1,8 +1,8 @@
 # Games
 
-5-game daily rotation via `getGameType()` in `albums.js`: `dayOfYear % 5` → `["guess", "cover", "lyric", "heardle", "scramble"]`. Each game draws from recognizable albums (133 of 424) with different seeds to avoid collisions with the featured album.
+5-game daily rotation via `getGameType()` in `albums.js`: `dayOfYear % 5` → `["guess", "cover", "lyric", "heardle", "scramble"]`. Each game draws from the recognizable subset with different seeds to avoid collisions with the featured album.
 
-Which album a game picks comes from `pickRotatingPoolAlbum`, which indexes by **appearance ordinal**, not `dayOfYear` — see `docs/album-data.md`. Pool sizes: guess/cover/scramble 133, heardle 128, lyric 120.
+Which album a game picks comes from `pickRotatingPoolAlbum`, which indexes by **appearance ordinal**, not `dayOfYear` — see `docs/album-data.md`. Current pool sizes are printed by `npm run eval-site` — don't trust a number written here.
 
 ## Guess the Album (6 attempts)
 
@@ -14,13 +14,13 @@ Blurred cover art, blur decreases per wrong guess (`[5, 3, 2, 1, 0]`px). Uses `A
 
 ## Lyric Fill-in-the-Blank (4 attempts)
 
-Random lyric line from `lyrics.json` (120 entries) with 1-2 words blanked. Hints after wrong guesses: word length, first letter, album title. Free-text input (not AlbumAutocomplete). Uses `GuessHistory` with custom `checkFn` that normalizes whitespace/punctuation.
+Random lyric line from `lyrics.json` with 1-2 words blanked. Hints after wrong guesses: word length, first letter, album title. Free-text input (not AlbumAutocomplete). Uses `GuessHistory` with custom `checkFn` that normalizes whitespace/punctuation.
 
 The two blanks are offset by `1 + (seed % (blankCount - 1))`, which cannot be zero, so they can never land on the same word. A fixed `+7` stride previously collided on any line with exactly 7 blankable words — 4.6% of line/seed pairs — halving the puzzle while still charging the player the same attempts.
 
 ## Heardle / Audio Intro (6 attempts)
 
-YouTube audio clips via IFrame API, progressively longer (`[1, 2, 4, 8, 16, 30]`s). Player + timer cleaned up on unmount. Global `window.onYouTubeIframeAPIReady` set/cleared per mount cycle. Uses `AlbumAutocomplete`. Requires `youtubeId` on album (128 recognizable albums have it).
+YouTube audio clips via IFrame API, progressively longer (`[1, 2, 4, 8, 16, 30]`s). Player + timer cleaned up on unmount. Global `window.onYouTubeIframeAPIReady` set/cleared per mount cycle. Uses `AlbumAutocomplete`. Requires `youtubeId` on the album; not all have one.
 
 ## Artist Scramble (variable attempts)
 
@@ -51,7 +51,7 @@ Daily head-to-head: two past albums shown side by side with cover art. User pick
 
 ## Blind Taste Test
 
-Two 60-second audio clips from YouTube (no album info visible). User must listen to both before voting is unlocked. After picking, both albums are revealed with cover art + community preference bar. Uses `getTastePair()` with seed `year * 97 + 31` — draws from albums with `youtubeId` (~126). Two simultaneous `YT.Player` instances; only one plays at a time. Posts to `/api/matchup` with `type: "taste"`. State: `aotd_taste_{date}`.
+Two 60-second audio clips from YouTube (no album info visible). User must listen to both before voting is unlocked. After picking, both albums are revealed with cover art + community preference bar. Uses `getTastePair()` with seed `year * 97 + 31` — draws from albums with a `youtubeId`. Two simultaneous `YT.Player` instances; only one plays at a time. Posts to `/api/matchup` with `type: "taste"`. State: `aotd_taste_{date}`.
 
 ## State Persistence
 

@@ -41,6 +41,10 @@
 - **Seeded permutation cache**: `lib/albums.js` caches shuffle permutations in a Map. Most seeds are year-based (few entries), but the daily Versus/Taste pairs seed per-day for full-year variety, so the Map grows ~2 entries/day (~730/year, ~1-2 MB of int arrays). Bounded and reset on every deploy — negligible in practice, but not the old "5-10/year"
 - **Adding albums shifts schedule**: Daily rotation uses `dayOfYear % ALBUMS.length` — changing album count shifts which album appears on which day
 
+## Docs
+
+- **Never write a derived count into prose.** Lyric coverage was corrected four separate times in one session because it was hard-coded in `CLAUDE.md`, `album-data.md`, `games.md` and `STATUS.md`. Pool sizes and coverage percentages come from `npm run eval-site`, which computes them. Historical narrative ("was 88, now 120") is fine — it's a fact about the past and doesn't rot
+
 ## CSS classes: before you call one "unused"
 
 Two traps, both hit during the 2026-07 dead-CSS removal:
