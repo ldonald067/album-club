@@ -2,7 +2,7 @@
 
 5-game daily rotation via `getGameType()` in `albums.js`: `dayOfYear % 5` → `["guess", "cover", "lyric", "heardle", "scramble"]`. Each game draws from recognizable albums (133 of 424) with different seeds to avoid collisions with the featured album.
 
-Which album a game picks comes from `pickRotatingPoolAlbum`, which indexes by **appearance ordinal**, not `dayOfYear` — see `docs/album-data.md`. Pool sizes: guess/cover/scramble 133, heardle 128, lyric 122.
+Which album a game picks comes from `pickRotatingPoolAlbum`, which indexes by **appearance ordinal**, not `dayOfYear` — see `docs/album-data.md`. Pool sizes: guess/cover/scramble 133, heardle 128, lyric 120.
 
 ## Guess the Album (6 attempts)
 
@@ -14,7 +14,7 @@ Blurred cover art, blur decreases per wrong guess (`[5, 3, 2, 1, 0]`px). Uses `A
 
 ## Lyric Fill-in-the-Blank (4 attempts)
 
-Random lyric line from `lyrics.json` (122 entries) with 1-2 words blanked. Hints after wrong guesses: word length, first letter, album title. Free-text input (not AlbumAutocomplete). Uses `GuessHistory` with custom `checkFn` that normalizes whitespace/punctuation.
+Random lyric line from `lyrics.json` (120 entries) with 1-2 words blanked. Hints after wrong guesses: word length, first letter, album title. Free-text input (not AlbumAutocomplete). Uses `GuessHistory` with custom `checkFn` that normalizes whitespace/punctuation.
 
 The two blanks are offset by `1 + (seed % (blankCount - 1))`, which cannot be zero, so they can never land on the same word. A fixed `+7` stride previously collided on any line with exactly 7 blankable words — 4.6% of line/seed pairs — halving the puzzle while still charging the player the same attempts.
 

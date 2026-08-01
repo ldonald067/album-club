@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-07-31.
+session. Last updated: 2026-08-01.
 
 ## What this is
 
@@ -59,7 +59,7 @@ Node 22) runs `npm test` then `npm run build`.
   unblankable lyric lines, and a blank-stride collision that silently halved the
   lyric puzzle. Five new `eval-site` guardrails cover all of it, and the sampler
   moved to appearance-ordinal indexing (load-bearing — see `docs/gotchas.md`).
-  Refilled 2026-07-31 to **122 of 133 (91.7%)**. Took three attempts: the first
+  Refilled 2026-07-31 to 122 of 133, now 120 after an adversarial review found two contaminated entries. Took three attempts: the first
   returned 24 entries of which ~5 were right, because Genius ranks by popularity;
   the fix that actually worked was sourcing tracklists from MusicBrainz and
   looking up those songs directly.
@@ -89,8 +89,8 @@ Node 22) runs `npm test` then `npm run build`.
 ## Open items / next steps
 
 1. ~~**Set `BACKUP_TOKEN`**~~ — DONE 2026-07-23 (see "Operational facts").
-2. ~~**Refill the lyric pool**~~ — DONE 2026-07-31, 80 → **122 of 133
-   (91.7%)**. The remaining 11 are 4 instrumentals that can never have lyrics
+2. ~~**Refill the lyric pool**~~ — DONE 2026-07-31, 80 → 122, now **120 of 133
+   (90.2%)** after two contaminated entries were pulled (item 3). The gap is 4 instrumentals that can never have lyrics
    plus 7 Genius won't resolve (Abbey Road, VU & Nico, Homework, both Jay-Z,
    Souvlaki, Bitches Brew). That is 94.6% of the achievable ceiling; the rest
    would need hand-curation. **Always read `git diff lib/lyrics.json` before
@@ -107,7 +107,7 @@ Node 22) runs `npm test` then `npm run build`.
    Run `npm run soundtrack-corner-report`, write the top of the "Coming up in
    rotation" list (air-date-sorted) in the house voice, validate via
    `npm run eval-site`. Pipeline documented in `docs/soundtrack-corner-research.md`.
-4. **Deferred by decision — community gates count rows, not people.**
+5. **Deferred by decision — community gates count rows, not people.**
    Neither `matchup_votes` nor `vibes` has a voter column or a uniqueness
    constraint, and `checkDailyLimit` allows 3 submissions per IP per endpoint
    per day, so one person can produce several rows: two tabs opened before
@@ -123,7 +123,7 @@ Node 22) runs `npm test` then `npm run build`.
    multi-tab path. Found by `/adversarial-review` on `0b2f76e`; the two cheaper
    findings from that review (percentage denominator, restore validation) are
    fixed.
-5. **Un-fixed review findings (lower severity, all in the review report):**
+6. **Un-fixed review findings (lower severity, all in the review report):**
    - `lib/api-helpers.js` chunked-body size bypass (MED) — precheck only fires
      with a Content-Length header.
    - HeardleGame leaves its clip timer running on a non-final wrong guess;
@@ -137,7 +137,7 @@ Node 22) runs `npm test` then `npm run build`.
      (latent).
    - A11y: footer + some small text below AA contrast; some `role="button"`
      divs handle Enter but not Space.
-6. **Suggested features (from the review, not built):** "Predict the Crowd"
+7. **Suggested features (from the review, not built):** "Predict the Crowd"
    (guess the room's average before reveal), "Divisive Meter", Streak Freeze,
    "The Verdict" one-tap critical tag. Deliberately avoid: freeform shoutbox,
    real leaderboards.

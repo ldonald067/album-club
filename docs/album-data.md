@@ -33,7 +33,7 @@
 
 ## Lyrics Data
 
-`lib/lyrics.json` stores 3-8 lyric lines per album, keyed by `"artist - title"`. **122 entries — 91.7% of recognizable albums, 94.6% of the achievable ceiling.** Populated via `npm run fetch-lyrics` (Genius API, needs `GENIUS_ACCESS_TOKEN`).
+`lib/lyrics.json` stores 3-8 lyric lines per album, keyed by `"artist - title"`. **120 entries — 90.2% of recognizable albums.** Populated via `npm run fetch-lyrics` (Genius API, needs `GENIUS_ACCESS_TOKEN`).
 
 The fetcher asks **MusicBrainz** (free, no key) for the album's real tracklist, then looks up those exact songs on Genius. A track MusicBrainz places on the album is on the album, so a title+artist match needs no further checking — this routes around Genius's album metadata, which is missing or wrong for much of the catalogue and was the hard ceiling on coverage.
 
