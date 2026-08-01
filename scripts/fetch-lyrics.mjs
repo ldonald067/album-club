@@ -156,11 +156,30 @@ const TRANSLATION_URL =
 const CREDITS_LINE =
   /written by|performed by|produced by|mixed by|engineered by|photo:|\(BMI\)|\(ASCAP\)|c\/o |courtesy of|under (?:exclusive )?licen[cs]e/i;
 
+// Tokens that identify nobody. "The Beatles" used to tokenise to ["the",
+// "beatles"], and since a hit matched if ANY token appeared anywhere in its
+// title, "the" waved through virtually every result on the page.
+const ARTIST_STOP_WORDS = new Set([
+  "the",
+  "and",
+  "feat",
+  "featuring",
+  "with",
+  "band",
+  "his",
+  "her",
+  "their",
+]);
+
 /** Filter search hits to actual songs with lyrics by the correct artist */
 function filterSongHits(hits, artistName) {
   const artistLower = artistName.toLowerCase();
   // Build multiple matching tokens for the artist name
-  const artistTokens = artistLower.split(/[\s&,]+/).filter((t) => t.length > 2);
+  const allTokens = artistLower.split(/[\s&,]+/).filter((t) => t.length > 2);
+  const distinctive = allTokens.filter((t) => !ARTIST_STOP_WORDS.has(t));
+  // If an artist is nothing but stop words, match the whole name instead of
+  // giving up and accepting anything.
+  const artistTokens = distinctive.length ? distinctive : [artistLower];
   return hits.filter((h) => {
     const r = h.result;
     // Must be a song type
