@@ -86,15 +86,6 @@
     ],
     "source": "genius"
   },
-  "Frank Ocean - Blonde": {
-    "lines": [
-      "Or do you not think so far ahead?",
-      "I remember, how could I forget (How could I forget)",
-      "You know you were my first time (Time)",
-      "It won't ever get old, not in my soul, not in my spirit, keep it alive"
-    ],
-    "source": "genius"
-  },
   "Portishead - Dummy": {
     "lines": [
       "So don't you stop being a man",
@@ -175,18 +166,6 @@
       "All bets off! The Villain got the dice rigged",
       "Allegedly, the investigation is still ongoing",
       "The pot doubles, now they really got troubles"
-    ],
-    "source": "genius"
-  },
-  "Arcade Fire - Funeral": {
-    "lines": [
-      "Sometimes I can't believe it",
-      "I'm moving past the feeling and into the night",
-      "I want to hold her hand",
-      "Then send me a son",
-      "So move your feet from hot pavement and into the grass",
-      "I'm moving past the feeling again",
-      "In my dreams, we're still screaming"
     ],
     "source": "genius"
   },
@@ -945,7 +924,9 @@
     "source": "genius"
   },
   "Buena Vista Social Club - Buena Vista Social Club": {
-    "lines": ["De Alto Cedro, voy para Marcané"],
+    "lines": [
+      "De Alto Cedro, voy para Marcané"
+    ],
     "source": "genius"
   },
   "Clipse - Let God Sort Em Out": {

@@ -384,14 +384,32 @@ failures += printGuardrail(
     ? `${repeatedLineEntries.length} entr(y/ies) store a duplicate line, e.g. ${repeatedLineEntries[0]}`
     : "Every stored line within an entry is distinct.",
 );
-// Two albums sharing identical lyrics means the fetcher matched the wrong song
-// for at least one of them — the signature of a popularity-ranked search result.
+// Two albums sharing lyrics means the fetcher matched the wrong song for at
+// least one of them — the signature of a popularity-ranked search result.
+// Compared line by line rather than as whole payloads: an earlier version only
+// caught byte-identical blocks, so dropping or reordering a single line hid the
+// very contamination it existed to detect.
+const lineOwners = new Map();
+for (const [key, value] of Object.entries(lyrics)) {
+  const lines = Array.isArray(value) ? value : value.lines || [];
+  for (const line of new Set(lines)) {
+    const norm = line
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+    // Very short lines ("oh oh oh") genuinely recur across songs
+    if (norm.split(" ").length < 5) continue;
+    if (!lineOwners.has(norm)) lineOwners.set(norm, new Set());
+    lineOwners.get(norm).add(key);
+  }
+}
+const overlaps = [...lineOwners.entries()].filter(([, keys]) => keys.size > 1);
 failures += printGuardrail(
-  sharedPayloads.length === 0,
+  overlaps.length === 0 && sharedPayloads.length === 0,
   "No two albums share the same lyrics",
-  sharedPayloads.length
-    ? `${sharedPayloads.length} payload(s) reused across albums: ${sharedPayloads[0].join(" / ")}`
-    : "Every album's lyric block is unique to it.",
+  overlaps.length || sharedPayloads.length
+    ? `${overlaps.length} distinctive line(s) appear under more than one album, e.g. "${overlaps[0]?.[0].slice(0, 50)}" in ${[...(overlaps[0]?.[1] || [])].join(" / ")}`
+    : `All ${lineOwners.size} distinctive lines belong to exactly one album.`,
 );
 
 failures += printGuardrail(
