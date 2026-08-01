@@ -97,7 +97,13 @@ Node 22) runs `npm test` then `npm run build`.
    committing a refill** — the guards catch the known failure shapes, not
    novelty.
 
-3. **Soundtrack Corner to 100%:** ~50 recognizable albums left, ~4 batches.
+3. **Two lyric entries need re-fetching.** *Frank Ocean — Blonde* and
+   *Arcade Fire — Funeral* were removed 2026-08-01: both carried another
+   album's song, found by the strengthened cross-album guardrail after every
+   hand audit had missed them (they were older entries, and the refills only
+   re-checked what they added). The next `fetch-lyrics` run picks them up.
+   Pool is 120/133.
+4. **Soundtrack Corner to 100%:** ~50 recognizable albums left, ~4 batches.
    Run `npm run soundtrack-corner-report`, write the top of the "Coming up in
    rotation" list (air-date-sorted) in the house voice, validate via
    `npm run eval-site`. Pipeline documented in `docs/soundtrack-corner-research.md`.
