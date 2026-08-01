@@ -183,6 +183,32 @@ function ActivityStatusNote({ children, tone = "default" }) {
 }
 
 /** Album autocomplete input with dropdown suggestions + keyboard navigation */
+/**
+ * A saved game round, or null if the stored value can't be trusted.
+ *
+ * JSON.parse only rejects malformed text. Well-formed JSON of the wrong shape —
+ * an older build's format, a partial write — used to reach setGuesses() and
+ * crash render, unrecoverably: the error boundary's "Try again" re-reads the
+ * same key. Checking Array.isArray alone was not enough, because the guesses are
+ * later fed through g.toLowerCase(), so ["", null] passes the container check
+ * and still throws.
+ */
+function readSavedRound(raw) {
+  try {
+    const state = JSON.parse(raw);
+    if (!state || typeof state !== "object") return null;
+    if (!Array.isArray(state.guesses)) return null;
+    if (!state.guesses.every((g) => typeof g === "string")) return null;
+    return {
+      guesses: state.guesses,
+      gameOver: state.gameOver === true,
+      solved: state.solved === true,
+    };
+  } catch {
+    return null;
+  }
+}
+
 function AlbumAutocomplete({
   guesses,
   currentGuess,
@@ -1742,12 +1768,8 @@ function GuessGame() {
     const saved = localStorage.getItem(`aotd_guess_${todayKey}`);
     if (saved) {
       try {
-        const state = JSON.parse(saved);
-        // JSON.parse only rejects malformed text. Well-formed JSON of the wrong
-        // shape (an older build's format, a partial write) would set guesses to
-        // undefined and crash render — and the error boundary's "Try again"
-        // re-reads the same key, so the page stays broken until UTC midnight.
-        if (!Array.isArray(state.guesses)) return;
+        const state = readSavedRound(saved);
+        if (!state) return;
         setGuesses(state.guesses);
         setCluesRevealed(Math.min(state.guesses.length + 2, 6));
         setGameOver(state.gameOver);
@@ -1989,12 +2011,8 @@ function CoverChallenge({ fallbackNote = null }) {
     const saved = localStorage.getItem(`aotd_cover_${todayKey}`);
     if (saved) {
       try {
-        const state = JSON.parse(saved);
-        // JSON.parse only rejects malformed text. Well-formed JSON of the wrong
-        // shape (an older build's format, a partial write) would set guesses to
-        // undefined and crash render — and the error boundary's "Try again"
-        // re-reads the same key, so the page stays broken until UTC midnight.
-        if (!Array.isArray(state.guesses)) return;
+        const state = readSavedRound(saved);
+        if (!state) return;
         setGuesses(state.guesses);
         setGameOver(state.gameOver);
         setSolved(state.solved);
@@ -2208,12 +2226,8 @@ function HeardleGame() {
     const saved = localStorage.getItem(`aotd_heardle_${todayKey}`);
     if (saved) {
       try {
-        const state = JSON.parse(saved);
-        // JSON.parse only rejects malformed text. Well-formed JSON of the wrong
-        // shape (an older build's format, a partial write) would set guesses to
-        // undefined and crash render — and the error boundary's "Try again"
-        // re-reads the same key, so the page stays broken until UTC midnight.
-        if (!Array.isArray(state.guesses)) return;
+        const state = readSavedRound(saved);
+        if (!state) return;
         setGuesses(state.guesses);
         setGameOver(state.gameOver);
         setSolved(state.solved);
@@ -2540,12 +2554,8 @@ function LyricGame() {
     const saved = localStorage.getItem(`aotd_lyric_${todayKey}`);
     if (saved) {
       try {
-        const state = JSON.parse(saved);
-        // JSON.parse only rejects malformed text. Well-formed JSON of the wrong
-        // shape (an older build's format, a partial write) would set guesses to
-        // undefined and crash render — and the error boundary's "Try again"
-        // re-reads the same key, so the page stays broken until UTC midnight.
-        if (!Array.isArray(state.guesses)) return;
+        const state = readSavedRound(saved);
+        if (!state) return;
         setGuesses(state.guesses);
         setGameOver(state.gameOver);
         setSolved(state.solved);
@@ -2856,12 +2866,8 @@ function ScrambleGame() {
     const saved = localStorage.getItem(`aotd_scramble_${todayKey}`);
     if (saved) {
       try {
-        const state = JSON.parse(saved);
-        // JSON.parse only rejects malformed text. Well-formed JSON of the wrong
-        // shape (an older build's format, a partial write) would set guesses to
-        // undefined and crash render — and the error boundary's "Try again"
-        // re-reads the same key, so the page stays broken until UTC midnight.
-        if (!Array.isArray(state.guesses)) return;
+        const state = readSavedRound(saved);
+        if (!state) return;
         setGuesses(state.guesses);
         setGameOver(state.gameOver);
         setSolved(state.solved);
@@ -4072,9 +4078,13 @@ export default function ForumPage({ album, dateString }) {
     let awaySince = 0;
     const onVisibility = () => {
       if (document.hidden) {
-        // A pending spin-restore would otherwise clobber the hidden title
+        // A pending spin-restore would otherwise clobber the hidden title.
+        // Both vinyl states have to go: that timer is the only thing that
+        // clears `vinylFlipped`, so cancelling it while a Runout Groove flip is
+        // showing would strand the etching on screen until the next click.
         clearTimeout(spinTimerRef.current);
         setVinylSpinning(false);
+        setVinylFlipped(false);
         if (pageTitleRef.current === null)
           pageTitleRef.current = document.title;
         awaySince = Date.now();
