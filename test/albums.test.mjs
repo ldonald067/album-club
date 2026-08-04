@@ -11,6 +11,7 @@ import {
   getVersusPair,
   getTastePair,
   pickRotatingPoolAlbum,
+  scrambleArtist,
 } from "../lib/albums.js";
 
 const GAME_TYPES = ["guess", "cover", "lyric", "heardle", "scramble"];
@@ -109,4 +110,34 @@ test("pickRotatingPoolAlbum returns a pool member for cadence-divisible pools", 
 test("an empty or invalid pool yields null rather than throwing", () => {
   assert.equal(pickRotatingPoolAlbum([], 1), null);
   assert.equal(pickRotatingPoolAlbum(null, 1), null);
+});
+
+test("scrambleArtist never hands back the original", () => {
+  // Names whose first two characters match: the old guard swapped positions 0
+  // and 1 to break an identity shuffle, which does nothing when those two hold
+  // the same character — so the puzzle rendered the answer in plain sight.
+  const names = ["aab", "aaXb", "MMW", "ABBA", "The The", "Massive Attack"];
+  for (const name of names) {
+    for (let seed = 0; seed < 500; seed++) {
+      assert.notEqual(
+        scrambleArtist(name, seed),
+        name,
+        `"${name}" scrambled to itself at seed ${seed}`,
+      );
+    }
+  }
+});
+
+test("scrambleArtist keeps the same characters", () => {
+  const sorted = (s) => s.split("").sort().join("");
+  for (const name of ["Radiohead", "Boards of Canada", "MF DOOM"]) {
+    for (let seed = 0; seed < 50; seed++) {
+      assert.equal(sorted(scrambleArtist(name, seed)), sorted(name));
+    }
+  }
+});
+
+test("a name of one repeated character is left alone", () => {
+  // Nothing to scramble; the guard must not loop or throw reaching for a swap.
+  assert.equal(scrambleArtist("aaa", 7), "aaa");
 });

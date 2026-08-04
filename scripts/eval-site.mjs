@@ -347,6 +347,30 @@ failures += printGuardrail(
     : `All ${albums.length} albums carry a distinct color and emoji.`,
 );
 
+/* Two albums sharing a cover URL reads as a bug to anyone who sees both — and
+   it hides a worse one, since a cover fetch that matched the wrong release
+   often lands on an image already in use. Boiler Room Berlin and Tokyo shipped
+   sharing one for months without anyone noticing. */
+const imageCounts = new Map();
+for (const album of albums) {
+  if (!album.image) continue;
+  imageCounts.set(album.image, (imageCounts.get(album.image) || 0) + 1);
+}
+const sharedImages = [...imageCounts].filter(([, n]) => n > 1);
+const missingImages = albums.filter((album) => !album.image);
+failures += printGuardrail(
+  sharedImages.length === 0 && missingImages.length === 0,
+  "Every album has its own cover image",
+  sharedImages.length || missingImages.length
+    ? `Shared by more than one album: ${
+        sharedImages.map(([url]) => url).join(", ") || "none"
+      }. Missing an image: ${
+        missingImages.map((a) => `${a.artist} - ${a.title}`).join(", ") ||
+        "none"
+      }.`
+    : `All ${albums.length} albums carry a distinct, populated image URL.`,
+);
+
 // The lyric game blanks words longer than three characters and needs two of
 // them to make a two-blank puzzle.
 const blankable = (line) =>

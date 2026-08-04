@@ -1210,14 +1210,18 @@ const BlindTasteTest = memo(function BlindTasteTest() {
     const player = side === "A" ? playerARef.current : playerBRef.current;
     const timerRef = side === "A" ? timerARef : timerBRef;
     const otherPlayer = side === "A" ? playerBRef.current : playerARef.current;
+    const otherTimerRef = side === "A" ? timerBRef : timerARef;
     if (!player) return;
 
-    // Pause other player
+    // Pause other player. Its timer has to go too: pausing does not cancel it,
+    // so it would still fire a minute later and mark that clip listened —
+    // crediting a clip the visitor switched away from after a few seconds.
     if (otherPlayer?.pauseVideo) {
       try {
         otherPlayer.pauseVideo();
       } catch {}
     }
+    clearTimeout(otherTimerRef.current);
     if (side === "A") {
       setPlayingB(false);
     } else {
@@ -2308,6 +2312,19 @@ function HeardleGame() {
     }, clipLength * 1000);
   };
 
+  /* Every guess ends the clip. Leaving the timer pending let it fire after the
+     next, longer clip had already started and pause it early; `playing` also
+     stayed true until then, so the play button did nothing in the meantime. */
+  const stopClip = () => {
+    clearTimeout(timerRef.current);
+    if (playerRef.current) {
+      try {
+        playerRef.current.pauseVideo();
+      } catch {}
+    }
+    setPlaying(false);
+  };
+
   const saveState = (newGuesses, isGameOver, isSolved) => {
     localStorage.setItem(
       `aotd_heardle_${todayKey}`,
@@ -2347,20 +2364,19 @@ function HeardleGame() {
       saveState(newGuesses, true, true);
       postResult(newGuesses.length, true);
       fireConfetti({ particleCount: 120, spread: 90, startVelocity: 30 });
-      if (playerRef.current) playerRef.current.pauseVideo();
-      clearTimeout(timerRef.current);
+      stopClip();
     } else if (newGuesses.length >= 6) {
       setGameOver(true);
       saveState(newGuesses, true, false);
       postResult(6, false);
       setShaking(true);
       setTimeout(() => setShaking(false), SHAKE_MS);
-      if (playerRef.current) playerRef.current.pauseVideo();
-      clearTimeout(timerRef.current);
+      stopClip();
     } else {
       saveState(newGuesses, false, false);
       setShaking(true);
       setTimeout(() => setShaking(false), SHAKE_MS);
+      stopClip();
       inputRef.current?.focus();
     }
   };
@@ -3227,7 +3243,10 @@ function YesterdayRecap() {
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") setExpanded(!expanded);
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault(); // Space would scroll the page as well as toggle
+            setExpanded(!expanded);
+          }
         }}
         aria-expanded={expanded}
       >
@@ -4165,10 +4184,14 @@ export default function ForumPage({ album, dateString }) {
             onClick={() =>
               setTaglineIdx((i) => (i + 1) % SECRET_TAGLINES.length)
             }
-            onKeyDown={(e) =>
-              e.key === "Enter" &&
-              setTaglineIdx((i) => (i + 1) % SECRET_TAGLINES.length)
-            }
+            onKeyDown={(e) => {
+              // Space activates a native button; a role="button" has to do it
+              // by hand, and must preventDefault or the page scrolls too.
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setTaglineIdx((i) => (i + 1) % SECRET_TAGLINES.length);
+              }
+            }}
           >
             {SECRET_TAGLINES[taglineIdx]}
           </div>

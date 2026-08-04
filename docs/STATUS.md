@@ -136,20 +136,50 @@ Node 22) runs `npm test` then `npm run build`.
    multi-tab path. Found by `/adversarial-review` on `0b2f76e`; the two cheaper
    findings from that review (percentage denominator, restore validation) are
    fixed.
-6. **Un-fixed review findings (lower severity, all in the review report):**
-   - `lib/api-helpers.js` chunked-body size bypass (MED) — precheck only fires
-     with a Content-Length header.
-   - HeardleGame leaves its clip timer running on a non-final wrong guess;
-     BlindTasteTest can mark a clip "heard" after switching away — both minor,
-     self-healing (`app/ForumPage.js`).
-   - Rate-limiter fails open at 2000 IPs; per-IP daily cap of 3 over-blocks NAT;
-     vote tables have no TTL and `getSiteStats` full-scans (`lib/rate-limit.js`,
-     `lib/db.js`).
-   - Boiler Room Berlin/Tokyo share one cover image URL (`lib/albums.json`).
-   - `scrambleArtist` anti-identity guard is a no-op when first two chars match
-     (latent).
-   - A11y: footer + some small text below AA contrast; some `role="button"`
-     divs handle Enter but not Space.
+6. ~~**Un-fixed review findings**~~ — ALL FIXED 2026-08-04. What changed, and
+   what to know about each:
+   - **Chunked-body bypass (MED).** `readJsonBody` now reads the stream by hand
+     and aborts at the first chunk over the cap, instead of letting
+     `request.text()` buffer an undeclared body in full. The parsing half moved
+     to `lib/request-body.js` — free of `next/server` so node:test can reach it;
+     `lib/api-helpers.js` re-exports it, so route imports are unchanged.
+     `test/api-helpers.test.mjs` covers it, and the chunked case was confirmed
+     to fail against the old implementation.
+   - **Audio timers.** Heardle stops the clip on every guess via one `stopClip`
+     helper (the non-final wrong-guess branch was the one missing it), and
+     Blind Taste Test clears the other side's timer when you switch players, so
+     a clip you abandoned no longer gets marked heard a minute later.
+   - **Rate limiter.** Evicts the coldest 10% instead of going unlimited when
+     full, and the table cap is now 10000. Its per-request `size > 1000` sweep
+     was an O(n) walk on every call — now time-throttled to once per 5s, which
+     took the fill test from 2682ms to 20ms. Daily cap 3 → 12, since it is
+     per address and NAT puts many people on one.
+   - **Vote retention.** `VOTE_RETENTION_DAYS` (default 365) prunes
+     playlist/matchup/soundtrack votes at startup. Those three are only ever
+     read `WHERE key = ?` on a day-scoped key and feed nothing on the stats
+     board. **`ratings`, `vibes` and `guess_stats` are deliberately excluded** —
+     they back lifetime totals, and pruning them would walk the stats board
+     backwards. Set to 0 to keep everything.
+   - **Stats scan.** Only the vibes GROUP BY was genuinely bad — it built a temp
+     B-tree because the existing index leads with `album_key`. `idx_vibes_vibe`
+     fixes it; the other three stats queries already used covering indexes.
+   - **Boiler Room.** Tokyo now has its own cover (a real set from the official
+     Boiler Room channel, `T1tcUfUhR5U`) plus that `youtubeId`, matching how the
+     Montreal entry is sourced. Year corrected 2023 → 2025 to match the source.
+     New `eval-site` guardrail fails on any shared or missing cover URL.
+   - **`scrambleArtist`.** Swaps with the first character that actually differs.
+     Confirmed genuinely latent first: across 302 catalog artists × 400 seeds the
+     old code never once leaked the answer, though crafted names like "aab" hit
+     it on 642 of 2000 seeds. Covered by tests now.
+   - **A11y.** 13 colour changes, all measured rather than eyeballed — footer
+     body was 2.87:1 and `.forum-sig` an effective 1.98:1 once its 0.5 opacity
+     was accounted for. Everything checked now clears AA 4.5. **`.clue.hidden`
+     was left alone on purpose** — that text is meant to be unreadable until the
+     clue is revealed. The banner tagline and est line already passed. Space now
+     activates the tagline (it was Enter-only) and both it and the recap header
+     call `preventDefault` so Space no longer scrolls the page as it fires.
+   - Also cleared: `MODULE_TYPELESS_PACKAGE_JSON` on every script run, via
+     `"type": "module"`. Verified nothing in the repo uses CommonJS first.
 7. **Suggested features (from the review, not built):** "Predict the Crowd"
    (guess the room's average before reveal), "Divisive Meter", Streak Freeze,
    "The Verdict" one-tap critical tag. Deliberately avoid: freeform shoutbox,
