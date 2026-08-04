@@ -1,6 +1,9 @@
 node_modules/
 .next/
 .DS_Store
+
+# Per-machine Claude Code approvals — shared config lives in settings.json
+.claude/settings.local.json
 data/
 .env
 .env.local
