@@ -3,16 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "engines": {
-    "node": ">=20.9"
+    "node": ">=20.12"
   },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "fetch-albums": "node scripts/fetch-albums.mjs",
-    "fetch-covers": "node scripts/fetch-covers.mjs",
-    "fetch-lyrics": "node scripts/fetch-lyrics.mjs",
-    "fetch-youtube-ids": "node scripts/fetch-youtube-ids.mjs",
+    "fetch-covers": "node --env-file-if-exists=.env scripts/fetch-covers.mjs",
+    "fetch-lyrics": "node --env-file-if-exists=.env scripts/fetch-lyrics.mjs",
+    "fetch-youtube-ids": "node --env-file-if-exists=.env scripts/fetch-youtube-ids.mjs",
     "soundtrack-corner-report": "node scripts/soundtrack-corner-report.mjs",
     "eval-site": "node --no-warnings scripts/eval-site.mjs",
     "test": "node --no-warnings --test test/*.test.mjs"

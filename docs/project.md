@@ -94,6 +94,12 @@ npm run soundtrack-corner-report  # Corner coverage + air-date queue + generator
 npm run eval-site            # Whole-site quality pass: albums, games, soundtrack, UI/API guardrails
 ```
 
+The three key-bearing fetchers read `.env` from the repo root via
+`--env-file-if-exists`, so keys go in once instead of on every invocation.
+Copy `.env.example` to `.env` and fill it in; `.env` is gitignored and must
+stay that way. A missing or empty `.env` is not an error — the flag no-ops and
+each script degrades the way it always has.
+
 ## Doc Improvement Reference
 
 Docs follow a progressive disclosure pattern per https://alexop.dev/posts/stop-bloating-your-claude-md-progressive-disclosure-ai-coding-tools/:

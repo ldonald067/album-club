@@ -53,6 +53,10 @@ Seeded shuffle (mulberry32 PRNG + Fisher-Yates) keyed by year. Same date = same 
 
 All optional: the site runs without them, and missing media sources now degrade gracefully. Heardle / Lyric Challenge can roll over to Cover Art Challenge with an explicit note instead of failing silently.
 
+Keys live in a gitignored `.env` at the repo root (`cp .env.example .env`). The
+fetchers below load it automatically, so the inline `KEY=xxx npm run …` form is
+only needed to override what's already in the file.
+
 - **MusicBrainz + Cover Art Archive**: Free (no key), primary source for album cover art
 - **iTunes Search API**: Free (no key), fallback for cover art
 - **Last.fm**: `LASTFM_API_KEY=xxx npm run fetch-covers` — legacy cover art fetcher

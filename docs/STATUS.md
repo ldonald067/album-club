@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-08-01.
+session. Last updated: 2026-08-04.
 
 ## What this is
 
@@ -89,19 +89,33 @@ Node 22) runs `npm test` then `npm run build`.
 ## Open items / next steps
 
 1. ~~**Set `BACKUP_TOKEN`**~~ — DONE 2026-07-23 (see "Operational facts").
-2. ~~**Refill the lyric pool**~~ — DONE 2026-07-31, 80 → 122, now **120 of 133
-   (90.2%)** after two contaminated entries were pulled (item 3). The gap is 4 instrumentals that can never have lyrics
-   plus 7 Genius won't resolve (Abbey Road, VU & Nico, Homework, both Jay-Z,
-   Souvlaki, Bitches Brew). That is 94.6% of the achievable ceiling; the rest
-   would need hand-curation. **Always read `git diff lib/lyrics.json` before
-   committing a refill** — the guards catch the known failure shapes, not
-   novelty.
+2. ~~**Refill the lyric pool**~~ — DONE 2026-07-31, 80 → 122, then 120 after two
+   contaminated entries were pulled, now **124 of 133 (93.2%)** — see item 3.
+   The gap is 4 instrumentals that can never have lyrics plus 5 Genius won't
+   resolve (Homework, both Jay-Z, Souvlaki, Bitches Brew). That is 96.1% of the
+   achievable ceiling; the rest would need hand-curation. **Always read
+   `git diff lib/lyrics.json` before committing a refill** — the guards catch
+   the known failure shapes, not novelty.
 
-3. **Two lyric entries need re-fetching.** _Frank Ocean — Blonde_ and
-   _Arcade Fire — Funeral_ were removed 2026-08-01: both carried another
-   album's song, found by the strengthened cross-album guardrail after every
-   hand audit had missed them (they were older entries, and the refills only
-   re-checked what they added). The next `fetch-lyrics` run picks them up.
+3. ~~**Two lyric entries need re-fetching**~~ — DONE 2026-08-04. _Frank Ocean —
+   Blonde_ and _Arcade Fire — Funeral_ (removed 2026-08-01 for carrying another
+   album's song) are back, and the same run also resolved two albums the
+   previous list had written off: _Abbey Road_ and _VU & Nico_. All four were
+   verified by outcome, not by eye — each stored line was traced to a Genius
+   track page that MusicBrainz places on that album. No existing entry changed.
+
+   Two things that run surfaced, neither fixed:
+   - `fetchTracklist` in `scripts/fetch-lyrics.mjs` catches every error and
+     returns `[]`, which is indistinguishable from "album not found". Funeral
+     failed on the first pass for exactly this reason — a transient MusicBrainz
+     hiccup dropped it to the weak album-search fallback — and succeeded on an
+     immediate re-run with nothing changed. **A failure in that log is not
+     evidence an album is unresolvable; re-run before concluding anything.**
+   - The _VU & Nico_ entry is 4 lines from "Femme Fatale", each carrying the
+     same parenthetical refrain. It passes every guard (the repeat check is
+     exact-match only) but makes a thin puzzle, since the blankable words are
+     nearly the same line to line. Worth hand-swapping to another track.
+
 4. **Soundtrack Corner to 100%:** ~50 recognizable albums left, ~4 batches.
    Run `npm run soundtrack-corner-report`, write the top of the "Coming up in
    rotation" list (air-date-sorted) in the house voice, validate via
@@ -151,4 +165,4 @@ game samplers, or the lyric data. The three most expensive ones:
 - **Never index a per-game pool by `dayOfYear`** — it collapses annual variety
   whenever the pool size shares a factor with the rotation cadence.
   `pickRotatingPoolAlbum` uses the appearance ordinal; `eval-site` guards it.
-- **Vote totals count rows, not people** — see open item 3.
+- **Vote totals count rows, not people** — see open item 5.
