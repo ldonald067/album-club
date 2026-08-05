@@ -180,7 +180,30 @@ Node 22) runs `npm test` then `npm run build`.
      call `preventDefault` so Space no longer scrolls the page as it fires.
    - Also cleared: `MODULE_TYPELESS_PACKAGE_JSON` on every script run, via
      `"type": "module"`. Verified nothing in the repo uses CommonJS first.
-7. **Suggested features (from the review, not built):** "Predict the Crowd"
+
+7. **Found by looking at the running site (2026-08-04), all fixed.** These were
+   invisible to every check that reads code or data rather than pixels:
+   - **8 cover URLs were `http://`** (coverartarchive.org). Production is https,
+     so those are mixed content — and local dev can never show it, because
+     localhost is http itself. All upgraded; the cover guardrail now fails on
+     any `http://` URL.
+   - **The soundtrack generator repeated itself.** `decadeFlavor.sceneNote` was
+     appended to all three pitch cards, so every album without a curated
+     override closed game, film and TV with the same sentence. Now one card
+     carries it. **The first fix was wrong in an instructive way:** it keyed the
+     choice off the card's seed, but `getAlbumSeed(album, kind)` salts per
+     medium, so all three still elected themselves independently and ~26% of
+     albums kept a duplicate. It has to key off the album. Verified across all
+     338 generated albums: exactly one copy each.
+   - **12 lyric lines gave their own answer away** — every blankable word the
+     same, so whatever got hidden was still printed beside it ("Okay (Okay,
+     okay, okay)"). Removed, with a new guardrail. Note the wider class was
+     left alone deliberately: 134 lines contain _a_ repeated blankable word, but
+     those only leak on some seeds and purging them would cost 15% of the pool.
+   - `lib/soundtrack-corner.js` imported `"./albums"` without an extension —
+     fine for Next's bundler, unresolvable for Node, which is why that module
+     could not be exercised from a script. Extensions added.
+8. **Suggested features (from the review, not built):** "Predict the Crowd"
    (guess the room's average before reveal), "Divisive Meter", Streak Freeze,
    "The Verdict" one-tap critical tag. Deliberately avoid: freeform shoutbox,
    real leaderboards.

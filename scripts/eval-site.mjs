@@ -358,17 +358,55 @@ for (const album of albums) {
 }
 const sharedImages = [...imageCounts].filter(([, n]) => n > 1);
 const missingImages = albums.filter((album) => !album.image);
+/* Production is https, so an http:// cover is mixed content: the browser either
+   blocks it or silently upgrades it, and neither shows up in local dev because
+   localhost is http itself. Eight coverartarchive.org URLs shipped this way. */
+const insecureImages = albums.filter((album) =>
+  (album.image || "").startsWith("http://"),
+);
 failures += printGuardrail(
-  sharedImages.length === 0 && missingImages.length === 0,
-  "Every album has its own cover image",
-  sharedImages.length || missingImages.length
+  sharedImages.length === 0 &&
+    missingImages.length === 0 &&
+    insecureImages.length === 0,
+  "Every album has its own cover image, served over https",
+  sharedImages.length || missingImages.length || insecureImages.length
     ? `Shared by more than one album: ${
         sharedImages.map(([url]) => url).join(", ") || "none"
       }. Missing an image: ${
         missingImages.map((a) => `${a.artist} - ${a.title}`).join(", ") ||
         "none"
+      }. Insecure http:// URL: ${
+        insecureImages.map((a) => `${a.artist} - ${a.title}`).join(", ") ||
+        "none"
       }.`
-    : `All ${albums.length} albums carry a distinct, populated image URL.`,
+    : `All ${albums.length} albums carry a distinct, populated https image URL.`,
+);
+
+/* A line whose blankable words are all the same word cannot be a puzzle: two
+   get hidden, the rest stay printed, and the answer is sitting right there.
+   "Okay (Okay, okay, okay)" shipped this way and read as broken rather than
+   easy, because the blanks also swallowed the opening bracket. */
+const selfRevealingLines = [];
+for (const [key, value] of Object.entries(lyrics)) {
+  const lines = Array.isArray(value) ? value : value.lines || [];
+  for (const line of lines) {
+    const words = line
+      .split(" ")
+      .filter((word) => word.replace(/[^a-zA-Z]/g, "").length > 3);
+    const distinct = new Set(
+      words.map((word) => word.replace(/[^a-zA-Z]/g, "").toLowerCase()),
+    );
+    if (distinct.size === 1 && words.length > 2) {
+      selfRevealingLines.push(`${key}: "${line}"`);
+    }
+  }
+}
+failures += printGuardrail(
+  selfRevealingLines.length === 0,
+  "No lyric line gives its own answer away",
+  selfRevealingLines.length
+    ? `Every blankable word is the same, so the answer stays visible: ${selfRevealingLines.join("; ")}`
+    : "No stored line repeats a single blankable word throughout.",
 );
 
 // The lyric game blanks words longer than three characters and needs two of
