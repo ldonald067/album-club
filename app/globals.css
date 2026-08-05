@@ -288,8 +288,14 @@ body {
   overflow: visible;
 }
 
-/* Genre-accent theming — set via --accent-color on .content */
-.content .panel-header {
+/* Genre-accent theming — set via --accent-color on .content.
+   The activity-card bars belong here too: they wear the same bar as .panel,
+   so they should take the same daily tint. Left out, they sat on the flat
+   --bg-header blue while every panel beside them shifted with the album. */
+.content .panel-header,
+.content .versus-header,
+.content .taste-header,
+.content .playlist-question {
   background: linear-gradient(
     to bottom,
     color-mix(in srgb, var(--accent-color, #3a5f8f) 35%, #3a5f8f),
