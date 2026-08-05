@@ -51,7 +51,10 @@ body {
 }
 
 .banner-inner {
-  padding: 20px 15px 5px;
+  /* Trimmed from 20px. Four full-width bands stack above the fold — banner,
+     nav, info bar, marquee — so the content start was pushed down about 200px
+     before anything readable appeared. */
+  padding: 12px 15px 5px;
 }
 
 .banner-est {
@@ -186,8 +189,8 @@ body {
 .marquee-bar {
   background: #fffde7;
   border: 1px solid var(--gold);
-  padding: 5px 10px;
-  margin-bottom: 15px;
+  padding: 4px 10px;
+  margin-bottom: 10px;
   border-radius: 3px;
   contain: paint;
   overflow: hidden;
@@ -301,6 +304,11 @@ body {
   gap: 25px;
   flex-wrap: wrap;
   overflow: visible;
+  /* Centre the sleeve-and-details pair. The info column used to flex to the
+     panel edge while its content stopped at the 320px table, leaving roughly
+     450px of empty panel to the right of the hero and making the whole block
+     look lopsided. */
+  justify-content: center;
 }
 
 /* Vinyl record wrapper */
@@ -411,8 +419,11 @@ body {
 }
 
 .album-info {
-  flex: 1;
+  /* Grow to fit the details, but stop at the width they actually need rather
+     than stretching to the panel edge. */
+  flex: 0 1 auto;
   min-width: 250px;
+  max-width: 420px;
 }
 
 .album-title {
@@ -2718,7 +2729,8 @@ body {
 
 /* ─── Playlist Poll ─── */
 .playlist-poll {
-  border: 1px solid var(--border-panel);
+  border: 2px solid var(--border-panel);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   border-radius: 4px;
   padding: 10px 12px;
   margin-bottom: 12px;
@@ -2727,10 +2739,19 @@ body {
 }
 
 .playlist-question {
-  font-size: 12px;
+  /* Same bar the .panel blocks wear. These cards used centred bold text, so
+     the page carried two card grammars at once — four blocks with blue title
+     bars and five without, alternating down the scroll. Negative margins pull
+     the bar out to the card edge, past the container's own padding. */
+  background: var(--bg-header);
+  color: #fff;
   font-weight: bold;
-  margin-bottom: 8px;
-  color: var(--text-primary);
+  font-size: 13px;
+  text-align: left;
+  padding: 8px 12px;
+  margin: -10px -12px 10px;
+  border-bottom: 1px solid #1a3050;
+  border-radius: 2px 2px 0 0;
 }
 
 .playlist-buttons {
@@ -2859,7 +2880,8 @@ body {
 
 /* ─── Album vs Album ─── */
 .versus-matchup {
-  border: 1px solid var(--border-panel);
+  border: 2px solid var(--border-panel);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   border-radius: 4px;
   padding: 10px 12px;
   margin-bottom: 12px;
@@ -2868,10 +2890,19 @@ body {
 }
 
 .versus-header {
-  font-size: 12px;
+  /* Same bar the .panel blocks wear. These cards used centred bold text, so
+     the page carried two card grammars at once — four blocks with blue title
+     bars and five without, alternating down the scroll. Negative margins pull
+     the bar out to the card edge, past the container's own padding. */
+  background: var(--bg-header);
+  color: #fff;
   font-weight: bold;
-  margin-bottom: 8px;
-  color: var(--text-primary);
+  font-size: 13px;
+  text-align: left;
+  padding: 8px 12px;
+  margin: -10px -12px 10px;
+  border-bottom: 1px solid #1a3050;
+  border-radius: 2px 2px 0 0;
 }
 
 .versus-cards {
@@ -3017,7 +3048,8 @@ body {
 
 /* ─── Blind Taste Test ─── */
 .taste-test {
-  border: 1px solid var(--border-panel);
+  border: 2px solid var(--border-panel);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   border-radius: 4px;
   padding: 10px 12px;
   margin-bottom: 12px;
@@ -3026,10 +3058,19 @@ body {
 }
 
 .taste-header {
-  font-size: 12px;
+  /* Same bar the .panel blocks wear. These cards used centred bold text, so
+     the page carried two card grammars at once — four blocks with blue title
+     bars and five without, alternating down the scroll. Negative margins pull
+     the bar out to the card edge, past the container's own padding. */
+  background: var(--bg-header);
+  color: #fff;
   font-weight: bold;
-  margin-bottom: 4px;
-  color: var(--text-primary);
+  font-size: 13px;
+  text-align: left;
+  padding: 8px 12px;
+  margin: -10px -12px 10px;
+  border-bottom: 1px solid #1a3050;
+  border-radius: 2px 2px 0 0;
 }
 
 .taste-desc {

@@ -4275,8 +4275,10 @@ export default function ForumPage({ album, dateString }) {
                   />
                 </span>
                 <span className="rank-progress-text">
+                  {/* Name the next rank. The icon alone read as "1/3 to 🌱",
+                      which does not say what you are working towards. */}
                   {visitRank.count}/{visitRank.nextRank.min} to{" "}
-                  {visitRank.nextRank.icon}
+                  {visitRank.nextRank.icon} {visitRank.nextRank.label}
                 </span>
               </span>
             )}
@@ -4414,6 +4416,30 @@ export default function ForumPage({ album, dateString }) {
               </div>
             </div>
 
+            {/* The three activities come first: they are what the site is for,
+                and the intro line below promises them. They used to sit after
+                the poll, the matchup, the taste test and both teasers, which
+                put Rate & Reveal a screen and a half down and the daily puzzle
+                past two full screens. */}
+            <div className="activity-intro">
+              Three ways to join today &mdash; rate the album, pick your vibes,
+              or play today&apos;s puzzle.
+            </div>
+
+            <RateReveal albumKey={album.key} />
+            <VibeCheck albumKey={album.key} />
+            {gameType === "cover" ? (
+              <CoverChallenge />
+            ) : gameType === "lyric" ? (
+              <LyricGame />
+            ) : gameType === "heardle" ? (
+              <HeardleGame />
+            ) : gameType === "scramble" ? (
+              <ScrambleGame />
+            ) : (
+              <GuessGame />
+            )}
+
             {/* Quick playlist poll */}
             <PlaylistPoll albumKey={album.key} />
 
@@ -4432,27 +4458,6 @@ export default function ForumPage({ album, dateString }) {
 
             {/* Yesterday's Recap */}
             <YesterdayRecap />
-
-            {/* Activity intro */}
-            <div className="activity-intro">
-              Three ways to join today &mdash; rate the album, pick your vibes,
-              or play today&apos;s puzzle.
-            </div>
-
-            {/* The three activities */}
-            <RateReveal albumKey={album.key} />
-            <VibeCheck albumKey={album.key} />
-            {gameType === "cover" ? (
-              <CoverChallenge />
-            ) : gameType === "lyric" ? (
-              <LyricGame />
-            ) : gameType === "heardle" ? (
-              <HeardleGame />
-            ) : gameType === "scramble" ? (
-              <ScrambleGame />
-            ) : (
-              <GuessGame />
-            )}
 
             {/* Daily wrap-up — shows after all activities completed */}
             {allDone && (
