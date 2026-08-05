@@ -203,6 +203,26 @@ Node 22) runs `npm test` then `npm run build`.
    - `lib/soundtrack-corner.js` imported `"./albums"` without an extension —
      fine for Next's bundler, unresolvable for Node, which is why that module
      could not be exercised from a script. Extensions added.
+
+   Two follow-ups from a second look at the running site:
+   - **The scene-note fix was incomplete the first time.** Restricting it to one
+     of the three pitch cards still left the "Boss Fight Energy" extra angle
+     appending the same sentence, so it appeared twice on 37% of generated
+     albums. Dropped from that angle; now exactly one occurrence per page across
+     all 338. The lesson is the measurement, not the bug: counting only the
+     three cards made a partial fix look total.
+   - **Lyric puzzles blank one word when the line is short.** Two blanks on a
+     short line left nothing to reason from — 27% of stored lines were down to
+     three visible words or fewer and 4.5% to one. A second blank is now added
+     only when at least four words survive it (`MIN_VISIBLE_WORDS` in
+     `app/ForumPage.js`). Lines of ≤2 visible words fell 15.1% → 4.5%. The
+     remaining cases are three-word lines where even one blank leaves little;
+     fixing those means removing data, which was judged not worth it.
+
+   **`VOTE_RETENTION_DAYS=0` is set in Railway (2026-08-04)**, so the startup
+   prune added above is disabled. At roughly one vote row per week it would not
+   have deleted anything for a year. Remove the variable to re-enable it.
+
 8. **Suggested features (from the review, not built):** "Predict the Crowd"
    (guess the room's average before reveal), "Divisive Meter", Streak Freeze,
    "The Verdict" one-tap critical tag. Deliberately avoid: freeform shoutbox,

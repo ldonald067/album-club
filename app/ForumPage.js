@@ -2630,12 +2630,18 @@ function LyricGame() {
   const seed = dayOfYear * 997 + puzzleAlbum.title.length;
   const blankCount = blankableIndices.length;
   const firstSlot = blankCount > 0 ? seed % blankCount : 0;
+  /* A second blank only when the line can spare the words. Two blanks on a
+     short line leaves nothing to reason from — "Dreams of loneliness" became
+     one visible word and a coin flip, and 27% of stored lines were down to
+     three words or fewer. Short lines now get a single blank instead. */
+  const MIN_VISIBLE_WORDS = 4;
+  const canSpareASecondBlank = words.length - 2 >= MIN_VISIBLE_WORDS;
   // Offset the second blank by 1..blankCount-1 so it can never land on the
   // first. A fixed +7 stride collided whenever a line had exactly 7 blankable
   // words — 7 % 7 === 0 — silently turning a two-blank puzzle into a one-blank
   // one, which affected 35 of the stored lines.
   const secondSlot =
-    blankCount > 1
+    blankCount > 1 && canSpareASecondBlank
       ? (firstSlot + 1 + (seed % (blankCount - 1))) % blankCount
       : -1;
   const blankIdx1 = blankCount > 0 ? blankableIndices[firstSlot].i : 0;
