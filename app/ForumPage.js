@@ -984,11 +984,14 @@ const VersusMatchup = memo(function VersusMatchup() {
 
   const renderCard = (album, side, btn) => (
     <div className={`versus-card${myPick === side ? " selected" : ""}`}>
+      {/* Eager, not lazy: Album vs Album sits in the first screenful, and a
+          lazy image there does not fetch until something makes the browser
+          re-evaluate — so both covers sat as empty white squares on load. */}
       <img
         src={album.image}
         alt={`${album.title} by ${album.artist}`}
         className="versus-cover"
-        loading="lazy"
+        loading="eager"
       />
       <div className="versus-info">
         <strong>{album.title}</strong>

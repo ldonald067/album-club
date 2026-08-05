@@ -2916,6 +2916,9 @@ body {
   object-fit: cover;
   border-radius: 2px;
   margin-bottom: 6px;
+  /* Sits behind the artwork, so a cover that is still arriving reads as an
+     empty sleeve rather than a white hole punched in the card. */
+  background: #e3dccc;
 }
 
 /* SHARED: VersusMatchup and BlindTasteTest. */
