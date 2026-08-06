@@ -631,11 +631,16 @@ body {
   border-color: #4a7fbf;
 }
 
-/* Chat agent */
+/* Secondary note in a panel title bar — the "Guess 1/6" counters. Seven of
+   these carried the same properties as inline styles, which no skin could
+   reach; they use this class now.
+
+   No opacity. White at 0.7–0.75 composites into the bar behind it and lands at
+   3.14:1 on vintage teal — the size and weight carry the de-emphasis instead,
+   which is also how the vintage reference builds hierarchy. */
 .panel-header-note {
   font-size: 10px;
   font-weight: normal;
-  opacity: 0.75;
 }
 
 .soundtrack-intro {
@@ -1755,8 +1760,12 @@ body {
   margin: 0 0 12px;
 }
 
+/* No !important. .wrap-message above sets the colour at equal specificity and
+   this rule follows it, so source order already wins — the !important bought
+   nothing and made the rule unreachable by any skin, pinning vintage to a
+   2.62:1 teal on silver. */
 .wrap-milestone {
-  color: var(--gold) !important;
+  color: var(--gold);
   font-weight: bold;
   font-size: 13px;
 }
@@ -3554,17 +3563,30 @@ body {
   color: #1f5c1f;
 }
 
-/* Title bars and links restated last so nothing in the fallbacks reaches them. */
+/* Title bars and links restated last so nothing in the fallbacks reaches them.
+   The ` *` descendant selectors are load-bearing: without them the universal
+   black fallback paints nested elements — the <strong> in "You voted Yes", the
+   album names in a decided matchup — black on teal at 4.40:1. Only
+   .panel-header carried one, so the other three bars shipped failing text. */
 :root[data-theme="vintage"] .panel-header,
 :root[data-theme="vintage"] .panel-header *,
 :root[data-theme="vintage"] .versus-header,
+:root[data-theme="vintage"] .versus-header *,
 :root[data-theme="vintage"] .taste-header,
+:root[data-theme="vintage"] .taste-header *,
 :root[data-theme="vintage"] .playlist-question,
+:root[data-theme="vintage"] .playlist-question *,
 :root[data-theme="vintage"] .banner-title,
 :root[data-theme="vintage"] .banner-tagline,
 :root[data-theme="vintage"] .banner-est,
 :root[data-theme="vintage"] .listen-btn {
   color: #fff;
+}
+
+/* Milestone copy in the daily wrap-up. Navy reads 8.80:1 on silver and is the
+   era's own emphasis colour; the default skin keeps its gold. */
+:root[data-theme="vintage"] .wrap-milestone {
+  color: #000080;
 }
 
 :root[data-theme="vintage"] a,

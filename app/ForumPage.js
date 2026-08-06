@@ -1649,11 +1649,7 @@ function VibeCheck({ albumKey }) {
           {submitted ? "VIBE CHECK — RESULTS" : "VIBE CHECK"}
         </span>
         {submitted && results && (
-          <span
-            style={{ fontSize: "10px", fontWeight: "normal", opacity: 0.7 }}
-          >
-            {results.total} vibes cast
-          </span>
+          <span className="panel-header-note">{results.total} vibes cast</span>
         )}
       </div>
       <div
@@ -1914,7 +1910,7 @@ function GuessGame() {
           <i className="hn hn-question" aria-hidden="true" /> GUESS THE ALBUM —
           DAILY PUZZLE
         </span>
-        <span style={{ fontSize: "10px", fontWeight: "normal", opacity: 0.7 }}>
+        <span className="panel-header-note">
           {gameOver
             ? solved
               ? `Solved in ${guesses.length}/6`
@@ -2153,7 +2149,7 @@ function CoverChallenge({ fallbackNote = null }) {
         <span>
           <i className="hn hn-star" aria-hidden="true" /> COVER ART CHALLENGE
         </span>
-        <span style={{ fontSize: "10px", fontWeight: "normal", opacity: 0.7 }}>
+        <span className="panel-header-note">
           {gameOver
             ? solved
               ? `Solved in ${guesses.length}/5`
@@ -2464,7 +2460,7 @@ function HeardleGame() {
           <i className="hn hn-sound-on" aria-hidden="true" /> HEARDLE — NAME
           THAT TUNE
         </span>
-        <span style={{ fontSize: "10px", fontWeight: "normal", opacity: 0.7 }}>
+        <span className="panel-header-note">
           {gameOver
             ? solved
               ? `Solved in ${guesses.length}/6`
@@ -2797,7 +2793,7 @@ function LyricGame() {
         <span>
           <i className="hn hn-music" aria-hidden="true" /> LYRIC CHALLENGE
         </span>
-        <span style={{ fontSize: "10px", fontWeight: "normal", opacity: 0.7 }}>
+        <span className="panel-header-note">
           {gameOver
             ? solved
               ? `Solved in ${guesses.length}/4`
@@ -3038,7 +3034,7 @@ function ScrambleGame() {
         <span>
           <i className="hn hn-question" aria-hidden="true" /> ARTIST SCRAMBLE
         </span>
-        <span style={{ fontSize: "10px", fontWeight: "normal", opacity: 0.7 }}>
+        <span className="panel-header-note">
           {gameOver
             ? solved
               ? `Solved in ${guesses.length}/${maxAttempts}`
@@ -3405,9 +3401,7 @@ function ArchiveSection() {
           <i className="hn hn-calender" aria-hidden="true" /> ARCHIVE — RECENT
           ALBUMS
         </span>
-        <span style={{ fontSize: "10px", fontWeight: "normal", opacity: 0.7 }}>
-          Last 30 days
-        </span>
+        <span className="panel-header-note">Last 30 days</span>
       </div>
       <div className="panel-body" style={{ padding: 0 }}>
         <table className="archive-table">
