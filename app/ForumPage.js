@@ -310,7 +310,7 @@ function AlbumAutocomplete({
                 onMouseEnter={() => setSuggestionIndex(i)}
               >
                 {a.cover} <strong>{a.title}</strong>{" "}
-                <span style={{ color: "#888" }}>— {a.artist}</span>
+                <span className="muted-text">— {a.artist}</span>
               </div>
             ))}
           </div>
@@ -3326,7 +3326,7 @@ function YesterdayRecap() {
             <span className="yesterday-emoji">{yesterdayAlbum.cover}</span>
             <div>
               <strong>{yesterdayAlbum.title}</strong>
-              <div style={{ fontSize: 11, color: "#888" }}>
+              <div className="muted-text" style={{ fontSize: 11 }}>
                 by {yesterdayAlbum.artist} · {yesterdayAlbum.genre} ·{" "}
                 {yesterdayAlbum.year}
               </div>
@@ -4790,7 +4790,7 @@ export default function ForumPage({ album, dateString }) {
               href="https://pixeliconlibrary.com"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: "#6688aa" }}
+              className="footer-link"
             >
               HackerNoon
             </a>
@@ -4799,7 +4799,7 @@ export default function ForumPage({ album, dateString }) {
               href="https://www.streamlinehq.com/icons/pixel"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: "#6688aa" }}
+              className="footer-link"
             >
               Streamline
             </a>
@@ -4809,7 +4809,7 @@ export default function ForumPage({ album, dateString }) {
             <i className="hn hn-envelope" aria-hidden="true" />{" "}
             <a
               href="mailto:rainbowpudding@littlealbumclub.net"
-              style={{ color: "#6688aa" }}
+              className="footer-link"
             >
               rainbowpudding@littlealbumclub.net
             </a>

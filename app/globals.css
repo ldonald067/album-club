@@ -3455,3 +3455,147 @@ body {
   border: 2px solid;
   border-color: #808080 #dfdfdf #dfdfdf #808080;
 }
+
+/* Secondary text and footer links used to carry inline color styles, which
+   beat every stylesheet rule and so could not be re-skinned at all. Both were
+   also below AA where they sat: #888 measured 3.45:1 on panel cream, and the
+   footer links 3.71:1 on the footer gradient. */
+.muted-text {
+  /* #5f5f5f rather than #6b6b6b: this text appears on both the panel cream
+     and the darker page cream, and 6b only cleared AA on the lighter one. */
+  color: #5f5f5f;
+}
+
+.footer-link {
+  color: #9ab6d2;
+}
+
+:root[data-theme="vintage"] .muted-text {
+  color: #000;
+}
+
+:root[data-theme="vintage"] .footer-link {
+  color: #000080;
+}
+
+/* Remaining vintage surfaces the audit turned up. Silver everywhere; the
+   Heardle ticks and the cover placeholder were still wearing default-skin
+   greys, and the two activity greys fail on silver (3.21 and 2.57). */
+:root[data-theme="vintage"] .heardle-tick {
+  background: #c0c0c0;
+  color: #000;
+  border: 2px solid;
+  border-color: #808080 #dfdfdf #dfdfdf #808080;
+}
+
+:root[data-theme="vintage"] .versus-cover {
+  background: #c0c0c0;
+}
+
+:root[data-theme="vintage"] .activity-prompt,
+:root[data-theme="vintage"] .activity-hint,
+:root[data-theme="vintage"] .taste-desc,
+:root[data-theme="vintage"] .scramble-reveal,
+:root[data-theme="vintage"] .archive-date,
+:root[data-theme="vintage"] .archive-year,
+:root[data-theme="vintage"] .stat-label,
+:root[data-theme="vintage"] .top-vibe-rank,
+:root[data-theme="vintage"] .top-vibe-count {
+  color: #000;
+}
+
+/* ── Vintage: whole-skin fallbacks ──
+   Walking the other tabs turned up a long tail of surfaces and text that still
+   wore default-skin colours — Soundtrack Corner cards, Archive table stripes,
+   stat cards, FAQ rows. Enumerating every class is a losing game, so the skin
+   ends with two broad rules and then re-asserts the few colours that carry
+   meaning.
+
+   Specificity does the ordering: this selector is (0,1,0), so the title-bar and
+   link rules above at (0,3,0) still win and keep their white and navy. */
+[data-theme="vintage"] * {
+  color: #000;
+}
+
+[data-theme="vintage"] table,
+[data-theme="vintage"] th,
+[data-theme="vintage"] td,
+[data-theme="vintage"] tr:nth-child(even),
+[data-theme="vintage"] .soundtrack-card,
+[data-theme="vintage"] .soundtrack-vote,
+[data-theme="vintage"] .soundtrack-corner-note,
+[data-theme="vintage"] .soundtrack-angle-card,
+[data-theme="vintage"] .soundtrack-recommendation,
+[data-theme="vintage"] .stat-card,
+[data-theme="vintage"] .top-vibe-bar-wrap,
+[data-theme="vintage"] .faq-question,
+[data-theme="vintage"] .archive-hide-mobile {
+  background: #c0c0c0;
+}
+
+/* Sunken bevel for the boxes that hold data, raised for the ones that act. */
+:root[data-theme="vintage"] .soundtrack-card,
+:root[data-theme="vintage"] .soundtrack-angle-card,
+:root[data-theme="vintage"] .stat-card,
+:root[data-theme="vintage"] th {
+  border: 2px solid;
+  border-color: #dfdfdf #808080 #808080 #dfdfdf;
+}
+
+/* Colours that still have to mean something on silver. Maroon reads 6.02:1,
+   the green 5.03:1 — both clear AA, unlike the default skin's brighter pair. */
+:root[data-theme="vintage"] .submit-error,
+:root[data-theme="vintage"] .hot-take-hot {
+  color: #800000;
+}
+
+:root[data-theme="vintage"] .taste-heard,
+:root[data-theme="vintage"] .hot-take-crowd {
+  color: #1f5c1f;
+}
+
+/* Title bars and links restated last so nothing in the fallbacks reaches them. */
+:root[data-theme="vintage"] .panel-header,
+:root[data-theme="vintage"] .panel-header *,
+:root[data-theme="vintage"] .versus-header,
+:root[data-theme="vintage"] .taste-header,
+:root[data-theme="vintage"] .playlist-question,
+:root[data-theme="vintage"] .banner-title,
+:root[data-theme="vintage"] .banner-tagline,
+:root[data-theme="vintage"] .banner-est,
+:root[data-theme="vintage"] .listen-btn {
+  color: #fff;
+}
+
+:root[data-theme="vintage"] a,
+:root[data-theme="vintage"] .footer-link {
+  color: #000080;
+}
+
+/* Last three, each outranking the fallbacks above for its own reason:
+   .archive-table th sets colour at (0,1,1) which beats the universal rule; the
+   stripe is a literal .even class, not :nth-child; and the recommendation
+   cover carries its own cream. */
+:root[data-theme="vintage"] .archive-table th {
+  background: #c0c0c0;
+  color: #000;
+  border-bottom: 2px solid #808080;
+}
+
+:root[data-theme="vintage"] .archive-table tr.even {
+  background: #c0c0c0;
+}
+
+:root[data-theme="vintage"] .archive-table td {
+  border-bottom: 1px solid #808080;
+}
+
+:root[data-theme="vintage"] .archive-hide-mobile,
+:root[data-theme="vintage"] .archive-table th.archive-hide-mobile {
+  color: #000;
+}
+
+:root[data-theme="vintage"] .soundtrack-recommendation-cover {
+  background: #c0c0c0;
+  border-color: #808080;
+}
