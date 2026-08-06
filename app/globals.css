@@ -2913,7 +2913,7 @@ body {
 
 .versus-cards {
   display: flex;
-  gap: 6px;
+  gap: 18px;
   justify-content: center;
   align-items: stretch;
   margin-bottom: 8px;
@@ -2921,7 +2921,7 @@ body {
 
 .versus-card {
   flex: 1;
-  max-width: 150px;
+  max-width: 220px;
   display: flex;
   flex-direction: column;
   border: 2px solid var(--border-panel);
@@ -2948,8 +2948,12 @@ body {
 /* SHARED: VersusMatchup and BlindTasteTest. The versus-* name predates the
    taste test reusing it — check both before changing or deleting. */
 .versus-cover {
-  width: 100px;
-  height: 100px;
+  width: 100%;
+  max-width: 190px;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  margin-left: auto;
+  margin-right: auto;
   object-fit: cover;
   border-radius: 2px;
   margin-bottom: 6px;
@@ -3160,14 +3164,14 @@ body {
 
 .taste-reveal {
   display: flex;
-  gap: 8px;
+  gap: 18px;
   justify-content: center;
   margin-bottom: 8px;
 }
 
 .taste-reveal-card {
   flex: 1;
-  max-width: 150px;
+  max-width: 220px;
   border: 2px solid var(--border-panel);
   border-radius: 4px;
   padding: 8px;
