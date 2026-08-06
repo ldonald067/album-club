@@ -42,6 +42,27 @@ Node 22) runs `npm test` then `npm run build`.
 
 ## Recent work (this stretch of sessions)
 
+- **Skins (2026-08-06).** A "Skin" dropdown in the info bar switches between the
+  default 2004 forum and a **Vintage** 1990s-desktop look (teal `#008080` title
+  bars, silver `#C0C0C0` everywhere, bevelled edges, Silkscreen pixel type on
+  display text). All of it lives in one `:root[data-theme="vintage"]` block at
+  the end of `globals.css`; nothing in the components knows the skin exists.
+  Three things worth knowing before touching it:
+  - **Teal is a surface, never text.** Teal on silver measures 2.62:1, failing
+    even the 3.0 large-text bar. It sits behind white (4.77:1); links use the
+    era's navy `#000080` (8.80:1). The reference's own rule is accessibility
+    first where the two collide.
+  - **Body copy stays a system sans.** Silkscreen is a bitmap face and brutal at
+    paragraph length, so the pixel type is display-only.
+  - **The square-corner rule exempts `.vinyl-disc`.** Squaring everything turned
+    the record behind the sleeve into a black box.
+
+  The skin is applied by a tiny pre-paint script in `layout.js` so it cannot
+  flash, which needs `suppressHydrationWarning` on `<html>` — the server markup
+  and live DOM genuinely differ by that attribute. **React still logs a
+  hydration diff in dev; production is clean.** Verified against a real
+  `next start` build, not assumed. Stored under the new key `aotd_theme`.
+
 - **Genre Bingo removed (2026-07-28).** The board was derived purely from the
   calendar — cells were non-interactive `div`s and `getMonthMatches()` read only
   the date, so progress was identical whether or not anyone ever visited.

@@ -383,6 +383,61 @@ function getVisitRank() {
   return { ...rank, count, nextRank, progress };
 }
 
+/* ─── Skin picker ───
+   Two looks: the default 2004 forum, and a 1990s desktop skin. The skin is a
+   data-theme attribute on <html>; all of its styling lives in globals.css, so
+   nothing here needs to know what the skin actually changes.
+
+   aotd_theme is a NEW key. Nothing existing was renamed — doing so silently
+   discards a visitor's history and looks identical on a fresh profile. */
+const THEMES = [
+  { value: "default", label: "Default" },
+  { value: "vintage", label: "Vintage" },
+];
+
+function ThemePicker() {
+  const [theme, setTheme] = useState("default");
+
+  useEffect(() => {
+    // layout.js already applied the saved skin before paint; read it back so
+    // the control agrees with what is on screen.
+    const applied = document.documentElement.getAttribute("data-theme");
+    setTheme(applied === "vintage" ? "vintage" : "default");
+  }, []);
+
+  const changeTheme = (value) => {
+    setTheme(value);
+    if (value === "vintage") {
+      document.documentElement.setAttribute("data-theme", "vintage");
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+    }
+    try {
+      localStorage.setItem("aotd_theme", value);
+    } catch {
+      // Private-mode browsers refuse writes; the skin still applies this visit
+    }
+  };
+
+  return (
+    <span className="theme-picker">
+      <label htmlFor="aotd-skin">Skin</label>
+      <select
+        id="aotd-skin"
+        className="theme-select"
+        value={theme}
+        onChange={(event) => changeTheme(event.target.value)}
+      >
+        {THEMES.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </span>
+  );
+}
+
 /* ─── Streak milestones ─── */
 const STREAK_MILESTONES = [
   { at: 3, msg: "3 days strong! You're building a habit." },
@@ -4284,6 +4339,7 @@ export default function ForumPage({ album, dateString }) {
             )}
           </span>
         )}
+        <ThemePicker />
       </div>
 
       <div

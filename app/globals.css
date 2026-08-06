@@ -3248,3 +3248,210 @@ body {
   cursor: default;
   transition: opacity 0.2s;
 }
+
+/* ============================================
+   VINTAGE SKIN — opt-in 1990s desktop styling
+   ============================================
+   Applied by data-theme="vintage" on <html>, set before first paint by the
+   bootstrap script in layout.js. Every rule is prefixed with
+   :root[data-theme="vintage"] so it outranks the default chrome, including
+   the two-class .content .panel-header accent rule.
+
+   Palette per the reference: teal #008080 and silver #C0C0C0, black text, no
+   white surfaces. One deliberate deviation, and its reason: teal text on
+   silver measures 2.62:1, which fails even the 3.0 bar for large text and UI,
+   so teal is used only as a *surface* behind white text (4.77:1). Links take
+   navy #000080 (8.80:1) — the era's own link colour. The reference itself puts
+   accessibility above aesthetics where the two collide. */
+
+:root[data-theme="vintage"] {
+  --bg-page: #c0c0c0;
+  --bg-main: #c0c0c0;
+  --bg-dark: #008080;
+  --bg-panel: #c0c0c0;
+  --bg-panel-alt: #c0c0c0;
+  --bg-sidebar: #c0c0c0;
+  --bg-header: #008080;
+  --bg-banner: #008080;
+  --bg-nav: #c0c0c0;
+  --bg-footer: #c0c0c0;
+  --border-panel: #808080;
+  --border-inner: #808080;
+  --border-light: #808080;
+  --text-primary: #000;
+  --text-secondary: #000;
+  --text-muted: #000;
+  --text-link: #000080;
+  --gold: #008080;
+  --gold-light: #008080;
+  --star-active: #000080;
+  --star-inactive: #808080;
+  --btn-active: #008080;
+  --btn-disabled: #c0c0c0;
+}
+
+/* Square corners everywhere — rounded rectangles are the wrong decade. The
+   vinyl disc is exempt: it is a record, and squaring it turned the sleeve's
+   backdrop into a black box. */
+:root[data-theme="vintage"] *:not(.vinyl-disc) {
+  border-radius: 0;
+}
+
+/* The outset bevel that every 90s dialog, button and panel wore. */
+:root[data-theme="vintage"] .panel,
+:root[data-theme="vintage"] .playlist-poll,
+:root[data-theme="vintage"] .versus-matchup,
+:root[data-theme="vintage"] .taste-test,
+:root[data-theme="vintage"] .versus-card,
+:root[data-theme="vintage"] .taste-reveal-card,
+:root[data-theme="vintage"] .marquee-bar,
+:root[data-theme="vintage"] .site-footer,
+:root[data-theme="vintage"] .mini-teaser {
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #dfdfdf #808080 #808080 #dfdfdf;
+  box-shadow: none;
+}
+
+/* Title bars: teal behind white, the single accent in a silver world. */
+:root[data-theme="vintage"] .panel-header,
+:root[data-theme="vintage"] .versus-header,
+:root[data-theme="vintage"] .taste-header,
+:root[data-theme="vintage"] .playlist-question {
+  background: #008080;
+  color: #fff;
+  border-bottom: 0;
+  font-family: var(--font-pixel), "Courier New", monospace;
+  letter-spacing: 0;
+}
+
+/* Pixel type on display text only. Silkscreen is a bitmap face and punishing
+   at paragraph length, and the reference's own rule is accessibility first —
+   so body copy keeps a system sans and the era shows in the chrome. */
+:root[data-theme="vintage"] .banner-title,
+:root[data-theme="vintage"] .nav-item,
+:root[data-theme="vintage"] .album-title,
+:root[data-theme="vintage"] .listen-btn,
+:root[data-theme="vintage"] .btn-submit,
+:root[data-theme="vintage"] .theme-select {
+  font-family: var(--font-pixel), "Courier New", monospace;
+}
+
+:root[data-theme="vintage"] .banner {
+  background: #008080;
+  border-bottom: 2px solid #808080;
+}
+
+:root[data-theme="vintage"] .banner-title {
+  color: #fff;
+  text-shadow: 2px 2px 0 #004040;
+}
+
+:root[data-theme="vintage"] .banner-tagline,
+:root[data-theme="vintage"] .banner-est {
+  color: #fff;
+}
+
+/* Nav and info bar become a silver toolbar. */
+:root[data-theme="vintage"] .nav,
+:root[data-theme="vintage"] .info-bar {
+  background: #c0c0c0;
+  border-bottom: 2px solid #808080;
+  color: #000;
+}
+
+:root[data-theme="vintage"] .nav-item {
+  color: #000;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #dfdfdf #808080 #808080 #dfdfdf;
+}
+
+/* Pressed-in bevel for the active tab, inverted the way 90s toolbars did it. */
+:root[data-theme="vintage"] .nav-item.active {
+  background: #c0c0c0;
+  border-color: #808080 #dfdfdf #dfdfdf #808080;
+  color: #000;
+}
+
+:root[data-theme="vintage"] .site-footer,
+:root[data-theme="vintage"] .site-footer .footer-title,
+:root[data-theme="vintage"] .site-footer .footer-dim,
+:root[data-theme="vintage"] .forum-sig {
+  color: #000;
+  opacity: 1;
+}
+
+:root[data-theme="vintage"] a {
+  color: #000080;
+}
+
+/* Buttons wear the same bevel; the primary action takes the teal surface. */
+:root[data-theme="vintage"] button,
+:root[data-theme="vintage"] .listen-btn {
+  background: #c0c0c0;
+  color: #000;
+  border: 2px solid;
+  border-color: #dfdfdf #808080 #808080 #dfdfdf;
+  box-shadow: none;
+}
+
+:root[data-theme="vintage"] .listen-btn {
+  background: #008080;
+  color: #fff;
+}
+
+:root[data-theme="vintage"] button:active {
+  border-color: #808080 #dfdfdf #dfdfdf #808080;
+}
+
+/* Focus has to stay obvious on silver — teal is too weak, so use black. */
+:root[data-theme="vintage"] :focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 1px;
+}
+
+/* No white surfaces: the reference is explicit that silver is the universal
+   ground. The meta table becomes an inset field, the way a 90s dialog sank its
+   data areas below the surface. */
+:root[data-theme="vintage"] .activity-intro,
+:root[data-theme="vintage"] .info-table,
+:root[data-theme="vintage"] .info-table tr:nth-child(even),
+:root[data-theme="vintage"] .info-table td {
+  background: #c0c0c0;
+  color: #000;
+}
+
+:root[data-theme="vintage"] .info-table {
+  border: 2px solid;
+  border-color: #808080 #dfdfdf #dfdfdf #808080;
+}
+
+:root[data-theme="vintage"] .activity-intro {
+  border: 2px solid;
+  border-color: #808080 #dfdfdf #dfdfdf #808080;
+}
+
+/* The skin picker itself, in both skins. */
+.theme-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+}
+
+.theme-select {
+  font-family: inherit;
+  font-size: 11px;
+  padding: 1px 4px;
+  border: 1px solid var(--border-light);
+  background: var(--bg-main);
+  color: var(--text-primary);
+}
+
+:root[data-theme="vintage"] .theme-select {
+  background: #fff;
+  color: #000;
+  border: 2px solid;
+  border-color: #808080 #dfdfdf #dfdfdf #808080;
+}
