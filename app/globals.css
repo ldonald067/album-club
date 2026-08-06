@@ -32,6 +32,35 @@
   --star-inactive: #555;
   --btn-active: linear-gradient(to bottom, #4a7fbf, #2a5f9f);
   --btn-disabled: linear-gradient(to bottom, #aaa, #999);
+
+  /* ── Surface palette ──
+     Every light background in the stylesheet resolves through one of these.
+     A skin overrides the palette once instead of chasing each class; the
+     previous approach enumerated selectors and was provably incomplete.
+     Values are exactly what each rule used before, so the default skin is
+     unchanged. eval-site fails the build if a raw light hex reappears. */
+  --surface-field: #fff; /* white data fields and cards */
+  --surface-note: #fffde7; /* pale highlight notes */
+  --surface-alt: #f9f7f0; /* zebra rows and hover */
+  --surface-alt-warm: #faf6ec; /* warmer zebra and section bands */
+  --surface-inset: #eee; /* quiet inset chips */
+  --surface-positive: #e8f5e9; /* correct / solved */
+  --surface-negative: #fce4ec; /* wrong / failed */
+  --surface-bar: #f5f0e3; /* info bar and highlighted suggestion */
+  --surface-card: #fbf7ef; /* soundtrack cards */
+  --surface-welcome: #fef9e7; /* welcome-back banner */
+  --surface-status: #fff7d8; /* activity status note */
+  --surface-status-error: #fff0ea; /* activity status error */
+  --surface-status-subtle: #f7f3e8; /* activity status subtle */
+  --surface-corner-note: #f9f4ea; /* soundtrack corner note */
+  --surface-rec-cover: #f6f1e6; /* recommendation cover chip */
+  --surface-active: #e8e0d0; /* pressed suggestion */
+  --surface-track: #f0ede5; /* attempt bar track */
+  --surface-tomorrow: #f5f0e0; /* tomorrow teaser */
+  --surface-thead: #f0ead8; /* table head */
+  --surface-row-hover: #f0ebd5; /* table row hover */
+  --surface-progress-track: #e0d8c4; /* rank progress track */
+  --surface-sleeve: #e3dccc; /* empty cover sleeve */
 }
 
 body {
@@ -124,7 +153,7 @@ body {
 
 /* Info bar */
 .info-bar {
-  background: #f5f0e3;
+  background: var(--surface-bar);
   border-bottom: 1px solid var(--border-light);
   padding: 6px 20px;
   display: flex;
@@ -187,7 +216,7 @@ body {
 
 /* Marquee bar */
 .marquee-bar {
-  background: #fffde7;
+  background: var(--surface-note);
   border: 1px solid var(--gold);
   padding: 4px 10px;
   margin-bottom: 10px;
@@ -224,7 +253,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  background: #fef9e7;
+  background: var(--surface-welcome);
   border: 1px solid var(--gold);
   border-radius: 3px;
   padding: 8px 14px;
@@ -472,14 +501,14 @@ body {
 .info-table {
   border-collapse: collapse;
   font-size: 12px;
-  background: #fff;
+  background: var(--surface-field);
   border: 1px solid #ccc;
   width: 100%;
   max-width: 320px;
 }
 
 .info-table tr:nth-child(even) {
-  background: #f9f7f0;
+  background: var(--surface-alt);
 }
 
 .info-table td {
@@ -500,7 +529,7 @@ body {
   color: #776;
   padding: 8px 15px;
   margin-bottom: 15px;
-  background: #faf6ec;
+  background: var(--surface-alt-warm);
   border: 1px dashed var(--border-light);
   border-radius: 3px;
   font-style: italic;
@@ -515,7 +544,7 @@ body {
 }
 
 .activity-status-note {
-  background: #fff7d8;
+  background: var(--surface-status);
   border: 1px solid #d9c878;
   border-radius: 4px;
   color: #6a5a12;
@@ -526,13 +555,13 @@ body {
 }
 
 .activity-status-note.error {
-  background: #fff0ea;
+  background: var(--surface-status-error);
   border-color: #d8a69a;
   color: #8a3a2f;
 }
 
 .activity-status-note.subtle {
-  background: #f7f3e8;
+  background: var(--surface-status-subtle);
   border-color: var(--border-light);
   color: #6b6253;
 }
@@ -623,7 +652,7 @@ body {
   border-radius: 2px;
   font-family: Verdana, sans-serif;
   font-size: 12px;
-  background: #fff;
+  background: var(--surface-field);
 }
 
 .form-input:focus {
@@ -690,7 +719,7 @@ body {
 }
 
 .soundtrack-vote {
-  background: #fbf7ef;
+  background: var(--surface-card);
   border: 1px solid var(--border-light);
   border-radius: 6px;
   margin-bottom: 10px;
@@ -819,7 +848,7 @@ body {
 }
 
 .soundtrack-card {
-  background: #fbf7ef;
+  background: var(--surface-card);
   border: 1px solid var(--border-light);
   border-radius: 6px;
   min-width: 0;
@@ -861,7 +890,7 @@ body {
 }
 
 .soundtrack-corner-note {
-  background: #f9f4ea;
+  background: var(--surface-corner-note);
   border: 1px dashed var(--border-light);
   border-radius: 6px;
   color: #665a49;
@@ -882,7 +911,7 @@ body {
 }
 
 .soundtrack-angle-card {
-  background: #fff;
+  background: var(--surface-field);
   border: 1px solid #d9cfba;
   border-radius: 6px;
   min-width: 0;
@@ -952,7 +981,7 @@ body {
 
 .soundtrack-recommendation {
   align-items: flex-start;
-  background: #fff;
+  background: var(--surface-field);
   border: 1px solid #d7ccb5;
   border-radius: 6px;
   display: flex;
@@ -963,7 +992,7 @@ body {
 
 .soundtrack-recommendation-cover {
   align-items: center;
-  background: #f6f1e6;
+  background: var(--surface-rec-cover);
   border: 1px solid var(--border-inner);
   border-radius: 4px;
   display: inline-flex;
@@ -1260,7 +1289,7 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 10px 8px;
-  background: #fff;
+  background: var(--surface-field);
   border: 2px solid var(--border-inner);
   border-radius: 4px;
   cursor: pointer;
@@ -1272,7 +1301,7 @@ body {
 
 .vibe-btn:not(:disabled):hover {
   border-color: #999;
-  background: #f9f7f0;
+  background: var(--surface-alt);
 }
 
 .vibe-btn.selected {
@@ -1333,7 +1362,7 @@ body {
 
 .vibe-btn.locked.selected {
   border-color: var(--gold);
-  background: #fffde7;
+  background: var(--surface-note);
 }
 
 .vibe-pixel-icon {
@@ -1362,7 +1391,7 @@ body {
   gap: 8px;
   padding: 8px 12px;
   margin-bottom: 10px;
-  background: #fffde7;
+  background: var(--surface-note);
   border: 1px solid var(--gold);
   border-radius: 3px;
   font-size: 13px;
@@ -1514,11 +1543,11 @@ body {
 }
 
 .clue.revealed {
-  background: #fff;
+  background: var(--surface-field);
 }
 
 .clue.hidden {
-  background: #eee;
+  background: var(--surface-inset);
   color: #bbb;
 }
 
@@ -1554,12 +1583,12 @@ body {
 }
 
 .guess-item.correct {
-  background: #e8f5e9;
+  background: var(--surface-positive);
   border: 1px solid #81c784;
 }
 
 .guess-item.wrong {
-  background: #fce4ec;
+  background: var(--surface-negative);
   border: 1px solid #e57373;
 }
 
@@ -1593,7 +1622,7 @@ body {
   max-height: 200px;
   overscroll-behavior: contain;
   overflow-y: auto;
-  background: #fff;
+  background: var(--surface-field);
   border: 1px solid #ccc;
   border-top: none;
   border-radius: 0 0 3px 3px;
@@ -1611,11 +1640,11 @@ body {
 
 .suggestion-item:hover,
 .suggestion-item.highlighted {
-  background: #f5f0e3;
+  background: var(--surface-bar);
 }
 
 .suggestion-item:active {
-  background: #e8e0d0;
+  background: var(--surface-active);
 }
 
 .suggestion-item:last-child {
@@ -1631,13 +1660,13 @@ body {
 }
 
 .guess-result.solved {
-  background: #e8f5e9;
+  background: var(--surface-positive);
   border: 1px solid #81c784;
   color: #2e7d32;
 }
 
 .guess-result.failed {
-  background: #fce4ec;
+  background: var(--surface-negative);
   border: 1px solid #e57373;
   color: #c62828;
 }
@@ -1689,7 +1718,7 @@ body {
 .attempt-bar-wrap {
   flex: 1;
   height: 16px;
-  background: #f0ede5;
+  background: var(--surface-track);
   border-radius: 2px;
   overflow: hidden;
 }
@@ -1773,7 +1802,7 @@ body {
 .wrap-tomorrow {
   display: inline-block;
   padding: 6px 14px;
-  background: #f5f0e0;
+  background: var(--surface-tomorrow);
   border: 1px dashed var(--gold);
   border-radius: 3px;
   font-size: 12px;
@@ -2083,13 +2112,13 @@ body {
   padding: 3px 8px;
   font-size: 10px;
   border-radius: 3px;
-  background: #eee;
+  background: var(--surface-inset);
   color: #6b6b6b;
   border: 1px solid #ddd;
 }
 
 .heardle-tick.active {
-  background: #e8f5e9;
+  background: var(--surface-positive);
   color: #2e7d32;
   border-color: #81c784;
 }
@@ -2133,7 +2162,7 @@ body {
   font-size: 11px;
   color: #665;
   padding: 4px 10px;
-  background: #fffde7;
+  background: var(--surface-note);
   border: 1px dashed var(--gold);
   border-radius: 3px;
 }
@@ -2171,7 +2200,7 @@ body {
   min-width: 80px;
   text-align: center;
   padding: 8px;
-  background: #f9f7f0;
+  background: var(--surface-alt);
   border: 1px solid #e8e0d0;
   border-radius: 4px;
 }
@@ -2214,7 +2243,7 @@ body {
 }
 
 .archive-table th {
-  background: #f0ead8;
+  background: var(--surface-thead);
   padding: 6px 10px;
   text-align: left;
   font-size: 10px;
@@ -2230,11 +2259,11 @@ body {
 }
 
 .archive-table tr.even {
-  background: #faf6ec;
+  background: var(--surface-alt-warm);
 }
 
 .archive-table tr:hover {
-  background: #f0ebd5;
+  background: var(--surface-row-hover);
 }
 
 .archive-date {
@@ -2277,7 +2306,7 @@ body {
 .stat-card {
   text-align: center;
   padding: 15px 10px;
-  background: #fff;
+  background: var(--surface-field);
   border: 1px solid #e8e0d0;
   border-radius: 4px;
 }
@@ -2333,7 +2362,7 @@ body {
 .top-vibe-bar-wrap {
   flex: 1;
   height: 8px;
-  background: #eee;
+  background: var(--surface-inset);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -2371,7 +2400,7 @@ body {
   display: flex;
   gap: 8px;
   padding: 12px 15px;
-  background: #faf6ec;
+  background: var(--surface-alt-warm);
   font-weight: bold;
   font-size: 12px;
   color: #333;
@@ -2625,7 +2654,7 @@ body {
   display: inline-block;
   width: 36px;
   height: 6px;
-  background: #e0d8c4;
+  background: var(--surface-progress-track);
   border: 1px solid var(--border-light);
   border-radius: 2px;
   overflow: hidden;
@@ -2968,7 +2997,7 @@ body {
   margin-bottom: 6px;
   /* Sits behind the artwork, so a cover that is still arriving reads as an
      empty sleeve rather than a white hole punched in the card. */
-  background: #e3dccc;
+  background: var(--surface-sleeve);
 }
 
 /* SHARED: VersusMatchup and BlindTasteTest. */
@@ -3491,14 +3520,9 @@ body {
    Heardle ticks and the cover placeholder were still wearing default-skin
    greys, and the two activity greys fail on silver (3.21 and 2.57). */
 :root[data-theme="vintage"] .heardle-tick {
-  background: #c0c0c0;
   color: #000;
   border: 2px solid;
   border-color: #808080 #dfdfdf #dfdfdf #808080;
-}
-
-:root[data-theme="vintage"] .versus-cover {
-  background: #c0c0c0;
 }
 
 :root[data-theme="vintage"] .activity-prompt,
@@ -3526,20 +3550,45 @@ body {
   color: #000;
 }
 
-[data-theme="vintage"] table,
-[data-theme="vintage"] th,
-[data-theme="vintage"] td,
-[data-theme="vintage"] tr:nth-child(even),
-[data-theme="vintage"] .soundtrack-card,
-[data-theme="vintage"] .soundtrack-vote,
-[data-theme="vintage"] .soundtrack-corner-note,
-[data-theme="vintage"] .soundtrack-angle-card,
-[data-theme="vintage"] .soundtrack-recommendation,
-[data-theme="vintage"] .stat-card,
-[data-theme="vintage"] .top-vibe-bar-wrap,
-[data-theme="vintage"] .faq-question,
-[data-theme="vintage"] .archive-hide-mobile {
-  background: #c0c0c0;
+/* The whole surface palette goes silver in one place. This replaces the
+   enumerated class list that used to live here — that approach required
+   discovering every background in the stylesheet and stayed incomplete through
+   two rounds of auditing. Any rule that resolves a background through a token
+   is now skinned automatically, including rules written after this one. */
+:root[data-theme="vintage"] {
+  --surface-field: #c0c0c0;
+  --surface-note: #c0c0c0;
+  --surface-alt: #c0c0c0;
+  --surface-alt-warm: #c0c0c0;
+  --surface-inset: #c0c0c0;
+  --surface-positive: #c0c0c0;
+  --surface-negative: #c0c0c0;
+  --surface-bar: #c0c0c0;
+  --surface-card: #c0c0c0;
+  --surface-welcome: #c0c0c0;
+  --surface-status: #c0c0c0;
+  --surface-status-error: #c0c0c0;
+  --surface-status-subtle: #c0c0c0;
+  --surface-corner-note: #c0c0c0;
+  --surface-rec-cover: #c0c0c0;
+  --surface-active: #a8a8a8;
+  --surface-track: #a8a8a8;
+  --surface-tomorrow: #c0c0c0;
+  --surface-thead: #c0c0c0;
+  --surface-row-hover: #a8a8a8;
+  --surface-progress-track: #a8a8a8;
+  --surface-sleeve: #c0c0c0;
+}
+
+/* Text entry stays white. Sunken white input boxes are what the era actually
+   did, and they are the one surface the reference's "no white" rule should not
+   swallow — a field the visitor types into needs to read as a field. */
+:root[data-theme="vintage"] .form-input,
+:root[data-theme="vintage"] .theme-select {
+  background: #fff;
+  color: #000;
+  border: 2px solid;
+  border-color: #808080 #dfdfdf #dfdfdf #808080;
 }
 
 /* Sunken bevel for the boxes that hold data, raised for the ones that act. */
@@ -3589,6 +3638,14 @@ body {
   color: #000080;
 }
 
+/* Anything sitting on a --gold surface is on teal in this skin, so it needs the
+   same white-and-descendants treatment as the title bars — the universal black
+   fallback otherwise reaches its nested text at 4.40:1. */
+:root[data-theme="vintage"] .heardle-tick.current,
+:root[data-theme="vintage"] .heardle-tick.current * {
+  color: #fff;
+}
+
 :root[data-theme="vintage"] a,
 :root[data-theme="vintage"] .footer-link {
   color: #000080;
@@ -3604,10 +3661,6 @@ body {
   border-bottom: 2px solid #808080;
 }
 
-:root[data-theme="vintage"] .archive-table tr.even {
-  background: #c0c0c0;
-}
-
 :root[data-theme="vintage"] .archive-table td {
   border-bottom: 1px solid #808080;
 }
@@ -3618,6 +3671,5 @@ body {
 }
 
 :root[data-theme="vintage"] .soundtrack-recommendation-cover {
-  background: #c0c0c0;
   border-color: #808080;
 }

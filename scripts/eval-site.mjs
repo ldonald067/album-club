@@ -409,6 +409,49 @@ failures += printGuardrail(
     : "No stored line repeats a single blankable word throughout.",
 );
 
+/* Every light background must resolve through the surface palette, so a skin
+   can restyle the whole site by overriding variables. The vintage skin first
+   tried enumerating classes and stayed incomplete through two audits — a raw
+   hex here is exactly how the next surface escapes a skin unnoticed. Dark
+   accent fills (bars, badges) are exempt; they are not surfaces. */
+const cssSource = fs.readFileSync(
+  path.join(rootDir, "app", "globals.css"),
+  "utf-8",
+);
+const paletteEnd = cssSource.indexOf("VINTAGE SKIN — opt-in");
+const cssBeforeSkin =
+  paletteEnd === -1 ? cssSource : cssSource.slice(0, paletteEnd);
+const rawSurfaces = [];
+for (const match of cssBeforeSkin.matchAll(
+  /background(?:-color)?:\s*(#[0-9a-fA-F]{3,6})\s*;/g,
+)) {
+  const hex = match[1].toLowerCase();
+  const full =
+    hex.length === 4
+      ? "#" +
+        hex
+          .slice(1)
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : hex;
+  const r = parseInt(full.slice(1, 3), 16);
+  const g = parseInt(full.slice(3, 5), 16);
+  const b = parseInt(full.slice(5, 7), 16);
+  // Only light values are "surfaces"; dark fills are decorative.
+  if ((r + g + b) / 3 < 200) continue;
+  // The palette definitions themselves are where the hexes belong.
+  const line = cssBeforeSkin.slice(0, match.index).split("\n").length;
+  rawSurfaces.push(`${hex} (globals.css:${line})`);
+}
+failures += printGuardrail(
+  rawSurfaces.length === 0,
+  "Light backgrounds go through the surface palette",
+  rawSurfaces.length
+    ? `Hardcoded light background(s) a skin cannot reach: ${rawSurfaces.join(", ")}. Add a --surface-* token instead.`
+    : "No raw light background hexes outside the palette.",
+);
+
 // The lyric game blanks words longer than three characters and needs two of
 // them to make a two-blank puzzle.
 const blankable = (line) =>
