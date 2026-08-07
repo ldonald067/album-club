@@ -124,17 +124,22 @@ docs. This section is only what is still open.
    **Revisit if traffic grows.** Cheap partial mitigation: re-check localStorage
    at submit time rather than only on mount, which closes the multi-tab path.
 
-3. **Pre-existing contrast failures in the default skin.** Found by the
-   strengthened audit, none introduced by the skin work. All four sit on solid
-   backgrounds, so they are real rather than the gradient artefact described in
-   `docs/gotchas.md`:
-   - `.rank-progress-text` 3.73 (`#666` on the info bar)
-   - `.vibe-label` 3.93–4.49 across four tinted variants
-   - `.activity-intro` 4.22 (`#776` on `--surface-alt-warm`)
-   - `.playlist-btn` yes 3.73 / no 2.40 (`#333` on the tinted vote buttons)
+3. ~~**Pre-existing contrast failures in the default skin**~~ — RESOLVED
+   2026-08-07, and mostly by correcting the measurement rather than the CSS.
 
-   Fixing them means darkening deliberately soft colours, so it is a taste call
-   as much as a compliance one — worth doing, but not silently.
+   An earlier version of this item listed four failures. **Three were not real.**
+   `.playlist-btn` and the four `.vibe-label` variants sit on translucent tints
+   — `rgba(...,0.15)` and `rgba(...,0.25)` over cream — and the audit had been
+   treating those as opaque. Composited properly the buttons measure 10.56:1 and
+   10.10:1, the labels 6.6–6.99:1. `.rank-progress-text` was likewise 5.05:1,
+   not 3.73:1.
+
+   One was real: `.activity-intro` at 4.22:1. `--text-intro` moved `#776` →
+   `#6f6f5e`, giving 4.73:1 — the smallest darkening that clears AA, chosen so
+   the band still reads as a soft aside.
+
+   The lesson is in `docs/gotchas.md`: a contrast finding is not real until you
+   have the **composited** background.
 
 4. **Mobile verified (2026-08-07).** Checked at 375x812 with real touch
    emulation — mobile UA, five touch points, `(pointer: coarse)` active. No

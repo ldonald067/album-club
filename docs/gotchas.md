@@ -68,9 +68,22 @@ will both miss real failures and invent fake ones.
   The tell was that no CSS rule, inline style, or ancestor explained the value:
   nulling all sixteen `opacity` rules one at a time never moved it
 
+- **A translucent background is not the colour it reports.** `.playlist-btn`
+  sits on `rgba(90,154,90,0.15)` — a 15% green wash over cream, which renders
+  as a pale mint. Treat that `rgba` as opaque and `#333` on it looks like
+  3.73:1; composite it properly and it is 10.56:1. This produced **three false
+  findings in one pass** — both playlist buttons and all four vibe labels were
+  reported as failures and are fine. Walk the ancestor chain collecting every
+  background with `alpha > 0` and blend them back-to-front over the body colour
+
 Related: WCAG 1.4.3 exempts **disabled** controls from contrast. Check
 `el.matches(':disabled')` before filing one — dimmed-but-enabled is a real
 failure, dimmed-and-disabled is not.
+
+The habit that catches all four: **a contrast finding is not real until you have
+the composited background**, not the declared one. Every trap above is the same
+mistake wearing a different hat — trusting a declared value over a rendered
+pixel.
 
 ## Docs
 

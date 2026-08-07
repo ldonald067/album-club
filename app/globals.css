@@ -73,7 +73,7 @@
   --text-quiet: #6b6b6b; /* muted metadata */
   --text-prompt: #665; /* activity prompts */
   --text-answer: #666; /* answers and secondary rows */
-  --text-intro: #776; /* intro band */
+  --text-intro: #6f6f5e; /* intro band — 4.73:1 on its band, was #776 at 4.22 */
   --text-label: #555; /* table and clue labels */
   --text-artist: #444; /* album artist */
   --text-question: #333; /* faq question */
