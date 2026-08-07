@@ -16,7 +16,29 @@ How curated overrides and generator knowledge get written. Not runtime data.
 2. Write from the **"Coming up in rotation"** section — it sorts uncovered recognizable albums by their next featured air date, so effort lands on albums visitors will actually see soon. Take the top ~12.
 3. For each: capture what critics keep noticing, what fans keep feeling, what scene language fits, and three "listen next" moves that exist in `lib/albums.json` (exact titles — dangling recs are dropped at runtime and now fail `npm run eval-site`).
 4. Write the override in `lib/soundtrack-corner-data.js` in the established voice: specific musical anchors, wit without snark, no generic praise. Every `extraAngles` entry uses one of the five real angle keys.
-5. Run `npm run eval-site` (structural validation), `npm run build`, spot-check one entry in the browser, ship.
+
+### Override shape
+
+```js
+"Artist::Exact Title": {
+  intro, bridgeNote,
+  cards: { game: {title, body}, film: {…}, tv: {…} },   // all three required
+  extraAngles: [ {key, title, body}, {key, title, body} ],
+  listenFor: [ …at least three ],
+  recommendations: [ {title, reason} ×3 ],              // exact catalog titles
+}
+```
+
+**Do not write `label` on an angle.** It is derived from the key by
+`getAngleLabel()` in `lib/soundtrack-corner.js`, so the label can never drift
+from the key it belongs to. All 196 hand-written labels were byte-identical to
+the derived ones before this changed, and a missing one used to render blank
+while passing validation.
+
+Validate the batch **before** inserting it — key in the catalog, no
+self-recommendation, every rec title real, three recs, two angles, three cards.
+Two placeholder recommendations survived drafting in the 2026-08 batch and were
+caught by exactly this check, not by reading. 5. Run `npm run eval-site` (structural validation), `npm run build`, spot-check one entry in the browser, ship.
 
 ## Raising the Floor (generator knowledge)
 

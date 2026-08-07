@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { SOUNDTRACK_OVERRIDES } from "../lib/soundtrack-corner-data.js";
+import { getAngleLabel } from "../lib/soundtrack-corner.js";
 
 const rootDir = process.cwd();
 
@@ -187,13 +188,10 @@ printSection("Override structure");
   const catalogKeys = new Set(
     albums.map((album) => `${album.artist}::${album.title}`),
   );
-  const validAngleKeys = new Set([
-    "boss-fight",
-    "needle-drop",
-    "cold-open",
-    "studio-match",
-    "end-credits",
-  ]);
+  /* Ask the generator whether a key is real rather than keeping a second copy
+     of the list here — a hand-maintained duplicate drifts the moment someone
+     adds an angle. getAngleLabel also proves the key resolves to a label, which
+     is what the UI actually renders. */
   const structureProblems = [];
   for (const [key, override] of Object.entries(SOUNDTRACK_OVERRIDES)) {
     if (!catalogKeys.has(key)) {
@@ -205,7 +203,7 @@ printSection("Override structure");
       }
     }
     for (const angle of override.extraAngles || []) {
-      if (!validAngleKeys.has(angle.key) || !angle.title || !angle.body) {
+      if (!getAngleLabel(angle.key) || !angle.title || !angle.body) {
         structureProblems.push(`bad extra angle (${key}): ${angle.key}`);
       }
     }

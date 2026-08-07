@@ -105,12 +105,20 @@ Node 22) runs `npm test` then `npm run build`.
 Completed work is not listed here — it lives in git history and in the topic
 docs. This section is only what is still open.
 
-1. **Soundtrack Corner to 100%:** ~50 recognizable albums left, ~4 batches.
-   Run `npm run soundtrack-corner-report`, write the top of the air-date-sorted
-   "Coming up in rotation" list in the house voice, validate with
-   `npm run eval-site`. Pipeline in `docs/soundtrack-corner-research.md`.
-   **Not urgent:** nothing uncovered airs for ~100 days, and the report's own
-   header says effort should land on albums visitors will see soon.
+1. **Soundtrack Corner — 90.2% of recognizable albums covered (2026-08-07).**
+   Thirteen left. Get exact figures from `npm run soundtrack-corner-report`,
+   never from prose; pipeline in `docs/soundtrack-corner-research.md`.
+
+   **Two of the thirteen were skipped deliberately, not missed.** _BTS —
+   Arirang_ and _Olivia Rodrigo — You Seem Pretty Sad for a Girl So In Love_
+   are 2026 releases past the point where the writing could be grounded in the
+   actual records. Scene-work for an album nobody involved has heard is
+   invention, and this project's standing rule is that wrong data costs more
+   than missing data. Whoever knows those records should write them.
+
+   The other eleven are simply next in the queue: Mr. Morale, Javelin, Spirit
+   of Eden, Either/Or, Turn on the Bright Lights, Live at Pompeii, Lateralus,
+   Bitches Brew, MAP OF THE SOUL: 7, thank u next, Debí Tirar Más Fotos.
 
 2. **Deferred by decision — community gates count rows, not people.** Neither
    `matchup_votes` nor `vibes` has a voter column or uniqueness constraint, and
