@@ -40,8 +40,15 @@ Each of these has already cost real time or shipped a live bug.
   committing any refill — the guards catch known failure shapes, not novelty.
 - **Never rename an `aotd_*` localStorage key.** It silently discards every
   user's history, and on a fresh profile it looks identical to working.
+- **Never hardcode a colour in CSS.** Every light background and every text
+  colour resolves through a `--surface-*` / `--text-*` token in `:root`, so a
+  skin overrides a palette instead of chasing selectors. The first Vintage skin
+  chased selectors and was still incomplete after two full audits. `eval-site`
+  fails on a raw light background hex and names the line. See `docs/skins.md`.
 - **Verify by outcome, not by reading.** Guardrails in `eval-site` have caught
-  data faults that three rounds of careful manual review missed.
+  data faults that three rounds of careful manual review missed. For colour,
+  "by outcome" means measuring the rendered pixel — `docs/gotchas.md` lists
+  three ways the measurement itself lies.
 
 ## Where things live
 
@@ -72,5 +79,9 @@ standing decisions, including features deliberately _not_ built.
 | UI components or state | `docs/components.md`  |
 | Album data or imports  | `docs/album-data.md`  |
 | CSS or rendering       | `docs/performance.md` |
+| Colours, themes, a11y  | `docs/skins.md`       |
 | Build errors or quirks | `docs/gotchas.md`     |
 | Deploys or scripts     | `docs/project.md`     |
+
+Writing Soundtrack Corner overrides has its own pipeline —
+`docs/soundtrack-corner-research.md`.

@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-08-04.
+session. Last updated: 2026-08-06.
 
 ## What this is
 
@@ -42,26 +42,19 @@ Node 22) runs `npm test` then `npm run build`.
 
 ## Recent work (this stretch of sessions)
 
-- **Skins (2026-08-06).** A "Skin" dropdown in the info bar switches between the
-  default 2004 forum and a **Vintage** 1990s-desktop look (teal `#008080` title
-  bars, silver `#C0C0C0` everywhere, bevelled edges, Silkscreen pixel type on
-  display text). All of it lives in one `:root[data-theme="vintage"]` block at
-  the end of `globals.css`; nothing in the components knows the skin exists.
-  Three things worth knowing before touching it:
-  - **Teal is a surface, never text.** Teal on silver measures 2.62:1, failing
-    even the 3.0 large-text bar. It sits behind white (4.77:1); links use the
-    era's navy `#000080` (8.80:1). The reference's own rule is accessibility
-    first where the two collide.
-  - **Body copy stays a system sans.** Silkscreen is a bitmap face and brutal at
-    paragraph length, so the pixel type is display-only.
-  - **The square-corner rule exempts `.vinyl-disc`.** Squaring everything turned
-    the record behind the sleeve into a black box.
+- **Skins (2026-08-06).** A "Skin" dropdown switches between the default 2004
+  forum and a **Vintage** 1990s desktop. Every colour in the stylesheet now
+  resolves through a `--surface-*` / `--text-*` token, so a skin overrides a
+  palette rather than chasing selectors, and `eval-site` fails on a raw hex.
+  Read `docs/skins.md` before touching it — the traps are specific and
+  expensive. The default skin was proved unchanged by comparing computed
+  colours for 311 selectors across five tabs, before and after.
 
-  The skin is applied by a tiny pre-paint script in `layout.js` so it cannot
-  flash, which needs `suppressHydrationWarning` on `<html>` — the server markup
-  and live DOM genuinely differ by that attribute. **React still logs a
-  hydration diff in dev; production is clean.** Verified against a real
-  `next start` build, not assumed. Stored under the new key `aotd_theme`.
+- **Landing page reordered (2026-08-05).** Rate & Reveal, Vibe Check and the
+  daily puzzle now follow the album directly; the poll, matchup, taste test and
+  teasers sit below them. Rate & Reveal moved from 1259px to 569px — it had
+  been a screen and a half down, below every secondary widget, on a page whose
+  own copy promises "three ways to join today".
 
 - **Genre Bingo removed (2026-07-28).** The board was derived purely from the
   calendar — cells were non-interactive `div`s and `getMonthMatches()` read only
@@ -109,145 +102,42 @@ Node 22) runs `npm test` then `npm run build`.
 
 ## Open items / next steps
 
-1. ~~**Set `BACKUP_TOKEN`**~~ — DONE 2026-07-23 (see "Operational facts").
-2. ~~**Refill the lyric pool**~~ — DONE 2026-07-31, 80 → 122, then 120 after two
-   contaminated entries were pulled, now **124 of 133 (93.2%)** — see item 3.
-   The gap is 4 instrumentals that can never have lyrics plus 5 Genius won't
-   resolve (Homework, both Jay-Z, Souvlaki, Bitches Brew). That is 96.1% of the
-   achievable ceiling; the rest would need hand-curation. **Always read
-   `git diff lib/lyrics.json` before committing a refill** — the guards catch
-   the known failure shapes, not novelty.
+Completed work is not listed here — it lives in git history and in the topic
+docs. This section is only what is still open.
 
-3. ~~**Two lyric entries need re-fetching**~~ — DONE 2026-08-04. _Frank Ocean —
-   Blonde_ and _Arcade Fire — Funeral_ (removed 2026-08-01 for carrying another
-   album's song) are back, and the same run also resolved two albums the
-   previous list had written off: _Abbey Road_ and _VU & Nico_. All four were
-   verified by outcome, not by eye — each stored line was traced to a Genius
-   track page that MusicBrainz places on that album. No existing entry changed.
+1. **Soundtrack Corner to 100%:** ~50 recognizable albums left, ~4 batches.
+   Run `npm run soundtrack-corner-report`, write the top of the air-date-sorted
+   "Coming up in rotation" list in the house voice, validate with
+   `npm run eval-site`. Pipeline in `docs/soundtrack-corner-research.md`.
+   **Not urgent:** nothing uncovered airs for ~100 days, and the report's own
+   header says effort should land on albums visitors will see soon.
 
-   Two things that run surfaced, neither fixed:
-   - `fetchTracklist` in `scripts/fetch-lyrics.mjs` catches every error and
-     returns `[]`, which is indistinguishable from "album not found". Funeral
-     failed on the first pass for exactly this reason — a transient MusicBrainz
-     hiccup dropped it to the weak album-search fallback — and succeeded on an
-     immediate re-run with nothing changed. **A failure in that log is not
-     evidence an album is unresolvable; re-run before concluding anything.**
-   - The _VU & Nico_ entry is 4 lines from "Femme Fatale", each carrying the
-     same parenthetical refrain. It passes every guard (the repeat check is
-     exact-match only) but makes a thin puzzle, since the blankable words are
-     nearly the same line to line. Worth hand-swapping to another track.
+2. **Deferred by decision — community gates count rows, not people.** Neither
+   `matchup_votes` nor `vibes` has a voter column or uniqueness constraint, and
+   `checkDailyLimit` allows several submissions per IP per day, so one person
+   can produce several rows: two tabs opened before voting (the localStorage
+   guard only runs on mount), a retry after a lost response, cleared storage, a
+   second device. The "first one in today" gates then open and the split renders
+   as though a second person voted. Fixing it properly means a submission/voter
+   key, a uniqueness rule and a server-derived participant count — a schema
+   change and migration for a cosmetic misfire that needs an uncommon trigger.
+   **Revisit if traffic grows.** Cheap partial mitigation: re-check localStorage
+   at submit time rather than only on mount, which closes the multi-tab path.
 
-4. **Soundtrack Corner to 100%:** ~50 recognizable albums left, ~4 batches.
-   Run `npm run soundtrack-corner-report`, write the top of the "Coming up in
-   rotation" list (air-date-sorted) in the house voice, validate via
-   `npm run eval-site`. Pipeline documented in `docs/soundtrack-corner-research.md`.
-5. **Deferred by decision — community gates count rows, not people.**
-   Neither `matchup_votes` nor `vibes` has a voter column or a uniqueness
-   constraint, and `checkDailyLimit` allows 3 submissions per IP per endpoint
-   per day, so one person can produce several rows: two tabs opened before
-   voting (the localStorage guard only runs on mount), a retry after a lost
-   response, cleared storage, or a second device. When that happens the
-   "first one in today" gates open and the split renders as though a second
-   person had voted. Fixing it properly means a submission/voter key plus a
-   uniqueness rule and a server-derived participant count — a schema change and
-   a migration to correct a cosmetic misfire that needs an uncommon trigger, so
-   it was judged disproportionate at current traffic. **Revisit if traffic
-   grows.** Cheap partial mitigation if it starts mattering: re-check
-   localStorage at submit time rather than only on mount, which closes the
-   multi-tab path. Found by `/adversarial-review` on `0b2f76e`; the two cheaper
-   findings from that review (percentage denominator, restore validation) are
-   fixed.
-6. ~~**Un-fixed review findings**~~ — ALL FIXED 2026-08-04. What changed, and
-   what to know about each:
-   - **Chunked-body bypass (MED).** `readJsonBody` now reads the stream by hand
-     and aborts at the first chunk over the cap, instead of letting
-     `request.text()` buffer an undeclared body in full. The parsing half moved
-     to `lib/request-body.js` — free of `next/server` so node:test can reach it;
-     `lib/api-helpers.js` re-exports it, so route imports are unchanged.
-     `test/api-helpers.test.mjs` covers it, and the chunked case was confirmed
-     to fail against the old implementation.
-   - **Audio timers.** Heardle stops the clip on every guess via one `stopClip`
-     helper (the non-final wrong-guess branch was the one missing it), and
-     Blind Taste Test clears the other side's timer when you switch players, so
-     a clip you abandoned no longer gets marked heard a minute later.
-   - **Rate limiter.** Evicts the coldest 10% instead of going unlimited when
-     full, and the table cap is now 10000. Its per-request `size > 1000` sweep
-     was an O(n) walk on every call — now time-throttled to once per 5s, which
-     took the fill test from 2682ms to 20ms. Daily cap 3 → 12, since it is
-     per address and NAT puts many people on one.
-   - **Vote retention.** `VOTE_RETENTION_DAYS` (default 365) prunes
-     playlist/matchup/soundtrack votes at startup. Those three are only ever
-     read `WHERE key = ?` on a day-scoped key and feed nothing on the stats
-     board. **`ratings`, `vibes` and `guess_stats` are deliberately excluded** —
-     they back lifetime totals, and pruning them would walk the stats board
-     backwards. Set to 0 to keep everything.
-   - **Stats scan.** Only the vibes GROUP BY was genuinely bad — it built a temp
-     B-tree because the existing index leads with `album_key`. `idx_vibes_vibe`
-     fixes it; the other three stats queries already used covering indexes.
-   - **Boiler Room.** Tokyo now has its own cover (a real set from the official
-     Boiler Room channel, `T1tcUfUhR5U`) plus that `youtubeId`, matching how the
-     Montreal entry is sourced. Year corrected 2023 → 2025 to match the source.
-     New `eval-site` guardrail fails on any shared or missing cover URL.
-   - **`scrambleArtist`.** Swaps with the first character that actually differs.
-     Confirmed genuinely latent first: across 302 catalog artists × 400 seeds the
-     old code never once leaked the answer, though crafted names like "aab" hit
-     it on 642 of 2000 seeds. Covered by tests now.
-   - **A11y.** 13 colour changes, all measured rather than eyeballed — footer
-     body was 2.87:1 and `.forum-sig` an effective 1.98:1 once its 0.5 opacity
-     was accounted for. Everything checked now clears AA 4.5. **`.clue.hidden`
-     was left alone on purpose** — that text is meant to be unreadable until the
-     clue is revealed. The banner tagline and est line already passed. Space now
-     activates the tagline (it was Enter-only) and both it and the recap header
-     call `preventDefault` so Space no longer scrolls the page as it fires.
-   - Also cleared: `MODULE_TYPELESS_PACKAGE_JSON` on every script run, via
-     `"type": "module"`. Verified nothing in the repo uses CommonJS first.
+3. **Pre-existing contrast failures in the default skin.** Found by the
+   strengthened audit, none introduced by the skin work: `rank-progress-text`
+   3.73, four `vibe-label` variants 3.93–4.49. Each sits on a solid background,
+   so these are real, not the gradient artefact described in `docs/gotchas.md`.
 
-7. **Found by looking at the running site (2026-08-04), all fixed.** These were
-   invisible to every check that reads code or data rather than pixels:
-   - **8 cover URLs were `http://`** (coverartarchive.org). Production is https,
-     so those are mixed content — and local dev can never show it, because
-     localhost is http itself. All upgraded; the cover guardrail now fails on
-     any `http://` URL.
-   - **The soundtrack generator repeated itself.** `decadeFlavor.sceneNote` was
-     appended to all three pitch cards, so every album without a curated
-     override closed game, film and TV with the same sentence. Now one card
-     carries it. **The first fix was wrong in an instructive way:** it keyed the
-     choice off the card's seed, but `getAlbumSeed(album, kind)` salts per
-     medium, so all three still elected themselves independently and ~26% of
-     albums kept a duplicate. It has to key off the album. Verified across all
-     338 generated albums: exactly one copy each.
-   - **12 lyric lines gave their own answer away** — every blankable word the
-     same, so whatever got hidden was still printed beside it ("Okay (Okay,
-     okay, okay)"). Removed, with a new guardrail. Note the wider class was
-     left alone deliberately: 134 lines contain _a_ repeated blankable word, but
-     those only leak on some seeds and purging them would cost 15% of the pool.
-   - `lib/soundtrack-corner.js` imported `"./albums"` without an extension —
-     fine for Next's bundler, unresolvable for Node, which is why that module
-     could not be exercised from a script. Extensions added.
+4. **Mobile is unverified.** Neither browser tool available in-session can
+   emulate a viewport — one resizes the window without changing the CSS
+   viewport, the other runs a hidden pane. The landing page was reordered and
+   the skin added without a real 375px pass. Worth doing by hand.
 
-   Two follow-ups from a second look at the running site:
-   - **The scene-note fix was incomplete the first time.** Restricting it to one
-     of the three pitch cards still left the "Boss Fight Energy" extra angle
-     appending the same sentence, so it appeared twice on 37% of generated
-     albums. Dropped from that angle; now exactly one occurrence per page across
-     all 338. The lesson is the measurement, not the bug: counting only the
-     three cards made a partial fix look total.
-   - **Lyric puzzles blank one word when the line is short.** Two blanks on a
-     short line left nothing to reason from — 27% of stored lines were down to
-     three visible words or fewer and 4.5% to one. A second blank is now added
-     only when at least four words survive it (`MIN_VISIBLE_WORDS` in
-     `app/ForumPage.js`). Lines of ≤2 visible words fell 15.1% → 4.5%. The
-     remaining cases are three-word lines where even one blank leaves little;
-     fixing those means removing data, which was judged not worth it.
-
-   **`VOTE_RETENTION_DAYS=0` is set in Railway (2026-08-04)**, so the startup
-   prune added above is disabled. At roughly one vote row per week it would not
-   have deleted anything for a year. Remove the variable to re-enable it.
-
-8. **Suggested features (from the review, not built):** "Predict the Crowd"
-   (guess the room's average before reveal), "Divisive Meter", Streak Freeze,
-   "The Verdict" one-tap critical tag. Deliberately avoid: freeform shoutbox,
-   real leaderboards.
+5. **Suggested features (from the 2026-07 review, not built):** "Predict the
+   Crowd" (guess the room's average before reveal), "Divisive Meter", Streak
+   Freeze, "The Verdict" one-tap critical tag. Deliberately avoid: freeform
+   shoutbox, real leaderboards.
 
 ## Gotchas worth knowing
 
@@ -259,4 +149,4 @@ game samplers, or the lyric data. The three most expensive ones:
 - **Never index a per-game pool by `dayOfYear`** — it collapses annual variety
   whenever the pool size shares a factor with the rotation cadence.
   `pickRotatingPoolAlbum` uses the appearance ordinal; `eval-site` guards it.
-- **Vote totals count rows, not people** — see open item 5.
+- **Vote totals count rows, not people** — see open item 2.
