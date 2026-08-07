@@ -61,6 +61,53 @@
   --surface-row-hover: #f0ebd5; /* table row hover */
   --surface-progress-track: #e0d8c4; /* rank progress track */
   --surface-sleeve: #e3dccc; /* empty cover sleeve */
+
+  /* ── Text palette ──
+     Companion to the surface palette. Every text colour resolves here so a
+     skin overrides the palette instead of forcing colour with a universal
+     selector — that fallback kept bleeding black onto teal surfaces and was
+     patched three separate times before this. Values match what each rule
+     used before, so the default skin is unchanged.
+     Deliberately NOT tokenised: #fff (already correct on dark surfaces) and
+     .clue.hidden's #bbb, which is meant to be unreadable until revealed. */
+  --text-quiet: #6b6b6b; /* muted metadata */
+  --text-prompt: #665; /* activity prompts */
+  --text-answer: #666; /* answers and secondary rows */
+  --text-intro: #776; /* intro band */
+  --text-label: #555; /* table and clue labels */
+  --text-artist: #444; /* album artist */
+  --text-question: #333; /* faq question */
+  --text-card-title: #2d2d2d; /* soundtrack card titles */
+  --text-display: #1a1a2e; /* album title, konami */
+  --text-bar: #554a2e; /* info bar and marquee */
+  --text-card-meta: #7d705d; /* soundtrack meta */
+  --text-card-copy: #554a3b; /* soundtrack card copy */
+  --text-corner-note: #665a49; /* corner note */
+  --text-angle-copy: #584c3e; /* angle copy */
+  --text-section-title: #655a48; /* section titles */
+  --text-list: #44392d; /* listen-for list */
+  --text-recs-intro: #6e6252; /* recommendations intro */
+  --text-rec-reason: #5f5345; /* recommendation reason */
+  --text-kicker: #6d6253; /* corner kicker */
+  --text-status-subtle: #6b6253; /* subtle status */
+  --text-hint: #767561; /* activity hint */
+  --text-status: #6a5a12; /* status note */
+  --text-muted-inline: #5f5f5f; /* inline muted text */
+  --text-error: #c62828; /* errors (6.02:1 on silver) */
+  --text-status-error: #8a3a2f; /* status error */
+  --text-link-strong: #a11414; /* emphasised link */
+  --text-success: #2e7d32; /* solved (5.03:1 on silver) */
+  --text-positive: #3f7a3f; /* positive */
+  --text-hot: #8a5410; /* hot take */
+  --text-birthday: #8a6700; /* album birthday */
+  --text-streak: #8b6914; /* streak badge */
+  --text-nav: #8cb4d8; /* nav items (silver toolbar in vintage) */
+  --text-banner-est: #7a8fb5; /* banner est (teal in vintage) */
+  --text-banner-tagline: #8899aa; /* banner tagline */
+  --text-footer: #9ab6d2; /* footer body */
+  --text-footer-dim: #97aec6; /* footer dim */
+  --text-sig: #c3d4e6; /* forum signature */
+  --text-heading-link: #3a5f8f; /* archive titles, faq icon */
 }
 
 body {
@@ -88,7 +135,7 @@ body {
 
 .banner-est {
   font-size: 11px;
-  color: #7a8fb5;
+  color: var(--text-banner-est);
   letter-spacing: 4px;
   text-transform: uppercase;
   margin-bottom: 6px;
@@ -107,7 +154,7 @@ body {
 }
 
 .banner-tagline {
-  color: #8899aa;
+  color: var(--text-banner-tagline);
   font-size: 11px;
   margin-top: 6px;
   font-style: italic;
@@ -127,7 +174,7 @@ body {
 }
 
 .nav-item {
-  color: #8cb4d8;
+  color: var(--text-nav);
   padding: 4px 12px;
   border-radius: 3px;
   cursor: pointer;
@@ -162,12 +209,12 @@ body {
   flex-wrap: wrap;
   gap: 4px;
   font-size: 11px;
-  color: #554a2e;
+  color: var(--text-bar);
 }
 
 .streak-badge {
   font-weight: bold;
-  color: #8b6914;
+  color: var(--text-streak);
 }
 
 .best-streak {
@@ -224,7 +271,7 @@ body {
   contain: paint;
   overflow: hidden;
   font-size: 11px;
-  color: #554a2e;
+  color: var(--text-bar);
 }
 
 .marquee-track {
@@ -463,14 +510,14 @@ body {
 
 .album-title {
   font-size: 24px;
-  color: #1a1a2e;
+  color: var(--text-display);
   font-family: Georgia, serif;
   margin-bottom: 4px;
 }
 
 .album-artist {
   font-size: 16px;
-  color: #444;
+  color: var(--text-artist);
   margin-bottom: 12px;
   font-style: italic;
 }
@@ -517,7 +564,7 @@ body {
 
 .info-table td:first-child {
   font-weight: bold;
-  color: #555;
+  color: var(--text-label);
   border-right: 1px solid #ddd;
   width: 120px;
 }
@@ -526,7 +573,7 @@ body {
 .activity-intro {
   text-align: center;
   font-size: 11px;
-  color: #776;
+  color: var(--text-intro);
   padding: 8px 15px;
   margin-bottom: 15px;
   background: var(--surface-alt-warm);
@@ -538,7 +585,7 @@ body {
 /* Shared activity styles */
 .activity-prompt {
   font-size: 12px;
-  color: #665;
+  color: var(--text-prompt);
   margin-bottom: 15px;
   font-style: italic;
 }
@@ -547,7 +594,7 @@ body {
   background: var(--surface-status);
   border: 1px solid #d9c878;
   border-radius: 4px;
-  color: #6a5a12;
+  color: var(--text-status);
   font-size: 11px;
   line-height: 1.5;
   margin: 0 0 12px;
@@ -557,13 +604,13 @@ body {
 .activity-status-note.error {
   background: var(--surface-status-error);
   border-color: #d8a69a;
-  color: #8a3a2f;
+  color: var(--text-status-error);
 }
 
 .activity-status-note.subtle {
   background: var(--surface-status-subtle);
   border-color: var(--border-light);
-  color: #6b6253;
+  color: var(--text-status-subtle);
 }
 
 .stats-state-copy {
@@ -583,7 +630,7 @@ body {
 
 .activity-hint {
   font-size: 10px;
-  color: #767561;
+  color: var(--text-hint);
   transition: opacity 0.2s;
 }
 
@@ -598,14 +645,14 @@ body {
 }
 
 .activity-hint.at-limit {
-  color: #c62828;
+  color: var(--text-error);
   font-weight: bold;
   animation: limitFlash 0.3s ease 2;
 }
 
 /* Submit error */
 .submit-error {
-  color: #c62828;
+  color: var(--text-error);
   font-size: 11px;
   text-align: center;
   margin: 6px 0;
@@ -673,7 +720,7 @@ body {
 }
 
 .soundtrack-intro {
-  color: #665;
+  color: var(--text-prompt);
   font-size: 12px;
   font-style: italic;
   line-height: 1.5;
@@ -704,7 +751,7 @@ body {
 }
 
 .soundtrack-corner-kicker {
-  color: #6d6253;
+  color: var(--text-kicker);
   font-size: 11px;
   font-weight: bold;
   margin-bottom: 10px;
@@ -834,7 +881,7 @@ body {
 }
 
 .album-birthday {
-  color: #8a6700;
+  color: var(--text-birthday);
   font-size: 11px;
   font-weight: bold;
   margin: 4px 0 8px;
@@ -857,7 +904,7 @@ body {
 
 .soundtrack-card-meta {
   align-items: center;
-  color: #7d705d;
+  color: var(--text-card-meta);
   display: flex;
   gap: 6px;
   margin-bottom: 6px;
@@ -876,14 +923,14 @@ body {
 }
 
 .soundtrack-card-title {
-  color: #2d2d2d;
+  color: var(--text-card-title);
   font-size: 12px;
   font-weight: bold;
   margin-bottom: 5px;
 }
 
 .soundtrack-card-copy {
-  color: #554a3b;
+  color: var(--text-card-copy);
   font-size: 11px;
   line-height: 1.55;
   margin: 0;
@@ -893,7 +940,7 @@ body {
   background: var(--surface-corner-note);
   border: 1px dashed var(--border-light);
   border-radius: 6px;
-  color: #665a49;
+  color: var(--text-corner-note);
   font-size: 11px;
   line-height: 1.5;
   margin-bottom: 10px;
@@ -919,7 +966,7 @@ body {
 }
 
 .soundtrack-angle-label {
-  color: #7d705d;
+  color: var(--text-card-meta);
   font-size: 10px;
   font-weight: bold;
   margin-bottom: 4px;
@@ -927,7 +974,7 @@ body {
 }
 
 .soundtrack-angle-title {
-  color: #2d2d2d;
+  color: var(--text-card-title);
   font-size: 12px;
   font-weight: bold;
   line-height: 1.4;
@@ -935,14 +982,14 @@ body {
 }
 
 .soundtrack-angle-copy {
-  color: #584c3e;
+  color: var(--text-angle-copy);
   font-size: 11px;
   line-height: 1.5;
   margin: 0;
 }
 
 .soundtrack-section-title {
-  color: #655a48;
+  color: var(--text-section-title);
   font-size: 10px;
   font-weight: bold;
   letter-spacing: 0.4px;
@@ -951,7 +998,7 @@ body {
 }
 
 .soundtrack-list {
-  color: #44392d;
+  color: var(--text-list);
   margin: 0;
   padding-left: 18px;
 }
@@ -972,7 +1019,7 @@ body {
 }
 
 .soundtrack-recommendations-intro {
-  color: #6e6252;
+  color: var(--text-recs-intro);
   font-size: 11px;
   line-height: 1.45;
   margin-bottom: 8px;
@@ -1012,20 +1059,20 @@ body {
 }
 
 .soundtrack-recommendation-title {
-  color: #2d2d2d;
+  color: var(--text-card-title);
   font-size: 11px;
   font-weight: bold;
   line-height: 1.35;
 }
 
 .soundtrack-recommendation-meta {
-  color: #7d705d;
+  color: var(--text-card-meta);
   font-size: 10px;
   line-height: 1.35;
 }
 
 .soundtrack-recommendation-reason {
-  color: #5f5345;
+  color: var(--text-rec-reason);
   font-size: 10px;
   line-height: 1.5;
   margin: 0;
@@ -1033,7 +1080,7 @@ body {
 
 .soundtrack-recommendation-link {
   align-self: flex-start;
-  color: #a11414;
+  color: var(--text-link-strong);
   font-size: 10px;
   font-weight: bold;
   margin-top: 2px;
@@ -1141,13 +1188,13 @@ body {
 .hot-take-hot {
   background: rgba(201, 100, 39, 0.15);
   border: 1px solid rgba(201, 100, 39, 0.3);
-  color: #8a5410;
+  color: var(--text-hot);
 }
 
 .hot-take-crowd {
   background: rgba(90, 154, 90, 0.15);
   border: 1px solid rgba(90, 154, 90, 0.3);
-  color: #3f7a3f;
+  color: var(--text-positive);
 }
 
 .rate-summary {
@@ -1251,7 +1298,7 @@ body {
 
 .histo-label {
   font-size: 10px;
-  color: #665;
+  color: var(--text-prompt);
   padding: 2px 0;
   border-top: 1px solid var(--border-inner);
   width: 100%;
@@ -1553,7 +1600,7 @@ body {
 
 .clue-label {
   font-weight: bold;
-  color: #555;
+  color: var(--text-label);
   white-space: nowrap;
 }
 
@@ -1662,13 +1709,13 @@ body {
 .guess-result.solved {
   background: var(--surface-positive);
   border: 1px solid #81c784;
-  color: #2e7d32;
+  color: var(--text-success);
 }
 
 .guess-result.failed {
   background: var(--surface-negative);
   border: 1px solid #e57373;
-  color: #c62828;
+  color: var(--text-error);
 }
 
 .guess-community {
@@ -1768,7 +1815,7 @@ body {
 
 .scramble-reveal {
   font-size: 13px;
-  color: #6b6b6b;
+  color: var(--text-quiet);
   margin-top: 8px;
   text-align: center;
 }
@@ -1816,19 +1863,19 @@ body {
   border-radius: 4px;
   padding: 15px;
   text-align: center;
-  color: #9ab6d2;
+  color: var(--text-footer);
   font-size: 10px;
   line-height: 2;
 }
 
 .site-footer .footer-title {
-  color: #8cb4d8;
+  color: var(--text-nav);
   font-weight: bold;
   margin-bottom: 4px;
 }
 
 .site-footer .footer-dim {
-  color: #97aec6;
+  color: var(--text-footer-dim);
 }
 
 /* ─── Album cover art ─── */
@@ -2113,13 +2160,13 @@ body {
   font-size: 10px;
   border-radius: 3px;
   background: var(--surface-inset);
-  color: #6b6b6b;
+  color: var(--text-quiet);
   border: 1px solid #ddd;
 }
 
 .heardle-tick.active {
   background: var(--surface-positive);
-  color: #2e7d32;
+  color: var(--text-success);
   border-color: #81c784;
 }
 
@@ -2160,7 +2207,7 @@ body {
 
 .lyric-hint {
   font-size: 11px;
-  color: #665;
+  color: var(--text-prompt);
   padding: 4px 10px;
   background: var(--surface-note);
   border: 1px dashed var(--gold);
@@ -2247,7 +2294,7 @@ body {
   padding: 6px 10px;
   text-align: left;
   font-size: 10px;
-  color: #665;
+  color: var(--text-prompt);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   border-bottom: 2px solid #d5cbb0;
@@ -2267,7 +2314,7 @@ body {
 }
 
 .archive-date {
-  color: #6b6b6b;
+  color: var(--text-quiet);
   white-space: nowrap;
   font-size: 10px;
 }
@@ -2279,17 +2326,17 @@ body {
 
 .archive-title {
   font-weight: bold;
-  color: #3a5f8f;
+  color: var(--text-heading-link);
 }
 
 .archive-artist {
-  color: #666;
+  color: var(--text-answer);
   font-style: italic;
 }
 
 .archive-genre,
 .archive-year {
-  color: #6b6b6b;
+  color: var(--text-quiet);
 }
 
 .archive-year {
@@ -2320,7 +2367,7 @@ body {
 
 .stat-label {
   font-size: 10px;
-  color: #6b6b6b;
+  color: var(--text-quiet);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-top: 4px;
@@ -2341,7 +2388,7 @@ body {
 
 .top-vibe-rank {
   font-size: 10px;
-  color: #6b6b6b;
+  color: var(--text-quiet);
   font-weight: bold;
   width: 24px;
 }
@@ -2355,7 +2402,7 @@ body {
 
 .top-vibe-name {
   font-weight: bold;
-  color: #666;
+  color: var(--text-answer);
   width: 100px;
 }
 
@@ -2382,7 +2429,7 @@ body {
 
 .top-vibe-count {
   font-size: 10px;
-  color: #6b6b6b;
+  color: var(--text-quiet);
   width: 30px;
   text-align: right;
 }
@@ -2403,7 +2450,7 @@ body {
   background: var(--surface-alt-warm);
   font-weight: bold;
   font-size: 12px;
-  color: #333;
+  color: var(--text-question);
 }
 
 .faq-answer {
@@ -2411,20 +2458,20 @@ body {
   gap: 8px;
   padding: 10px 15px 12px;
   font-size: 11px;
-  color: #666;
+  color: var(--text-answer);
   line-height: 1.6;
 }
 
 .faq-icon {
   font-weight: bold;
-  color: #3a5f8f;
+  color: var(--text-heading-link);
   flex-shrink: 0;
   font-size: 13px;
   font-family: Georgia, serif;
 }
 
 .faq-icon-a {
-  color: #2e7d32;
+  color: var(--text-success);
 }
 
 /* ─── Responsive ─── */
@@ -2557,7 +2604,7 @@ body {
 @media (hover: none) {
   .nav-item:hover {
     background: none;
-    color: #8cb4d8;
+    color: var(--text-nav);
   }
 
   .nav-item.active:hover {
@@ -2616,7 +2663,7 @@ body {
     #ff9ff3,
     #54a0ff
   );
-  color: #1a1a2e;
+  color: var(--text-display);
   font-weight: bold;
   font-size: 13px;
   letter-spacing: 1px;
@@ -2686,7 +2733,7 @@ body {
   font-style: italic;
   font-size: 10px;
   opacity: 0.8;
-  color: #c3d4e6;
+  color: var(--text-sig);
 }
 
 /* ─── Next album countdown ─── */
@@ -2848,7 +2895,8 @@ body {
 }
 
 .playlist-bar-yes {
-  background: #5a9a5a;
+  /* Darkened from #5a9a5a: the white label on it read 3.38:1 in both skins. */
+  background: #3f7a3f;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3182,7 +3230,7 @@ body {
 .taste-heard {
   display: block;
   font-size: 10px;
-  color: #3f7a3f;
+  color: var(--text-positive);
   margin-top: 4px;
   font-weight: bold;
 }
@@ -3320,8 +3368,13 @@ body {
   --text-secondary: #000;
   --text-muted: #000;
   --text-link: #000080;
-  --gold: #008080;
-  --gold-light: #008080;
+  /* --gold is mostly a TEXT colour on light surfaces (.vibe-btn.locked,
+     .histo-label.mine, .lyric-quote), where teal reads 2.62:1. Navy reads
+     8.80:1. It is also a background in three places — .heardle-tick.current,
+     .attempt-bar.yours, .rank-progress-fill — which carry white or no text, so
+     navy works there too. */
+  --gold: #000080;
+  --gold-light: #000080;
   --star-active: #000080;
   --star-inactive: #808080;
   --btn-active: #008080;
@@ -3508,10 +3561,6 @@ body {
   color: #9ab6d2;
 }
 
-:root[data-theme="vintage"] .muted-text {
-  color: #000;
-}
-
 :root[data-theme="vintage"] .footer-link {
   color: #000080;
 }
@@ -3520,34 +3569,8 @@ body {
    Heardle ticks and the cover placeholder were still wearing default-skin
    greys, and the two activity greys fail on silver (3.21 and 2.57). */
 :root[data-theme="vintage"] .heardle-tick {
-  color: #000;
   border: 2px solid;
   border-color: #808080 #dfdfdf #dfdfdf #808080;
-}
-
-:root[data-theme="vintage"] .activity-prompt,
-:root[data-theme="vintage"] .activity-hint,
-:root[data-theme="vintage"] .taste-desc,
-:root[data-theme="vintage"] .scramble-reveal,
-:root[data-theme="vintage"] .archive-date,
-:root[data-theme="vintage"] .archive-year,
-:root[data-theme="vintage"] .stat-label,
-:root[data-theme="vintage"] .top-vibe-rank,
-:root[data-theme="vintage"] .top-vibe-count {
-  color: #000;
-}
-
-/* ── Vintage: whole-skin fallbacks ──
-   Walking the other tabs turned up a long tail of surfaces and text that still
-   wore default-skin colours — Soundtrack Corner cards, Archive table stripes,
-   stat cards, FAQ rows. Enumerating every class is a losing game, so the skin
-   ends with two broad rules and then re-asserts the few colours that carry
-   meaning.
-
-   Specificity does the ordering: this selector is (0,1,0), so the title-bar and
-   link rules above at (0,3,0) still win and keep their white and navy. */
-[data-theme="vintage"] * {
-  color: #000;
 }
 
 /* The whole surface palette goes silver in one place. This replaces the
@@ -3578,6 +3601,47 @@ body {
   --surface-row-hover: #a8a8a8;
   --surface-progress-track: #a8a8a8;
   --surface-sleeve: #c0c0c0;
+
+  /* Text palette. With these set, the skin no longer needs a universal colour
+     rule — every element already resolves its own colour through a token. */
+  --text-quiet: #000; /* muted metadata */
+  --text-prompt: #000; /* activity prompts */
+  --text-answer: #000; /* answers and secondary rows */
+  --text-intro: #000; /* intro band */
+  --text-label: #000; /* table and clue labels */
+  --text-artist: #000; /* album artist */
+  --text-question: #000; /* faq question */
+  --text-card-title: #000; /* soundtrack card titles */
+  --text-display: #000; /* album title, konami */
+  --text-bar: #000; /* info bar and marquee */
+  --text-card-meta: #000; /* soundtrack meta */
+  --text-card-copy: #000; /* soundtrack card copy */
+  --text-corner-note: #000; /* corner note */
+  --text-angle-copy: #000; /* angle copy */
+  --text-section-title: #000; /* section titles */
+  --text-list: #000; /* listen-for list */
+  --text-recs-intro: #000; /* recommendations intro */
+  --text-rec-reason: #000; /* recommendation reason */
+  --text-kicker: #000; /* corner kicker */
+  --text-status-subtle: #000; /* subtle status */
+  --text-hint: #000; /* activity hint */
+  --text-status: #000; /* status note */
+  --text-muted-inline: #000; /* inline muted text */
+  --text-error: #800000; /* errors (6.02:1 on silver) */
+  --text-status-error: #800000; /* status error */
+  --text-link-strong: #800000; /* emphasised link */
+  --text-success: #1a4f1a; /* solved (5.03:1 on silver) */
+  --text-positive: #1a4f1a; /* positive */
+  --text-hot: #800000; /* hot take */
+  --text-birthday: #000080; /* album birthday */
+  --text-streak: #000080; /* streak badge */
+  --text-nav: #000; /* nav items (silver toolbar in vintage) */
+  --text-banner-est: #fff; /* banner est (teal in vintage) */
+  --text-banner-tagline: #fff; /* banner tagline */
+  --text-footer: #000; /* footer body */
+  --text-footer-dim: #000; /* footer dim */
+  --text-sig: #000; /* forum signature */
+  --text-heading-link: #000080; /* archive titles, faq icon */
 }
 
 /* Text entry stays white. Sunken white input boxes are what the era actually
@@ -3600,31 +3664,15 @@ body {
   border-color: #dfdfdf #808080 #808080 #dfdfdf;
 }
 
-/* Colours that still have to mean something on silver. Maroon reads 6.02:1,
-   the green 5.03:1 — both clear AA, unlike the default skin's brighter pair. */
-:root[data-theme="vintage"] .submit-error,
-:root[data-theme="vintage"] .hot-take-hot {
-  color: #800000;
-}
-
-:root[data-theme="vintage"] .taste-heard,
-:root[data-theme="vintage"] .hot-take-crowd {
-  color: #1f5c1f;
-}
-
 /* Title bars and links restated last so nothing in the fallbacks reaches them.
    The ` *` descendant selectors are load-bearing: without them the universal
    black fallback paints nested elements — the <strong> in "You voted Yes", the
    album names in a decided matchup — black on teal at 4.40:1. Only
    .panel-header carried one, so the other three bars shipped failing text. */
 :root[data-theme="vintage"] .panel-header,
-:root[data-theme="vintage"] .panel-header *,
 :root[data-theme="vintage"] .versus-header,
-:root[data-theme="vintage"] .versus-header *,
 :root[data-theme="vintage"] .taste-header,
-:root[data-theme="vintage"] .taste-header *,
 :root[data-theme="vintage"] .playlist-question,
-:root[data-theme="vintage"] .playlist-question *,
 :root[data-theme="vintage"] .banner-title,
 :root[data-theme="vintage"] .banner-tagline,
 :root[data-theme="vintage"] .banner-est,
@@ -3638,14 +3686,6 @@ body {
   color: #000080;
 }
 
-/* Anything sitting on a --gold surface is on teal in this skin, so it needs the
-   same white-and-descendants treatment as the title bars — the universal black
-   fallback otherwise reaches its nested text at 4.40:1. */
-:root[data-theme="vintage"] .heardle-tick.current,
-:root[data-theme="vintage"] .heardle-tick.current * {
-  color: #fff;
-}
-
 :root[data-theme="vintage"] a,
 :root[data-theme="vintage"] .footer-link {
   color: #000080;
@@ -3656,8 +3696,6 @@ body {
    stripe is a literal .even class, not :nth-child; and the recommendation
    cover carries its own cream. */
 :root[data-theme="vintage"] .archive-table th {
-  background: #c0c0c0;
-  color: #000;
   border-bottom: 2px solid #808080;
 }
 
@@ -3672,4 +3710,21 @@ body {
 
 :root[data-theme="vintage"] .soundtrack-recommendation-cover {
   border-color: #808080;
+}
+
+/* The per-album accent is set as an inline custom property on .content, so a
+   stylesheet rule cannot reach it without !important — this is the one case
+   that warrants it. The vintage palette is teal and silver only; letting a
+   rotating album colour through put .stat-num at 3.06:1 on silver. */
+:root[data-theme="vintage"] .content {
+  --accent-color: #000080 !important;
+  --accent-light: #c0c0c0 !important;
+}
+
+/* .scramble-display is the one place a --gold text colour sits on a --bg-dark
+   background. Both tokens are teal in this skin, so the scrambled letters
+   rendered teal on teal — ratio 1.00, completely invisible, with the game
+   unplayable. White on the teal panel reads 4.77:1. */
+:root[data-theme="vintage"] .scramble-display {
+  color: #fff;
 }
