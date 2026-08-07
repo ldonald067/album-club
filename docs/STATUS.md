@@ -125,14 +125,31 @@ docs. This section is only what is still open.
    at submit time rather than only on mount, which closes the multi-tab path.
 
 3. **Pre-existing contrast failures in the default skin.** Found by the
-   strengthened audit, none introduced by the skin work: `rank-progress-text`
-   3.73, four `vibe-label` variants 3.93–4.49. Each sits on a solid background,
-   so these are real, not the gradient artefact described in `docs/gotchas.md`.
+   strengthened audit, none introduced by the skin work. All four sit on solid
+   backgrounds, so they are real rather than the gradient artefact described in
+   `docs/gotchas.md`:
+   - `.rank-progress-text` 3.73 (`#666` on the info bar)
+   - `.vibe-label` 3.93–4.49 across four tinted variants
+   - `.activity-intro` 4.22 (`#776` on `--surface-alt-warm`)
+   - `.playlist-btn` yes 3.73 / no 2.40 (`#333` on the tinted vote buttons)
 
-4. **Mobile is unverified.** Neither browser tool available in-session can
-   emulate a viewport — one resizes the window without changing the CSS
-   viewport, the other runs a hidden pane. The landing page was reordered and
-   the skin added without a real 375px pass. Worth doing by hand.
+   Fixing them means darkening deliberately soft colours, so it is a taste call
+   as much as a compliance one — worth doing, but not silently.
+
+4. **Mobile verified (2026-08-07).** Checked at 375x812 with real touch
+   emulation — mobile UA, five touch points, `(pointer: coarse)` active. No
+   horizontal overflow on any tab in either skin, the Archive table fits, and
+   vintage has zero contrast failures at that size. Two touch targets were
+   fixed: the skin picker (20px) and the Guess row's input and button (20px),
+   which are unclassed elements so every class-based rule in the
+   `(pointer: coarse)` block had been missing them — the primary control of
+   the daily game. `.banner-tagline` and `.footer-link` stay under 44px and
+   are exempt: WCAG 2.5.8 excludes targets inline in a block of text.
+
+   **A correction for anyone who read the old version of this file:** it said no
+   in-session browser tool could emulate a viewport. That was wrong. The in-app
+   Browser pane's `resize_window` mobile preset does full device emulation;
+   only the Chrome extension's resize leaves the CSS viewport at desktop width.
 
 5. **Suggested features (from the 2026-07 review, not built):** "Predict the
    Crowd" (guess the room's average before reveal), "Divisive Meter", Streak

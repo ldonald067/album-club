@@ -3219,10 +3219,21 @@ body {
 /* Touch devices get the 44px tap target; on desktop these action buttons are
    sized by their own padding so they don't dwarf their 11px labels. Declared
    after the base rules so it wins regardless of source order. */
+/* Touch targets. The three below were sized when this block was written; the
+   rest were found by actually loading the site at 375px with touch emulation.
+   The guess row is the worst of them — an unclassed <input> and <button>, so
+   every class-based rule here missed them, and the primary control of the
+   daily game rendered 20px tall on a phone. The skin picker had the same
+   problem for the same reason: it was new and nobody measured it. */
 @media (pointer: coarse) {
   .versus-btn,
   .playlist-btn,
-  .taste-play-btn {
+  .taste-play-btn,
+  .nav-item,
+  .listen-btn,
+  .theme-select,
+  .guess-input input,
+  .guess-input button {
     min-height: 44px;
   }
 }
