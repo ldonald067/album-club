@@ -3753,8 +3753,10 @@ function CozyFeaturedGame({ game, canFullscreen }) {
             <button type="button" className="listen-btn" onClick={goFullscreen}>
               Full screen
             </button>
+            {/* Both halves earn their place: there is no Esc on a phone, and
+                no back gesture on a desktop. */}
             <span className="cozy-controls-note">
-              Esc brings you back here.
+              Esc, or your back gesture, brings you back here.
             </span>
           </>
         ) : (
