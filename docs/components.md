@@ -53,16 +53,17 @@ Own nav tab, not a home-page panel — the home page already renders ~25 blocks 
 
 Games live in the `COZY_GAMES` array. **Adding one is a single entry.**
 
-- `featured: true` → full 620px playable frame (520px under 640px wide). Currently just the self-hosted Night Desk Terrarium at `pixelfun.littlealbumclub.net`.
+- `featured: true` → full playable frame. Currently just the self-hosted Night Desk Terrarium at `pixelfun.littlealbumclub.net`. The frame is 700×620 in the normal column (520px tall under 640px viewport), but at viewports ≥1280px the `.cozy-panel` breaks out of the 960px column so the frame reaches **1200×730** — the game's own grid collapses below ~1180px of frame width, and 1200px is where everything fits one screen (its width table lives in `cozyfun/docs/EMBEDDING.md`). 730 is measured: at 1200 wide the materials tray needs 690px of panel height before the last row clears its internal scroll.
 - otherwise → itch.io compact card via `embedId`, the number in itch's embed URL (Share → Embed on the game's page), **not** the URL slug. The card only loads the game on click and already opens itch in a new tab, so several cost little.
 
 The shelf and its credit line don't render at all when no card games exist.
 
-Three things about the featured embed that should not be "tidied":
+Four things about the featured embed that should not be "tidied":
 
 - `src` points at `/embed.html`, a ~4.8 KB poster. The site root pulls ~9 MB on load.
-- `allow="autoplay; fullscreen"` is required for the ambience audio; without it it fails silently.
+- `allow="autoplay; fullscreen"` is required for the ambience audio; without it it fails silently. It also permits the game's own fullscreen button, which is the **primary** full-size path — Esc (or the back gesture) lands the player straight back on this tab.
 - **No `sandbox` attribute.** Without `allow-same-origin` it would cut the game off from browser storage and silently break saved scenes.
+- The "Play in New Tab" link renders only where `document.fullscreenEnabled` is false — the same check the game uses to render its fullscreen button, so the two sides flip together (in practice: iOS Safari). Everywhere else the link is deliberately absent: a second open surface is a second live simulation diverging from the same autosave (`cozyfun/docs/EMBEDDING.md` → "One window at a time").
 
 ## Album vs Album (`VersusMatchup`)
 

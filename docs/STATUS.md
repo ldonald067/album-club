@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-08-07.
+session. Last updated: 2026-08-09.
 
 ## Handoff — read this first
 
@@ -70,6 +70,17 @@ Node 22) runs `npm test` then `npm run build`.
   upgrade (not wired).
 
 ## Recent work (this stretch of sessions)
+
+- **Cozy embed widened + fullscreen-first (2026-08-09).** At viewports ≥1280px
+  the Cozy panel breaks out of the 960px column so the terrarium frame gets
+  1200×730 — the game's desktop layout on a single screen instead of 2178px of
+  content stacked inside a 700×620 frame (its grid collapses below ~1180px of
+  frame width; table in `cozyfun/docs/EMBEDDING.md`). The game's own fullscreen
+  button is now the primary full-size path (Esc returns to the tab); "Play in
+  New Tab" renders only where `document.fullscreenEnabled` is false — the same
+  check the game gates its button on — because a second surface is a second
+  simulation diverging from the same autosave. Narrower viewports and mobile
+  are unchanged and were re-verified.
 
 - **Skins (2026-08-06).** A "Skin" dropdown switches between the default 2004
   forum and a **Vintage** 1990s desktop. Every colour in the stylesheet now

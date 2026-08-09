@@ -3693,9 +3693,19 @@ const COZY_GAMES = [
 function CozyVibesSection() {
   const featured = COZY_GAMES.filter((g) => g.featured);
   const cards = COZY_GAMES.filter((g) => !g.featured);
+  // Mirrors the exact check the game uses to render its own fullscreen button,
+  // so the two sides flip together: where fullscreen works (everywhere but iOS
+  // Safari), that button is the primary path and Esc lands the player back on
+  // this tab. Only where it can't work do we fall back to a new-tab link — a
+  // second surface is a second live simulation diverging from the same
+  // autosave, so it must not be the default.
+  const [canFullscreen, setCanFullscreen] = useState(true);
+  useEffect(() => {
+    setCanFullscreen(Boolean(document.fullscreenEnabled));
+  }, []);
 
   return (
-    <div className="panel">
+    <div className="panel cozy-panel">
       <div className="panel-header">
         <span>
           <i className="hn hn-play" aria-hidden="true" /> COZY VIBES
@@ -3730,17 +3740,26 @@ function CozyVibesSection() {
                 🕯️ It&apos;s night in there. Click to light the lamp.
               </div>
             </div>
-            <div style={{ textAlign: "center", marginTop: 8 }}>
-              <a
-                href={game.playUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="listen-btn"
-                style={{ fontSize: 11, padding: "8px 16px" }}
-              >
-                <i className="hn hn-play" aria-hidden="true" /> Play in New Tab
-              </a>
-            </div>
+            {canFullscreen ? (
+              <p className="cozy-fullscreen-hint">
+                Room to breathe: the expand button on the game&apos;s top row
+                goes full screen — Esc, or your back gesture, sets you back down
+                right here.
+              </p>
+            ) : (
+              <div style={{ textAlign: "center", marginTop: 8 }}>
+                <a
+                  href={game.playUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="listen-btn"
+                  style={{ fontSize: 11, padding: "8px 16px" }}
+                >
+                  <i className="hn hn-play" aria-hidden="true" /> Play in New
+                  Tab
+                </a>
+              </div>
+            )}
           </div>
         ))}
 
