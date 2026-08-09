@@ -13,7 +13,7 @@
 | `cover`        | string  | Single emoji, unique across all albums             |
 | `color`        | string  | Hex color, unique across all albums, R+G+B < 600   |
 | `recognizable` | boolean | True if a general listener could guess from clues  |
-| `image`        | string  | Cover art URL (all 424 populated)                  |
+| `image`        | string  | Cover art URL, https only — all populated          |
 | `youtubeId`    | string? | YouTube video ID for Heardle/Taste Test (see note) |
 
 ## Quality Rules
@@ -26,8 +26,8 @@
 - **Color must be unique** — no two albums share the same hex
 - **Emoji must be unique** — single codepoint only (no flags 🇫🇷, ZWJ ❤️‍🔥, or keycaps 3️⃣)
 - **`recognizable: true`** only for albums a general listener could guess from clues. Niche/experimental = false
-- **`youtubeId` coverage is intentionally partial across the full 424-album catalog (~32%)**: many albums are mixtapes, lofi compilations, DJ sets, or niche releases without obvious full-album uploads. That is expected. The current recognizable pool is fully covered, which keeps Heardle and Blind Taste Test on stable daily picks.
-- **`image` must not be null** — fetch via MusicBrainz/iTunes before committing. All 424 currently populated
+- **`youtubeId` coverage is intentionally partial across the full catalog**: many albums are mixtapes, lofi compilations, DJ sets, or niche releases without obvious full-album uploads. That is expected. The current recognizable pool is fully covered, which keeps Heardle and Blind Taste Test on stable daily picks.
+- **`image` must not be null, and must be https** — fetch via MusicBrainz/iTunes before committing. `eval-site` fails on a missing, duplicated, or `http://` cover: production is https, so an insecure URL is mixed content and local dev cannot reveal it
 - **No duplicates** — check artist+title before adding. Run `/add-album` skill for validation
 - After renaming an album, set `image` to `null` and re-run fetch-covers to get correct artwork
 
@@ -45,7 +45,7 @@ Lyric Challenge now picks from the lyric-backed recognizable subset first instea
 
 ## Daily Rotation
 
-Seeded shuffle (mulberry32 PRNG + Fisher-Yates) keyed by year. Same date = same album globally. Rotates through all 424 albums before repeating.
+Seeded shuffle (mulberry32 PRNG + Fisher-Yates) keyed by year. Same date = same album globally. Rotates through the whole catalog before repeating, so adding an album shifts which record lands on which day.
 
 **The per-game sampler is different and the difference matters.** `pickRotatingPoolAlbum` indexes by _appearance ordinal_ — how many times that game has aired — not by `dayOfYear`. Indexing on the day samples the pool at a stride of `GAME_TYPES.length`, which collapses a pool sharing that factor to `pool/cadence` distinct albums a year (a pool of 80 gives 16, not 73) with no visible symptom. `npm run eval-site` fails if this regresses.
 

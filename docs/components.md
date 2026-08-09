@@ -72,6 +72,21 @@ Daily head-to-head matchup. Shows two album covers side by side with title/artis
 
 Two 60-second mystery audio clips via YouTube IFrame API. Two `YT.Player` instances (`taste-player-a`, `taste-player-b`) — only one plays at a time. Pick buttons disabled until both clips heard (`listenedA && listenedB`). After voting, reveals both albums with cover art + community preference bar + confetti. YouTube API script shared with HeardleGame — checks `window.YT` before loading, chains `onYouTubeIframeAPIReady`. Posts to `/api/matchup` with `type: "taste"`. State: `aotd_taste_{date}`.
 
+## Skin Picker (`ThemePicker`)
+
+A `<select>` in the info bar switching the default 2004 forum look and the
+**Vintage** 1990s-desktop skin. The component is deliberately thin: it sets
+`data-theme` on `<html>` and writes `aotd_theme`, and knows nothing about what
+the skin changes. All styling lives in one block at the end of `globals.css`.
+
+A pre-paint script in `app/layout.js` applies the saved skin before React
+hydrates, so a returning visitor never sees the wrong look flash. That is why
+`<html>` carries `suppressHydrationWarning`.
+
+**Read `docs/skins.md` before touching any colour.** Every background and text
+colour resolves through a `--surface-*` / `--text-*` token, and `eval-site`
+fails on a raw light hex.
+
 ## Retention Features (localStorage-only, no backend)
 
 ### Streak Milestones

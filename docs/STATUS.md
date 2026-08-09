@@ -1,7 +1,36 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-08-06.
+session. Last updated: 2026-08-07.
+
+## Handoff — read this first
+
+**Nothing is in flight.** `master` is clean, pushed, and deployed; verify with
+`GET /api/health`, which returns the running commit SHA. The last stretch
+(2026-08-04 → 08-07) covered: the lyric pool refill, every outstanding code
+review finding, the Vintage skin and the colour-token system underneath it, a
+landing-page reorder, a real mobile pass, and Soundtrack Corner taken to
+effectively complete. Details are in the sections below and in git history.
+
+**Four things a new session will get wrong without warning:**
+
+1. **Measure colour, never read it.** Four separate contrast "findings" this
+   week were measurement artefacts — gradients, opacity, a frozen animation
+   timeline, and translucent backgrounds. Three would have led to darkening
+   colours that were already fine. `docs/gotchas.md` → "Verifying colour".
+2. **Never hardcode a colour.** Backgrounds and text both resolve through
+   `--surface-*` / `--text-*` tokens; `eval-site` fails on a raw light hex.
+   `docs/skins.md`.
+3. **Verify by outcome.** `eval-site` guardrails have repeatedly caught what
+   careful reading missed — a self-recommending album, a stray CJK character in
+   a card title, contaminated lyric entries. Run it, and add a guardrail when
+   you fix a class of bug rather than just the instance.
+4. **Do not write content for records you do not know.** Two 2026 albums are
+   deliberately uncovered in Soundtrack Corner for this reason. Wrong data
+   costs more than missing data.
+
+**Where to pick up:** the open items below. None is urgent; item 2 is a
+standing decision rather than a task.
 
 ## What this is
 
@@ -50,6 +79,11 @@ Node 22) runs `npm test` then `npm run build`.
   expensive. The default skin was proved unchanged by comparing computed
   colours for 311 selectors across five tabs, before and after.
 
+- **Soundtrack Corner finished (2026-08-07).** Every recognizable album but two
+  is curated, and every genre now routes to a real profile instead of the bland
+  default. Angle labels are derived from their key rather than restated in the
+  data. Figures come from `npm run soundtrack-corner-report`.
+
 - **Landing page reordered (2026-08-05).** Rate & Reveal, Vibe Check and the
   daily puzzle now follow the album directly; the poll, matchup, taste test and
   teasers sit below them. Rate & Reveal moved from 1259px to 569px — it had
@@ -96,9 +130,9 @@ Node 22) runs `npm test` then `npm run build`.
 - **Earlier in this stretch:** a multi-agent review whose top 5 all shipped
   (off-volume backup, the `loadJson()` crash class + error boundary, node:test +
   CI, the UTC-midnight reload, even-stride pair repeats + icon subset);
-  Soundtrack Corner's cue vote, explainer, teaser and 86 curated overrides
-  (62.4% of the recognizable pool); and the catalog reaching 424 albums with all
-  images populated and unique emoji/colours.
+  Soundtrack Corner's cue vote, explainer and teaser, plus the first large batch
+  of curated overrides; and the catalog reaching full coverage on images, emoji
+  and accent colours. Current counts come from `npm run eval-site`.
 
 ## Open items / next steps
 
@@ -118,10 +152,14 @@ docs. This section is only what is still open.
    generated corner — a worse one, but an honest one. **Whoever knows those two
    records should write them; do not fill the gap from a press release.**
 
-   What is worth doing next here is the **generator floor**, not the last two
-   overrides: albums whose genre matches no profile fall to `DEFAULT_PROFILE`
-   and read blandest. One new profile improves dozens of albums at once. The
-   report's "Generator floor" section tracks which genre clusters have piled up.
+   **The generator floor is closed too (2026-08-07).** Seven new profiles —
+   neon-nostalgia, lofi-chill, global-roots, heavy-atmos, minimal-process,
+   britpop-swagger, mixtape-live — took the DEFAULT_PROFILE count from 21 to 0.
+   Most were near-misses rather than missing genres: the patterns use word
+   boundaries, so `\bmetal\b` never matched Metalcore and `\bpop\b` never
+   matched Britpop. **Append new profiles, never edit an existing regex** —
+   they match in array order, so appending can only catch what everything else
+   missed, and editing silently re-routes albums that already read well.
 
 2. **Deferred by decision — community gates count rows, not people.** Neither
    `matchup_votes` nor `vibes` has a voter column or uniqueness constraint, and

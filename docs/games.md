@@ -47,7 +47,7 @@ Each game's `saveState()` dispatches `window.dispatchEvent(new Event("aotd-activ
 
 ## Album vs Album
 
-Daily head-to-head: two past albums shown side by side with cover art. User picks their favorite, community vote split shown as percentage bar after voting. Deterministic daily pairing via `getVersusPair()` using seed `year * 83 + 23` — draws from full 424-album catalog, avoids today's featured album. Posts to `/api/matchup` with `type: "versus"`. State: `aotd_versus_{date}`.
+Daily head-to-head: two past albums shown side by side with cover art. User picks their favorite, community vote split shown as percentage bar after voting. Deterministic daily pairing via `getVersusPair()` using seed `year * 83 + 23` — draws from the full catalog, avoids today's featured album. Posts to `/api/matchup` with `type: "versus"`. State: `aotd_versus_{date}`.
 
 ## Blind Taste Test
 

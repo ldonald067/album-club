@@ -98,7 +98,7 @@ All caches are in-memory objects, no external cache layer needed for single-inst
 Current: **55.1 kB** page JS, **157 kB** First Load. Target: stay under 55 kB page JS.
 
 - `better-sqlite3` stays server-only (never imported in client code)
-- `lib/albums.json` (424 albums) is intentionally client-bundled — needed for autocomplete
+- `lib/albums.json` is intentionally client-bundled — needed for autocomplete. It is the largest single contributor to bundle size, so check it when the budget moves
 - `canvas-confetti` is dynamically imported and cached in `_confetti` variable
 - No code splitting needed — single-page app
 - **Pixel icons are self-hosted as a subset** (`app/iconfont-subset.css` +
