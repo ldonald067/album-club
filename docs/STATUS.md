@@ -71,16 +71,29 @@ Node 22) runs `npm test` then `npm run build`.
 
 ## Recent work (this stretch of sessions)
 
-- **Cozy embed widened + fullscreen-first (2026-08-09).** At viewports ≥1280px
-  the Cozy panel breaks out of the 960px column so the terrarium frame gets
-  1200×730 — the game's desktop layout on a single screen instead of 2178px of
-  content stacked inside a 700×620 frame (its grid collapses below ~1180px of
-  frame width; table in `cozyfun/docs/EMBEDDING.md`). The game's own fullscreen
-  button is now the primary full-size path (Esc returns to the tab); "Play in
-  New Tab" renders only where `document.fullscreenEnabled` is false — the same
-  check the game gates its button on — because a second surface is a second
-  simulation diverging from the same autosave. Narrower viewports and mobile
-  are unchanged and were re-verified.
+- **Cozy embed widened, and fullscreen moved to the site (2026-08-09).** At
+  viewports ≥1280px the Cozy panel breaks out of the 960px column so the
+  terrarium frame gets 1200×730 — the game's desktop layout on a single screen
+  instead of 2178px of content stacked inside a 700×620 frame (its grid
+  collapses below ~1180px of frame width; table in `cozyfun/docs/EMBEDDING.md`).
+
+  **The first version of this leaned on the game's own fullscreen button and was
+  wrong.** That button only exists on screen in the game's wide layout: at a
+  700×620 frame it sits 535px below the frame's fold, inside the iframe's own
+  scroll. So every visitor under 1280px — the reporter included — had no
+  reachable fullscreen at all, and the shipped copy pointed at a control they
+  could not see. The site now renders its own "Full screen" button that calls
+  `requestFullscreen()` on the iframe, visible at every width, with a
+  `fullscreenchange` handler that sizes the frame inline (author CSS otherwise
+  letterboxes it at 620px). "Play in New Tab" still renders only where
+  `document.fullscreenEnabled` is false (iOS Safari).
+
+  **Fullscreen engagement cannot be verified by automation.** Chrome refuses the
+  grant for synthesized clicks — the in-app pane and the Chrome extension both
+  reject with "not granted", and a control test on a plain page with no iframe
+  rejected identically, so it is not the embed. Verify the preconditions
+  (`fullscreenEnabled` in-frame, the `featurePolicy` delegation, the inline
+  resize on a dispatched `fullscreenchange`) and have a human press the button.
 
 - **Skins (2026-08-06).** A "Skin" dropdown switches between the default 2004
   forum and a **Vintage** 1990s desktop. Every colour in the stylesheet now

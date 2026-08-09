@@ -2043,12 +2043,28 @@ body {
   padding-top: 8px;
 }
 
-.cozy-fullscreen-hint {
+/* Fullscreen lives here rather than only inside the game: below ~1180px of
+   frame width the game's layout stacks and its own control row falls hundreds
+   of pixels below the frame's fold, so at most widths that button cannot be
+   found without scrolling inside the iframe. */
+.cozy-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.cozy-controls .listen-btn {
+  margin-top: 0;
+  font-size: 11px;
+  padding: 8px 16px;
+}
+
+.cozy-controls-note {
   font-size: 10px;
   font-style: italic;
   color: var(--text-muted);
-  text-align: center;
-  margin: 8px 0 0;
 }
 
 /* The game's grid collapses below ~1180px of frame width; narrower than that

@@ -3690,15 +3690,96 @@ const COZY_GAMES = [
   },
 ];
 
+// The game has its own fullscreen button, but only its wide desktop layout puts
+// it on screen. In a frame narrower than ~1180px the layout stacks and that
+// control lands ~535px below the frame's own fold, reachable only by scrolling
+// inside the iframe — measured at 700x620, not assumed. So the site offers
+// fullscreen from its own chrome, where it is visible at every width.
+function CozyFeaturedGame({ game, canFullscreen }) {
+  const frameRef = useRef(null);
+
+  // Our stylesheet pins the frame's height, and author styles outrank the UA's
+  // sizing for a fullscreen element — left alone the game would letterbox at
+  // 620px in the middle of a black screen. Inline styles beat both without a
+  // specificity race against the width breakout in globals.css.
+  useEffect(() => {
+    function fitToScreen() {
+      const frame = frameRef.current;
+      if (!frame) return;
+      const isFull = document.fullscreenElement === frame;
+      frame.style.width = isFull ? "100vw" : "";
+      frame.style.height = isFull ? "100vh" : "";
+      frame.style.borderRadius = isFull ? "0" : "";
+    }
+    document.addEventListener("fullscreenchange", fitToScreen);
+    return () => document.removeEventListener("fullscreenchange", fitToScreen);
+  }, []);
+
+  function goFullscreen() {
+    const frame = frameRef.current;
+    if (!frame?.requestFullscreen) return;
+    // A refused request must not surface as an unhandled rejection; the game
+    // stays playable in the frame either way.
+    frame.requestFullscreen().catch(() => {});
+  }
+
+  return (
+    <div className="cozy-featured">
+      <div className="cozy-game-title">
+        {game.title}
+        <span className="cozy-byline">{game.byline}</span>
+      </div>
+      <p className="cozy-blurb">{game.blurb}</p>
+      {/* The sandbox is a night scene, so it loads dark. Framed like a lit
+          window rather than left as a black rectangle on a cream page, with a
+          caption so the darkness reads as intent. */}
+      <div className="cozy-window">
+        <div className="cozy-frame">
+          <iframe
+            ref={frameRef}
+            src={game.embedUrl}
+            title={`${game.title} — a cozy pixel sandbox`}
+            allow="autoplay; fullscreen"
+            loading="lazy"
+          />
+        </div>
+        <div className="cozy-sill">
+          🕯️ It&apos;s night in there. Click to light the lamp.
+        </div>
+      </div>
+      <div className="cozy-controls">
+        {canFullscreen ? (
+          <>
+            <button type="button" className="listen-btn" onClick={goFullscreen}>
+              Full screen
+            </button>
+            <span className="cozy-controls-note">
+              Esc brings you back here.
+            </span>
+          </>
+        ) : (
+          <a
+            href={game.playUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="listen-btn"
+          >
+            <i className="hn hn-play" aria-hidden="true" /> Play in New Tab
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function CozyVibesSection() {
   const featured = COZY_GAMES.filter((g) => g.featured);
   const cards = COZY_GAMES.filter((g) => !g.featured);
-  // Mirrors the exact check the game uses to render its own fullscreen button,
-  // so the two sides flip together: where fullscreen works (everywhere but iOS
-  // Safari), that button is the primary path and Esc lands the player back on
-  // this tab. Only where it can't work do we fall back to a new-tab link — a
-  // second surface is a second live simulation diverging from the same
-  // autosave, so it must not be the default.
+  // Fullscreen is the primary full-size path: a second open surface is a second
+  // live simulation diverging from the same autosave. Only where the browser
+  // has no fullscreen at all (iOS Safari) is a new tab the one option left, so
+  // the link appears there and nowhere else. Read after mount — the server has
+  // no `document`.
   const [canFullscreen, setCanFullscreen] = useState(true);
   useEffect(() => {
     setCanFullscreen(Boolean(document.fullscreenEnabled));
@@ -3718,49 +3799,11 @@ function CozyVibesSection() {
         </p>
 
         {featured.map((game) => (
-          <div key={game.id} className="cozy-featured">
-            <div className="cozy-game-title">
-              {game.title}
-              <span className="cozy-byline">{game.byline}</span>
-            </div>
-            <p className="cozy-blurb">{game.blurb}</p>
-            {/* The sandbox is a night scene, so it loads dark. Framed like a
-                lit window rather than left as a black rectangle on a cream
-                page, with a caption so the darkness reads as intent. */}
-            <div className="cozy-window">
-              <div className="cozy-frame">
-                <iframe
-                  src={game.embedUrl}
-                  title={`${game.title} — a cozy pixel sandbox`}
-                  allow="autoplay; fullscreen"
-                  loading="lazy"
-                />
-              </div>
-              <div className="cozy-sill">
-                🕯️ It&apos;s night in there. Click to light the lamp.
-              </div>
-            </div>
-            {canFullscreen ? (
-              <p className="cozy-fullscreen-hint">
-                Room to breathe: the expand button on the game&apos;s top row
-                goes full screen — Esc, or your back gesture, sets you back down
-                right here.
-              </p>
-            ) : (
-              <div style={{ textAlign: "center", marginTop: 8 }}>
-                <a
-                  href={game.playUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="listen-btn"
-                  style={{ fontSize: 11, padding: "8px 16px" }}
-                >
-                  <i className="hn hn-play" aria-hidden="true" /> Play in New
-                  Tab
-                </a>
-              </div>
-            )}
-          </div>
+          <CozyFeaturedGame
+            key={game.id}
+            game={game}
+            canFullscreen={canFullscreen}
+          />
         ))}
 
         {cards.length > 0 && (
