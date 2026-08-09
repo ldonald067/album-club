@@ -105,20 +105,23 @@ Node 22) runs `npm test` then `npm run build`.
 Completed work is not listed here — it lives in git history and in the topic
 docs. This section is only what is still open.
 
-1. **Soundtrack Corner — 90.2% of recognizable albums covered (2026-08-07).**
-   Thirteen left. Get exact figures from `npm run soundtrack-corner-report`,
-   never from prose; pipeline in `docs/soundtrack-corner-research.md`.
+1. **Soundtrack Corner — effectively finished (2026-08-07).** Every recognizable
+   album is curated except two. Get exact figures from
+   `npm run soundtrack-corner-report`, never from prose; pipeline in
+   `docs/soundtrack-corner-research.md`.
 
-   **Two of the thirteen were skipped deliberately, not missed.** _BTS —
-   Arirang_ and _Olivia Rodrigo — You Seem Pretty Sad for a Girl So In Love_
-   are 2026 releases past the point where the writing could be grounded in the
-   actual records. Scene-work for an album nobody involved has heard is
-   invention, and this project's standing rule is that wrong data costs more
-   than missing data. Whoever knows those records should write them.
+   **The two left are a judgement call, not a backlog.** _BTS — Arirang_ and
+   _Olivia Rodrigo — You Seem Pretty Sad for a Girl So In Love_ are 2026
+   releases past the point where this writing can be grounded in the actual
+   records, and scene-work for an album the author has not heard is invention.
+   Wrong data costs more than missing data, and an uncovered album still gets a
+   generated corner — a worse one, but an honest one. **Whoever knows those two
+   records should write them; do not fill the gap from a press release.**
 
-   The other eleven are simply next in the queue: Mr. Morale, Javelin, Spirit
-   of Eden, Either/Or, Turn on the Bright Lights, Live at Pompeii, Lateralus,
-   Bitches Brew, MAP OF THE SOUL: 7, thank u next, Debí Tirar Más Fotos.
+   What is worth doing next here is the **generator floor**, not the last two
+   overrides: albums whose genre matches no profile fall to `DEFAULT_PROFILE`
+   and read blandest. One new profile improves dozens of albums at once. The
+   report's "Generator floor" section tracks which genre clusters have piled up.
 
 2. **Deferred by decision — community gates count rows, not people.** Neither
    `matchup_votes` nor `vibes` has a voter column or uniqueness constraint, and
