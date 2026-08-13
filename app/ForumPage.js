@@ -3697,6 +3697,11 @@ const COZY_GAMES = [
 // fullscreen from its own chrome, where it is visible at every width.
 function CozyFeaturedGame({ game, canFullscreen }) {
   const frameRef = useRef(null);
+  // `fullscreenEnabled` reports permission, not the outcome of a real request:
+  // an in-app webview or a managed browser can advertise support and still
+  // refuse the call. Swallowing that left the only full-size path dead and
+  // silent, so the refusal is recorded and the new-tab fallback uncovered.
+  const [fullscreenRefused, setFullscreenRefused] = useState(false);
 
   // Our stylesheet pins the frame's height, and author styles outrank the UA's
   // sizing for a fullscreen element — left alone the game would letterbox at
@@ -3718,9 +3723,12 @@ function CozyFeaturedGame({ game, canFullscreen }) {
   function goFullscreen() {
     const frame = frameRef.current;
     if (!frame?.requestFullscreen) return;
-    // A refused request must not surface as an unhandled rejection; the game
-    // stays playable in the frame either way.
-    frame.requestFullscreen().catch(() => {});
+    // Both arms are handled, so a refusal never surfaces as an unhandled
+    // rejection and a later success takes the fallback back down.
+    frame.requestFullscreen().then(
+      () => setFullscreenRefused(false),
+      () => setFullscreenRefused(true),
+    );
   }
 
   return (
@@ -3748,7 +3756,11 @@ function CozyFeaturedGame({ game, canFullscreen }) {
         </div>
       </div>
       <div className="cozy-controls">
-        {canFullscreen ? (
+        {/* The button stays mounted after a refusal rather than being swapped
+            out: it is what the player just pressed, so unmounting it would
+            drop keyboard focus to the body at the exact moment we owe them an
+            explanation. */}
+        {canFullscreen && (
           <>
             <button type="button" className="listen-btn" onClick={goFullscreen}>
               Full screen
@@ -3756,10 +3768,13 @@ function CozyFeaturedGame({ game, canFullscreen }) {
             {/* Both halves earn their place: there is no Esc on a phone, and
                 no back gesture on a desktop. */}
             <span className="cozy-controls-note">
-              Esc, or your back gesture, brings you back here.
+              {fullscreenRefused
+                ? "This browser turned full screen down — the tab below is the roomier option."
+                : "Esc, or your back gesture, brings you back here."}
             </span>
           </>
-        ) : (
+        )}
+        {(!canFullscreen || fullscreenRefused) && (
           <a
             href={game.playUrl}
             target="_blank"

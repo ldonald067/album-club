@@ -73,7 +73,9 @@ Node 22) runs `npm test` then `npm run build`.
 
 - **Cozy embed widened, and fullscreen moved to the site (2026-08-09).** At
   viewports ≥1280px the Cozy panel breaks out of the 960px column so the
-  terrarium frame gets 1200×730 — the game's desktop layout on a single screen
+  terrarium frame widens to up to 1200×730 (`min(viewport − 94px, 1200px)`,
+  so 1186px at the 1280px boundary — still above the game's real 1180px
+  collapse threshold) — the game's desktop layout on a single screen
   instead of 2178px of content stacked inside a 700×620 frame (its grid
   collapses below ~1180px of frame width; table in `cozyfun/docs/EMBEDDING.md`).
 

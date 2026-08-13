@@ -2067,14 +2067,18 @@ body {
   color: var(--text-muted);
 }
 
-/* The game's grid collapses below ~1180px of frame width; narrower than that
-   the layout stacks and runs to ~2178px of content inside a 620px frame. On
-   screens with room, break this one panel out of the 960px column so the
-   frame reaches 1200px — the game's full desktop layout, one screen, no
-   scrolling. 730px height is measured, not chosen: at 1200px wide the
-   materials tray needs 690px of panel height before the last row of
-   materials clears its internal scroll (the settings column still scrolls
-   internally by design). See cozyfun/docs/EMBEDDING.md for the width table. */
+/* The game's grid collapses at 1180px of frame width or less; narrower than
+   that the layout stacks and runs to ~2178px of content inside a 620px frame.
+   On screens with room, break this one panel out of the 960px column so the
+   frame widens to the game's full desktop layout — one screen, no scrolling.
+   The frame works out to min(viewport - 94px, 1200px), so this rule yields
+   1186px at its own 1280px boundary and the full 1200px from 1294px up. The
+   floor of that range still clears 1180, which is what the threshold actually
+   is; do not lower the 1280px breakpoint without redoing that arithmetic.
+   730px height is measured, not chosen: the materials tray needs 690px of
+   panel height before its last row clears its internal scroll (the settings
+   column still scrolls internally by design). Width table in
+   cozyfun/docs/EMBEDDING.md. */
 @media (min-width: 1280px) {
   .cozy-panel {
     width: min(1260px, calc(100vw - 40px));
