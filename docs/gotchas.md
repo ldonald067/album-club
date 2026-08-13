@@ -85,6 +85,44 @@ the composited background**, not the declared one. Every trap above is the same
 mistake wearing a different hat — trusting a declared value over a rendered
 pixel.
 
+## Verifying with browser automation: the instrument lies too
+
+Same shape as the colour traps above, one layer up — the tool doing the
+measuring behaves differently from a real browser. Each of these produced a
+confident wrong answer.
+
+- **A scripted tab-close does not fire `pagehide`.** The terrarium's window
+  ownership hands itself back when the holding window departs, and that release
+  is broadcast from a `pagehide` listener. Closing the second window with the
+  automation's tab-close left the first stuck on "another window is tending this
+  terrarium", which got written up as a missing feature and nearly became a
+  change request. It is implemented and it works — release the window by
+  _navigating it away_ and the first resumes on its own. Building the "fix"
+  would have added a second claim path to the one subsystem where a race means
+  two engines writing divergent saves. **Test unload-driven behaviour with a
+  navigation, never a tab-close**
+- **Chrome will not grant fullscreen to a synthesized click.**
+  `requestFullscreen()` from an automated click rejects with
+  `TypeError: not granted` — in the in-app pane, in real Chrome through the
+  extension, and on a plain page with no iframe at all, which is what proves it
+  is the automation and not the embed. Fullscreen _engagement_ is
+  human-verifiable only. What automation can prove is the preconditions:
+  `document.fullscreenEnabled` measured **inside** the frame, and
+  `iframe.featurePolicy.allowsFeature("fullscreen", origin)` from the parent
+- **The pane's screenshot can lag a programmatic scroll**, still showing the old
+  viewport after `scrollTo`/`scrollIntoView`. Geometry claims belong to
+  `getBoundingClientRect()`, not to what a screenshot appears to show
+- **Clicks into a cross-site iframe land wrong or not at all.** On localhost the
+  pane delivered nothing into the cozy embed; on production, through
+  `embed.html` → `index.html`, they arrived offset by hundreds of pixels — a
+  click aimed at the top control row hit the room buttons. Drive an embedded app
+  at its own origin, where `contentDocument` is readable and one frame level
+  keeps coordinates honest
+
+The habit, same as for colour: **before filing what a tool reports, ask what the
+tool does differently from a real browser.** A finding that only reproduces
+under automation is a finding about the automation.
+
 ## Docs
 
 - **Never write a derived count into prose.** Lyric coverage was corrected four separate times in one session because it was hard-coded in `CLAUDE.md`, `album-data.md`, `games.md` and `STATUS.md`. Pool sizes and coverage percentages come from `npm run eval-site`, which computes them. Historical narrative ("was 88, now 120") is fine — it's a fact about the past and doesn't rot
