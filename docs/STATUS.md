@@ -1,18 +1,21 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-08-09.
+session. Last updated: 2026-08-13.
 
 ## Handoff — read this first
 
 **Nothing is in flight.** `master` is clean, pushed, and deployed; verify with
 `GET /api/health`, which returns the running commit SHA. The last stretch
-(2026-08-04 → 08-07) covered: the lyric pool refill, every outstanding code
-review finding, the Vintage skin and the colour-token system underneath it, a
-landing-page reorder, a real mobile pass, and Soundtrack Corner taken to
-effectively complete. Details are in the sections below and in git history.
+(2026-08-09 → 08-13) was all Cozy Vibes and housekeeping: the terrarium embed
+widened and given a working fullscreen path, an adversarial review whose one
+real finding shipped, Next.js bumped to 16.3.0, and Railway's agent tooling
+installed. The stretch before it (08-04 → 08-07) covered the lyric pool refill,
+every outstanding code review finding, the Vintage skin and the colour-token
+system underneath it, a landing-page reorder, a real mobile pass, and Soundtrack
+Corner taken to effectively complete. Details below and in git history.
 
-**Four things a new session will get wrong without warning:**
+**Five things a new session will get wrong without warning:**
 
 1. **Measure colour, never read it.** Four separate contrast "findings" this
    week were measurement artefacts — gradients, opacity, a frozen animation
@@ -28,9 +31,15 @@ effectively complete. Details are in the sections below and in git history.
 4. **Do not write content for records you do not know.** Two 2026 albums are
    deliberately uncovered in Soundtrack Corner for this reason. Wrong data
    costs more than missing data.
+5. **The verification tool lies too.** A scripted tab-close skips `pagehide`;
+   Chrome refuses fullscreen to a synthesized click; the preview pane's
+   screenshot lags a programmatic scroll. Each produced a confident wrong
+   answer this stretch, and one nearly became a change request against working
+   code. `docs/gotchas.md` → "Verifying with browser automation".
 
-**Where to pick up:** the open items below. None is urgent; item 2 is a
-standing decision rather than a task.
+**Where to pick up:** the open items below. Only item 5 is an actual task, and
+it is a thirty-second manual check; item 2 is a standing decision, and the rest
+are context. Nothing is urgent.
 
 ## What this is
 
@@ -62,6 +71,32 @@ Node 22) runs `npm test` then `npm run build`.
   `RAILWAY_VOLUME_MOUNT_PATH`. Data survives deploys (verified).
 - **Deploy "crashed" notifications:** fixed — `instrumentation.js` exits 0 on
   SIGTERM. If they return, check that file; confirm health via `/api/health`.
+  **The log line is not the notification.** Every rollout still prints
+  `npm error ... signal SIGTERM` after `Stopping Container`, because the fix
+  governs the Node process's exit code and not the `npm` wrapper whose child is
+  reported as signal-terminated. That is expected noise. Railway also tags it
+  `severity: error` merely for being on stderr — the same tag it gives
+  `npm warn config production`. Judge health by a climbing `uptimeSeconds`, and
+  note a single-replica deploy has a real few-second 502 gap mid-swap.
+- **Server Action probe traffic is external and inert.** Bursts of
+  `Failed to find Server Action "x"` appear in the deploy logs (four bursts of
+  ~12 across 2026-08-10/11). A real action id is a 40-char hash, so `x` is a
+  scanner fingerprinting for Next.js. This app defines **no** server actions
+  (`"use server"` appears nowhere) and has no middleware, so there is nothing to
+  reach and the request dies at the manifest lookup. Not a fault, and a
+  framework bump will not stop it. It stops being inert the day a server action
+  is added.
+- **Railway agent tooling is installed (2026-08-13).** `railway setup agent` put
+  the `use-railway` skill and a local stdio MCP server into `~/.claude.json`
+  (`railway mcp`), authenticating through the existing CLI login — no separate
+  credential. It exposes read tools worth knowing (`get_logs`,
+  `list_deployments`, `service_metrics`, `http_requests`) so logs can be queried
+  directly instead of exported to CSV. `get_logs` needs an explicit
+  `service_id` when you also pass a `deployment_id`, because the project is
+  linked but no service is. **Both repos live in one Railway project** —
+  `album-club` and `cozyfun` (the game) — so the game's logs are reachable the
+  same way. The same server also exposes destructive tools (`remove_volume`
+  would target the SQLite volume); do not call that class without asking.
 - **Backups — DONE (2026-07-23):** `BACKUP_TOKEN` is set in Railway and as a
   GitHub Actions secret (alongside `BACKUP_URL`). `GET /api/backup` verified
   live (404 without token, 200 SQLite snapshot with it, integrity `ok`);
@@ -71,7 +106,8 @@ Node 22) runs `npm test` then `npm run build`.
 
 ## Recent work (this stretch of sessions)
 
-- **Cozy embed widened, and fullscreen moved to the site (2026-08-09).** At
+- **Cozy embed widened, and fullscreen moved to the site (2026-08-09 → 08-13).**
+  At
   viewports ≥1280px the Cozy panel breaks out of the 960px column so the
   terrarium frame widens to up to 1200×730 (`min(viewport − 94px, 1200px)`,
   so 1186px at the 1280px boundary — still above the game's real 1180px
@@ -90,12 +126,37 @@ Node 22) runs `npm test` then `npm run build`.
   letterboxes it at 620px). "Play in New Tab" still renders only where
   `document.fullscreenEnabled` is false (iOS Safari).
 
+  **A refused request now uncovers the fallback (2026-08-13).** This was the one
+  real finding from an adversarial review, and all three reviewer lenses landed
+  on it independently: `requestFullscreen()`'s rejection was swallowed, so on a
+  browser that advertises support and then refuses (an in-app webview, a managed
+  browser) the only full-size path died silently with the new-tab link still
+  hidden. Both arms of the promise are handled now — a refusal reveals the link
+  and rewrites the note, a later success takes it back down. The button stays
+  mounted across that transition on purpose: unmounting what the player just
+  pressed would drop keyboard focus to the body exactly when they are owed an
+  explanation.
+
   **Fullscreen engagement cannot be verified by automation.** Chrome refuses the
   grant for synthesized clicks — the in-app pane and the Chrome extension both
   reject with "not granted", and a control test on a plain page with no iframe
   rejected identically, so it is not the embed. Verify the preconditions
   (`fullscreenEnabled` in-frame, the `featurePolicy` delegation, the inline
   resize on a dispatched `fullscreenchange`) and have a human press the button.
+
+  **The game moved under us, and the embed still fits (checked 2026-08-13).**
+  Re-verified against a cozyfun build ten commits newer: its breakpoints are
+  still 1180/860, so the ≥1280px arithmetic holds, and it still gates its own
+  fullscreen button on `document.fullscreenEnabled`. Its window-ownership cycle
+  works end to end — a second surface claims the terrarium, the first pauses,
+  and it **hands back automatically** when the holder departs via `pagehide`.
+  That auto-handback already exists; do not "add" it (see gotcha 5 above).
+
+- **Next.js 16.2.10 → 16.3.0 (2026-08-13).** Routine hygiene, not a response to
+  the probe traffic above. React 19 already satisfied the peer range, so only
+  `next` moved. Verified on the new version: unchanged route table, all tabs
+  rendering, every API route 200 with `no-store`, and a `POST /api/rate`
+  round-tripping through better-sqlite3 and persisting.
 
 - **Skins (2026-08-06).** A "Skin" dropdown switches between the default 2004
   forum and a **Vintage** 1990s desktop. Every colour in the stylesheet now
@@ -231,7 +292,15 @@ docs. This section is only what is still open.
    Browser pane's `resize_window` mobile preset does full device emulation;
    only the Chrome extension's resize leaves the CSS viewport at desktop width.
 
-5. **Suggested features (from the 2026-07 review, not built):** "Predict the
+5. **One manual check is outstanding: press the Cozy "Full screen" button.**
+   Everything upstream of the browser's grant is verified (see Recent work), but
+   the grant itself is refused to automation in every tool available here, so
+   only a human press closes it. Thirty seconds: Cozy Vibes → Full screen → the
+   game should fill the screen in its desktop layout → Esc returns to the tab.
+   If it does not engage, read the note under the button — a refusal now says so
+   and reveals the new-tab link.
+
+6. **Suggested features (from the 2026-07 review, not built):** "Predict the
    Crowd" (guess the room's average before reveal), "Divisive Meter", Streak
    Freeze, "The Verdict" one-tap critical tag. Deliberately avoid: freeform
    shoutbox, real leaderboards.
