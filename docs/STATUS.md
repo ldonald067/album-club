@@ -37,9 +37,8 @@ Corner taken to effectively complete. Details below and in git history.
    answer this stretch, and one nearly became a change request against working
    code. `docs/gotchas.md` → "Verifying with browser automation".
 
-**Where to pick up:** the open items below. Only item 5 is an actual task, and
-it is a thirty-second manual check; item 2 is a standing decision, and the rest
-are context. Nothing is urgent.
+**Where to pick up:** the open items below. None is a task — item 2 is a
+standing decision and the rest are context. Nothing is urgent.
 
 ## What this is
 
@@ -143,6 +142,8 @@ Node 22) runs `npm test` then `npm run build`.
   rejected identically, so it is not the embed. Verify the preconditions
   (`fullscreenEnabled` in-frame, the `featurePolicy` delegation, the inline
   resize on a dispatched `fullscreenchange`) and have a human press the button.
+  **Done — pressed by hand on 2026-08-13 and it works.** The feature is closed;
+  only re-test by hand if the button or the frame sizing changes.
 
   **The game moved under us, and the embed still fits (checked 2026-08-13).**
   Re-verified against a cozyfun build ten commits newer: its breakpoints are
@@ -292,15 +293,7 @@ docs. This section is only what is still open.
    Browser pane's `resize_window` mobile preset does full device emulation;
    only the Chrome extension's resize leaves the CSS viewport at desktop width.
 
-5. **One manual check is outstanding: press the Cozy "Full screen" button.**
-   Everything upstream of the browser's grant is verified (see Recent work), but
-   the grant itself is refused to automation in every tool available here, so
-   only a human press closes it. Thirty seconds: Cozy Vibes → Full screen → the
-   game should fill the screen in its desktop layout → Esc returns to the tab.
-   If it does not engage, read the note under the button — a refusal now says so
-   and reveals the new-tab link.
-
-6. **Suggested features (from the 2026-07 review, not built):** "Predict the
+5. **Suggested features (from the 2026-07 review, not built):** "Predict the
    Crowd" (guess the room's average before reveal), "Divisive Meter", Streak
    Freeze, "The Verdict" one-tap critical tag. Deliberately avoid: freeform
    shoutbox, real leaderboards.
