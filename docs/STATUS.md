@@ -68,15 +68,33 @@ Node 22) runs `npm test` then `npm run build`.
 
 - **DB persistence:** a Railway volume is attached; `lib/db.js` writes to
   `RAILWAY_VOLUME_MOUNT_PATH`. Data survives deploys (verified).
-- **Deploy "crashed" notifications:** fixed — `instrumentation.js` exits 0 on
-  SIGTERM. If they return, check that file; confirm health via `/api/health`.
-  **The log line is not the notification.** Every rollout still prints
-  `npm error ... signal SIGTERM` after `Stopping Container`, because the fix
-  governs the Node process's exit code and not the `npm` wrapper whose child is
-  reported as signal-terminated. That is expected noise. Railway also tags it
-  `severity: error` merely for being on stderr — the same tag it gives
-  `npm warn config production`. Judge health by a climbing `uptimeSeconds`, and
-  note a single-replica deploy has a real few-second 502 gap mid-swap.
+- **Deploy "crashed" notifications: rare, not gone.** `instrumentation.js` exits
+  0 on SIGTERM, which is why these stopped being routine after 2026-07. One
+  still arrived on 2026-08-13, and the evidence says the exit code is not what
+  triggers them: the `npm error ... signal SIGTERM` line prints after
+  `Stopping Container` on _every_ rollout — the fix governs Node's exit code,
+  not the `npm`/`sh` wrapper Railway's log shows dying by signal — yet four
+  deploys that day produced one email. What was different is that two pushes
+  three minutes apart killed a container 53 seconds into its life while a second
+  deploy overlapped it. **Treat early death during an overlapping deploy as the
+  likely trigger, not the exit code.** Three practices follow:
+  - **Batch commits; don't push twice within a few minutes.** That day's two
+    docs pushes should have been one, and the email would not exist.
+  - **Leave the notification on.** An occasional false positive is worth hearing
+    about a real crash; muting is the only option here that can actually hurt.
+  - **Judge health by `GET /api/health` with a climbing `uptimeSeconds`**, never
+    by the log's severity tags — Railway marks anything on stderr `error`, the
+    same tag it gives `npm warn config production`. Note also that a
+    single-replica deploy has a real few-second 502 gap mid-swap.
+
+  **If a crash email ever follows a single isolated deploy, the timing theory is
+  dead and this is systemic.** The fix then is to start the container without the
+  npm/sh wrapper — `node node_modules/next/dist/bin/next start`, which serves
+  correctly and exits 0 on a real SIGTERM (both checked locally 2026-08-13).
+  Deliberately not shipped: it changes the production start path and wants a
+  `railway.json` that can affect builder selection, to chase a mechanism the
+  evidence does not support.
+
 - **Server Action probe traffic is external and inert.** Bursts of
   `Failed to find Server Action "x"` appear in the deploy logs (four bursts of
   ~12 across 2026-08-10/11). A real action id is a 40-char hash, so `x` is a

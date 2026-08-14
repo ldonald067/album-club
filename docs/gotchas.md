@@ -2,7 +2,7 @@
 
 ## Deployment
 
-- **Railway "Deploy Crashed" on every push (fixed 2026-07)**: Node exits with code 143 on SIGTERM by default, and Railway reports any nonzero exit as a crash when the old container is replaced during a rollout. `instrumentation.js` registers SIGTERM/SIGINT handlers that `process.exit(0)`. If crash notifications return, check that file still exists and verify real health via `/api/health` (`uptimeSeconds` climbing = no crash loop)
+- **Railway "Deploy Crashed" notifications (mostly quieted 2026-07, not eliminated)**: Node exits with code 143 on SIGTERM by default, and Railway reports a nonzero exit as a crash when the old container is replaced during a rollout. `instrumentation.js` registers SIGTERM/SIGINT handlers that `process.exit(0)`, which stopped these being routine. **They are rare, not gone** — one arrived 2026-08-13 after two pushes three minutes apart killed a container 53s into its life. The exit code is not the trigger: `npm error ... signal SIGTERM` prints on _every_ rollout (it is the `npm`/`sh` wrapper, not Node) yet four deploys that day produced one email. **Don't push twice within a few minutes**, and verify real health via `/api/health` (`uptimeSeconds` climbing = no crash loop) rather than by log severity — Railway tags all stderr `error`, including `npm warn`. Full diagnosis and the shelved fix: `docs/STATUS.md` → Operational facts
 
 ## Next.js / Build
 
