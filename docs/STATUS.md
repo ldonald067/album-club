@@ -70,16 +70,20 @@ Node 22) runs `npm test` then `npm run build`.
   `RAILWAY_VOLUME_MOUNT_PATH`. Data survives deploys (verified).
 - **Deploy "crashed" notifications: rare, not gone.** `instrumentation.js` exits
   0 on SIGTERM, which is why these stopped being routine after 2026-07. One
-  still arrived on 2026-08-13, and the evidence says the exit code is not what
-  triggers them: the `npm error ... signal SIGTERM` line prints after
-  `Stopping Container` on _every_ rollout — the fix governs Node's exit code,
-  not the `npm`/`sh` wrapper Railway's log shows dying by signal — yet four
-  deploys that day produced one email. What was different is that two pushes
-  three minutes apart killed a container 53 seconds into its life while a second
-  deploy overlapped it. **Treat early death during an overlapping deploy as the
-  likely trigger, not the exit code.** Three practices follow:
-  - **Batch commits; don't push twice within a few minutes.** That day's two
-    docs pushes should have been one, and the email would not exist.
+  still arrived on 2026-08-13. **What the evidence supports:** the exit code
+  alone does not predict these. The `npm error ... signal SIGTERM` line prints
+  after `Stopping Container` on _every_ rollout — the fix governs Node's exit
+  code, not the `npm`/`sh` wrapper Railway's log shows dying by signal — yet
+  four deploys that day produced one email, so that line cannot be the whole
+  condition. **What is only a hypothesis:** that overlapping deploys are the
+  trigger. The one thing observably different about the flagged deploy was two
+  pushes three minutes apart, which killed a container 53 seconds into its life
+  while a second deploy overlapped it. That is a single correlated event; the
+  variable was never isolated, and Railway's actual notification condition is
+  undocumented here. Treat it as the leading guess, not a finding. Three
+  practices follow, none of which depend on the hypothesis being right:
+  - **Batch commits; don't push twice within a few minutes.** Cheap regardless,
+    and it removes the one variable currently suspected.
   - **Leave the notification on.** An occasional false positive is worth hearing
     about a real crash; muting is the only option here that can actually hurt.
   - **Judge health by `GET /api/health` with a climbing `uptimeSeconds`**, never
@@ -87,11 +91,14 @@ Node 22) runs `npm test` then `npm run build`.
     same tag it gives `npm warn config production`. Note also that a
     single-replica deploy has a real few-second 502 gap mid-swap.
 
-  **If a crash email ever follows a single isolated deploy, the timing theory is
-  dead and this is systemic.** The fix then is to start the container without the
-  npm/sh wrapper — `node node_modules/next/dist/bin/next start`, which serves
-  correctly and exits 0 on a real SIGTERM (both checked locally 2026-08-13).
-  Deliberately not shipped: it changes the production start path and wants a
+  **If a crash email ever follows a single isolated deploy, that refutes the
+  timing hypothesis — it does not confirm any replacement.** Investigate what
+  Railway actually keys on before changing anything; do not treat the wrapper as
+  guilty by elimination. One candidate fix is already verified and waiting:
+  starting the container without the npm/sh wrapper —
+  `node node_modules/next/dist/bin/next start`, which serves correctly and exits
+  0 on a real SIGTERM (both checked locally 2026-08-13). Deliberately not
+  shipped: it changes the production start path and wants a
   `railway.json` that can affect builder selection, to chase a mechanism the
   evidence does not support.
 
@@ -140,8 +147,9 @@ Node 22) runs `npm test` then `npm run build`.
   could not see. The site now renders its own "Full screen" button that calls
   `requestFullscreen()` on the iframe, visible at every width, with a
   `fullscreenchange` handler that sizes the frame inline (author CSS otherwise
-  letterboxes it at 620px). "Play in New Tab" still renders only where
-  `document.fullscreenEnabled` is false (iOS Safari).
+  letterboxes it at 620px). "Play in New Tab" renders where
+  `document.fullscreenEnabled` is false (iOS Safari) **and** after a refused
+  request — see the next paragraph; both arms are load-bearing.
 
   **A refused request now uncovers the fallback (2026-08-13).** This was the one
   real finding from an adversarial review, and all three reviewer lenses landed
@@ -167,9 +175,13 @@ Node 22) runs `npm test` then `npm run build`.
   Re-verified against a cozyfun build ten commits newer: its breakpoints are
   still 1180/860, so the ≥1280px arithmetic holds, and it still gates its own
   fullscreen button on `document.fullscreenEnabled`. Its window-ownership cycle
-  works end to end — a second surface claims the terrarium, the first pauses,
-  and it **hands back automatically** when the holder departs via `pagehide`.
-  That auto-handback already exists; do not "add" it (see gotcha 5 above).
+  was exercised through a **navigation-triggered** departure: a second surface
+  claims the terrarium, the first pauses, and it **hands back automatically**
+  when the holder fires `pagehide`. That auto-handback already exists; do not
+  "add" it (see gotcha 5 above). Not verified: departure by a real human
+  closing the tab. The spec fires `pagehide` there too, and the same listener
+  serves both, so this is very likely fine — but it is reasoning, not a
+  measurement, and it is the exact action that first looked broken.
 
 - **Next.js 16.2.10 → 16.3.0 (2026-08-13).** Routine hygiene, not a response to
   the probe traffic above. React 19 already satisfied the peer range, so only

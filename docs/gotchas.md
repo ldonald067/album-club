@@ -2,7 +2,7 @@
 
 ## Deployment
 
-- **Railway "Deploy Crashed" notifications (mostly quieted 2026-07, not eliminated)**: Node exits with code 143 on SIGTERM by default, and Railway reports a nonzero exit as a crash when the old container is replaced during a rollout. `instrumentation.js` registers SIGTERM/SIGINT handlers that `process.exit(0)`, which stopped these being routine. **They are rare, not gone** — one arrived 2026-08-13 after two pushes three minutes apart killed a container 53s into its life. The exit code is not the trigger: `npm error ... signal SIGTERM` prints on _every_ rollout (it is the `npm`/`sh` wrapper, not Node) yet four deploys that day produced one email. **Don't push twice within a few minutes**, and verify real health via `/api/health` (`uptimeSeconds` climbing = no crash loop) rather than by log severity — Railway tags all stderr `error`, including `npm warn`. Full diagnosis and the shelved fix: `docs/STATUS.md` → Operational facts
+- **Railway "Deploy Crashed" notifications (mostly quieted 2026-07, not eliminated)**: Node exits with code 143 on SIGTERM by default, and Railway reports a nonzero exit as a crash when the old container is replaced during a rollout. `instrumentation.js` registers SIGTERM/SIGINT handlers that `process.exit(0)`, which stopped these being routine. **They are rare, not gone** — one arrived 2026-08-13. What that established: the exit code alone does not predict them, since `npm error ... signal SIGTERM` prints on _every_ rollout (it is the `npm`/`sh` wrapper, not Node) yet four deploys that day produced one email. What it did **not** establish is the actual trigger — the leading guess is that the flagged container died 53s in while a second deploy overlapped it, but that is one correlated event and the variable was never isolated. **Batching pushes is cheap insurance, not a proven fix.** Verify real health via `/api/health` (`uptimeSeconds` climbing = no crash loop) rather than by log severity — Railway tags all stderr `error`, including `npm warn`. Full diagnosis and the shelved fix: `docs/STATUS.md` → Operational facts
 
 ## Next.js / Build
 
@@ -89,24 +89,30 @@ pixel.
 
 Same shape as the colour traps above, one layer up — the tool doing the
 measuring behaves differently from a real browser. Each of these produced a
-confident wrong answer.
+confident wrong answer. **These are observations about specific tools, not laws
+of automation.** Where a rule is stated, the evidence behind it is named, so the
+next reader can tell whether their harness is covered.
 
-- **A scripted tab-close does not fire `pagehide`.** The terrarium's window
-  ownership hands itself back when the holding window departs, and that release
-  is broadcast from a `pagehide` listener. Closing the second window with the
-  automation's tab-close left the first stuck on "another window is tending this
+- **The in-app pane's `tabs_close` did not fire `pagehide`.** The terrarium's
+  window ownership hands itself back when the holding window departs, and that
+  release is broadcast from a `pagehide` listener. Closing the second window
+  with that tool left the first stuck on "another window is tending this
   terrarium", which got written up as a missing feature and nearly became a
   change request. It is implemented and it works — release the window by
   _navigating it away_ and the first resumes on its own. Building the "fix"
   would have added a second claim path to the one subsystem where a race means
-  two engines writing divergent saves. **Test unload-driven behaviour with a
-  navigation, never a tab-close**
-- **Chrome will not grant fullscreen to a synthesized click.**
-  `requestFullscreen()` from an automated click rejects with
-  `TypeError: not granted` — in the in-app pane, in real Chrome through the
-  extension, and on a plain page with no iframe at all, which is what proves it
-  is the automation and not the embed. Fullscreen _engagement_ is
-  human-verifiable only. What automation can prove is the preconditions:
+  two engines writing divergent saves. **Prefer a navigation for unload-driven
+  behaviour here.** Two caveats worth keeping: other harnesses may close tabs
+  differently, and a navigation only exercises the navigation path — departure
+  by a **real human closing the tab** has never been measured, and that is the
+  action that first looked broken
+- **Chrome refused fullscreen to every synthesized click tried here.**
+  `requestFullscreen()` from an automated click rejected with
+  `TypeError: not granted` in the in-app pane, in real Chrome through the
+  extension, and — the control that matters — on a plain page with no iframe at
+  all, which is what points at the automation rather than the embed. Treat
+  fullscreen _engagement_ as human-verifiable until some driver is shown to
+  manage it. What automation can prove is the preconditions:
   `document.fullscreenEnabled` measured **inside** the frame, and
   `iframe.featurePolicy.allowsFeature("fullscreen", origin)` from the parent
 - **The pane's screenshot can lag a programmatic scroll**, still showing the old
@@ -119,9 +125,13 @@ confident wrong answer.
   at its own origin, where `contentDocument` is readable and one frame level
   keeps coordinates honest
 
-The habit, same as for colour: **before filing what a tool reports, ask what the
-tool does differently from a real browser.** A finding that only reproduces
-under automation is a finding about the automation.
+The habit, same as for colour: **before filing what a tool reports, name the
+specific thing the tool does differently from the user's path.** If you can name
+it — a close primitive that skips `pagehide`, a click with no user activation —
+the finding is about the tool. If you cannot, the finding is real and you have
+learned nothing yet: automation surfaces genuine timing, focus, and ordering
+bugs precisely because it is faster and more repeatable than a person. "Only
+reproduces under automation" is a prompt to go looking, not a verdict.
 
 ## Docs
 

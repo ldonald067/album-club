@@ -58,14 +58,14 @@ Games live in the `COZY_GAMES` array. **Adding one is a single entry.**
 
 The shelf and its credit line don't render at all when no card games exist.
 
-Four things about the featured embed that should not be "tidied":
+Things about the featured embed that should not be "tidied":
 
 - `src` points at `/embed.html`, a ~4.8 KB poster. The site root pulls ~9 MB on load.
-- `allow="autoplay; fullscreen"` is required for the ambience audio; without it it fails silently. It also permits the game's own fullscreen button, which is the **primary** full-size path — Esc (or the back gesture) lands the player straight back on this tab.
+- `allow="autoplay; fullscreen"` is required for the ambience audio; without it it fails silently. It also permits fullscreen from inside the frame, which is what lets the game render its own button — but **the site's button below is the primary path**, not the game's. Either way, Esc or the back gesture lands the player back on this tab.
 - **No `sandbox` attribute.** Without `allow-same-origin` it would cut the game off from browser storage and silently break saved scenes.
 - The **site's own "Full screen" button** (`CozyFeaturedGame`) calls `requestFullscreen()` on the iframe element from the parent page. It exists because the game's own fullscreen button is only reachable in its wide desktop layout: measured at a 700×620 frame, that control sits **535px below the frame's fold**, inside the iframe's own scroll. Relying on it — as this panel briefly did — means most visitors have no fullscreen at all. Don't remove it in favour of the game's.
 - **`fullscreenchange` sets the frame's size inline** (`100vw`/`100vh`). This is load-bearing, not belt-and-braces: `.cozy-frame iframe` pins an explicit height, and author styles outrank the UA's sizing for a fullscreen element, so without it the game letterboxes at 620px on a black screen. Inline styles also dodge a specificity race with the ≥1280px breakout rule.
-- The "Play in New Tab" link renders only where `document.fullscreenEnabled` is false (in practice: iOS Safari). Everywhere else the link is deliberately absent: a second open surface is a second live simulation diverging from the same autosave (`cozyfun/docs/EMBEDDING.md` → "One window at a time").
+- The "Play in New Tab" link renders under **two** conditions: where `document.fullscreenEnabled` is false (in practice: iOS Safari), **and** after a `requestFullscreen()` call is actually refused (`fullscreenRefused`). It is absent otherwise, because a second open surface is a second live simulation diverging from the same autosave (`cozyfun/docs/EMBEDDING.md` → "One window at a time"). **Both conditions are load-bearing — do not simplify this to the capability check alone.** `fullscreenEnabled` reports permission, not the outcome of a request; dropping the refusal arm restores the silent dead-end an adversarial review already caught once.
 
 ## Album vs Album (`VersusMatchup`)
 
