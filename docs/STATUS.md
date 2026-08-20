@@ -10,9 +10,10 @@ session. Last updated: 2026-08-20.
 (2026-08-09 → 08-13) was all Cozy Vibes and housekeeping: the terrarium embed
 widened and given a working fullscreen path, an adversarial review whose one
 real finding shipped, Next.js bumped to 16.3.0, and Railway's agent tooling
-installed. Since then (08-16 → 08-20) **nothing has changed but documentation**:
-a second adversarial review that found no code defects and six doc ones, then a
-sweep that fixed the stale facts in README and `api.md`. The stretch before the
+installed. Since then (08-16 → 08-20): a second adversarial review that found no
+code defects and six doc ones, a sweep that fixed the stale facts in README and
+`api.md`, the terrarium frame raised to 770px to restore headroom in the game's
+materials tray, and a fourth game added to the Cozy shelf. The stretch before the
 Cozy work (08-04 → 08-07) covered the lyric pool refill,
 every outstanding code review finding, the Vintage skin and the colour-token
 system underneath it, a landing-page reorder, a real mobile pass, and Soundtrack
@@ -185,6 +186,22 @@ Node 22) runs `npm test` then `npm run build`.
   closing the tab. The spec fires `pagehide` there too, and the same listener
   serves both, so this is very likely fine — but it is reasoning, not a
   measurement, and it is the exact action that first looked broken.
+
+  **Frame height 730 → 770, and why (2026-08-20).** Re-checked against a cozyfun
+  build fourteen commits newer. The breakpoints still hold, but measuring the
+  game's materials tray at 1200×730 found only **8px** of slack left — one added
+  material row from its last row sliding behind the tray's internal scroll,
+  silently, in the same shape as the bug that made the game's own fullscreen
+  button unreachable. 770px measures 48px. **The technique matters more than the
+  number:** `scrollHeight` returns `max(content, box)`, so it reports a perfect
+  fit at any headroom — compare the last `.tool-group`'s bottom against the
+  `.tool-panel`'s inner edge instead. Details in `docs/components.md`.
+
+  **Standing decision: the "Full screen" button sits below the fold, and that is
+  fine (2026-08-20).** At a maximized 1512×982 window the frame starts 351px
+  down, so 631px of 770 is visible and the button needs a ~231px scroll. Raising
+  the height cost 40px of that. Considered and **deliberately not changed** —
+  moving the button above the frame was offered and declined. Don't "fix" it.
 
 - **Next.js 16.2.10 → 16.3.0 (2026-08-13).** Routine hygiene, not a response to
   the probe traffic above. React 19 already satisfied the peer range, so only
