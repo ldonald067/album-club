@@ -887,6 +887,27 @@ body {
   margin: 4px 0 8px;
 }
 
+/* The pitches wait behind the question now, so the way past the gate has to be
+   visible without competing with the three vote buttons above it. */
+.soundtrack-vote-skip {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+  margin-top: 10px;
+  padding: 4px 0;
+  text-decoration: underline;
+}
+
+.soundtrack-cards-lead {
+  color: var(--text-prompt);
+  font-size: 11px;
+  font-weight: bold;
+  margin: 14px 0 8px;
+}
+
 /* The room's verdict reads louder than the memory line under it: it is about
    today, and it is the half of the reveal people came back for. */
 .soundtrack-vote-verdict {
@@ -3329,7 +3350,8 @@ body {
   .listen-btn,
   .theme-select,
   .guess-input input,
-  .guess-input button {
+  .guess-input button,
+  .soundtrack-vote-skip {
     min-height: 44px;
   }
 }

@@ -124,7 +124,7 @@ function CueAftermath({ myPick, results }) {
 }
 
 /** One-tap "where does this cue belong" vote with a community reveal */
-function CueVote({ cards }) {
+function CueVote({ cards, onPick, onSkip, skipped }) {
   // Keyed by the live UTC date (not the render-frozen album prop) so the
   // storage key, SoundtrackMini, and the API's album_key always agree —
   // including in the window right after UTC midnight before a reload.
@@ -146,6 +146,7 @@ function CueVote({ cards }) {
     const saved = localStorage.getItem(storageKey);
     if (saved) {
       setMyPick(saved);
+      onPick(saved);
       loadResults();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -170,6 +171,7 @@ function CueVote({ cards }) {
       localStorage.setItem(storageKey, pick);
       window.dispatchEvent(new Event("aotd-activity"));
       setMyPick(pick);
+      onPick(pick);
       setResults(data);
       setJustRevealed(true);
     } catch (err) {
@@ -243,7 +245,17 @@ function CueVote({ cards }) {
   return (
     <div className="soundtrack-vote">
       <div className="soundtrack-vote-prompt">
-        Where does this one belong tonight? One vote, then you see the room.
+        {skipped ? (
+          <>
+            Pitches are open — still worth calling it. One vote, then you see
+            the room.
+          </>
+        ) : (
+          <>
+            Where does this one belong tonight? Call it before you read the
+            pitches — one vote, then you see the room and the club&apos;s case.
+          </>
+        )}
       </div>
       {error && (
         <p className="submit-error" role="alert">
@@ -263,6 +275,11 @@ function CueVote({ cards }) {
           </button>
         ))}
       </div>
+      {!skipped && (
+        <button type="button" className="soundtrack-vote-skip" onClick={onSkip}>
+          Or just read the pitches
+        </button>
+      )}
     </div>
   );
 }
@@ -270,14 +287,37 @@ function CueVote({ cards }) {
 export default function SoundtrackCorner({ album, onPlayToday }) {
   const corner = useMemo(() => buildSoundtrackCorner(album), [album]);
   const gameLabel = GAME_LABELS[getGameType()] || "today's game";
+  /* The question comes before the club's answer to it. Read three pitches
+     first and the vote turns into a review of the pitches; asked cold it is
+     an instinct, which is the thing worth arguing with. Rate & Reveal on the
+     home page already works this way round.
+
+     Only the three pitch cards wait — everything else stays visible, and the
+     skip link opens them without voting. The room's split is a reward for
+     committing; the club's own writing is not something to hold hostage. */
+  const [myPick, setMyPick] = useState(null);
+  const [skipped, setSkipped] = useState(false);
+  const revealedCase = Boolean(myPick) || skipped;
+  const leadRef = useRef(null);
+
+  /* Skipping unmounts the button that was just pressed, which drops keyboard
+     focus to the body — the same fault the Cozy fullscreen button was fixed
+     for. Send focus to what the press revealed instead. Voting does not need
+     this: the results block is the live region and it stays put. */
+  useEffect(() => {
+    if (skipped && leadRef.current) {
+      leadRef.current.focus();
+    }
+  }, [skipped]);
 
   return (
     <div className="soundtrack-corner">
       <div className="soundtrack-corner-explainer">
         <strong>How this works: </strong>every day we take today&apos;s album
-        and ask one question — if this record scored a scene, what scene? Below:
-        three pitches (🎮 game, 🎬 film, 📺 TV), your vote, two bonus angles,
-        what to listen for, and what to spin next. Argue with all of it.
+        and ask one question — if this record scored a scene, what scene? Call
+        it first (🎮 game, 🎬 film, 📺 TV), then see the room and read the
+        club&apos;s case for all three, plus two bonus angles, what to listen
+        for, and what to spin next. Argue with all of it.
       </div>
       <p className="soundtrack-intro">{corner.intro}</p>
       <div className="soundtrack-corner-actions">
@@ -291,36 +331,55 @@ export default function SoundtrackCorner({ album, onPlayToday }) {
         </a>
       </div>
       <div className="soundtrack-corner-kicker">{corner.kicker}</div>
-      <div className="soundtrack-corner-grid">
-        {corner.cards.map((card) => (
-          <div key={card.key} className="soundtrack-card">
-            <div className="soundtrack-card-meta">
-              <span className="soundtrack-card-icon" aria-hidden="true">
-                {card.icon}
-              </span>
-              <span className="soundtrack-card-label">{card.label}</span>
-            </div>
-            <div className="soundtrack-card-title">{card.title}</div>
-            <p className="soundtrack-card-copy">{card.body}</p>
+      <CueVote
+        cards={corner.cards}
+        onPick={setMyPick}
+        onSkip={() => setSkipped(true)}
+        skipped={skipped}
+      />
+      {revealedCase && (
+        <>
+          <div className="soundtrack-cards-lead" ref={leadRef} tabIndex={-1}>
+            {myPick
+              ? "Now the club's case for all three."
+              : "The club's case for all three."}
           </div>
-        ))}
-      </div>
-      <CueVote cards={corner.cards} />
+          <div className="soundtrack-corner-grid">
+            {corner.cards.map((card) => (
+              <div key={card.key} className="soundtrack-card">
+                <div className="soundtrack-card-meta">
+                  <span className="soundtrack-card-icon" aria-hidden="true">
+                    {card.icon}
+                  </span>
+                  <span className="soundtrack-card-label">{card.label}</span>
+                </div>
+                <div className="soundtrack-card-title">{card.title}</div>
+                <p className="soundtrack-card-copy">{card.body}</p>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
       <div className="soundtrack-corner-note">{corner.bridgeNote}</div>
-      <div className="soundtrack-corner-section">
-        <div className="soundtrack-section-title">
-          {corner.extraAnglesHeading}
+      {/* Waits with the pitch cards: "Two more angles" is two more of the same
+          argument, and offering the sequel while the first three are still
+          behind the question read like a mistake. */}
+      {revealedCase && (
+        <div className="soundtrack-corner-section">
+          <div className="soundtrack-section-title">
+            {corner.extraAnglesHeading}
+          </div>
+          <div className="soundtrack-angle-grid">
+            {corner.extraAngles.map((angle) => (
+              <div key={angle.key} className="soundtrack-angle-card">
+                <div className="soundtrack-angle-label">{angle.label}</div>
+                <div className="soundtrack-angle-title">{angle.title}</div>
+                <p className="soundtrack-angle-copy">{angle.body}</p>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="soundtrack-angle-grid">
-          {corner.extraAngles.map((angle) => (
-            <div key={angle.key} className="soundtrack-angle-card">
-              <div className="soundtrack-angle-label">{angle.label}</div>
-              <div className="soundtrack-angle-title">{angle.title}</div>
-              <p className="soundtrack-angle-copy">{angle.body}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+      )}
       <div className="soundtrack-corner-section">
         <div className="soundtrack-section-title">
           {corner.listenForHeading}

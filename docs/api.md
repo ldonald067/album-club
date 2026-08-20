@@ -65,6 +65,10 @@ Aggregate site statistics (total ratings, avg rating, albums rated, top vibes, p
 
 Soundtrack Corner's "where does this cue belong" vote. POST body: `{ pick }` where pick is `"game"`, `"film"`, or `"tv"`. Returns `{ game, film, tv, total }` counts for today's album. GET returns the same distribution (30s in-memory cache, busted on POST). Daily limit 3 per IP (`soundtrack` endpoint key). DB table: `soundtrack_votes` keyed by the daily `album_key`.
 
+### GET `/api/soundtrack/history`
+
+The Archive's cue log. Returns `{ days: { "YYYY-MM-DD": { game, film, tv, total } } }` for the last 30 days — the same window the Archive table lists. Read-only (the vote itself still goes to `/api/soundtrack`), 60s in-memory cache keyed by the UTC date. The `Room` column derives a winner client-side and shows nothing below two votes or on a tie; the raw counts are returned so that floor stays a UI decision rather than something baked into the payload.
+
 ### GET `/api/health`
 
 Deploy/status probe: `{ commit, volumeMounted, uptimeSeconds }`. `commit` is the short Railway commit SHA (`"dev"` locally), `volumeMounted` reports whether `RAILWAY_VOLUME_MOUNT_PATH` is present (i.e. the SQLite volume is attached). Rate-limited like every other route. Used to verify deploys landed and the data volume is still attached. A climbing `uptimeSeconds` is also the check that distinguishes a real crash loop from Railway's cosmetic "Deploy Crashed" notification — see `docs/gotchas.md` → Deployment.

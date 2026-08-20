@@ -13,7 +13,9 @@ real finding shipped, Next.js bumped to 16.3.0, and Railway's agent tooling
 installed. Since then (08-16 → 08-20): a second adversarial review that found no
 code defects and six doc ones, a sweep that fixed the stale facts in README and
 `api.md`, the terrarium frame raised to 770px to restore headroom in the game's
-materials tray, and a fourth game added to the Cozy shelf. The stretch before the
+materials tray, a fourth game added to the Cozy shelf, and a three-part pass on
+Soundtrack Corner: the generated tier repaired and guarded, the daily vote given
+a memory, and the vote moved ahead of the pitches it used to sit under. The stretch before the
 Cozy work (08-04 → 08-07) covered the lyric pool refill,
 every outstanding code review finding, the Vintage skin and the colour-token
 system underneath it, a landing-page reorder, a real mobile pass, and Soundtrack
@@ -203,6 +205,38 @@ Node 22) runs `npm test` then `npm run build`.
   the height cost 40px of that. Considered and **deliberately not changed** —
   moving the button above the frame was offered and declined. Don't "fix" it.
 
+- **Soundtrack Corner, three passes (2026-08-20).** Coverage was already closed,
+  so none of this was more overrides.
+
+  **The generated tier was broken and nothing could see it.** Neither
+  `eval-site` nor the report had ever called `buildSoundtrackCorner` — every
+  check read the curated overrides as data — so two faults sat in the 290
+  uncurated corners: 33 bridge notes read "when **the the** pocket" (the
+  template supplied the article and one profile's `bridgeFocus` starts with
+  one), and **63%** of generated corners printed at least two identical "Listen
+  next" reasons, 11% the same sentence three times in one view. The reasons now
+  carry three phrasings picked by position and three distinct traits — an index,
+  not a better hash, because the trait pools hold three entries and two picks
+  routinely share a branch. A new `eval-site` section renders all 424 corners
+  and fails on a repeat, a doubled article or a thin corner; both faults were
+  reintroduced to prove it bites.
+
+  **The vote now remembers.** Two records already existed unread: 30 days of
+  picks in localStorage and a per-date distribution only today's row queried.
+  They feed a verdict line ("The room went TV. You went game."), one line of
+  personal history — streak or 30-day lean, never both — and a cue log in the
+  Archive (`Room` / `You` columns, new `GET /api/soundtrack/history`). The
+  verdict holds back below two votes and on a tie, the floor Album vs Album and
+  Vibe already set.
+
+  **The corner asks before it argues.** `CueVote` sits under the kicker now;
+  the three pitch cards and "two more angles" wait for a vote or the "Or just
+  read the pitches" link. At 375px the buttons moved ~490px up, out from under
+  two screens of copy. Everything that is not a pitch stays visible — the
+  skip link exists because the club's writing is not worth holding hostage for
+  a one-tap vote. `eval-site` fails if the order is ever reversed. **Deliberate,
+  not a bug: do not "fix" it back.**
+
 - **Next.js 16.2.10 → 16.3.0 (2026-08-13).** Routine hygiene, not a response to
   the probe traffic above. React 19 already satisfied the peer range, so only
   `next` moved. Verified on the new version: unchanged route table, all tabs
@@ -281,6 +315,13 @@ docs. This section is only what is still open.
    album is curated except two. Get exact figures from
    `npm run soundtrack-corner-report`, never from prose; pipeline in
    `docs/soundtrack-corner-research.md`.
+
+   **"Finished" meant coverage, and only coverage.** The 2026-08-20 pass found
+   two shipped faults in the generated tier and rebuilt the vote's shape around
+   it (see Recent work). If the corner feels weak again, the lever is unlikely
+   to be more overrides: measure the rendered output first, the way that pass
+   did, and check what the vote's own data could pay back before writing
+   anything new.
 
    **The two left are a judgement call, not a backlog.** _BTS — Arirang_ and
    _Olivia Rodrigo — You Seem Pretty Sad for a Girl So In Love_ are 2026

@@ -319,6 +319,12 @@ failures += printGuardrail(
   "The vote-then-see-the-room loop is the corner's daily ritual — keep it.",
 );
 failures += printGuardrail(
+  soundtrackCornerSource.indexOf("<CueVote") <
+    soundtrackCornerSource.indexOf("soundtrack-corner-grid"),
+  "The corner asks before it argues",
+  "The cue vote must render above the three pitch cards. Read the pitches first and the vote becomes a review of them instead of an instinct.",
+);
+failures += printGuardrail(
   forumSource.includes("SoundtrackMini") &&
     soundtrackCornerSource.includes("onPlayToday"),
   "Corner and daily loop cross-link both ways",
