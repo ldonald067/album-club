@@ -3688,6 +3688,14 @@ const COZY_GAMES = [
     blurb: "A pocket stage and a box of players. Make something up.",
     embedId: 4805776,
   },
+  {
+    id: "welcome-to-kamegi",
+    title: "Welcome to Kamegi",
+    byline: "rainbowpudding",
+    blurb:
+      "A town that can't agree what year it is. Talk to everyone, solve its puzzles, decide about the last train.",
+    embedId: 4247508,
+  },
 ];
 
 // The game has its own fullscreen button, but only its wide desktop layout puts
