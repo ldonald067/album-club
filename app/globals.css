@@ -2075,9 +2075,15 @@ body {
    1186px at its own 1280px boundary and the full 1200px from 1294px up. The
    floor of that range still clears 1180, which is what the threshold actually
    is; do not lower the 1280px breakpoint without redoing that arithmetic.
-   730px height is measured, not chosen: the materials tray needs 690px of
-   panel height before its last row clears its internal scroll (the settings
-   column still scrolls internally by design). Width table in
+   The height is measured, not chosen, and it is a budget rather than a
+   preference: the game's materials tray scrolls internally once its content
+   outgrows the panel, which hides the last row of materials behind a fold
+   nobody thinks to scroll. Measured against the live game at 1200px wide,
+   730px left only 8px of slack in that tray — one added material row from
+   regressing — so this is 770px, which measures 48px. Re-measure if the game
+   gains materials: load the game at this frame size and compare the last
+   .tool-group's bottom against the .tool-panel's inner edge. (The settings
+   column still scrolls internally by design.) Width table in
    cozyfun/docs/EMBEDDING.md. */
 @media (min-width: 1280px) {
   .cozy-panel {
@@ -2092,7 +2098,7 @@ body {
   }
 
   .cozy-panel .cozy-frame iframe {
-    height: 730px;
+    height: 770px;
   }
 }
 
