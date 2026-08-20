@@ -22,21 +22,105 @@ const CUE_STREAK_LINES = {
     `That's ${n} TV cues running — the club suspects you're pitching a limited series.`,
 };
 
-/** Consecutive days (ending today) the same medium was picked */
-function getCueStreak() {
+const CUE_LEAN_LINES = {
+  game: (count, total) =>
+    `${count} of your last ${total} cues went to a game. The club has you filed under level designer.`,
+  film: (count, total) =>
+    `${count} of your last ${total} cues went to film. You are, on the record, a needle-drop person.`,
+  tv: (count, total) =>
+    `${count} of your last ${total} cues went to TV. Somewhere there is a very well-scored pilot with your name on it.`,
+};
+
+const CUE_NAMES = { game: "game", film: "film", tv: "TV" };
+
+/* Read the picks once and let the streak and the lean both derive from it.
+   The keys are never written here — renaming an aotd_* key silently discards
+   everyone's history and looks identical to working on a fresh profile. */
+function readCuePicks(days = 30) {
   const today = new Date();
-  let streakPick = null;
-  let streak = 0;
-  for (let i = 0; i < 30; i++) {
+  const entries = [];
+  for (let i = 0; i < days; i++) {
     const key = new Date(today.getTime() - i * 86400000)
       .toISOString()
       .slice(0, 10);
-    const pick = localStorage.getItem(`aotd_soundtrack_${key}`);
+    entries.push({ key, pick: localStorage.getItem(`aotd_soundtrack_${key}`) });
+  }
+  return entries;
+}
+
+/** Consecutive days (ending today) the same medium was picked */
+function getCueStreak() {
+  let streakPick = null;
+  let streak = 0;
+  for (const { pick } of readCuePicks()) {
     if (!pick || (streakPick && pick !== streakPick)) break;
     streakPick = pick;
     streak++;
   }
   return { pick: streakPick, streak };
+}
+
+/** Your lean across the last 30 days. Null until there is enough to be a lean
+    rather than a coincidence, and null on a tie — a "lean" that flips daily
+    reads as the site guessing. */
+function getCueLean() {
+  const counts = { game: 0, film: 0, tv: 0 };
+  let total = 0;
+
+  for (const { pick } of readCuePicks()) {
+    if (pick && pick in counts) {
+      counts[pick] += 1;
+      total += 1;
+    }
+  }
+
+  if (total < 5) return null;
+
+  const ranked = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+  if (counts[ranked[0]] === counts[ranked[1]]) return null;
+
+  return { pick: ranked[0], count: counts[ranked[0]], total };
+}
+
+/** The room's verdict today, or null when it has not earned the word "room".
+    Two is the floor Album vs Album and Vibe already settled on: one row is one
+    row, and a 100% split off a single vote is the zero-traffic lie they fixed. */
+function getRoomCue(results) {
+  if (!results || results.total < 2) return null;
+
+  const ranked = ["game", "film", "tv"].sort((a, b) => results[b] - results[a]);
+  return results[ranked[0]] === results[ranked[1]] ? null : ranked[0];
+}
+
+/* What the vote leaves behind: today's disagreement, then one line of memory.
+   Only one memory line ever shows — a streak and a lean are the same fact told
+   twice, and the pair read like the site was padding. */
+function CueAftermath({ myPick, results }) {
+  const room = getRoomCue(results);
+  const { pick: streakPick, streak } = getCueStreak();
+  const lean = getCueLean();
+
+  const memory =
+    streak >= 3 && CUE_STREAK_LINES[streakPick]
+      ? CUE_STREAK_LINES[streakPick](streak)
+      : lean && CUE_LEAN_LINES[lean.pick]
+        ? CUE_LEAN_LINES[lean.pick](lean.count, lean.total)
+        : null;
+
+  if (!room && !memory) return null;
+
+  return (
+    <>
+      {room && (
+        <div className="soundtrack-vote-verdict">
+          {room === myPick
+            ? `The room is with you — ${CUE_NAMES[room]} it is.`
+            : `The room went ${CUE_NAMES[room]}. You went ${CUE_NAMES[myPick]}. Hold your position.`}
+        </div>
+      )}
+      {memory && <div className="soundtrack-vote-streak">{memory}</div>}
+    </>
+  );
 }
 
 /** One-tap "where does this cue belong" vote with a community reveal */
@@ -151,14 +235,7 @@ function CueVote({ cards }) {
             );
           })}
         </div>
-        {(() => {
-          const { pick, streak } = getCueStreak();
-          return streak >= 3 && CUE_STREAK_LINES[pick] ? (
-            <div className="soundtrack-vote-streak">
-              {CUE_STREAK_LINES[pick](streak)}
-            </div>
-          ) : null;
-        })()}
+        <CueAftermath myPick={myPick} results={results} />
       </div>
     );
   }

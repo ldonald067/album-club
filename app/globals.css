@@ -887,6 +887,15 @@ body {
   margin: 4px 0 8px;
 }
 
+/* The room's verdict reads louder than the memory line under it: it is about
+   today, and it is the half of the reveal people came back for. */
+.soundtrack-vote-verdict {
+  color: var(--text-answer);
+  font-size: 11px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
 .soundtrack-vote-streak {
   color: var(--text-muted);
   font-size: 10px;
@@ -2383,6 +2392,25 @@ body {
   font-size: 16px;
 }
 
+/* Cue log — what the room decided, and what you said. Two narrow columns of
+   words; the "You" one drops out at mobile the same way genre and year do. */
+/* Qualified, because `.archive-table th` sets padding and text-align at
+   (0,1,1) and a bare class loses to it — the same specificity trap the vintage
+   skin block at the bottom of this file documents. */
+.archive-table th.archive-cue-head,
+.archive-table td.archive-cue-cell {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.archive-cue {
+  color: var(--text-answer);
+}
+
+.archive-cue-empty {
+  color: var(--text-quiet);
+}
+
 .archive-title {
   font-weight: bold;
   color: var(--text-heading-link);
@@ -2620,6 +2648,15 @@ body {
 
   .archive-hide-mobile {
     display: none;
+  }
+
+  /* "ROOM" is a wider minimum than the columns it replaced, and the archive
+     table is already at its narrowest here — 10px of padding is the difference
+     between fitting and a 1px horizontal scroll on the whole page. */
+  .archive-table th.archive-cue-head,
+  .archive-table td.archive-cue-cell {
+    padding-left: 4px;
+    padding-right: 4px;
   }
 
   .stats-grid {

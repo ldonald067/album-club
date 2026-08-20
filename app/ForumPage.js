@@ -3376,7 +3376,40 @@ function YesterdayRecap() {
 }
 
 /* ─── Archive Section ─── */
+
+/* Words, not the vote's emoji. In an 11px table the pair "🎮🎬" is a cipher:
+   nothing on screen says which glyph is the room and which is you, and the
+   distinction was carrying entirely on a title attribute. Two labeled columns
+   make agreement and disagreement legible at a glance, which is the whole
+   point of putting it in a table. */
+const CUE_NAMES = { game: "Game", film: "Film", tv: "TV" };
+
+/** The day's winning cue, or null on a tie or too few votes to mean anything.
+    Two is the same floor Album vs Album and Vibe use — one row is one row, and
+    calling it "the room" would be the zero-traffic lie those two already fixed. */
+function getRoomCue(day) {
+  if (!day || day.total < 2) return null;
+  const ranked = ["game", "film", "tv"].sort((a, b) => day[b] - day[a]);
+  return day[ranked[0]] === day[ranked[1]] ? null : ranked[0];
+}
+
+/** One cue cell: a medium, or a mark that nothing is on record. */
+function ArchiveCue({ pick }) {
+  if (!pick) {
+    return (
+      <span className="archive-cue-empty" aria-label="Nothing on record">
+        ·
+      </span>
+    );
+  }
+
+  return <span className="archive-cue">{CUE_NAMES[pick]}</span>;
+}
+
 function ArchiveSection() {
+  const [history, setHistory] = useState(null);
+  const [myCues, setMyCues] = useState(null);
+
   const rows = useMemo(() => {
     const fmt = new Intl.DateTimeFormat("en-US", {
       month: "short",
@@ -3394,6 +3427,21 @@ function ArchiveSection() {
     return result;
   }, []);
 
+  useEffect(() => {
+    loadJson("/api/soundtrack/history")
+      .then((data) => setHistory(data.days || {}))
+      .catch(() => setHistory({}));
+  }, []);
+
+  useEffect(() => {
+    const mine = {};
+    for (const row of rows) {
+      const pick = localStorage.getItem(`aotd_soundtrack_${row.key}`);
+      if (pick) mine[row.key] = pick;
+    }
+    setMyCues(mine);
+  }, [rows]);
+
   return (
     <div className="panel">
       <div className="panel-header">
@@ -3401,7 +3449,7 @@ function ArchiveSection() {
           <i className="hn hn-calender" aria-hidden="true" /> ARCHIVE — RECENT
           ALBUMS
         </span>
-        <span className="panel-header-note">Last 30 days</span>
+        <span className="panel-header-note">Last 30 days · cue log</span>
       </div>
       <div className="panel-body" style={{ padding: 0 }}>
         <table className="archive-table">
@@ -3413,6 +3461,8 @@ function ArchiveSection() {
               <th>Artist</th>
               <th className="archive-hide-mobile">Genre</th>
               <th className="archive-hide-mobile">Year</th>
+              <th className="archive-cue-head">Room</th>
+              <th className="archive-cue-head archive-hide-mobile">You</th>
             </tr>
           </thead>
           <tbody>
@@ -3426,6 +3476,12 @@ function ArchiveSection() {
                   {row.genre}
                 </td>
                 <td className="archive-year archive-hide-mobile">{row.year}</td>
+                <td className="archive-cue-cell">
+                  <ArchiveCue pick={getRoomCue(history?.[row.key])} />
+                </td>
+                <td className="archive-cue-cell archive-hide-mobile">
+                  <ArchiveCue pick={myCues?.[row.key]} />
+                </td>
               </tr>
             ))}
           </tbody>
