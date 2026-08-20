@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-08-13.
+session. Last updated: 2026-08-20.
 
 ## Handoff — read this first
 
@@ -10,7 +10,10 @@ session. Last updated: 2026-08-13.
 (2026-08-09 → 08-13) was all Cozy Vibes and housekeeping: the terrarium embed
 widened and given a working fullscreen path, an adversarial review whose one
 real finding shipped, Next.js bumped to 16.3.0, and Railway's agent tooling
-installed. The stretch before it (08-04 → 08-07) covered the lyric pool refill,
+installed. Since then (08-16 → 08-20) **nothing has changed but documentation**:
+a second adversarial review that found no code defects and six doc ones, then a
+sweep that fixed the stale facts in README and `api.md`. The stretch before the
+Cozy work (08-04 → 08-07) covered the lyric pool refill,
 every outstanding code review finding, the Vintage skin and the colour-token
 system underneath it, a landing-page reorder, a real mobile pass, and Soundtrack
 Corner taken to effectively complete. Details below and in git history.
