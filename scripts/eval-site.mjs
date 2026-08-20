@@ -1,7 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import { SOUNDTRACK_OVERRIDES } from "../lib/soundtrack-corner-data.js";
-import { getAngleLabel } from "../lib/soundtrack-corner.js";
+import {
+  buildSoundtrackCorner,
+  getAngleLabel,
+} from "../lib/soundtrack-corner.js";
 
 const rootDir = process.cwd();
 
@@ -218,6 +221,68 @@ printSection("Override structure");
     structureProblems.length === 0,
     "Curated overrides are structurally sound",
     "Bad keys or dangling recommendations silently vanish at runtime — catch them here.",
+  );
+}
+
+printSection("Rendered corners");
+{
+  /* Everything above this section inspects the curated overrides as data. That
+     left the 290 generated corners — the tier most visitors actually meet —
+     with no check at all, and two faults shipped behind it: a doubled article
+     in 33 bridge notes, and duplicate "Listen next" reasons in 63% of
+     generated corners (11% printed the same sentence three times in one view).
+     Both are obvious on sight and invisible to a structural read, so render
+     every album and read the output. */
+  const renderProblems = [];
+
+  for (const album of albums) {
+    const corner = buildSoundtrackCorner(album);
+    const label = `${album.artist} - ${album.title}`;
+
+    const reasons = corner.recommendations.map((rec) => rec.reason);
+    if (new Set(reasons).size !== reasons.length) {
+      renderProblems.push(`repeated recommendation reason (${label})`);
+    }
+
+    const prose = [
+      corner.intro,
+      corner.kicker,
+      corner.bridgeNote,
+      ...corner.cards.flatMap((card) => [card.title, card.body]),
+      ...corner.extraAngles.flatMap((angle) => [angle.title, angle.body]),
+      ...corner.listenFor,
+      ...reasons,
+    ].join(" \n ");
+
+    const doubled = prose.match(/\b(the|a|an)\s+\1\b/i);
+    if (doubled) {
+      renderProblems.push(`doubled article "${doubled[0]}" (${label})`);
+    }
+
+    if (corner.cards.length !== 3 || corner.cards.some((card) => !card.body)) {
+      renderProblems.push(`incomplete pitch cards (${label})`);
+    }
+    if (
+      corner.extraAngles.length !== 2 ||
+      corner.extraAngles.some((angle) => !getAngleLabel(angle.key))
+    ) {
+      renderProblems.push(`bad extra angles (${label})`);
+    }
+    if (corner.listenFor.length < 3) {
+      renderProblems.push(`thin listen-for list (${label})`);
+    }
+    if (corner.recommendations.length !== 3) {
+      renderProblems.push(`wrong recommendation count (${label})`);
+    }
+  }
+
+  renderProblems.slice(0, 5).forEach((problem) => console.log(`  ! ${problem}`));
+  failures += printGuardrail(
+    renderProblems.length === 0,
+    "Every corner renders clean copy",
+    renderProblems.length
+      ? `${renderProblems.length} rendered corner problem(s) across ${albums.length} albums`
+      : `All ${albums.length} corners render three distinct reasons and clean prose.`,
   );
 }
 
