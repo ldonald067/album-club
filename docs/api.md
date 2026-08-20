@@ -67,4 +67,8 @@ Soundtrack Corner's "where does this cue belong" vote. POST body: `{ pick }` whe
 
 ### GET `/api/health`
 
-Deploy/status probe: `{ commit, volumeMounted, uptimeSeconds }`. `commit` is the short Railway commit SHA (`"dev"` locally), `volumeMounted` reports whether `RAILWAY_VOLUME_MOUNT_PATH` is present (i.e. the SQLite volume is attached). Rate-limited like every other route. Used to verify deploys landed and the data volume is still attached.
+Deploy/status probe: `{ commit, volumeMounted, uptimeSeconds }`. `commit` is the short Railway commit SHA (`"dev"` locally), `volumeMounted` reports whether `RAILWAY_VOLUME_MOUNT_PATH` is present (i.e. the SQLite volume is attached). Rate-limited like every other route. Used to verify deploys landed and the data volume is still attached. A climbing `uptimeSeconds` is also the check that distinguishes a real crash loop from Railway's cosmetic "Deploy Crashed" notification — see `docs/gotchas.md` → Deployment.
+
+### GET `/api/backup`
+
+Returns a consistent SQLite snapshot of the live database, for the daily backup workflow. **Token-gated**: without the `BACKUP_TOKEN` secret it 404s rather than 401ing, so the route does not advertise its own existence. Driven by `.github/workflows/backup.yml` (daily 06:00 UTC, 90-day artifact retention) using the `BACKUP_URL` + `BACKUP_TOKEN` Actions secrets. Operational detail and the Litestream upgrade path live in `docs/project.md` → Database Backups.

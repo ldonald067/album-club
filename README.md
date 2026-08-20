@@ -4,25 +4,29 @@ A retro forum-style website where a new album is featured every day. Rate it, pi
 
 ## Features
 
-- **Daily Album** — a different album every day from a rotation of 424 curated albums
+- **Daily Album** — a different album every day from a hand-curated rotation
 - **Rate & Reveal** — rate 1-10 and see the community histogram
 - **Vibe Check** — pick 1-3 mood vibes and see what everyone else chose
-- **5 Daily Games** (rotating):
+- **Daily Games** — one per day, rotating:
   - **Guess the Album** — clue-based guessing (genre, decade, artist initial)
   - **Cover Art Challenge** — guess from a blurred album cover
   - **Lyric Fill-in-the-Blank** — complete the missing words
   - **Heardle** — name the album from a short audio clip
   - **Artist Scramble** — unscramble the artist name, guess the album
+- **Playlist Poll** — add today's album to the playlist, or skip it
+- **Album vs Album** — a daily head-to-head from the back catalogue
+- **Blind Taste Test** — two mystery clips, no labels, pick one
+- **Soundtrack Corner** — today's album reimagined as game / film / TV cue music, with scene cards and "listen next" picks
+- **Cozy Vibes** — a self-hosted pixel sandbox and a small shelf of cozy games
+- **Skins** — switch the 2004 forum for a Vintage 1990s desktop
 - **Streak Tracking** — tracks your daily participation streak
 - **Shareable Results** — Wordle-style copy-to-clipboard for all activities
 - **Yesterday's Recap** — see what the community thought about yesterday's album
 - **Retro Aesthetic** — 2004 forum vibes with pixel art icons and a vinyl record CSS effect
 
-- **Soundtrack Corner** — today's album reimagined as game / film / TV cue music, with scene cards and "listen next" picks
-
 ## Setup
 
-Requires [Node.js](https://nodejs.org/) v20.9+.
+Requires [Node.js](https://nodejs.org/) v20.12+ (CI runs 22).
 
 ```bash
 git clone https://github.com/ldonald067/album-club.git
@@ -40,11 +44,12 @@ app/
   page.js              # Server component — resolves today's album
   ForumPage.js         # Client component — all UI and games
   globals.css          # All styling
-  api/                 # rate, vibe, guess, stats, playlist, matchup, health routes
+  api/                 # rate, vibe, guess, stats, playlist, matchup,
+                       #   soundtrack, health, backup routes
 lib/
-  albums.json          # 424 album entries (source of truth)
+  albums.json          # The album catalog (source of truth)
   albums.js            # Shuffle logic, game helpers, vibes
-  lyrics.json          # Lyric lines for ~88 albums
+  lyrics.json          # Lyric lines for the Lyric game
   db.js                # SQLite database
 data/                  # Auto-created, holds aotd.db (gitignored)
 scripts/               # Data fetching + eval tools (covers, lyrics, YouTube IDs, site eval)

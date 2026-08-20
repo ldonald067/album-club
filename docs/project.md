@@ -104,6 +104,7 @@ each script degrades the way it always has.
 
 Docs follow a progressive disclosure pattern per https://alexop.dev/posts/stop-bloating-your-claude-md-progressive-disclosure-ai-coding-tools/:
 
-- **CLAUDE.md** (~45 lines) — universal context, always loaded
+- **CLAUDE.md** — universal context, always loaded, so it pays a cost on every
+  task and should stay the shortest file here
 - **docs/\*.md** — domain-specific, loaded on-demand when relevant to the task
 - Keep CLAUDE.md slim; add new knowledge to the appropriate docs/ file

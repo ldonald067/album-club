@@ -41,9 +41,9 @@
 - **Seeded permutation cache**: `lib/albums.js` caches shuffle permutations in a Map. Most seeds are year-based (few entries), but the daily Versus/Taste pairs seed per-day for full-year variety, so the Map grows ~2 entries/day (~730/year, ~1-2 MB of int arrays). Bounded and reset on every deploy — negligible in practice, but not the old "5-10/year"
 - **Adding albums shifts schedule**: Daily rotation uses `dayOfYear % ALBUMS.length` — changing album count shifts which album appears on which day
 
-## Verifying colour: three ways the measurement lies
+## Verifying colour: the ways the measurement lies
 
-All three were hit while auditing the Vintage skin, and each one produced a
+Every one of these was hit while auditing the Vintage skin, and each produced a
 confident wrong answer before it was caught. A contrast sweep that ignores them
 will both miss real failures and invent fake ones.
 
@@ -80,7 +80,7 @@ Related: WCAG 1.4.3 exempts **disabled** controls from contrast. Check
 `el.matches(':disabled')` before filing one — dimmed-but-enabled is a real
 failure, dimmed-and-disabled is not.
 
-The habit that catches all four: **a contrast finding is not real until you have
+The habit that catches every one of them: **a contrast finding is not real until you have
 the composited background**, not the declared one. Every trap above is the same
 mistake wearing a different hat — trusting a declared value over a rendered
 pixel.
