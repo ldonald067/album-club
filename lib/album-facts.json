@@ -349,5 +349,145 @@
     ],
     "releaseYear": 1975,
     "mbid": "39b22944-7503-3937-8bba-09b17281cc6a"
+  },
+  "The Clash::London Calling": {
+    "tracks": 19,
+    "runtimeMinutes": 65,
+    "longestMinutes": 6,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 1979,
+    "mbid": "8d73e45e-7ca1-3cb4-ae28-6da76196c17c"
+  },
+  "Joy Division::Unknown Pleasures": {
+    "tracks": 10,
+    "runtimeMinutes": 39,
+    "longestMinutes": 6,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 1979,
+    "mbid": "42352def-1aab-3000-b548-895ebd869cb6"
+  },
+  "Pixies::Doolittle": {
+    "tracks": 15,
+    "runtimeMinutes": 39,
+    "longestMinutes": 4,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 1989,
+    "mbid": "1aa41b19-5a72-341b-bd91-4cf61d1dab6b"
+  },
+  "Radiohead::The Bends": {
+    "tracks": 12,
+    "runtimeMinutes": 49,
+    "longestMinutes": 5,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 1994,
+    "mbid": "b8048f24-c026-3398-b23a-b5e50716cbc7"
+  },
+  "Björk::Homogenic": {
+    "tracks": 10,
+    "runtimeMinutes": 44,
+    "longestMinutes": 6,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 1997,
+    "mbid": "810272e0-aef1-3d85-b2d3-e512e87fc38c"
+  },
+  "Radiohead::Kid A": {
+    "tracks": 10,
+    "runtimeMinutes": 50,
+    "longestMinutes": 7,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2000,
+    "mbid": "e75c0549-ad55-39e3-8025-c72c5d4a3c5d"
+  },
+  "OutKast::Stankonia": {
+    "tracks": 26,
+    "runtimeMinutes": 83,
+    "longestMinutes": 7,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2000,
+    "mbid": "00d2cd53-21c9-3738-b683-56847b7b0040"
+  },
+  "Wilco::Yankee Hotel Foxtrot": {
+    "tracks": 11,
+    "runtimeMinutes": 52,
+    "longestMinutes": 7,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2002,
+    "mbid": "95f2ba4b-2dd9-38d1-8158-a416a391489c"
+  },
+  "Jay-Z::The Blueprint": {
+    "tracks": 15,
+    "runtimeMinutes": 63,
+    "longestMinutes": 6,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2001,
+    "mbid": "11ae8c9c-27c1-3308-9761-edb87c8f54ea"
+  },
+  "The White Stripes::Elephant": {
+    "tracks": 14,
+    "runtimeMinutes": 50,
+    "longestMinutes": 7,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2003,
+    "mbid": "d85b9684-4277-3565-b89b-115c8b4b7fd3"
+  },
+  "Tame Impala::InnerSpeaker": {
+    "tracks": 11,
+    "runtimeMinutes": 54,
+    "longestMinutes": 7,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2010,
+    "mbid": "0cfdeff7-4aa7-4df4-918d-88c9421cc512"
+  },
+  "Kendrick Lamar::good kid, m.A.A.d city": {
+    "tracks": 15,
+    "runtimeMinutes": 83,
+    "longestMinutes": 12,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2012,
+    "mbid": "499c19c8-0dab-4824-884b-6191d145e95b"
+  },
+  "Frank Ocean::Channel Orange": {
+    "tracks": 17,
+    "runtimeMinutes": 62,
+    "longestMinutes": 10,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2012,
+    "mbid": "f8f4167d-897c-4b25-a171-638374d1dfa4"
+  },
+  "Kanye West::My Beautiful Dark Twisted Fantasy": {
+    "tracks": 13,
+    "runtimeMinutes": 69,
+    "longestMinutes": 9,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2010,
+    "mbid": "5d6e21e1-deb5-428e-bb42-c2a567f3619b"
   }
 }

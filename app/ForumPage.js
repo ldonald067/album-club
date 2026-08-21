@@ -3442,6 +3442,17 @@ function ArchiveSection() {
     setMyCues(mine);
   }, [rows]);
 
+  /* At this site's traffic the room rarely reaches two votes on a day, and a
+     column of "·" thirty rows deep is worse than no column: it reads as a
+     broken feature rather than a quiet one. Each half of the cue log appears
+     only once it has something to say. Decided after the history request
+     settles (it resolves to {} on failure) so the table does not shuffle its
+     own columns mid-load. */
+  const showRoom =
+    history !== null && rows.some((row) => getRoomCue(history[row.key]));
+  const showMine = myCues !== null && rows.some((row) => myCues[row.key]);
+  const showCueLog = showRoom || showMine;
+
   return (
     <div className="panel">
       <div className="panel-header">
@@ -3449,7 +3460,9 @@ function ArchiveSection() {
           <i className="hn hn-calender" aria-hidden="true" /> ARCHIVE — RECENT
           ALBUMS
         </span>
-        <span className="panel-header-note">Last 30 days · cue log</span>
+        <span className="panel-header-note">
+          Last 30 days{showCueLog ? " · cue log" : ""}
+        </span>
       </div>
       <div className="panel-body" style={{ padding: 0 }}>
         <table className="archive-table">
@@ -3461,8 +3474,10 @@ function ArchiveSection() {
               <th>Artist</th>
               <th className="archive-hide-mobile">Genre</th>
               <th className="archive-hide-mobile">Year</th>
-              <th className="archive-cue-head">Room</th>
-              <th className="archive-cue-head archive-hide-mobile">You</th>
+              {showRoom && <th className="archive-cue-head">Room</th>}
+              {showMine && (
+                <th className="archive-cue-head archive-hide-mobile">You</th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -3476,12 +3491,16 @@ function ArchiveSection() {
                   {row.genre}
                 </td>
                 <td className="archive-year archive-hide-mobile">{row.year}</td>
-                <td className="archive-cue-cell">
-                  <ArchiveCue pick={getRoomCue(history?.[row.key])} />
-                </td>
-                <td className="archive-cue-cell archive-hide-mobile">
-                  <ArchiveCue pick={myCues?.[row.key]} />
-                </td>
+                {showRoom && (
+                  <td className="archive-cue-cell">
+                    <ArchiveCue pick={getRoomCue(history[row.key])} />
+                  </td>
+                )}
+                {showMine && (
+                  <td className="archive-cue-cell archive-hide-mobile">
+                    <ArchiveCue pick={myCues[row.key]} />
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
