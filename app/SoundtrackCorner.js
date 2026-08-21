@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { buildSoundtrackCorner } from "@/lib/soundtrack-corner";
-import { getGameType, getTodayKey } from "@/lib/albums";
+import { getGameType, getTodayKey, VIBES } from "@/lib/albums";
 import { loadJson } from "@/lib/safe-fetch";
 
 const GAME_LABELS = {
@@ -284,6 +284,101 @@ function CueVote({ cards, onPick, onSkip, skipped }) {
   );
 }
 
+/* The corner spent its whole life ignoring what the same page collected hours
+   earlier. Ratings and vibe words are the one kind of album-specific knowledge
+   the generator cannot invent and must not: they are real listeners on this
+   exact record, today. Mood words are also scene directions, which is the
+   corner's entire subject.
+
+   Both floors are the site's existing ones, not new inventions. The vibes
+   table stores one row per mood and everyone picks up to three, so `total` is
+   never a headcount — your own submission accounts for exactly your picks, and
+   anything past that means somebody else weighed in. Ratings are one row per
+   submission, so the same subtraction works there. Below either floor this
+   renders nothing rather than quoting a room of one back at itself. */
+function ClubRead() {
+  const [read, setRead] = useState(null);
+
+  useEffect(() => {
+    const todayKey = getTodayKey();
+    let myVibeCount = 0;
+
+    try {
+      const saved = JSON.parse(
+        localStorage.getItem(`aotd_vibed_${todayKey}`) || "[]",
+      );
+      if (Array.isArray(saved)) {
+        myVibeCount = Math.min(saved.length, 3);
+      }
+    } catch {
+      // A malformed entry means we cannot subtract our own rows, so subtract
+      // the maximum instead: overshooting hides the block, undershooting
+      // reports a lone voter as a room.
+      myVibeCount = 3;
+    }
+
+    const iRated = localStorage.getItem(`aotd_rated_${todayKey}`) ? 1 : 0;
+
+    Promise.all([
+      loadJson("/api/rate").catch(() => null),
+      loadJson("/api/vibe").catch(() => null),
+    ]).then(([rating, vibes]) =>
+      setRead({ rating, vibes, myVibeCount, iRated }),
+    );
+  }, []);
+
+  if (!read) return null;
+
+  const { rating, vibes, myVibeCount, iRated } = read;
+  const moods =
+    vibes?.distribution && vibes.total > myVibeCount
+      ? Object.entries(vibes.distribution)
+          .sort((left, right) => right[1] - left[1])
+          .slice(0, 3)
+          .map(([label]) => label)
+      : [];
+  const score =
+    rating && rating.total > iRated && rating.average > 0 ? rating : null;
+
+  if (!moods.length && !score) return null;
+
+  return (
+    <div className="soundtrack-corner-section">
+      <div className="soundtrack-section-title">What the club is hearing</div>
+      <p className="soundtrack-club-read">
+        {moods.length > 0 && (
+          <>
+            Today the room keeps reaching for{" "}
+            {moods.map((mood, index) => {
+              const vibe = VIBES.find((entry) => entry.label === mood);
+              return (
+                <span key={mood}>
+                  {index > 0 && (index === moods.length - 1 ? " and " : ", ")}
+                  <strong>
+                    <span aria-hidden="true">{vibe?.emoji}</span> {mood}
+                  </strong>
+                </span>
+              );
+            })}
+            .{" "}
+          </>
+        )}
+        {score && (
+          <>
+            It is sitting at <strong>{score.average}</strong> across{" "}
+            {score.total} {score.total === 1 ? "rating" : "ratings"}.{" "}
+          </>
+        )}
+        {/* Only earned when there are mood words: an average on its own says
+            nothing about scene work, and "the room agrees" is a claim a mean
+            cannot make — it hides its own spread. */}
+        {moods.length > 0 &&
+          "Mood words are scene directions. Take them, or argue with them too."}
+      </p>
+    </div>
+  );
+}
+
 export default function SoundtrackCorner({ album, onPlayToday }) {
   const corner = useMemo(() => buildSoundtrackCorner(album), [album]);
   const gameLabel = GAME_LABELS[getGameType()] || "today's game";
@@ -383,6 +478,7 @@ export default function SoundtrackCorner({ album, onPlayToday }) {
           </div>
         </div>
       )}
+      <ClubRead />
       <div className="soundtrack-corner-section">
         <div className="soundtrack-section-title">
           {corner.listenForHeading}

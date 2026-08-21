@@ -901,6 +901,13 @@ body {
   text-decoration: underline;
 }
 
+.soundtrack-club-read {
+  color: var(--text-answer);
+  font-size: 11px;
+  line-height: 1.6;
+  margin: 0;
+}
+
 .soundtrack-cards-lead {
   color: var(--text-prompt);
   font-size: 11px;

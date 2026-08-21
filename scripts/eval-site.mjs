@@ -385,6 +385,12 @@ failures += printGuardrail(
   "The vote-then-see-the-room loop is the corner's daily ritual — keep it.",
 );
 failures += printGuardrail(
+  soundtrackCornerSource.includes("vibes.total > myVibeCount") &&
+    soundtrackCornerSource.includes("rating.total > iRated"),
+  "The corner never quotes a room of one",
+  "What the club is hearing must subtract the visitor's own rows before calling it a room — the vibes table stores one row per mood, not one per person.",
+);
+failures += printGuardrail(
   soundtrackCornerSource.indexOf("<CueVote") <
     soundtrackCornerSource.indexOf("soundtrack-corner-grid"),
   "The corner asks before it argues",
