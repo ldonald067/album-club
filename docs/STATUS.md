@@ -252,6 +252,33 @@ Node 22) runs `npm test` then `npm run build`.
   inside a sentence that was unique per album. It counts six-word runs now,
   capped at the largest decade bucket, and both old templates fail it.
 
+- **The corner stopped writing from two fields (2026-08-21).** Two additions,
+  both about where knowledge comes from rather than how it reads.
+
+  **What the club is hearing.** The corner ignored the rating average and vibe
+  words the same page collected hours earlier. It quotes them now — the only
+  album-specific knowledge in the generated tier that comes from people. Both
+  floors subtract the visitor's own rows first, reusing Vibe Check's rule: the
+  vibes table stores one row per mood and everyone picks up to three, so the
+  total is not a headcount.
+
+  **Sourced album facts.** `npm run fetch-album-facts` pulls track count,
+  runtime, longest track and release type from MusicBrainz into
+  `lib/album-facts.json`. A fact line takes the coda's slot on one pitch card,
+  and shape affinity nudges "Listen next". **Partial by design** — a quarter of
+  this catalog is DJ sets and curated playlists with no MusicBrainz release
+  group, and the matcher refuses to guess rather than force a match. The run is
+  resumable; coverage lives in `npm run soundtrack-corner-report`.
+
+  **Two faults the run itself caught, both worth knowing.** Passing a candidate
+  object where its title string belonged rejected _every_ album — the guards
+  failed closed, which is the right direction. And _Purple Rain_ matched
+  Prince's **single**: same artist, title, year, score 100, three tracks, 19
+  minutes. Hence the primary-type filter and an `eval-site` check that fails any
+  Album-typed record of single size. Release country was collected and then
+  dropped: it is the earliest _pressing_'s country, so _Nevermind_ came back
+  `SA` — a fact that functions as a lie.
+
 - **Next.js 16.2.10 → 16.3.0 (2026-08-13).** Routine hygiene, not a response to
   the probe traffic above. React 19 already satisfied the peer range, so only
   `next` moved. Verified on the new version: unchanged route table, all tabs

@@ -11,6 +11,7 @@
     "build": "next build",
     "start": "next start",
     "fetch-albums": "node scripts/fetch-albums.mjs",
+    "fetch-album-facts": "node scripts/fetch-album-facts.mjs",
     "fetch-covers": "node --env-file-if-exists=.env scripts/fetch-covers.mjs",
     "fetch-lyrics": "node --env-file-if-exists=.env scripts/fetch-lyrics.mjs",
     "fetch-youtube-ids": "node --env-file-if-exists=.env scripts/fetch-youtube-ids.mjs",

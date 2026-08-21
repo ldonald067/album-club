@@ -4,6 +4,7 @@ import { SOUNDTRACK_PROFILES } from "../lib/soundtrack-corner-data.js";
 
 const rootDir = process.cwd();
 const albumsPath = path.join(rootDir, "lib", "albums.json");
+const factsPath = path.join(rootDir, "lib", "album-facts.json");
 const soundtrackDataPath = path.join(
   rootDir,
   "lib",
@@ -156,6 +157,29 @@ for (const [genre, count] of Object.entries(defaultGenreCounts)
   .slice(0, 8)) {
   console.log(`- ${genre}: ${count}`);
 }
+
+/* Sourced facts are the generator's only album-specific input, so their
+   coverage belongs next to override coverage rather than in prose anywhere. */
+const albumFacts = fs.existsSync(factsPath)
+  ? JSON.parse(fs.readFileSync(factsPath, "utf8"))
+  : {};
+const factKeys = new Set(Object.keys(albumFacts));
+const generatedAlbums = albums.filter(
+  (album) => !overrideKeys.has(`${album.artist}::${album.title}`),
+);
+const generatedWithFacts = generatedAlbums.filter((album) =>
+  factKeys.has(`${album.artist}::${album.title}`),
+);
+console.log("");
+console.log(
+  `Sourced facts: ${factKeys.size}/${albums.length} albums (${((factKeys.size / albums.length) * 100).toFixed(1)}%)`,
+);
+console.log(
+  `- reaching a generated corner: ${generatedWithFacts.length}/${generatedAlbums.length} (curated albums ignore them)`,
+);
+console.log(
+  "- run `npm run fetch-album-facts` to fill gaps; it resumes and skips what it has",
+);
 
 if (uncoveredPriorityAlbums.length > 0 || uncoveredEditorialAlbums.length > 0) {
   console.log("");

@@ -10,6 +10,7 @@ const rootDir = process.cwd();
 
 const albumsPath = path.join(rootDir, "lib", "albums.json");
 const lyricsPath = path.join(rootDir, "lib", "lyrics.json");
+const factsPath = path.join(rootDir, "lib", "album-facts.json");
 const soundtrackDataPath = path.join(
   rootDir,
   "lib",
@@ -105,6 +106,7 @@ function printGuardrail(pass, label, detail) {
 
 const albums = readJson(albumsPath);
 const lyrics = readJson(lyricsPath);
+const albumFacts = fs.existsSync(factsPath) ? readJson(factsPath) : {};
 const soundtrackSource = readText(soundtrackDataPath);
 const forumSource = readText(forumPagePath);
 const soundtrackCornerSource = readText(soundtrackCornerPath);
@@ -351,6 +353,73 @@ printSection("Rendered corners");
     overused.length
       ? `${overused.length} phrase(s) exceed the ${ceiling}-album ceiling — an intro or bridge frame pool has collapsed`
       : `Most repeated intro/bridge phrase runs ${ranked[0][1]}/${generatedAlbums.length} ("${ranked[0][0]}"), under the ${ceiling}-album decade ceiling.`,
+  );
+}
+
+printSection("Album facts");
+{
+  /* scripts/fetch-album-facts.mjs sources these from MusicBrainz and refuses to
+     guess, so the file is partial by design — the catalog's DJ sets, radio
+     mixes and curated playlists have no MusicBrainz release group at all. What
+     is here has to be right, though: it is the only thing on the page stated as
+     fact rather than as a reading. */
+  const catalogByKey = new Map(
+    albums.map((album) => [`${album.artist}::${album.title}`, album]),
+  );
+  const factProblems = [];
+
+  for (const [key, facts] of Object.entries(albumFacts)) {
+    const album = catalogByKey.get(key);
+
+    if (!album) {
+      factProblems.push(`not in the catalog: ${key}`);
+      continue;
+    }
+    if (!(facts.tracks >= 1 && facts.tracks <= 60)) {
+      factProblems.push(`implausible track count (${key}): ${facts.tracks}`);
+    }
+    if (!(facts.runtimeMinutes >= 5 && facts.runtimeMinutes <= 300)) {
+      factProblems.push(
+        `implausible runtime (${key}): ${facts.runtimeMinutes}`,
+      );
+    }
+    if (facts.longestMinutes > facts.runtimeMinutes) {
+      factProblems.push(`longest track exceeds the runtime (${key})`);
+    }
+    if (Math.abs((facts.releaseYear || 0) - album.year) > 1) {
+      factProblems.push(
+        `year drift (${key}): catalog ${album.year}, MusicBrainz ${facts.releaseYear}`,
+      );
+    }
+    if (!facts.types?.length) {
+      factProblems.push(`no release type (${key})`);
+    }
+    /* The one that already caught a live fault: "Purple Rain" matched Prince's
+       *single* — same name, same year, same artist, score 100, and 3 tracks in
+       19 minutes. An album-length record is not that small. */
+    if (
+      facts.types?.includes("Album") &&
+      facts.tracks <= 3 &&
+      facts.runtimeMinutes < 25
+    ) {
+      factProblems.push(
+        `album-shaped record is single-sized (${key}): ${facts.tracks} tracks, ${facts.runtimeMinutes} min — probably matched a single`,
+      );
+    }
+  }
+
+  console.log(
+    `Facts coverage: ${Object.keys(albumFacts).length}/${albums.length} albums (${formatPercent(
+      Object.keys(albumFacts).length / albums.length,
+    )})`,
+  );
+  factProblems.slice(0, 5).forEach((problem) => console.log(`  ! ${problem}`));
+  failures += printGuardrail(
+    factProblems.length === 0,
+    "Sourced album facts are plausible",
+    factProblems.length
+      ? `${factProblems.length} problem(s) in lib/album-facts.json`
+      : "Track counts, runtimes, longest tracks and years all check out against the catalog.",
   );
 }
 

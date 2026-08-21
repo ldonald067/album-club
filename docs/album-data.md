@@ -43,6 +43,40 @@ Lines are filtered on ingest: >15 and <120 chars, no metadata or section headers
 
 Lyric Challenge now picks from the lyric-backed recognizable subset first instead of choosing from the full recognizable pool and hoping a lyric entry exists. That makes the game steadier and turns Cover Art Challenge into a rarer fallback instead of a random-feeling swap.
 
+## Album Facts (`lib/album-facts.json`)
+
+Sourced shape data from MusicBrainz — track count, runtime, longest track,
+release type — keyed `"Artist::Title"` off the catalog's own strings. Fill it
+with `npm run fetch-album-facts`; the run resumes and skips whatever it already
+has, so an interrupted pass costs nothing.
+
+**Why a second file rather than fields on `albums.json`:** a bad run can then be
+deleted without touching the catalog every other feature reads. Same reasoning
+as `lyrics.json`.
+
+**It is partial by design.** Roughly a quarter of this catalog is DJ sets, radio
+mixes and curated playlists that have no MusicBrainz release group at all, and
+those are _supposed_ to come back empty. Every read of the facts is optional;
+an album without them generates exactly as it did before.
+
+**The matcher refuses to guess**, because this is the failure mode that put a
+rap verse under _Kind of Blue_. A candidate must clear five checks — search
+score ≥ 90, primary type Album or EP, artist, title, and a release year within
+a year of the catalog's. Two faults were caught this way during the first run:
+
+- Passing the candidate object where the title string belonged made every
+  comparison normalize to `"object object"`, and **every album was rejected**.
+  Failing closed is the right direction for this to fail.
+- _Purple Rain_ matched Prince's **single** — same artist, same title, same
+  year, score 100, and 3 tracks in 19 minutes. Hence the primary-type filter,
+  and `eval-site` now fails any Album-typed record that is single-sized.
+
+**Deliberately not collected: release country.** It is the country of the
+earliest official _pressing_, not where the record is from — _Nevermind_ came
+back `SA`, _Rumours_ `NL`. It would read as a fact and function as a lie.
+
+Coverage lives in `npm run soundtrack-corner-report`, never in prose here.
+
 ## Daily Rotation
 
 Seeded shuffle (mulberry32 PRNG + Fisher-Yates) keyed by year. Same date = same album globally. Rotates through the whole catalog before repeating, so adding an album shifts which record lands on which day.
@@ -57,7 +91,7 @@ Keys live in a gitignored `.env` at the repo root (`cp .env.example .env`). The
 fetchers below load it automatically, so the inline `KEY=xxx npm run …` form is
 only needed to override what's already in the file.
 
-- **MusicBrainz + Cover Art Archive**: Free (no key), primary source for album cover art
+- **MusicBrainz + Cover Art Archive**: Free (no key), primary source for album cover art, and the source for `npm run fetch-album-facts` (one request per second, identifying User-Agent, retries on 503 and on a dropped connection)
 - **iTunes Search API**: Free (no key), fallback for cover art
 - **Last.fm**: `LASTFM_API_KEY=xxx npm run fetch-covers` — legacy cover art fetcher
 - **Genius**: `GENIUS_ACCESS_TOKEN=xxx npm run fetch-lyrics` — lyric lines for recognizable albums
