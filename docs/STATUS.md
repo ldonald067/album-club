@@ -252,6 +252,20 @@ Node 22) runs `npm test` then `npm run build`.
   inside a sentence that was unique per album. It counts six-word runs now,
   capped at the largest decade bucket, and both old templates fail it.
 
+- **Metadata and share surface (2026-08-21).** The site has **one rating, one
+  puzzle play and zero vibes** on record (`/api/stats`), with Railway request
+  volume to match — so every community gate is permanently closed, including
+  two shipped earlier the same day. Meanwhile a shared link rendered as a bare
+  URL: no Open Graph tags, no card image, no favicon, no sitemap, and a title
+  that never named the day's album on a site whose whole premise is the day.
+  Fixed: per-day `generateMetadata`, a 1200×630 card drawn from the album's
+  accent colour and cover emoji, `metadataBase`, robots, sitemap, icon. Details
+  and the reasoning in `docs/project.md` → Discoverability.
+
+  **The remaining step is not code.** Nothing here submits the sitemap or puts
+  the link anywhere; that needs a human with the accounts. Judge this by
+  GoatCounter, not by the rating count.
+
 - **The corner stopped writing from two fields (2026-08-21).** Two additions,
   both about where knowledge comes from rather than how it reads.
 

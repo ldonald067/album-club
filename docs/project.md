@@ -6,6 +6,39 @@
 - **Analytics**: https://littlealbumclub.goatcounter.com (GoatCounter, script in `layout.js`)
 - **Contact**: rainbowpudding@littlealbumclub.net (mailto link in footer)
 
+## Discoverability and Share Surface
+
+Added 2026-08-21, after measuring: the site had **one rating, one puzzle play
+and zero vibes** on record, and Railway's request volume matched. Every
+community feature holds back below two participants — correctly — so at that
+traffic they render nothing. The bottleneck was never another feature.
+
+What existed before: a static `<title>`, a static description, and nothing
+else. No Open Graph tags, no Twitter card, no image, no favicon, no sitemap. A
+link pasted into a chat window rendered as a bare URL, and a daily site's
+metadata never mentioned the day.
+
+- `app/page.js` → `generateMetadata()` builds title, description and card from
+  `getTodayAlbum()`. Already `force-dynamic`, so it cannot be cached past UTC
+  midnight.
+- `app/opengraph-image.js` → a 1200×630 card drawn from the album's own accent
+  colour and cover emoji. **Deliberately not the album artwork**: that is a
+  remote Last.fm or iTunes URL, and a card that depends on a third-party fetch
+  fails inside someone else's chat client, where nobody will ever see it fail.
+  Verified by rendering it, including the catalog's longest title — three lines,
+  no clipping.
+- `app/layout.js` → `metadataBase`, without which `og:image` resolves
+  relatively and no crawler can fetch it. Reads `SITE_URL`, then Railway's
+  `RAILWAY_PUBLIC_DOMAIN`, then the live domain.
+- `app/robots.js`, `app/sitemap.js`, `app/icon.svg` → there was no robots.txt
+  at all, which already meant "index everything", so the rules change nothing;
+  the sitemap pointer is the part that earns its keep. `/api/` is disallowed
+  because those routes are no-store JSON with nothing to index.
+
+`eval-site` fails if the metadata drifts back to static or the card loses its
+image. **Not done:** submitting the sitemap to Search Console, or anywhere to
+share the link — those need a human with the accounts.
+
 ## Database Backups
 
 The community aggregate (all ratings/vibes/votes) lives only on the Railway

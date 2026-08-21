@@ -489,5 +489,226 @@
     ],
     "releaseYear": 2010,
     "mbid": "5d6e21e1-deb5-428e-bb42-c2a567f3619b"
+  },
+  "Radiohead::In Rainbows": {
+    "tracks": 10,
+    "runtimeMinutes": 43,
+    "longestMinutes": 5,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2007,
+    "mbid": "6e335887-60ba-38f0-95af-fae7774336bf"
+  },
+  "Tame Impala::Currents": {
+    "tracks": 13,
+    "runtimeMinutes": 51,
+    "longestMinutes": 8,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2015,
+    "mbid": "08aa7a6c-3e43-4459-87b2-e47faf3a088a"
+  },
+  "Tyler, the Creator::Igor": {
+    "tracks": 12,
+    "runtimeMinutes": 40,
+    "longestMinutes": 6,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2019,
+    "mbid": "0f1b9e07-b38b-4bba-9794-55e0924d7177"
+  },
+  "Billie Eilish::When We All Fall Asleep, Where Do We Go?": {
+    "tracks": 14,
+    "runtimeMinutes": 43,
+    "longestMinutes": 5,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2019,
+    "mbid": "72375978-a9a1-4254-b957-85565c716b7e"
+  },
+  "Weyes Blood::Titanic Rising": {
+    "tracks": 14,
+    "runtimeMinutes": 57,
+    "longestMinutes": 6,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2019,
+    "mbid": "b30447b9-8e32-4e98-a128-9c18d9378e8d"
+  },
+  "Kendrick Lamar::DAMN.": {
+    "tracks": 14,
+    "runtimeMinutes": 55,
+    "longestMinutes": 8,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2017,
+    "mbid": "b88655ba-7469-48b8-a296-b9011ab73ef3"
+  },
+  "Lorde::Melodrama": {
+    "tracks": 11,
+    "runtimeMinutes": 41,
+    "longestMinutes": 6,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2017,
+    "mbid": "668e80e0-b35e-4471-9788-0a3d797fe42c"
+  },
+  "SZA::Ctrl": {
+    "tracks": 14,
+    "runtimeMinutes": 49,
+    "longestMinutes": 5,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2017,
+    "mbid": "8f892c1b-0709-4cf4-9711-493892a9eb9b"
+  },
+  "Tyler, the Creator::Flower Boy": {
+    "tracks": 14,
+    "runtimeMinutes": 47,
+    "longestMinutes": 5,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2017,
+    "mbid": "e248e931-c26c-4c94-aba2-2f89ce583901"
+  },
+  "Arctic Monkeys::AM": {
+    "tracks": 12,
+    "runtimeMinutes": 42,
+    "longestMinutes": 5,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2013,
+    "mbid": "a348ba2f-f8b3-4686-b928-e63d8d94d543"
+  },
+  "Daft Punk::Random Access Memories": {
+    "tracks": 13,
+    "runtimeMinutes": 74,
+    "longestMinutes": 9,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2013,
+    "mbid": "aa997ea0-2936-40bd-884d-3af8a0e064dc"
+  },
+  "Death Grips::The Money Store": {
+    "tracks": 13,
+    "runtimeMinutes": 41,
+    "longestMinutes": 5,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2012,
+    "mbid": "aa0b4e86-358e-4c92-aecd-94f5f59233f7"
+  },
+  "The Weeknd::House of Balloons": {
+    "tracks": 9,
+    "runtimeMinutes": 50,
+    "longestMinutes": 8,
+    "types": [
+      "Album",
+      "Mixtape/Street"
+    ],
+    "releaseYear": 2011,
+    "mbid": "6fe82196-df5d-4938-aa39-920df5b4517d"
+  },
+  "Bon Iver::Bon Iver": {
+    "tracks": 10,
+    "runtimeMinutes": 39,
+    "longestMinutes": 6,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2011,
+    "mbid": "2cb36662-3560-4b90-a0a5-7924ac039490"
+  },
+  "Tame Impala::Lonerism": {
+    "tracks": 26,
+    "runtimeMinutes": 110,
+    "longestMinutes": 6,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2012,
+    "mbid": "b0864c80-2726-4761-bf66-a97610162a2c"
+  },
+  "alt-J::An Awesome Wave": {
+    "tracks": 13,
+    "runtimeMinutes": 49,
+    "longestMinutes": 13,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2012,
+    "mbid": "0d8562eb-7f72-427b-8a0b-984cc5ee7766"
+  },
+  "Lorde::Pure Heroine": {
+    "tracks": 10,
+    "runtimeMinutes": 37,
+    "longestMinutes": 5,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2013,
+    "mbid": "8e8a1db7-1d43-44d3-9796-fd69f12730cb"
+  },
+  "Phoebe Bridgers::Punisher": {
+    "tracks": 11,
+    "runtimeMinutes": 41,
+    "longestMinutes": 6,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2020,
+    "mbid": "cf75fd5a-ca84-4371-94d7-27410360f06b"
+  },
+  "Fiona Apple::Fetch the Bolt Cutters": {
+    "tracks": 13,
+    "runtimeMinutes": 52,
+    "longestMinutes": 6,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2020,
+    "mbid": "882db6d8-e28b-46ba-8a30-277e86fbddf7"
+  },
+  "Mac Miller::Circles": {
+    "tracks": 12,
+    "runtimeMinutes": 49,
+    "longestMinutes": 6,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2020,
+    "mbid": "1a19e11b-106c-45fc-8452-387216ed18f7"
+  },
+  "The Weeknd::After Hours": {
+    "tracks": 14,
+    "runtimeMinutes": 56,
+    "longestMinutes": 6,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2020,
+    "mbid": "78570bea-2a26-467c-a3db-c52723ceb394"
+  },
+  "Dua Lipa::Future Nostalgia": {
+    "tracks": 11,
+    "runtimeMinutes": 37,
+    "longestMinutes": 4,
+    "types": [
+      "Album"
+    ],
+    "releaseYear": 2020,
+    "mbid": "aa366795-92d7-4d67-91fa-6741f82a4858"
   }
 }

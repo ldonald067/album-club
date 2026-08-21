@@ -17,6 +17,8 @@ const soundtrackDataPath = path.join(
   "soundtrack-corner-data.js",
 );
 const forumPagePath = path.join(rootDir, "app", "ForumPage.js");
+const homePagePath = path.join(rootDir, "app", "page.js");
+const ogImagePath = path.join(rootDir, "app", "opengraph-image.js");
 const soundtrackCornerPath = path.join(rootDir, "app", "SoundtrackCorner.js");
 
 function readJson(filePath) {
@@ -109,7 +111,9 @@ const lyrics = readJson(lyricsPath);
 const albumFacts = fs.existsSync(factsPath) ? readJson(factsPath) : {};
 const soundtrackSource = readText(soundtrackDataPath);
 const forumSource = readText(forumPagePath);
+const homePageSource = readText(homePagePath);
 const soundtrackCornerSource = readText(soundtrackCornerPath);
+const layoutSource = readText(path.join(rootDir, "app", "layout.js"));
 
 const recognizableAlbums = albums.filter((album) => album.recognizable);
 const lyricKeys = new Set(Object.keys(lyrics).map((key) => key.toLowerCase()));
@@ -452,6 +456,24 @@ failures += printGuardrail(
     soundtrackCornerSource.includes("/api/soundtrack"),
   "Cue vote is wired into the corner",
   "The vote-then-see-the-room loop is the corner's daily ritual — keep it.",
+);
+/* A daily site whose shared link said the same thing every day. The title, the
+   description and the social card all name today's record now, and a link
+   pasted into a chat shows what the club is listening to instead of a bare
+   URL. Static metadata is the easy thing to drift back to, so it is checked. */
+failures += printGuardrail(
+  homePageSource.includes("export function generateMetadata") &&
+    homePageSource.includes("album.title") &&
+    homePageSource.includes("openGraph"),
+  "A shared link names the day's album",
+  "app/page.js must build its title, description and card from today's album — a daily site whose metadata never changes is a static link.",
+);
+failures += printGuardrail(
+  fs.existsSync(ogImagePath) &&
+    readText(ogImagePath).includes("ImageResponse") &&
+    layoutSource.includes("metadataBase"),
+  "The social card has an image and an absolute URL",
+  "Without app/opengraph-image.js the card is text only; without metadataBase in the layout, og:image resolves relatively and no crawler can fetch it.",
 );
 failures += printGuardrail(
   soundtrackCornerSource.includes("vibes.total > myVibeCount") &&
