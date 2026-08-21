@@ -288,6 +288,72 @@ printSection("Rendered corners");
   );
 }
 
+{
+  /* Three phrases used to appear in 290 of 290 generated corners — the intro's
+     "feels built for scene work", the bridge's "stay louder than generic
+     background mood", and "lands best on screen when". Card-title collisions
+     are invisible at one album a day; a phrase in every corner is what a daily
+     visitor actually meets. Seeded frame pools fixed it, and this keeps a pool
+     from quietly collapsing back to a single entry.
+
+     Counted as word runs, not sentences. Every one of those three sat *inside*
+     a sentence that was unique per album ("OK Computer by Radiohead feels built
+     for scene work"), so a sentence-level check passes a collapsed pool — the
+     first version of this guardrail did exactly that and had to be rewritten.
+
+     Intro and bridge only. The pitch cards keep a fixed skeleton on purpose
+     ("If X scored Y, it would be the part where Z"); it is grammar, not a
+     claim, and holding it to this ceiling would flag the template itself.
+
+     The ceiling is the largest decade bucket rather than a fixed percentage.
+     The decade vibe line legitimately lands once per album of its decade, so it
+     sits exactly at the bucket size and nothing honest exceeds it; a fixed
+     threshold would either flag it or drift as the catalog's spread changes. */
+  const SHINGLE = 6;
+  const generatedAlbums = albums.filter(
+    (album) => !SOUNDTRACK_OVERRIDES[getSoundtrackOverrideKey(album)],
+  );
+  const decadeBuckets = new Map();
+  const phraseAlbums = new Map();
+
+  for (const album of generatedAlbums) {
+    const decade = getDecadeLabel(album.year);
+    decadeBuckets.set(decade, (decadeBuckets.get(decade) || 0) + 1);
+
+    const corner = buildSoundtrackCorner(album);
+    const words = `${corner.intro} ${corner.bridgeNote}`
+      .toLowerCase()
+      .split(/\s+/)
+      .filter(Boolean);
+    const phrases = new Set();
+
+    for (let i = 0; i + SHINGLE <= words.length; i += 1) {
+      phrases.add(words.slice(i, i + SHINGLE).join(" "));
+    }
+    for (const phrase of phrases) {
+      phraseAlbums.set(phrase, (phraseAlbums.get(phrase) || 0) + 1);
+    }
+  }
+
+  const ceiling = Math.max(...decadeBuckets.values());
+  const ranked = [...phraseAlbums.entries()].sort(
+    (left, right) => right[1] - left[1],
+  );
+  const overused = ranked.filter(([, count]) => count > ceiling);
+
+  overused
+    .slice(0, 3)
+    .forEach(([phrase, count]) => console.log(`  ! ${count}x "${phrase}"`));
+
+  failures += printGuardrail(
+    overused.length === 0,
+    "No phrase shows up in every corner",
+    overused.length
+      ? `${overused.length} phrase(s) exceed the ${ceiling}-album ceiling — an intro or bridge frame pool has collapsed`
+      : `Most repeated intro/bridge phrase runs ${ranked[0][1]}/${generatedAlbums.length} ("${ranked[0][0]}"), under the ${ceiling}-album decade ceiling.`,
+  );
+}
+
 printSection("UI and API guardrails");
 failures += printGuardrail(
   forumSource.includes("Heardle switched formats."),

@@ -46,6 +46,8 @@ Albums without an override fall to a genre profile in `SOUNDTRACK_PROFILES`; alb
 
 `DECADE_FLAVORS` adds era texture on top of profiles; keep it split by real decades as the catalog grows.
 
+`INTRO_FRAMES` and `BRIDGE_FRAMES` in `lib/soundtrack-corner.js` are the sentence shapes those profiles get poured into. **Append, never edit** — same reasoning as the profiles, and `eval-site` fails if any six-word run across the generated intros and bridges exceeds the largest decade bucket, which is what a collapsed pool looks like. Two rules for a new frame: it must not claim the album suits scene work (the vote above the cards asks that), and it must never make a `texture` phrase the subject of a verb — some are plural ("gloss, hooks, and feelings") and some are not.
+
 ## Working Rules
 
 - Prefer depth over raw count, but keep pushing the curated tier outward in batches so the corner does not become "special for 60 records and generic for everything else."

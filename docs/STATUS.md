@@ -237,6 +237,21 @@ Node 22) runs `npm test` then `npm run build`.
   a one-tap vote. `eval-site` fails if the order is ever reversed. **Deliberate,
   not a bug: do not "fix" it back.**
 
+- **Soundtrack Corner copy pass (2026-08-21).** Followed the three passes above,
+  and all of it was measured rather than read. The page stated its premise four
+  times in 123 words before anyone could vote — explainer, intro, kicker,
+  prompt — so the explainer lost its 58-word table of contents (written when the
+  vote still sat below the cards) and the preamble is 87 words. Generated
+  corners ran a median **332 words against curated's 250** and said less; each
+  pitch card now takes at most one flourish instead of a guaranteed coda, and
+  the median is 295. Three phrases appeared in **290 of 290** generated corners;
+  seeded intro and bridge frame pools replaced them, and none of the new intro
+  frames asserts that the album suits scene work — the vote above it asks that.
+  **The guardrail for this had to be rewritten:** counting whole sentences
+  passed a deliberately collapsed pool, because every offending phrase sat
+  inside a sentence that was unique per album. It counts six-word runs now,
+  capped at the largest decade bucket, and both old templates fail it.
+
 - **Next.js 16.2.10 → 16.3.0 (2026-08-13).** Routine hygiene, not a response to
   the probe traffic above. React 19 already satisfied the peer range, so only
   `next` moved. Verified on the new version: unchanged route table, all tabs

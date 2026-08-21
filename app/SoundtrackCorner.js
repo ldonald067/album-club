@@ -252,8 +252,8 @@ function CueVote({ cards, onPick, onSkip, skipped }) {
           </>
         ) : (
           <>
-            Where does this one belong tonight? Call it before you read the
-            pitches — one vote, then you see the room and the club&apos;s case.
+            Where does this one belong tonight? Call it first — one vote, then
+            the room and the club&apos;s case.
           </>
         )}
       </div>
@@ -312,12 +312,15 @@ export default function SoundtrackCorner({ album, onPlayToday }) {
 
   return (
     <div className="soundtrack-corner">
+      {/* Was a 58-word table of contents, written when the vote sat below three
+          pitch cards and needed announcing. The vote is the first thing on the
+          page now and asks the question itself, so this had the page stating
+          its premise four times — explainer, intro, kicker, prompt — across 123
+          words before anyone could answer. */}
       <div className="soundtrack-corner-explainer">
-        <strong>How this works: </strong>every day we take today&apos;s album
-        and ask one question — if this record scored a scene, what scene? Call
-        it first (🎮 game, 🎬 film, 📺 TV), then see the room and read the
-        club&apos;s case for all three, plus two bonus angles, what to listen
-        for, and what to spin next. Argue with all of it.
+        <strong>How this works: </strong>every day the club treats today&apos;s
+        album as cue music. You call it first, we make our case after, and you
+        argue with all of it.
       </div>
       <p className="soundtrack-intro">{corner.intro}</p>
       <div className="soundtrack-corner-actions">
