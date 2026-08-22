@@ -276,13 +276,22 @@ Node 22) runs `npm test` then `npm run build`.
   vibes table stores one row per mood and everyone picks up to three, so the
   total is not a headcount.
 
-  **Sourced album facts.** `npm run fetch-album-facts` pulls track count,
-  runtime, longest track and release type from MusicBrainz into
-  `lib/album-facts.json`. A fact line takes the coda's slot on one pitch card,
+  **Sourced album facts — 338/424 (79.7%), committed 2026-08-21.**
+  `npm run fetch-album-facts` pulls track count, runtime, longest track and
+  release type from MusicBrainz into `lib/album-facts.json`. A fact line takes the coda's slot on one pitch card,
   and shape affinity nudges "Listen next". **Partial by design** — a quarter of
   this catalog is DJ sets and curated playlists with no MusicBrainz release
   group, and the matcher refuses to guess rather than force a match. The run is
   resumable; coverage lives in `npm run soundtrack-corner-report`.
+
+  **Which release the numbers come from took three rules to get right**, and the
+  wrong ones all produced confident, plausible-looking numbers. Earliest-official
+  gave _Lonerism_ 26 tracks and 110 minutes (a year-only box set sorts before any
+  dated day in the same year). Median gave _Structures from Silence_ 7 tracks
+  instead of 3. Minimum gave _Kind of Blue_ 3 tracks and 26 minutes — on the one
+  record this repo can least afford to get wrong. Consensus across editions is in
+  use, measured 9/11 against known shapes. Table and reasoning in
+  `docs/album-data.md`; **do not "simplify" it back to earliest.**
 
   **Two faults the run itself caught, both worth knowing.** Passing a candidate
   object where its title string belonged rejected _every_ album — the guards

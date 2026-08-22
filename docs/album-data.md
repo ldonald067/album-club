@@ -62,14 +62,65 @@ an album without them generates exactly as it did before.
 **The matcher refuses to guess**, because this is the failure mode that put a
 rap verse under _Kind of Blue_. A candidate must clear five checks — search
 score ≥ 90, primary type Album or EP, artist, title, and a release year within
-a year of the catalog's. Two faults were caught this way during the first run:
+a year of the catalog's — and a plain album outranks one flagged Live or
+Compilation when both qualify. Faults caught by running it, each now guarded:
 
 - Passing the candidate object where the title string belonged made every
   comparison normalize to `"object object"`, and **every album was rejected**.
   Failing closed is the right direction for this to fail.
 - _Purple Rain_ matched Prince's **single** — same artist, same title, same
   year, score 100, and 3 tracks in 19 minutes. Hence the primary-type filter,
-  and `eval-site` now fails any Album-typed record that is single-sized.
+  and `eval-site` fails any Album-typed record that is single-sized.
+- `encodeURI` leaves `&`, `?` and `#` alone, so `releasegroup:"The Velvet
+Underground & Nico"` truncated into a search for "The Velvet Underground".
+  21 catalog entries carry one of those characters. URLs are built with
+  `URLSearchParams` now.
+- Justice's _Cross_ matched **A Cross the Universe**, their live album a year
+  later: same artist, adjacent year, and the catalog title sits inside the
+  longer one. Title containment is now capped at 2× growth, which still accepts
+  _Music for Airports_ → _Ambient 1: Music for Airports_. That entry is
+  uncovered now, which is the honest outcome.
+
+**Which release the numbers come from took three tries, and the reasoning
+matters more than the answer.** A release group holds every edition ever
+pressed, and they disagree.
+
+| Rule              | Why it failed                                                                                                                                                                            |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Earliest official | MusicBrainz dates at varying precision and a bare year sorts before any dated day in it, so _Lonerism_'s year-only 4-disc box set won: 26 tracks, 110 minutes against a real 12 and 51   |
+| Median            | For an often-reissued album most catalogued editions **are** expanded, so the middle is a deluxe edition — _Structures from Silence_ 3 → 7 tracks, _Carrie & Lowell_ 11 → 18             |
+| Minimum           | Picked up truncated editions, and did it on the worst possible record: _Kind of Blue_ as 3 tracks and 26 minutes                                                                         |
+| **Consensus**     | In use. A box set is one release against a dozen ordinary pressings, and a truncated edition is outvoted the same way. Measured 9/11 against known shapes, vs minimum's 8 and median's 2 |
+
+It is a heuristic, not an oracle: _A Love Supreme_ still reports 3 movements
+against a real 4, because its catalogue genuinely disagrees with itself.
+
+**Video media are not tracks.** _Lemonade_ is catalogued mostly as
+`CD:12 + DVD:1`, and that DVD entry is the 65-minute film — counted, it made a
+12-track, 46-minute record report as 13 tracks and 111 minutes. Numbers like
+that look perfectly plausible on their own, which is why `eval-site` guards the
+exclusion at the source rather than trying to spot it in the data.
+
+Each entry stores the `releaseTitle` it was derived from. `eval-site` re-checks
+it against the catalog title and **reports** mismatches without failing: release
+titles carry edition text that group titles do not ("Ready to Die (The Remaster
+CD and DVD)"), and several catalog entries abbreviate a longer real title
+("Bon Iver" for "Bon Iver, Bon Iver"). As a hard check it fired nine times and
+eight were benign — the kind of guardrail people learn to scroll past. The
+strict rule still runs where it can act on the answer: inside the fetcher,
+before anything is written.
+
+**Coverage is 338/424 (79.7%), and the last stretch is not worth buying.** The
+gap is skips the guards earned: MusicBrainz files _Madvillainy_ under the 2002
+leak against the catalog's 2004, _Zombie_ only inside a "Na Poi / Zombie"
+reissue, _Blade Runner_ under its 1993 official release rather than the 1982
+score. Loosening the year window or the title rule to reach a round number
+would trade correctness for a number.
+
+**The fetch also found catalog errors, which are worth a look:** Petit Biscuit's
+_Presence_ is filed as 2022 and is a 2017 record; Between the Buried and Me's
+_Colors Live_ is filed as 2020 and is 2008. Both were rejected for year drift —
+correctly, given what the catalog claims.
 
 **Deliberately not collected: release country.** It is the country of the
 earliest official _pressing_, not where the record is from — _Nevermind_ came

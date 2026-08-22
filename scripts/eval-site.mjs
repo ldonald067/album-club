@@ -58,6 +58,30 @@ function groupCounts(items, getKey) {
   return [...counts.entries()].sort((left, right) => right[1] - left[1]);
 }
 
+/* Mirrors scripts/fetch-album-facts.mjs. Deliberately a copy rather than an
+   import: this exists to catch the fetcher's output being wrong, and a check
+   that shares its subject's code cannot do that if the shared part is the bug. */
+function normalizeTitle(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/^the\s+/, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function titlesAgree(catalogTitle, candidateTitle) {
+  const left = normalizeTitle(catalogTitle);
+  const right = normalizeTitle(candidateTitle);
+  if (!left || !right) return false;
+  if (left === right) return true;
+  if (!left.includes(right) && !right.includes(left)) return false;
+  const [shorter, longer] =
+    left.length < right.length ? [left, right] : [right, left];
+  return longer.length <= shorter.length * 2;
+}
+
 function getDecadeLabel(year) {
   return `${Math.floor(year / 10) * 10}s`;
 }
@@ -371,6 +395,7 @@ printSection("Album facts");
     albums.map((album) => [`${album.artist}::${album.title}`, album]),
   );
   const factProblems = [];
+  const factNotes = [];
 
   for (const [key, facts] of Object.entries(albumFacts)) {
     const album = catalogByKey.get(key);
@@ -398,6 +423,17 @@ printSection("Album facts");
     if (!facts.types?.length) {
       factProblems.push(`no release type (${key})`);
     }
+    /* Reported, deliberately not failed. Release titles carry edition text that
+       group titles do not — "Ready to Die (The Remaster CD and DVD)" — and
+       several catalog entries abbreviate a longer real title ("Bon Iver" for
+       "Bon Iver, Bon Iver", "Plantasia" for "Mother Earth's Plantasia"). As a
+       hard check this fired nine times and eight were benign, which is the
+       kind of guardrail people learn to scroll past. The strict title rule
+       still runs where it can act on the answer: inside the fetcher, before
+       anything is written. */
+    if (facts.releaseTitle && !titlesAgree(album.title, facts.releaseTitle)) {
+      factNotes.push(`${key} ← "${facts.releaseTitle}"`);
+    }
     /* The one that already caught a live fault: "Purple Rain" matched Prince's
        *single* — same name, same year, same artist, score 100, and 3 tracks in
        19 minutes. An album-length record is not that small. */
@@ -412,12 +448,30 @@ printSection("Album facts");
     }
   }
 
+  /* The DVD in "CD:12 + DVD:1" is the film, not a thirteenth song, and counting
+     it turned Lemonade into a 13-track, 111-minute record. Guarded at the
+     source because the resulting numbers look perfectly plausible on their own. */
+  const fetcherSource = readText(
+    path.join(rootDir, "scripts", "fetch-album-facts.mjs"),
+  );
+  if (!fetcherSource.includes("VIDEO_FORMATS")) {
+    factProblems.push(
+      "the fetcher no longer excludes video media — DVD tracks will be counted as songs",
+    );
+  }
+
   console.log(
     `Facts coverage: ${Object.keys(albumFacts).length}/${albums.length} albums (${formatPercent(
       Object.keys(albumFacts).length / albums.length,
     )})`,
   );
   factProblems.slice(0, 5).forEach((problem) => console.log(`  ! ${problem}`));
+  if (factNotes.length) {
+    console.log(
+      `  note: ${factNotes.length} entr(y/ies) came from a differently-titled release — usually an edition suffix, worth an eyeball after a refill:`,
+    );
+    factNotes.slice(0, 3).forEach((note) => console.log(`      ${note}`));
+  }
   failures += printGuardrail(
     factProblems.length === 0,
     "Sourced album facts are plausible",

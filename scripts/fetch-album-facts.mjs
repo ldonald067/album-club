@@ -2,6 +2,7 @@
  * Fetch verifiable shape facts for the catalog from MusicBrainz.
  *
  * Usage: node scripts/fetch-album-facts.mjs [--limit N] [--only "Artist"]
+ *        node scripts/fetch-album-facts.mjs --refresh [--resume]
  *
  * No API key. MusicBrainz asks for one request per second and a User-Agent
  * that identifies the caller, and both are honoured below.
@@ -111,15 +112,26 @@ function normalize(value) {
     .trim();
 }
 
-/* "Music for Airports" is filed as "Ambient 1: Music for Airports", and
-   "Untitled Unmastered." loses its full stop. Containment either way accepts
-   those; it will not accept two unrelated titles, because the artist and year
-   checks run alongside it. */
+/* Containment is needed — "Music for Airports" is filed as "Ambient 1: Music
+   for Airports" — but unbounded it matched Justice's "Cross" to "A Cross the
+   Universe", their live album from the following year. Same artist and one
+   year apart, so the artist and year checks both passed and the catalog got a
+   19-track, 135-minute live record filed as a 12-track studio album.
+
+   A real title variant adds a prefix or a bit of punctuation, so the longer
+   string stays close in length. Doubling means it is a different record. */
+const MAX_TITLE_GROWTH = 2;
+
 function titlesAgree(catalogTitle, candidateTitle) {
   const left = normalize(catalogTitle);
   const right = normalize(candidateTitle);
   if (!left || !right) return false;
-  return left === right || left.includes(right) || right.includes(left);
+  if (left === right) return true;
+  if (!left.includes(right) && !right.includes(left)) return false;
+
+  const [shorter, longer] =
+    left.length < right.length ? [left, right] : [right, left];
+  return longer.length <= shorter.length * MAX_TITLE_GROWTH;
 }
 
 function artistsAgree(catalogArtist, candidate) {
@@ -139,30 +151,86 @@ function yearsAgree(catalogYear, candidate) {
   return Math.abs(year - catalogYear) <= MAX_YEAR_DRIFT;
 }
 
+/* Lemonade is catalogued mostly as "CD:12 + DVD:1", and that one DVD entry is
+   the 65-minute film. Counting it made a 12-track, 46-minute record report as
+   13 tracks and 111 minutes — a fact, stated confidently, that was wrong.
+   Video media are not tracks. */
+const VIDEO_FORMATS = /dvd|blu-ray|bluray|vhs|umd|video/i;
+
+function audioMedia(release) {
+  return (release?.media || []).filter(
+    (medium) => !VIDEO_FORMATS.test(medium.format || ""),
+  );
+}
+
 function trackLengths(release) {
-  return (release?.media || [])
+  return audioMedia(release)
     .flatMap((medium) => medium.tracks || [])
     .map((track) => track.length || 0)
     .filter(Boolean);
 }
 
-/* The earliest official dated release is the record as it was released; later
-   deluxe editions inflate both track count and runtime. But plenty of early
-   pressings are catalogued without durations — Hounds of Love's 1985-09-16
-   release lists all 12 tracks and times none of them — and an earlier version
-   of this took that first release, found no lengths, and skipped an album that
-   MusicBrainz knows perfectly well. Walk forward to the earliest release that
-   was actually timed. */
+function trackCount(release) {
+  return audioMedia(release).flatMap((medium) => medium.tracks || []).length;
+}
+
+/* Pick the release whose track count MOST editions agree on, ties to the
+   smaller. Three rules were tried against records whose real shape is known,
+   and this one is here because it measured best — 9 of 11 against the
+   minimum's 8 and the median's 2.
+
+   "Earliest" failed twice over: MusicBrainz dates releases at varying
+   precision and a bare year sorts before any dated day in the same year, so
+   Lonerism's year-only 4-disc box set won and a 12-track, 51-minute record was
+   reported as 26 tracks and 110 minutes.
+
+   "Median" was worse. For an album reissued often, most catalogued editions
+   ARE expanded ones, so the middle of the distribution is a deluxe edition:
+   Structures from Silence went from a correct 3 tracks to a 3-disc anniversary
+   set, Carrie & Lowell from 11 to 18.
+
+   "Minimum" was close but picked up truncated editions, and did it on the one
+   record this repo can least afford to get wrong: Kind of Blue came out as 3
+   tracks and 26 minutes against a real 5 and 45.
+
+   Consensus handles all three. A box set is one release against a dozen
+   ordinary pressings; a truncated edition is likewise outvoted. It is a
+   heuristic, not an oracle — A Love Supreme still reports 3 movements against
+   a real 4, because its catalogue genuinely disagrees with itself — so
+   eval-site's plausibility checks stay the backstop.
+
+   Only timed releases are considered: plenty of early pressings list every
+   track and time none of them (Hounds of Love's 1985-09-16 release does), and
+   an earlier version skipped albums MusicBrainz knows perfectly well. */
 function pickRelease(releases) {
-  const official = releases
-    .filter((release) => release.status === "Official" && release.date)
-    .sort((left, right) => String(left.date).localeCompare(String(right.date)));
+  const timed = releases.filter(
+    (release) =>
+      release.status === "Official" &&
+      release.date &&
+      trackLengths(release).length,
+  );
+  const usable = timed.length
+    ? timed
+    : releases.filter((release) => trackLengths(release).length);
+
+  if (!usable.length) return null;
+
+  const votes = new Map();
+  for (const release of usable) {
+    const count = trackCount(release);
+    votes.set(count, (votes.get(count) || 0) + 1);
+  }
+
+  const [consensus] = [...votes.entries()].sort(
+    (left, right) => right[1] - left[1] || left[0] - right[0],
+  )[0];
 
   return (
-    official.find((release) => trackLengths(release).length) ||
-    releases.find((release) => trackLengths(release).length) ||
-    official[0] ||
-    null
+    usable
+      .filter((release) => trackCount(release) === consensus)
+      .sort((left, right) =>
+        String(left.date || "9999").localeCompare(String(right.date || "9999")),
+      )[0] || usable[0]
   );
 }
 
@@ -189,8 +257,16 @@ async function fetchFacts(album) {
       titlesAgree(album.title, candidate.title) &&
       yearsAgree(album.year, candidate),
   );
+  /* Prefer a plain album over one flagged Live or Compilation when both clear
+     the checks: the catalog's live records (The Köln Concert, the Tiny Desk
+     sets) only exist as live groups and still match, while a studio album with
+     a same-named live companion stops picking the companion. */
+  const albums = usable.filter(
+    (candidate) => candidate["primary-type"] === "Album",
+  );
   const match =
-    usable.find((candidate) => candidate["primary-type"] === "Album") ||
+    albums.find((candidate) => !(candidate["secondary-types"] || []).length) ||
+    albums[0] ||
     usable[0];
 
   if (!match) {
@@ -229,8 +305,36 @@ async function fetchFacts(album) {
         match["primary-type"],
         ...(match["secondary-types"] || []),
       ].filter(Boolean),
+      releaseTitle: release?.title || match.title,
       releaseYear: Number(String(match["first-release-date"]).slice(0, 4)),
       mbid: match.id,
+    },
+  };
+}
+
+/** Re-derive tracks/runtime/longest from a release group we already matched. */
+async function refreshFacts(album, stored) {
+  const releaseData = await musicbrainz("release", {
+    "release-group": stored.mbid,
+    inc: "recordings+media",
+    limit: 25,
+  });
+  const release = pickRelease(releaseData.releases || []);
+  const lengths = trackLengths(release);
+
+  if (!lengths.length) {
+    return { skipped: "no timed release on the stored release group" };
+  }
+
+  return {
+    facts: {
+      ...stored,
+      releaseTitle: release?.title || stored.releaseTitle,
+      tracks: trackCount(release),
+      runtimeMinutes: Math.round(
+        lengths.reduce((sum, value) => sum + value, 0) / 60000,
+      ),
+      longestMinutes: Math.round(Math.max(...lengths) / 60000),
     },
   };
 }
@@ -240,9 +344,25 @@ const existing = fs.existsSync(factsPath)
   ? JSON.parse(fs.readFileSync(factsPath, "utf8"))
   : {};
 
+/* --refresh re-derives shape facts for albums already in the file, reusing the
+   stored release-group id. That is one request instead of two: the match is
+   already made and does not need re-litigating, only the release choice does.
+   Written for the median-picker fix above, which changed which release counts
+   without changing which album matched. */
+const refresh = args.includes("--refresh");
+/* --resume skips entries already carrying the current schema. A full refresh
+   is well over an hour against MusicBrainz's rate limit, and losing the run at
+   minute 50 should not mean redoing the first 124 albums. */
+const resume = args.includes("--resume");
+
 const queue = albums
   .filter((album) => !only || album.artist.toLowerCase().includes(only))
-  .filter((album) => !existing[`${album.artist}::${album.title}`])
+  .filter((album) => {
+    const stored = existing[`${album.artist}::${album.title}`];
+    if (!refresh) return !stored;
+    if (!stored?.mbid) return false;
+    return resume ? !stored.releaseTitle : true;
+  })
   .slice(0, limit);
 
 console.log(
@@ -257,7 +377,9 @@ for (const [index, album] of queue.entries()) {
   const label = `${album.artist} — ${album.title}`;
 
   try {
-    const result = await fetchFacts(album);
+    const result = refresh
+      ? await refreshFacts(album, existing[key])
+      : await fetchFacts(album);
 
     if (result.facts) {
       existing[key] = result.facts;
