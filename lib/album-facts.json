@@ -3801,5 +3801,17 @@
     "releaseTitle": "TVアニメ「メイドインアビス」オリジナルサウンドトラック",
     "releaseYear": 2017,
     "mbid": "34b98c09-ac78-4549-8ea3-bb839223afd5"
+  },
+  "Vangelis::Blade Runner": {
+    "tracks": 12,
+    "runtimeMinutes": 58,
+    "longestMinutes": 9,
+    "types": [
+      "Album",
+      "Soundtrack"
+    ],
+    "releaseTitle": "Blade Runner",
+    "releaseYear": 1993,
+    "mbid": "f393097a-b567-3253-9bdf-df353ee3e9e1"
   }
 }

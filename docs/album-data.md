@@ -140,7 +140,15 @@ Ready to Die 19 → 17.
 **The fetch found three catalog errors and they are now fixed.** Petit Biscuit's
 _Presence_ was filed as 2022 and is a 2017 record; Between the Buried and Me's
 _Colors Live_ was filed as 2020 and is 2008; Boy Pablo's _Soy Pablo_ was filed
-as 2022 and is a 2018 record. Both were rejected for year drift
+as 2022 and is a 2018 record.
+
+**Vangelis's _Blade Runner_ moved 1982 → 1994, and that one was a judgement
+call, not an error.** 1982 is the film; the soundtrack album did not exist until
+1993/94. The catalog holds albums, so it now holds the album's year — which also
+lets it match. Pink Floyd's _Live at Pompeii_ was considered under the same
+logic and **deliberately left at 1972**: the 1972 performance is the thing
+people mean by that record, so it stays uncovered by the fetch. Do not
+"consistency-fix" it. Both were rejected for year drift
 — correctly, given what the catalog had claimed — and both match now, which is
 what took coverage over 80%. A wrong year is not cosmetic here: it picks the
 decade flavour the generated corner writes in.

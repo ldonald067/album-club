@@ -276,7 +276,7 @@ Node 22) runs `npm test` then `npm run build`.
   vibes table stores one row per mood and everyone picks up to three, so the
   total is not a headcount.
 
-  **Sourced album facts — 344/424 (81.1%), committed 2026-08-21.** Of the 80
+  **Sourced album facts — 345/424 (81.4%), committed 2026-08-21.** Of the 80
   still missing, 70 have no MusicBrainz release group at all — re-running the
   fetch cannot fill them.
   `npm run fetch-album-facts` pulls track count, runtime, longest track and
