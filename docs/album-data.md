@@ -110,16 +110,37 @@ eight were benign — the kind of guardrail people learn to scroll past. The
 strict rule still runs where it can act on the answer: inside the fetcher,
 before anything is written.
 
-**Coverage is 338/424 (79.7%), and the last stretch is not worth buying.** The
-gap is skips the guards earned: MusicBrainz files _Madvillainy_ under the 2002
-leak against the catalog's 2004, _Zombie_ only inside a "Na Poi / Zombie"
-reissue, _Blade Runner_ under its 1993 official release rather than the 1982
-score. Loosening the year window or the title rule to reach a round number
-would trade correctness for a number.
+**Coverage is 344/424 (81.1%), and the last stretch is not worth buying.** Of
+the 80 still missing, **70 have no MusicBrainz release group at all** — the DJ
+sets, radio mixes and curated playlists — and re-running the fetch cannot
+change that. The other ten are skips the guards earned: MusicBrainz files
+_Madvillainy_ under the 2002 leak against the catalog's 2004, _Zombie_ only
+inside a "Na Poi / Zombie" reissue, _Spirited Away_ only inside a combined
+Miyazaki release. Loosening the year window to reach a rounder number would
+trade correctness for a number.
 
-**The fetch found two catalog errors and they are now fixed.** Petit Biscuit's
+**Two guards were loosened, both after measuring what they were actually
+rejecting.** The Lucene score floor moved 90 → 80: relevance dilutes with title
+length, so "Interstellar: Original Motion Picture Soundtrack" scored 88 against
+a catalog entry of "Interstellar" while a same-named single scored 100. And
+known edition suffixes ("original motion picture soundtrack", "deluxe edition",
+"remastered") are stripped from the candidate before the 2× growth check. Both
+were safe to relax because artist, title, year and primary type are all checked
+independently — "A Cross the Universe" contains none of those phrases and is
+still rejected.
+
+**Editions that announce themselves lose the vote.** Consensus alone picked
+_Interstellar_'s **Expanded Edition** — five pressings of the 30-track version
+against four of the 16-track soundtrack. Releases whose title says "expanded",
+"deluxe", "remaster" and so on are set aside before the vote, with a fallback
+to the full set for albums that only exist as remasters. Three stored entries
+were affected and all three are now right: Interstellar 30 → 16 tracks,
+Ready to Die 19 → 17.
+
+**The fetch found three catalog errors and they are now fixed.** Petit Biscuit's
 _Presence_ was filed as 2022 and is a 2017 record; Between the Buried and Me's
-_Colors Live_ was filed as 2020 and is 2008. Both were rejected for year drift
+_Colors Live_ was filed as 2020 and is 2008; Boy Pablo's _Soy Pablo_ was filed
+as 2022 and is a 2018 record. Both were rejected for year drift
 — correctly, given what the catalog had claimed — and both match now, which is
 what took coverage over 80%. A wrong year is not cosmetic here: it picks the
 decade flavour the generated corner writes in.

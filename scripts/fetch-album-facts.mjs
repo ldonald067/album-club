@@ -41,7 +41,14 @@ const factsPath = path.join(rootDir, "lib", "album-facts.json");
 const USER_AGENT =
   "AlbumOfTheDayClub/1.0 (https://littlealbumclub.net) fetch-album-facts";
 const RATE_LIMIT_MS = 1100;
-const MIN_SCORE = 90;
+/* Lucene relevance, and it dilutes with title length: "Interstellar: Original
+   Motion Picture Soundtrack" scores 88 against a catalog entry of
+   "Interstellar" while a same-named single scores 100. 90 was set when the
+   title rule was the loose one and the score was carrying real weight; with
+   artist, title, year and primary type all checked independently it is the
+   weakest guard here, and holding it at 90 was rejecting correct albums for
+   having long official names. */
+const MIN_SCORE = 80;
 const ALLOWED_PRIMARY_TYPES = ["Album", "EP"];
 const MAX_YEAR_DRIFT = 1;
 
@@ -122,9 +129,23 @@ function normalize(value) {
    string stays close in length. Doubling means it is a different record. */
 const MAX_TITLE_GROWTH = 2;
 
-function titlesAgree(catalogTitle, candidateTitle) {
-  const left = normalize(catalogTitle);
-  const right = normalize(candidateTitle);
+/* MusicBrainz files scores under their full commercial title — "Interstellar:
+   Original Motion Picture Soundtrack", "Drive: Original Motion Picture
+   Soundtrack", "MADE IN ABYSS ORIGINAL SOUNDTRACK" — and against a catalog that
+   says "Interstellar" the growth cap threw all of them out. That is a format
+   suffix, not a different record, so it comes off before the comparison.
+
+   Only the listed phrases are removed, and only from the candidate. "A Cross
+   the Universe" contains none of them and stays rejected, which is the case
+   the cap exists for. */
+const EDITION_SUFFIX =
+  /\b(original (motion picture )?(soundtrack|score)|complete motion picture score( promotional edition)?|motion picture soundtrack|original series soundtrack|soundtrack from the motion picture|deluxe edition|expanded edition|anniversary edition|special edition|remastered|reissue)\b/g;
+
+function stripEditionText(value) {
+  return value.replace(EDITION_SUFFIX, " ").replace(/\s+/g, " ").trim();
+}
+
+function withinGrowth(left, right) {
   if (!left || !right) return false;
   if (left === right) return true;
   if (!left.includes(right) && !right.includes(left)) return false;
@@ -132,6 +153,15 @@ function titlesAgree(catalogTitle, candidateTitle) {
   const [shorter, longer] =
     left.length < right.length ? [left, right] : [right, left];
   return longer.length <= shorter.length * MAX_TITLE_GROWTH;
+}
+
+function titlesAgree(catalogTitle, candidateTitle) {
+  const left = normalize(catalogTitle);
+  const right = normalize(candidateTitle);
+
+  return (
+    withinGrowth(left, right) || withinGrowth(left, stripEditionText(right))
+  );
 }
 
 function artistsAgree(catalogArtist, candidate) {
@@ -202,6 +232,14 @@ function trackCount(release) {
    Only timed releases are considered: plenty of early pressings list every
    track and time none of them (Hounds of Love's 1985-09-16 release does), and
    an earlier version skipped albums MusicBrainz knows perfectly well. */
+/* Consensus alone is not enough when the expanded edition is the one the world
+   kept pressing. Interstellar's group holds five releases of the 30-track
+   Expanded Edition against four of the 16-track soundtrack, so the vote went to
+   the wrong record — and the release said so in its own title. Editions that
+   announce themselves get set aside first, and consensus runs on what is left. */
+const EDITION_TITLE =
+  /expanded|deluxe|anniversary|special edition|remaster|collector|complete (motion picture )?score|legacy edition|bonus/i;
+
 function pickRelease(releases) {
   const timed = releases.filter(
     (release) =>
@@ -209,9 +247,16 @@ function pickRelease(releases) {
       release.date &&
       trackLengths(release).length,
   );
-  const usable = timed.length
+  const all = timed.length
     ? timed
     : releases.filter((release) => trackLengths(release).length);
+
+  /* Fall back to the full set when every release is an edition: some albums
+     only exist as remasters, and a fact from a remaster beats no fact. */
+  const plain = all.filter(
+    (release) => !EDITION_TITLE.test(release.title || ""),
+  );
+  const usable = plain.length ? plain : all;
 
   if (!usable.length) return null;
 

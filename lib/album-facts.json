@@ -132,15 +132,15 @@
     "releaseTitle": "In the Aeroplane Over the Sea"
   },
   "The Notorious B.I.G.::Ready to Die": {
-    "tracks": 19,
-    "runtimeMinutes": 77,
+    "tracks": 17,
+    "runtimeMinutes": 69,
     "longestMinutes": 5,
     "types": [
       "Album"
     ],
     "releaseYear": 1994,
     "mbid": "5afcfeac-118a-35e6-af0d-35ec9003354d",
-    "releaseTitle": "Ready to Die (The Remaster CD and DVD)"
+    "releaseTitle": "Ready to Die"
   },
   "Frank Ocean::Blonde": {
     "tracks": 17,
@@ -3143,7 +3143,7 @@
     ],
     "releaseYear": 2021,
     "mbid": "6c90cb91-e615-4545-854b-6d6f10c5cb6d",
-    "releaseTitle": "Planet Her (deluxe)"
+    "releaseTitle": "Planet Her"
   },
   "The 1975::Being Funny in a Foreign Language": {
     "tracks": 11,
@@ -3754,5 +3754,52 @@
     "releaseTitle": "Colors_Live",
     "releaseYear": 2008,
     "mbid": "6a54ccfb-4865-3f3f-a58f-108a855fb644"
+  },
+  "Cliff Martinez::Drive": {
+    "tracks": 19,
+    "runtimeMinutes": 70,
+    "longestMinutes": 7,
+    "types": [
+      "Album",
+      "Soundtrack"
+    ],
+    "releaseTitle": "Drive: Original Motion Picture Soundtrack",
+    "releaseYear": 2011,
+    "mbid": "57dbf641-99ac-42f5-9981-5c11c0d1e48a"
+  },
+  "Boy Pablo::Soy Pablo": {
+    "tracks": 7,
+    "runtimeMinutes": 21,
+    "longestMinutes": 6,
+    "types": [
+      "Album"
+    ],
+    "releaseTitle": "Soy Pablo",
+    "releaseYear": 2018,
+    "mbid": "eb33a1ae-d0cf-4f8f-8d34-0fe274b1d785"
+  },
+  "Hans Zimmer::Interstellar": {
+    "tracks": 16,
+    "runtimeMinutes": 72,
+    "longestMinutes": 8,
+    "types": [
+      "Album",
+      "Soundtrack"
+    ],
+    "releaseTitle": "Interstellar",
+    "releaseYear": 2014,
+    "mbid": "4513c7b9-854e-457f-81d6-3dbeb001beb8"
+  },
+  "Kevin Penkin::Made in Abyss": {
+    "tracks": 52,
+    "runtimeMinutes": 114,
+    "longestMinutes": 5,
+    "types": [
+      "Album",
+      "Soundtrack"
+    ],
+    "releaseTitle": "TVアニメ「メイドインアビス」オリジナルサウンドトラック",
+    "releaseYear": 2017,
+    "mbid": "34b98c09-ac78-4549-8ea3-bb839223afd5"
   }
 }
