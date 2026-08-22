@@ -459,6 +459,16 @@ printSection("Album facts");
       "the fetcher no longer excludes video media — DVD tracks will be counted as songs",
     );
   }
+  /* The exclusion existed and one of the two code paths ignored it: the fetch
+     path counted a raw media flatMap while the refresh path used trackCount(),
+     so Colors Live stored 8 CD tracks plus 14 DVD ones as 22 while its runtime
+     counted only the CD. A split like that survives a spot-check, because
+     whichever path you happen to test is the one that is right. */
+  if (/release\?\.media \|\| \[\]\)\.flatMap/.test(fetcherSource)) {
+    factProblems.push(
+      "the fetcher counts media directly somewhere instead of through trackCount() — the fetch and refresh paths will disagree about video tracks",
+    );
+  }
 
   console.log(
     `Facts coverage: ${Object.keys(albumFacts).length}/${albums.length} albums (${formatPercent(

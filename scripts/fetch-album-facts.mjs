@@ -285,12 +285,15 @@ async function fetchFacts(album) {
     limit: 25,
   });
   const release = pickRelease(releaseData.releases || []);
-  const tracks = (release?.media || []).flatMap(
-    (medium) => medium.tracks || [],
-  );
+  /* trackCount(), not a raw media flatMap: both must exclude video media or the
+     two disagree. This line kept counting the DVD after the fix went in, so
+     Colors Live stored 8 CD tracks plus 14 DVD ones as 22 while its runtime
+     counted only the CD. The refresh path was right and the fetch path was not,
+     which is the sort of split that survives a spot-check. */
+  const tracks = trackCount(release);
   const lengths = trackLengths(release);
 
-  if (!tracks.length || !lengths.length) {
+  if (!tracks || !lengths.length) {
     return { skipped: "matched, but no track lengths on any release" };
   }
 
@@ -298,7 +301,7 @@ async function fetchFacts(album) {
 
   return {
     facts: {
-      tracks: tracks.length,
+      tracks,
       runtimeMinutes: Math.round(totalMs / 60000),
       longestMinutes: Math.round(Math.max(...lengths) / 60000),
       types: [

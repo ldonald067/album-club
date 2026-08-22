@@ -117,10 +117,20 @@ reissue, _Blade Runner_ under its 1993 official release rather than the 1982
 score. Loosening the year window or the title rule to reach a round number
 would trade correctness for a number.
 
-**The fetch also found catalog errors, which are worth a look:** Petit Biscuit's
-_Presence_ is filed as 2022 and is a 2017 record; Between the Buried and Me's
-_Colors Live_ is filed as 2020 and is 2008. Both were rejected for year drift —
-correctly, given what the catalog claims.
+**The fetch found two catalog errors and they are now fixed.** Petit Biscuit's
+_Presence_ was filed as 2022 and is a 2017 record; Between the Buried and Me's
+_Colors Live_ was filed as 2020 and is 2008. Both were rejected for year drift
+— correctly, given what the catalog had claimed — and both match now, which is
+what took coverage over 80%. A wrong year is not cosmetic here: it picks the
+decade flavour the generated corner writes in.
+
+**The video exclusion existed and one of the two code paths ignored it.** The
+fetch path counted a raw media flatMap while the refresh path used
+`trackCount()`, so _Colors Live_ stored its 8 CD tracks plus 14 DVD ones as 22
+while its runtime counted only the CD. A split like that survives a spot-check,
+because whichever path you happen to test is the one that is right —
+`eval-site` now fails if the fetcher counts media anywhere except through
+`trackCount()`.
 
 **Deliberately not collected: release country.** It is the country of the
 earliest official _pressing_, not where the record is from — _Nevermind_ came

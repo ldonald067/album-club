@@ -3731,5 +3731,28 @@
     "releaseTitle": "WOLF’S RAIN O.S.T.2",
     "releaseYear": 2004,
     "mbid": "57084d7c-27ac-3686-8e59-fd14ffe6f1b0"
+  },
+  "Petit Biscuit::Presence": {
+    "tracks": 14,
+    "runtimeMinutes": 54,
+    "longestMinutes": 5,
+    "types": [
+      "Album"
+    ],
+    "releaseTitle": "Presence",
+    "releaseYear": 2017,
+    "mbid": "853efecc-3abb-4a1b-af80-f843dacf3d9a"
+  },
+  "Between the Buried and Me::Colors Live": {
+    "tracks": 8,
+    "runtimeMinutes": 66,
+    "longestMinutes": 16,
+    "types": [
+      "Album",
+      "Live"
+    ],
+    "releaseTitle": "Colors_Live",
+    "releaseYear": 2008,
+    "mbid": "6a54ccfb-4865-3f3f-a58f-108a855fb644"
   }
 }

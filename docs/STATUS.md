@@ -276,7 +276,7 @@ Node 22) runs `npm test` then `npm run build`.
   vibes table stores one row per mood and everyone picks up to three, so the
   total is not a headcount.
 
-  **Sourced album facts — 338/424 (79.7%), committed 2026-08-21.**
+  **Sourced album facts — 340/424 (80.2%), committed 2026-08-21.**
   `npm run fetch-album-facts` pulls track count, runtime, longest track and
   release type from MusicBrainz into `lib/album-facts.json`. A fact line takes the coda's slot on one pitch card,
   and shape affinity nudges "Listen next". **Partial by design** — a quarter of
