@@ -12,19 +12,22 @@
  * inferred from those. These are facts instead: how many tracks, how long, how
  * long the longest one runs, whether it is a live set or a compilation.
  *
+ * All of it is checkable, none of it is invention, and it is the difference
+ * between writing about a 4-track 42-minute ambient record and a 22-track
+ * mixtape.
+ *
  * Deliberately NOT collected: the release country. It is the country of the
  * earliest official *pressing*, not where the record is from — Nevermind came
  * back "SA" and Rumours "NL" — so it would read as a fact and function as a
- * lie. All of
- * it is checkable, none of it is invention, and it is the difference between
- * writing about a 4-track 42-minute ambient record and a 22-track mixtape.
+ * lie.
  *
  * WHAT IT WILL NOT DO: guess. A lyric fetch that guessed once put a rap verse
- * under Kind of Blue (docs/gotchas.md), so a candidate here has to clear four
- * independent checks — search score, artist, title, year — and anything that
- * fails is skipped and reported rather than force-matched. Roughly a quarter of
- * this catalog is DJ sets, radio mixes and curated playlists that do not exist
- * in MusicBrainz at all; those are *supposed* to come back empty.
+ * under Kind of Blue (docs/gotchas.md), so a candidate here has to clear five
+ * independent checks — search score, primary type, artist, title and year —
+ * and anything that fails is skipped and reported rather than force-matched.
+ * Roughly a quarter of this catalog is DJ sets, radio mixes and curated
+ * playlists that do not exist in MusicBrainz at all; those are *supposed* to
+ * come back empty.
  *
  * Writes lib/album-facts.json, keyed "Artist::Title" off the catalog's own
  * strings. Deliberately a separate file from albums.json: a bad run can then

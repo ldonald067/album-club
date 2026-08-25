@@ -1,25 +1,37 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-08-20.
+session. Last updated: 2026-08-25.
 
 ## Handoff — read this first
 
 **Nothing is in flight.** `master` is clean, pushed, and deployed; verify with
-`GET /api/health`, which returns the running commit SHA. The last stretch
-(2026-08-09 → 08-13) was all Cozy Vibes and housekeeping: the terrarium embed
-widened and given a working fullscreen path, an adversarial review whose one
-real finding shipped, Next.js bumped to 16.3.0, and Railway's agent tooling
-installed. Since then (08-16 → 08-20): a second adversarial review that found no
-code defects and six doc ones, a sweep that fixed the stale facts in README and
-`api.md`, the terrarium frame raised to 770px to restore headroom in the game's
-materials tray, a fourth game added to the Cozy shelf, and a three-part pass on
-Soundtrack Corner: the generated tier repaired and guarded, the daily vote given
-a memory, and the vote moved ahead of the pitches it used to sit under. The stretch before the
-Cozy work (08-04 → 08-07) covered the lyric pool refill,
-every outstanding code review finding, the Vintage skin and the colour-token
-system underneath it, a landing-page reorder, a real mobile pass, and Soundtrack
-Corner taken to effectively complete. Details below and in git history.
+`GET /api/health`, which returns the running commit SHA.
+
+**2026-08-20 → 08-22 was one long stretch on Soundtrack Corner and on being
+findable at all.** In order: the generated tier repaired and guarded (two faults
+were live in it and nothing had ever rendered a corner to see them); the daily
+vote given a memory; the vote moved above the pitch cards it used to sit under;
+a copy pass that cut the preamble and broke up three phrases appearing in 290 of
+290 generated corners; "what the club is hearing", which quotes today's real
+ratings and vibe words; sourced album facts from MusicBrainz (345/424) wired
+into the corner and the recommendation scorer; and a metadata and share-surface
+pass. Four catalog years were corrected along the way and Blade Runner was
+curated. Details in Recent work below.
+
+**The single most important thing learned that day is not a feature.** The site
+has **one rating, one puzzle play and zero vibes** on record. Every
+community-gated feature therefore renders nothing, correctly, including two
+built that same day. Before building anything else that needs a room, read open
+item 6.
+
+The stretch before (2026-08-09 → 08-20) was Cozy Vibes and housekeeping: the
+terrarium embed widened and given a working fullscreen path, two adversarial
+reviews, Next.js bumped to 16.3.0, Railway's agent tooling installed, the
+terrarium frame raised to 770px, and a fourth game added to the Cozy shelf.
+Before that (08-04 → 08-07): the lyric pool refill, the Vintage skin and the
+colour-token system underneath it, a landing-page reorder and a real mobile
+pass. Details below and in git history.
 
 **Five things a new session will get wrong without warning:**
 
@@ -43,8 +55,12 @@ Corner taken to effectively complete. Details below and in git history.
    answer this stretch, and one nearly became a change request against working
    code. `docs/gotchas.md` → "Verifying with browser automation".
 
-**Where to pick up:** the open items below. None is a task — item 2 is a
-standing decision and the rest are context. Nothing is urgent.
+**Where to pick up:** the open items below. None is a coding task — items 2 and
+6 are standing decisions and the rest are context. The one genuinely open action
+is not code: **nothing has put the link anywhere.** The share surface exists
+now; submitting the sitemap and telling anyone the site exists needs a human
+with the accounts, and until that happens the community features have no room to
+hold.
 
 ## What this is
 
@@ -266,7 +282,7 @@ Node 22) runs `npm test` then `npm run build`.
   the link anywhere; that needs a human with the accounts. Judge this by
   GoatCounter, not by the rating count.
 
-- **The corner stopped writing from two fields (2026-08-21).** Two additions,
+- **The corner stopped writing from two fields (2026-08-21 → 08-22).** Two additions,
   both about where knowledge comes from rather than how it reads.
 
   **What the club is hearing.** The corner ignored the rating average and vibe
@@ -276,7 +292,7 @@ Node 22) runs `npm test` then `npm run build`.
   vibes table stores one row per mood and everyone picks up to three, so the
   total is not a headcount.
 
-  **Sourced album facts — 345/424 (81.4%), committed 2026-08-21.** Of the 80
+  **Sourced album facts — 345/424 (81.4%), committed 2026-08-22.** Of the 80
   still missing, 70 have no MusicBrainz release group at all — re-running the
   fetch cannot fill them.
   `npm run fetch-album-facts` pulls track count, runtime, longest track and
@@ -454,7 +470,32 @@ docs. This section is only what is still open.
 5. **Suggested features (from the 2026-07 review, not built):** "Predict the
    Crowd" (guess the room's average before reveal), "Divisive Meter", Streak
    Freeze, "The Verdict" one-tap critical tag. Deliberately avoid: freeform
-   shoutbox, real leaderboards.
+   shoutbox, real leaderboards. **Every one of these needs a room** — see item 6
+   before picking one up.
+
+6. **There is no audience yet, and that governs what is worth building
+   (measured 2026-08-22).** `GET /api/stats` reports **one rating, one puzzle play and
+   zero vibes**, and Railway's request volume matches. Judge this by
+   GoatCounter, which measures pageviews, rather than by the rating counter —
+   but the interaction record is what it is.
+
+   **The consequence is concrete, not philosophical.** Every community gate
+   holds back below two participants, correctly, so the cue vote's room split,
+   the Archive's Room column and "what the club is hearing" all render nothing
+   today. Two of those were built on 2026-08-21 and nobody has seen them. The
+   Archive's cue columns were subsequently made conditional for exactly this
+   reason: a column of "·" thirty rows deep reads as a broken feature rather
+   than a quiet one.
+
+   **So the bar for the next community feature is not "is it good" but "who is
+   in the room".** Solo-working features still pay off — the corner's streak and
+   lean lines, the You column, the whole generated tier. Room-dependent ones are
+   speculative until traffic exists.
+
+   **What would actually move it is not code.** The share surface shipped that
+   day (per-day metadata, a 1200×630 card, robots, sitemap, favicon), so a
+   pasted link finally shows today's record. Nothing has submitted the sitemap
+   or put the link in front of anyone; that needs a human with the accounts.
 
 ## Gotchas worth knowing
 
