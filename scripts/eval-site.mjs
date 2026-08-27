@@ -531,7 +531,12 @@ failures += printGuardrail(
    Share My Day — and the risk is not that someone restores them deliberately,
    it is that a future activity ships with "copy your result" as an obvious
    finishing touch. Checked as source text because there is no rendered symptom
-   to measure: an absent button looks exactly like a button nobody clicked. */
+   to measure: an absent button looks exactly like a button nobody clicked.
+
+   Scoped to ForumPage.js on purpose. The Open Graph card and the twitter: tags
+   in app/layout.js and app/page.js are not sharing under this rule — they
+   carry today's album and nothing about any visitor — so they are deliberately
+   outside what this checks. */
 {
   const sharingSignals = [
     ["ShareResultButton", "the removed share-result component is back"],

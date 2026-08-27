@@ -48,6 +48,13 @@ Each of these has already cost real time or shipped a live bug.
   had one. `eval-site` fails if a share or clipboard-copy of user activity
   reappears.
 
+  **The line is the button, not the metadata.** The site describing itself when
+  someone links to it is fine — the Open Graph card, the `twitter:` tags and
+  the per-day title all stay, because they carry today's album and nothing
+  about any visitor. What is banned is giving a visitor a control that
+  broadcasts what they did. Do not strip the card in the name of this rule, and
+  do not smuggle a share button in as "metadata".
+
 - **Never rename an `aotd_*` localStorage key.** It silently discards every
   user's history, and on a fresh profile it looks identical to working.
 - **Never hardcode a colour in CSS.** Every light background and every text

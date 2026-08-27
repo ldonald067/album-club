@@ -41,7 +41,9 @@ and how someone voted are not shareable, by decision, and the owner feels
 strongly about it. The non-negotiable is in `CLAUDE.md` and `eval-site` fails
 if a share button, a clipboard copy of user activity or the old style
 reappears. **An activity that ends without a share button is finished, not
-unfinished.**
+unfinished.** The line is the button, not the metadata: the Open Graph card and
+`twitter:` tags stay, because they carry today's album and nothing about any
+visitor.
 
 **Five things a new session will get wrong without warning:**
 
