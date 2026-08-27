@@ -525,6 +525,30 @@ failures += printGuardrail(
    description and the social card all name today's record now, and a link
    pasted into a chat shows what the club is listening to instead of a bare
    URL. Static metadata is the easy thing to drift back to, so it is checked. */
+/* A product rule, and the owner feels strongly about it: nothing on this site
+   broadcasts what a visitor did on it. Eight buttons were removed on
+   2026-08-25 — Share Rating, Share Vibes, five Wordle-style result grids and
+   Share My Day — and the risk is not that someone restores them deliberately,
+   it is that a future activity ships with "copy your result" as an obvious
+   finishing touch. Checked as source text because there is no rendered symptom
+   to measure: an absent button looks exactly like a button nobody clicked. */
+{
+  const sharingSignals = [
+    ["ShareResultButton", "the removed share-result component is back"],
+    ["navigator.clipboard", "a clipboard copy of user activity is back"],
+    ["share-btn", "the share button style is back"],
+  ].filter(([needle]) => forumSource.includes(needle));
+
+  sharingSignals.forEach(([, problem]) => console.log(`  ! ${problem}`));
+  failures += printGuardrail(
+    sharingSignals.length === 0,
+    "Nothing on the site shares what a visitor did",
+    sharingSignals.length
+      ? `${sharingSignals.length} sharing signal(s) in ForumPage.js — see the non-negotiable in CLAUDE.md`
+      : "No share buttons, clipboard copies or result grids. This is deliberate; see CLAUDE.md.",
+  );
+}
+
 failures += printGuardrail(
   homePageSource.includes("export function generateMetadata") &&
     homePageSource.includes("album.title") &&

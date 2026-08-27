@@ -33,6 +33,16 @@ Before that (08-04 → 08-07): the lyric pool refill, the Vintage skin and the
 colour-token system underneath it, a landing-page reorder and a real mobile
 pass. Details below and in git history.
 
+**No sharing, and this one is a standing rule (2026-08-25).** Nothing on this
+site broadcasts what a visitor did on it. Eight share buttons were removed —
+Share Rating, Share Vibes, five Wordle-style game result grids and Daily
+Wrap-up's "Share My Day" — along with the component behind them. Poll results
+and how someone voted are not shareable, by decision, and the owner feels
+strongly about it. The non-negotiable is in `CLAUDE.md` and `eval-site` fails
+if a share button, a clipboard copy of user activity or the old style
+reappears. **An activity that ends without a share button is finished, not
+unfinished.**
+
 **Five things a new session will get wrong without warning:**
 
 1. **Measure colour, never read it.** Four separate contrast "findings" this
@@ -496,6 +506,13 @@ docs. This section is only what is still open.
    day (per-day metadata, a 1200×630 card, robots, sitemap, favicon), so a
    pasted link finally shows today's record. Nothing has submitted the sitemap
    or put the link in front of anyone; that needs a human with the accounts.
+
+7. **Sharing is closed, permanently (2026-08-25).** Not a backlog item and not
+   a trade-off to revisit when traffic arrives: the club is somewhere to have
+   an opinion, not somewhere to perform having had one. This removes the
+   obvious growth lever that a site with no audience would normally reach for,
+   which is the point — see the rule in `CLAUDE.md` before proposing anything
+   adjacent to it.
 
 ## Gotchas worth knowing
 

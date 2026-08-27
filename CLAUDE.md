@@ -38,6 +38,16 @@ Each of these has already cost real time or shipped a live bug.
 - **Wrong data is worse than missing data.** A lyric fetch that guesses once put
   a rap verse under a Miles Davis record. Read `git diff lib/lyrics.json` before
   committing any refill — the guards catch known failure shapes, not novelty.
+- **No sharing. This is a product rule, not a technical one.** Nothing on this
+  site exists to broadcast what someone did on it: no share buttons, no
+  clipboard "copy my result", no Wordle-style score grids, no social cards of a
+  vote, a rating, a vibe or a poll result. Eight such buttons were removed on
+  2026-08-25 — Share Rating, Share Vibes, five game result grids and Share My
+  Day. **Do not add them back, and do not add a new one in a different shape.**
+  The club is somewhere to have an opinion, not somewhere to perform having
+  had one. `eval-site` fails if a share or clipboard-copy of user activity
+  reappears.
+
 - **Never rename an `aotd_*` localStorage key.** It silently discards every
   user's history, and on a fresh profile it looks identical to working.
 - **Never hardcode a colour in CSS.** Every light background and every text

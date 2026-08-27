@@ -4,11 +4,9 @@ ForumPage.js is a single client component (~5200 lines) containing most of the U
 
 ## Shared Components
 
-Four small shared components eliminate duplication across the core game/activity flows:
+Three small shared components eliminate duplication across the core game/activity flows.
 
-### `ShareResultButton({ getText, label })`
-
-Clipboard copy button with "Copied!" feedback. `getText` returns the share string, `label` is the button text. Used by all 7 activity components + Daily Wrap-up "Share My Day".
+**`ShareResultButton` was removed on 2026-08-25 and is not coming back.** It sat in eight places — Share Rating, Share Vibes, five Wordle-style game result grids and Daily Wrap-up's "Share My Day" — copying what the visitor had done to their clipboard. Sharing what someone voted or scored is against the site's rules now; see the non-negotiable in `CLAUDE.md`. If you are looking at an activity that ends without a share button, that is the design.
 
 ### `GuessHistory({ guesses, checkFn })`
 

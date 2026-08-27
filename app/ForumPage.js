@@ -27,7 +27,6 @@ import { loadJson } from "@/lib/safe-fetch";
 /* ─── Constants ─── */
 const MAX_SUGGESTIONS = 5;
 const SHAKE_MS = 400;
-const COPIED_FEEDBACK_MS = 2000;
 const SoundtrackCorner = dynamic(() => import("./SoundtrackCorner"), {
   ssr: false,
   loading: () => (
@@ -61,34 +60,6 @@ async function fireConfetti(options = {}) {
 }
 
 /* ─── Shared Components ─── */
-
-/** Reusable share button with clipboard copy + "Copied!" feedback */
-function ShareResultButton({ getText, label = "📋 Share Results" }) {
-  const btnRef = useRef(null);
-  const flash = (text) => {
-    const btn = btnRef.current;
-    if (btn) {
-      btn.textContent = text;
-      setTimeout(() => {
-        if (btnRef.current) btnRef.current.textContent = label;
-      }, COPIED_FEEDBACK_MS);
-    }
-  };
-  return (
-    <button
-      ref={btnRef}
-      className="btn-submit share-btn"
-      onClick={() => {
-        navigator.clipboard
-          .writeText(getText())
-          .then(() => flash("Copied!"))
-          .catch(() => flash("Copy failed — try selecting manually"));
-      }}
-    >
-      {label}
-    </button>
-  );
-}
 
 /** Vote is locked in but community results haven't arrived yet */
 function ResultsPending({ label, onRetry }) {
@@ -706,20 +677,6 @@ function RateReveal({ albumKey }) {
               </div>
             ))}
           </div>
-          <ShareResultButton
-            label="📋 Share Rating"
-            getText={() => {
-              const stars =
-                "\u2605".repeat(myRating) + "\u2606".repeat(10 - myRating);
-              return [
-                `Album Of The Day Club`,
-                `\u2b50 Rate & Reveal \u2014 ${albumKey}`,
-                `My Rating: ${myRating}/10 ${stars}`,
-                `Community Avg: ${results.average}/10 (${results.total} ratings)`,
-                window.location.origin,
-              ].join("\n");
-            }}
-          />
         </div>
       </div>
     );
@@ -1758,31 +1715,6 @@ function VibeCheck({ albumKey }) {
             {error}
           </p>
         )}
-        {submitted && (
-          <ShareResultButton
-            label="📋 Share Vibes"
-            getText={() => {
-              const vibeEmojis = selected
-                .map((s) => {
-                  const v = VIBES.find((vb) => vb.label === s);
-                  return v ? `${v.emoji} ${v.label}` : s;
-                })
-                .join(", ");
-              const lines = [
-                `Album Of The Day Club`,
-                `\ud83c\udfad Vibe Check \u2014 ${albumKey}`,
-                `My Vibes: ${vibeEmojis}`,
-              ];
-              if (topVibeData) {
-                lines.push(
-                  `Top Vibe: ${topVibeData.emoji} ${topVibeData.label} (${topVibePct}%)`,
-                );
-              }
-              lines.push(window.location.origin);
-              return lines.join("\n");
-            }}
-          />
-        )}
         {!submitted && (
           <div className="activity-footer">
             <span className={`activity-hint${atLimit ? " at-limit" : ""}`}>
@@ -2025,24 +1957,6 @@ function GuessGame() {
                 })}
               </div>
             )}
-
-            {/* Share card */}
-            <ShareResultButton
-              getText={() => {
-                const squares = guesses
-                  .map((g) => (isCorrectGuess(g) ? "🟩" : "⬛"))
-                  .join("");
-                return [
-                  `Album Of The Day Club`,
-                  `🎵 Daily Puzzle — ${todayKey}`,
-                  solved
-                    ? `Solved in ${guesses.length}/6`
-                    : `X/6 — Better luck tomorrow`,
-                  squares,
-                  window.location.origin,
-                ].join("\n");
-              }}
-            />
           </div>
         )}
       </div>
@@ -2237,22 +2151,6 @@ function CoverChallenge({ fallbackNote = null }) {
                 ({Math.round((stats.totalSolved / stats.totalPlayers) * 100)}%)
               </div>
             )}
-            <ShareResultButton
-              getText={() => {
-                const squares = guesses
-                  .map((g) => (isCorrectGuess(g) ? "🟩" : "⬛"))
-                  .join("");
-                return [
-                  `Album Of The Day Club`,
-                  `🖼️ Cover Art Challenge — ${todayKey}`,
-                  solved
-                    ? `Solved in ${guesses.length}/5`
-                    : `X/5 — Better luck tomorrow`,
-                  squares,
-                  window.location.origin,
-                ].join("\n");
-              }}
-            />
           </div>
         )}
       </div>
@@ -2553,22 +2451,6 @@ function HeardleGame() {
                 ({Math.round((stats.totalSolved / stats.totalPlayers) * 100)}%)
               </div>
             )}
-            <ShareResultButton
-              getText={() => {
-                const squares = guesses
-                  .map((g) => (isCorrectGuess(g) ? "🟩" : "⬛"))
-                  .join("");
-                return [
-                  `Album Of The Day Club`,
-                  `🎧 Heardle — ${todayKey}`,
-                  solved
-                    ? `Solved in ${guesses.length}/6`
-                    : `X/6 — Better luck tomorrow`,
-                  squares,
-                  window.location.origin,
-                ].join("\n");
-              }}
-            />
           </div>
         )}
       </div>
@@ -2881,22 +2763,6 @@ function LyricGame() {
                 ({Math.round((stats.totalSolved / stats.totalPlayers) * 100)}%)
               </div>
             )}
-            <ShareResultButton
-              getText={() => {
-                const squares = guesses
-                  .map((g) => (checkAnswer(g) ? "🟩" : "⬛"))
-                  .join("");
-                return [
-                  `Album Of The Day Club`,
-                  `🎤 Lyric Challenge — ${todayKey}`,
-                  solved
-                    ? `Solved in ${guesses.length}/4`
-                    : `X/4 — Better luck tomorrow`,
-                  squares,
-                  window.location.origin,
-                ].join("\n");
-              }}
-            />
           </div>
         )}
       </div>
@@ -3193,26 +3059,6 @@ function ScrambleGame() {
                 ({Math.round((stats.totalSolved / stats.totalPlayers) * 100)}%)
               </div>
             )}
-            <ShareResultButton
-              getText={() => {
-                const squares = guesses
-                  .map((g) =>
-                    g.toLowerCase() === puzzleAlbum.title.toLowerCase()
-                      ? "\ud83d\udfe9"
-                      : "\u2b1b",
-                  )
-                  .join("");
-                return [
-                  `Album Of The Day Club`,
-                  `\ud83d\udd00 Artist Scramble \u2014 ${todayKey}`,
-                  solved
-                    ? `Solved in ${guesses.length}/${maxAttempts}`
-                    : `X/${maxAttempts} \u2014 Better luck tomorrow`,
-                  squares,
-                  window.location.origin,
-                ].join("\n");
-              }}
-            />
           </div>
         )}
       </div>
@@ -4744,103 +4590,6 @@ export default function ForumPage({ album, dateString }) {
                       </div>
                     </div>
                   )}
-
-                  {/* Share My Day */}
-                  <ShareResultButton
-                    label="📋 Share My Day"
-                    getText={() => {
-                      const lines = [
-                        `Album Of The Day Club`,
-                        `\ud83d\udcbf Daily Recap \u2014 ${todayKey}`,
-                        `\ud83c\udfb5 ${album.title} by ${album.artist}`,
-                        ``,
-                      ];
-                      const myRating = localStorage.getItem(
-                        `aotd_rated_${todayKey}`,
-                      );
-                      if (myRating) {
-                        const r = parseInt(myRating);
-                        const stars =
-                          "\u2605".repeat(r) + "\u2606".repeat(10 - r);
-                        lines.push(`\u2b50 ${r}/10 ${stars}`);
-                      }
-                      const playlistVote = localStorage.getItem(
-                        `aotd_playlist_${todayKey}`,
-                      );
-                      if (playlistVote) {
-                        lines.push(
-                          playlistVote === "yes"
-                            ? "\ud83c\udfa7 Playlist: Yes"
-                            : "\ud83d\udeab Playlist: Nah",
-                        );
-                      }
-                      const vibeRaw = localStorage.getItem(
-                        `aotd_vibed_${todayKey}`,
-                      );
-                      if (vibeRaw) {
-                        try {
-                          const vibes = JSON.parse(vibeRaw);
-                          const vibeText = vibes
-                            .map((s) => {
-                              const v = VIBES.find((vb) => vb.label === s);
-                              return v ? `${v.emoji} ${v.label}` : s;
-                            })
-                            .join(", ");
-                          lines.push(`\ud83c\udfad ${vibeText}`);
-                        } catch {}
-                      }
-                      for (const gk of [
-                        "guess",
-                        "cover",
-                        "heardle",
-                        "lyric",
-                        "scramble",
-                      ]) {
-                        const raw = localStorage.getItem(
-                          `aotd_${gk}_${todayKey}`,
-                        );
-                        if (raw) {
-                          try {
-                            const state = JSON.parse(raw);
-                            if (state.gameOver) {
-                              const emoji = {
-                                guess: "\ud83c\udfb5",
-                                cover: "\ud83d\uddbc\ufe0f",
-                                heardle: "\ud83c\udfa7",
-                                lyric: "\ud83c\udfa4",
-                                scramble: "\ud83d\udd00",
-                              }[gk];
-                              const name = {
-                                guess: "Puzzle",
-                                cover: "Cover",
-                                heardle: "Heardle",
-                                lyric: "Lyric",
-                                scramble: "Scramble",
-                              }[gk];
-                              const max = {
-                                guess: 6,
-                                cover: 5,
-                                heardle: 6,
-                                lyric: 4,
-                                scramble: 5,
-                              }[gk];
-                              lines.push(
-                                state.solved
-                                  ? `${emoji} ${name}: Solved in ${state.guesses.length}/${max}`
-                                  : `${emoji} ${name}: X/${max}`,
-                              );
-                              break;
-                            }
-                          } catch {}
-                        }
-                      }
-                      if (streak >= 2) {
-                        lines.push(`\ud83d\udd25 ${streak}-day streak`);
-                      }
-                      lines.push(window.location.origin);
-                      return lines.join("\n");
-                    }}
-                  />
                 </div>
               </div>
             )}
