@@ -161,15 +161,16 @@ moved into the hero and the other ~1,000 lines went. **Do not rebuild it**: the
 ## Webamp view (`app/WebampView.js`)
 
 The real thing: `captbaritone/webamp`, Winamp 2 reimplemented for the browser,
-MIT licensed (© Jordan Eldredge and contributors). Added as a third `View`
-option beside Album and Player.
+MIT licensed (© Jordan Eldredge and contributors). The `View` dropdown offers
+Album and Webamp — there is no third option; the Club Player that once sat
+between them is gone.
 
 **It cannot play the album of the day, and nothing will make it.** Webamp plays
 audio through the Web Audio API, meaning files it can fetch; today's album is a
 YouTube video id, and a cross-origin YouTube iframe is opaque to Web Audio. It
 opens with an empty playlist and accepts files dragged into it — Webamp's own
-native behaviour, and the only honest offer. Album audio stays with the Club
-Player.
+native behaviour, and the only honest offer. Album audio plays inline in the
+Album view (`app/AlbumPlayback.js`).
 
 **Three things about integrating it that are not obvious:**
 

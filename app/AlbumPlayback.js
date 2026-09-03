@@ -22,6 +22,15 @@ import { getListenUrl } from "@/lib/albums";
 
 const VOLUME = 80;
 
+/* getListenUrl returns the stored video URL whenever an id exists, which is
+   exactly wrong on the failure path: a deleted, private or region-blocked video
+   would send the visitor to the same dead page that just failed to play. When
+   playback fails we search for the record instead. */
+function searchUrl(album) {
+  const q = encodeURIComponent(`${album.artist} ${album.title} full album`);
+  return `https://www.youtube.com/results?search_query=${q}`;
+}
+
 function formatTime(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
   const total = Math.floor(seconds);
@@ -44,13 +53,32 @@ export default function AlbumPlayback({ album }) {
     if (!hasAudio) return undefined;
     let cancelled = false;
 
-    /* The API script can be blocked outright — a content blocker, an offline
-       tab, a corporate proxy — in which case no callback of any kind fires and
-       nothing below ever runs. Ten seconds without a ready player is a failure,
-       and a link the visitor can use beats a spinner they cannot. */
-    const failTimer = setTimeout(() => {
-      if (!cancelled) setFailed(true);
-    }, 10000);
+    /* Reset per attempt. The effect already re-runs when the id changes, but
+       the state did not, so one failed album left a mounted component showing
+       the fallback forever — including for a later, perfectly playable one. */
+    setFailed(false);
+    setReady(false);
+    setPlaying(false);
+    setElapsed(0);
+    setDuration(0);
+
+    /* Fail on evidence, never on a stopwatch. A ten-second deadline was tried
+       and removed: it turned a slow connection into a permanent failure, and a
+       late onReady could not take it back. The signals below are real ones —
+       the script erroring, or the player reporting the video is unplayable —
+       and while loading, the row already shows an "Open on YouTube" link, so a
+       slow load is never a trap. */
+    const fail = () => {
+      if (cancelled) return;
+      cancelled = true; // stop initPlayer running behind the failure
+      try {
+        playerRef.current?.destroy?.();
+      } catch {
+        // Half-built player; nothing to clean up
+      }
+      playerRef.current = null;
+      setFailed(true);
+    };
 
     function initPlayer() {
       if (cancelled || playerRef.current) return;
@@ -68,7 +96,6 @@ export default function AlbumPlayback({ album }) {
         events: {
           onReady: (event) => {
             if (cancelled) return;
-            clearTimeout(failTimer);
             event.target.setVolume(VOLUME);
             setDuration(event.target.getDuration() || 0);
             setReady(true);
@@ -77,11 +104,7 @@ export default function AlbumPlayback({ album }) {
              long after its id was written into the catalog. Without this the
              controls simply stayed disabled forever with no explanation —
              silently killing the one capability this component exists for. */
-          onError: () => {
-            if (cancelled) return;
-            clearTimeout(failTimer);
-            setFailed(true);
-          },
+          onError: fail,
           onStateChange: (event) => {
             if (cancelled) return;
             setPlaying(event.data === window.YT.PlayerState.PLAYING);
@@ -103,13 +126,13 @@ export default function AlbumPlayback({ album }) {
       if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
         const tag = document.createElement("script");
         tag.src = "https://www.youtube.com/iframe_api";
+        tag.onerror = fail; // blocked by an extension, offline, proxied away
         document.head.appendChild(tag);
       }
     }
 
     return () => {
       cancelled = true;
-      clearTimeout(failTimer);
       clearInterval(tickRef.current);
       if (playerRef.current?.destroy) {
         try {
@@ -158,12 +181,12 @@ export default function AlbumPlayback({ album }) {
   if (!hasAudio || failed) {
     return (
       <a
-        href={getListenUrl(album)}
+        href={failed ? searchUrl(album) : getListenUrl(album)}
         target="_blank"
         rel="noopener noreferrer"
         className="listen-btn"
       >
-        ▶ {hasAudio ? "Play on YouTube" : "Search on YouTube"}
+        ▶ Search on YouTube
       </a>
     );
   }
