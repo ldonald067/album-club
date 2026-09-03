@@ -377,30 +377,44 @@ export default function ClubPlayer({ album }) {
       {tab === "equalizer" ? (
         <div className="club-player-eq">
           <div className="club-player-eq-row">
-            <div className="club-player-band">
-              <input
-                type="range"
-                min="-12"
-                max="12"
-                value={preamp}
-                aria-label="Preamp"
-                onChange={(e) => changePreamp(Number(e.target.value))}
-              />
-              <span>PRE</span>
+            {/* The dB scale is the detail that makes the panel read as a
+                machine rather than a row of sliders. Marks only — the sliders
+                themselves carry the labels a screen reader needs. */}
+            <div className="club-player-eq-scale" aria-hidden="true">
+              <span>+12 db</span>
+              <span>0 db</span>
+              <span>−12 db</span>
             </div>
-            {EQ_BANDS.map((band, i) => (
-              <div className="club-player-band" key={band}>
+            <div className="club-player-band preamp">
+              <span className="club-player-slot">
                 <input
                   type="range"
                   min="-12"
                   max="12"
-                  value={eq[i]}
-                  aria-label={`${band} hertz band`}
-                  onChange={(e) => changeBand(i, Number(e.target.value))}
+                  value={preamp}
+                  aria-label="Preamp"
+                  onChange={(e) => changePreamp(Number(e.target.value))}
                 />
-                <span>{band}</span>
-              </div>
-            ))}
+              </span>
+              <span className="club-player-band-label">PREAMP</span>
+            </div>
+            <div className="club-player-bands">
+              {EQ_BANDS.map((band, i) => (
+                <div className="club-player-band" key={band}>
+                  <span className="club-player-slot">
+                    <input
+                      type="range"
+                      min="-12"
+                      max="12"
+                      value={eq[i]}
+                      aria-label={`${band} hertz band`}
+                      onChange={(e) => changeBand(i, Number(e.target.value))}
+                    />
+                  </span>
+                  <span className="club-player-band-label">{band}</span>
+                </div>
+              ))}
+            </div>
           </div>
           <p className="club-player-eq-note">
             The sliders are scenery — they remember where you put them, but
