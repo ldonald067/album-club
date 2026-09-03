@@ -173,15 +173,41 @@ grip thumbs, and PREAMP divided off from the ten bands. The curve reports a
 **setting**, never a measurement — there is no signal to measure — and preamp
 shifts it, which is the only way that control can show its work here.
 
-**On Webamp** (`captbaritone/webamp`): its code is MIT and genuinely usable,
-but its author is explicit that "the Winamp name, interface, and sample audio
-file are surely property of Nullsoft". Embedding it would put Winamp's actual
-interface and branding on the site — the thing this component was written to
-avoid — and add a large dependency to the home path. **The one thing it is
-worth copying is its equaliser**, which is real because it plays audio through
-an AudioContext where ten `BiquadFilterNode`s do the work. If this site ever
-gains audio it can route through Web Audio, that is the reference to use, with
-attribution.
+## Webamp view (`app/WebampView.js`)
+
+The real thing: `captbaritone/webamp`, Winamp 2 reimplemented for the browser,
+MIT licensed (© Jordan Eldredge and contributors). Added as a third `View`
+option beside Album and Player.
+
+**It cannot play the album of the day, and nothing will make it.** Webamp plays
+audio through the Web Audio API, meaning files it can fetch; today's album is a
+YouTube video id, and a cross-origin YouTube iframe is opaque to Web Audio. It
+opens with an empty playlist and accepts files dragged into it — Webamp's own
+native behaviour, and the only honest offer. Album audio stays with the Club
+Player.
+
+**Three things about integrating it that are not obvious:**
+
+- **It attaches to `document.body`** and floats its windows over the page. It
+  is a desktop-style overlay, not an inline embed, so `.webamp-host` reserves
+  no height — nothing renders inside it. Wrapping it in a panel does not
+  contain it.
+- **React must never render children into the mount node.** Webamp mutates that
+  subtree imperatively; a React child inside it — even a one-line loading
+  message — leaves React calling `removeChild` on a node Webamp has replaced,
+  which throws `NotFoundError` and takes the whole page to the error boundary.
+  That happened on the first attempt.
+- **`onClose` has to switch the view back.** Closing Webamp's own window
+  otherwise leaves the view selected with nothing on screen.
+
+**It is ~917KB minified against a home page that ships 191KB of JS**, so it is
+behind `next/dynamic` and only fetched when the view is chosen. Verified: no
+webamp chunk loads on the default view, and `dispose()` removes it from the
+body when switching away.
+
+The author notes that "the Winamp name, interface, and sample audio file are
+surely property of Nullsoft", which is why this is opt-in and why the Club
+Player — drawn from scratch, no Winamp artwork — remains the house player.
 
 **The player keeps one look under every skin**, by decision — it already reads
 as period costume, so re-chroming it for Vintage would be work with no payoff.

@@ -1852,6 +1852,27 @@ body {
   letter-spacing: normal;
 }
 
+/* Webamp view. Minimal chrome on purpose: Webamp draws its own window and
+   positions it absolutely, so this only reserves height and carries the note
+   explaining what it can and cannot play. */
+.webamp-view {
+  padding: 12px;
+}
+
+.webamp-note {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text-answer);
+  margin: 0 0 10px;
+}
+
+/* A mount point, not a frame. Webamp attaches to document.body and floats its
+   own windows, so reserving height here would only add an empty box under the
+   note. */
+.webamp-host {
+  height: 0;
+}
+
 /* ─── Club Player ───
    A 2004 media-player homage for the album hero, offered beside the default
    album view. Drawn entirely from gradients and 1px bevels: no bitmaps, and

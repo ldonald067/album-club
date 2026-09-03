@@ -25,6 +25,13 @@ import {
 import { loadJson } from "@/lib/safe-fetch";
 import ClubPlayer from "./ClubPlayer";
 
+/* Webamp is ~917KB minified against a 191KB home page, so it is never part of
+   the default bundle — only fetched when someone actually picks that view. */
+const WebampView = dynamic(() => import("./WebampView"), {
+  ssr: false,
+  loading: () => <p className="webamp-note">Loading Webamp…</p>,
+});
+
 /* ─── Constants ─── */
 const MAX_SUGGESTIONS = 5;
 const SHAKE_MS = 400;
@@ -3988,8 +3995,9 @@ export default function ForumPage({ album, dateString }) {
   const [albumView, setAlbumView] = useState("album");
   useEffect(() => {
     try {
-      if (localStorage.getItem("aotd_album_view") === "player") {
-        setAlbumView("player");
+      const saved = localStorage.getItem("aotd_album_view");
+      if (saved === "player" || saved === "webamp") {
+        setAlbumView(saved);
       }
     } catch {
       // Private mode: the default view is a perfectly good answer
@@ -4423,10 +4431,16 @@ export default function ForumPage({ album, dateString }) {
                   >
                     <option value="album">Album</option>
                     <option value="player">Player</option>
+                    <option value="webamp">Webamp</option>
                   </select>
                 </span>
               </div>
-              {albumView === "player" ? (
+              {albumView === "webamp" ? (
+                <WebampView
+                  album={album}
+                  onClose={() => chooseAlbumView("album")}
+                />
+              ) : albumView === "player" ? (
                 <ClubPlayer album={album} />
               ) : (
                 <div
