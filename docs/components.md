@@ -136,6 +136,39 @@ Shows tomorrow's album emoji + genre + decade (e.g., `🎷 Tomorrow's Album — 
 - **Session state**: `sessionStorage` for welcome-back dismissal (resets per tab)
 - **Animation guards**: `justRevealed`/`justSubmitted` booleans prevent re-animating on reload
 
+## Club Player (`app/ClubPlayer.js`)
+
+A 2004 media-player homage offered as an alternative face for the album hero. A
+`View` dropdown in the panel header switches `Album` / `Player`, persisted to
+`aotd_album_view` (a new key — nothing was renamed). **`Album` is the default**,
+so the hero nobody asked to change is the one everybody still gets.
+
+**What is real and what is costume**, because a transport that lies is worse
+than no transport. Play/pause/stop, seek, volume and the clock all drive the
+same YouTube IFrame API that Heardle and Blind Taste Test already use, so
+pressing play plays the record. The spectrum and the equaliser are period
+scenery: a cross-origin YouTube iframe exposes no audio data to Web Audio, and
+the API has no EQ. The spectrum animates **only while audio is genuinely
+playing** so it never implies analysis of a stream we cannot read, and the EQ
+panel says outright that its sliders are scenery. Do not "finish" the EQ by
+wiring it to something — there is nothing to wire it to.
+
+The LCD readout is the sourced facts from `lib/album-facts.json` — track count
+and runtime are exactly what that strip was always for. 135 of 424 albums have
+a `youtubeId`; without one the transport is replaced by an explicit note and a
+YouTube search link, the same shape as Heardle's rollover.
+
+**The player keeps one look under every skin**, by decision — it already reads
+as period costume, so re-chroming it for Vintage would be work with no payoff.
+That is why its colours are a separate `--player-*` token family rather than
+`--surface-*`, and why `.club-player` joins `.vinyl-disc` in the exemption on
+Vintage's blanket `border-radius: 0`. They are still tokens, so a future skin
+_can_ reach the player deliberately.
+
+Lives outside `ForumPage.js` against the usual convention: it owns a player
+lifecycle and ~300 lines of self-contained chrome. It is on the home path, so
+it is imported normally rather than behind `next/dynamic`.
+
 ## Soundtrack Corner (`SoundtrackCornerPanel` → `app/SoundtrackCorner.js`)
 
 Its own nav tab (formerly the Chat Booth — the AI chat was removed in July 2026). Renders today's album as game / film / TV cue music: album-specific scene cards, two rotating extra angles (for example boss-fight energy or best-fit game studio), a short "listen for" list, and a clickable "listen next" recommendation row with one-line reasons plus YouTube links for today's album and each follow-up pick. Loaded with `next/dynamic` (`ssr: false`) so its weight stays off the main page.

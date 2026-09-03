@@ -23,6 +23,7 @@ import {
   getTastePair,
 } from "@/lib/albums";
 import { loadJson } from "@/lib/safe-fetch";
+import ClubPlayer from "./ClubPlayer";
 
 /* ─── Constants ─── */
 const MAX_SUGGESTIONS = 5;
@@ -3981,6 +3982,28 @@ export default function ForumPage({ album, dateString }) {
   const [konamiTriggered, setKonamiTriggered] = useState(false);
   const [vinylSpinning, setVinylSpinning] = useState(false);
   const [vinylFlipped, setVinylFlipped] = useState(false);
+  /* Which face the album hero wears. Read on mount rather than during render:
+     the server has no localStorage, and guessing here is how you get a
+     hydration mismatch. "album" is the default and the fallback. */
+  const [albumView, setAlbumView] = useState("album");
+  useEffect(() => {
+    try {
+      if (localStorage.getItem("aotd_album_view") === "player") {
+        setAlbumView("player");
+      }
+    } catch {
+      // Private mode: the default view is a perfectly good answer
+    }
+  }, []);
+
+  const chooseAlbumView = (value) => {
+    setAlbumView(value);
+    try {
+      localStorage.setItem("aotd_album_view", value);
+    } catch {
+      // Preference lost, view still switched for this session
+    }
+  };
   const [estHover, setEstHover] = useState(false);
   const [forumSig, setForumSig] = useState("");
   const [taglineIdx, setTaglineIdx] = useState(0);
@@ -4390,88 +4413,107 @@ export default function ForumPage({ album, dateString }) {
                   <i className="hn hn-music" aria-hidden="true" /> TODAY&apos;S
                   ALBUM — {dateString.toUpperCase()}
                 </span>
-              </div>
-              <div
-                className="album-display"
-                style={{
-                  background: `linear-gradient(135deg, ${album.color}18, ${album.color}08)`,
-                }}
-              >
-                <div className="album-cover-wrap">
-                  <div
-                    className="album-cover"
-                    style={{
-                      background: album.image
-                        ? "#1a1a1a"
-                        : `linear-gradient(145deg, ${album.color}, ${album.color}cc)`,
-                    }}
+                <span className="album-view-picker">
+                  <label htmlFor="album-view">View</label>
+                  <select
+                    id="album-view"
+                    className="theme-select"
+                    value={albumView}
+                    onChange={(e) => chooseAlbumView(e.target.value)}
                   >
-                    {album.image && !imgError ? (
-                      <img
-                        src={album.image}
-                        alt={`${album.title} by ${album.artist}`}
-                        loading="eager"
-                        onError={() => setImgError(true)}
-                      />
-                    ) : (
-                      <span className="cover-emoji">{album.cover}</span>
-                    )}
+                    <option value="album">Album</option>
+                    <option value="player">Player</option>
+                  </select>
+                </span>
+              </div>
+              {albumView === "player" ? (
+                <ClubPlayer album={album} />
+              ) : (
+                <div
+                  className="album-display"
+                  style={{
+                    background: `linear-gradient(135deg, ${album.color}18, ${album.color}08)`,
+                  }}
+                >
+                  <div className="album-cover-wrap">
+                    <div
+                      className="album-cover"
+                      style={{
+                        background: album.image
+                          ? "#1a1a1a"
+                          : `linear-gradient(145deg, ${album.color}, ${album.color}cc)`,
+                      }}
+                    >
+                      {album.image && !imgError ? (
+                        <img
+                          src={album.image}
+                          alt={`${album.title} by ${album.artist}`}
+                          loading="eager"
+                          onError={() => setImgError(true)}
+                        />
+                      ) : (
+                        <span className="cover-emoji">{album.cover}</span>
+                      )}
+                    </div>
+                    <div
+                      className={`vinyl-disc${vinylSpinning ? " spinning" : ""}${
+                        vinylFlipped ? " flipped" : ""
+                      }`}
+                      role="button"
+                      tabIndex={0}
+                      aria-label="Spin the vinyl record"
+                      onClick={spinVinyl}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          spinVinyl();
+                        }
+                      }}
+                      style={{ cursor: "pointer" }}
+                      title="Click to spin!"
+                    />
                   </div>
-                  <div
-                    className={`vinyl-disc${vinylSpinning ? " spinning" : ""}${
-                      vinylFlipped ? " flipped" : ""
-                    }`}
-                    role="button"
-                    tabIndex={0}
-                    aria-label="Spin the vinyl record"
-                    onClick={spinVinyl}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        spinVinyl();
-                      }
-                    }}
-                    style={{ cursor: "pointer" }}
-                    title="Click to spin!"
-                  />
+                  <div className="album-info">
+                    <h2 className="album-title">{album.title}</h2>
+                    <div className="album-artist">by {album.artist}</div>
+                    {isAlbumBirthday && (
+                      <div
+                        className="album-birthday"
+                        title="Round-number year!"
+                      >
+                        🎂 turns {albumAge} this year
+                      </div>
+                    )}
+                    {vinylFlipped && (
+                      <div className="runout-etching" role="status">
+                        ⌁ RUNOUT · AOTD-{album.year}-B · &ldquo;{runoutEtching}
+                        &rdquo;
+                      </div>
+                    )}
+                    <table className="info-table">
+                      <tbody>
+                        {[
+                          ["Year", album.year],
+                          ["Genre", album.genre],
+                        ].map(([label, val], i) => (
+                          <tr key={i}>
+                            <td>{label}</td>
+                            <td>{val}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <a
+                      href={getListenUrl(album)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="listen-btn"
+                    >
+                      ▶ Listen on YouTube
+                    </a>
+                  </div>
                 </div>
-                <div className="album-info">
-                  <h2 className="album-title">{album.title}</h2>
-                  <div className="album-artist">by {album.artist}</div>
-                  {isAlbumBirthday && (
-                    <div className="album-birthday" title="Round-number year!">
-                      🎂 turns {albumAge} this year
-                    </div>
-                  )}
-                  {vinylFlipped && (
-                    <div className="runout-etching" role="status">
-                      ⌁ RUNOUT · AOTD-{album.year}-B · &ldquo;{runoutEtching}
-                      &rdquo;
-                    </div>
-                  )}
-                  <table className="info-table">
-                    <tbody>
-                      {[
-                        ["Year", album.year],
-                        ["Genre", album.genre],
-                      ].map(([label, val], i) => (
-                        <tr key={i}>
-                          <td>{label}</td>
-                          <td>{val}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  <a
-                    href={getListenUrl(album)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="listen-btn"
-                  >
-                    ▶ Listen on YouTube
-                  </a>
-                </div>
-              </div>
+              )}
             </div>
 
             {/* The three activities come first: they are what the site is for,

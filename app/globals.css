@@ -56,6 +56,23 @@
   --surface-rec-cover: #f6f1e6; /* recommendation cover chip */
   --surface-active: #e8e0d0; /* pressed suggestion */
   --surface-track: #f0ede5; /* attempt bar track */
+
+  /* Club Player chrome. Its own family on purpose: the player keeps one look
+     under every skin (the owner's call — it reads as period costume already),
+     so it must not inherit --surface-* when a skin repaints those. They are
+     still tokens rather than inline hexes, so a future skin CAN reach the
+     player deliberately, and eval-site's raw-light-background check stays
+     satisfied. */
+  --player-face: #d3d9e4; /* the plastic the unit is moulded from */
+  --player-face-lit: #e6eaf1; /* bevel highlight */
+  --player-face-dim: #9aa4b6; /* bevel shadow */
+  --player-lcd: #10243c; /* the display glass */
+  --player-lcd-ink: #7ee0a8; /* phosphor green */
+  /* 5.56:1 on the LCD glass. The first value measured 3.32:1 at 8px, and the
+     chips carry real content — track count, runtime, year — so they are text,
+     not decoration. Brightened the least that clears AA with margin. */
+  --player-lcd-dim: #5ea88b; /* inactive phosphor */
+  --player-chrome-ink: #1b2534; /* labels on the plastic */
   --surface-tomorrow: #f5f0e0; /* tomorrow teaser */
   --surface-thead: #f0ead8; /* table head */
   --surface-row-hover: #f0ebd5; /* table row hover */
@@ -1827,6 +1844,371 @@ body {
   color: var(--text-muted);
 }
 
+.album-view-picker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  letter-spacing: normal;
+}
+
+/* ─── Club Player ───
+   A 2004 media-player homage for the album hero, offered beside the default
+   album view. Drawn entirely from gradients and 1px bevels: no bitmaps, and
+   nothing derived from any player's artwork. Colours come from the --player-*
+   family so the unit keeps one look under every skin. */
+.club-player {
+  background: var(--player-face);
+  border: 1px solid var(--player-face-dim);
+  border-radius: 6px;
+  box-shadow:
+    inset 1px 1px 0 var(--player-face-lit),
+    inset -1px -1px 0 var(--player-face-dim);
+  padding: 8px;
+  margin: 12px;
+  max-width: 560px;
+}
+
+.club-player-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(
+    180deg,
+    var(--player-face-lit),
+    var(--player-face-dim)
+  );
+  border-radius: 3px;
+  padding: 3px 8px;
+  margin-bottom: 8px;
+}
+
+.club-player-name {
+  font-family: var(--font-pixel), "Courier New", monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--player-chrome-ink);
+}
+
+.club-player-badge {
+  font-size: 13px;
+}
+
+.club-player-lcd {
+  background: var(--player-lcd);
+  border-radius: 3px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+  padding: 7px 9px;
+}
+
+.club-player-lcd-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.club-player-state,
+.club-player-clock {
+  font-family: var(--font-pixel), "Courier New", monospace;
+  color: var(--player-lcd-ink);
+  font-size: 13px;
+}
+
+.club-player-readout {
+  display: flex;
+  gap: 5px;
+}
+
+.club-player-chip {
+  font-family: var(--font-pixel), "Courier New", monospace;
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: var(--player-lcd-dim);
+  border: 1px solid var(--player-lcd-dim);
+  border-radius: 2px;
+  padding: 1px 4px;
+}
+
+/* Costume, and it behaves like it: the bars sit flat until real playback
+   starts, so an idle player never pretends to be reading a signal. */
+.club-player-spectrum {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 18px;
+  margin-left: auto;
+}
+
+.club-player-spectrum i {
+  width: 3px;
+  height: 2px;
+  background: var(--player-lcd-dim);
+}
+
+.club-player-spectrum.active i {
+  background: var(--player-lcd-ink);
+  animation: club-player-bounce 900ms ease-in-out infinite alternate;
+}
+
+@keyframes club-player-bounce {
+  from {
+    height: 2px;
+  }
+  to {
+    height: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .club-player-spectrum.active i {
+    animation: none;
+    height: 9px;
+  }
+  .club-player-marquee span.scrolling {
+    animation: none;
+  }
+}
+
+.club-player-marquee {
+  overflow: hidden;
+  white-space: nowrap;
+  margin-top: 6px;
+  border-top: 1px solid var(--player-lcd-dim);
+  padding-top: 5px;
+}
+
+.club-player-marquee span {
+  display: inline-block;
+  font-family: var(--font-pixel), "Courier New", monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--player-lcd-ink);
+}
+
+.club-player-marquee span.scrolling {
+  animation: club-player-scroll 14s linear infinite;
+}
+
+@keyframes club-player-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.club-player-seek,
+.club-player-volume input {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--player-face-dim);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.club-player-seek {
+  width: 100%;
+  margin: 10px 0 8px;
+}
+
+.club-player-seek::-webkit-slider-thumb,
+.club-player-volume input::-webkit-slider-thumb,
+.club-player-band input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 11px;
+  height: 17px;
+  border-radius: 2px;
+  border: 1px solid var(--player-face-dim);
+  background: linear-gradient(
+    180deg,
+    var(--player-face-lit),
+    var(--player-face)
+  );
+}
+
+.club-player-seek::-moz-range-thumb,
+.club-player-volume input::-moz-range-thumb,
+.club-player-band input::-moz-range-thumb {
+  width: 11px;
+  height: 17px;
+  border-radius: 2px;
+  border: 1px solid var(--player-face-dim);
+  background: var(--player-face-lit);
+}
+
+.club-player-transport {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.club-player-btn {
+  font-size: 13px;
+  line-height: 1;
+  min-width: 34px;
+  padding: 6px 8px;
+  cursor: pointer;
+  color: var(--player-chrome-ink);
+  background: linear-gradient(
+    180deg,
+    var(--player-face-lit),
+    var(--player-face)
+  );
+  border: 1px solid var(--player-face-dim);
+  border-radius: 3px;
+}
+
+.club-player-btn:active:not(:disabled) {
+  background: var(--player-face-dim);
+}
+
+.club-player-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.club-player-volume {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.club-player-volume input {
+  width: 96px;
+}
+
+.club-player-nosource {
+  font-size: 11px;
+  color: var(--player-chrome-ink);
+  padding: 10px 2px 6px;
+}
+
+.club-player-tabs {
+  display: flex;
+  gap: 3px;
+  margin-top: 10px;
+}
+
+.club-player-tab {
+  font-family: var(--font-pixel), "Courier New", monospace;
+  font-size: 8px;
+  letter-spacing: 1px;
+  padding: 5px 10px;
+  cursor: pointer;
+  color: var(--player-chrome-ink);
+  background: var(--player-face);
+  border: 1px solid var(--player-face-dim);
+  border-bottom: none;
+  border-radius: 3px 3px 0 0;
+}
+
+.club-player-tab.active {
+  background: var(--player-face-lit);
+}
+
+.club-player-eq,
+.club-player-info {
+  background: var(--player-face-lit);
+  border: 1px solid var(--player-face-dim);
+  border-radius: 0 3px 3px 3px;
+  padding: 10px;
+  margin: 0;
+}
+
+.club-player-eq-row {
+  display: flex;
+  gap: 6px;
+  align-items: flex-end;
+  overflow-x: auto;
+}
+
+.club-player-band {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Vertical without writing-mode games: the input is rotated in its own box so
+   the row stays a plain flex row and keyboard order follows the visual order. */
+.club-player-band input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 62px;
+  height: 6px;
+  transform: rotate(-90deg);
+  margin: 28px -28px;
+  border-radius: 3px;
+  background: var(--player-face-dim);
+}
+
+.club-player-band span {
+  font-family: var(--font-pixel), "Courier New", monospace;
+  font-size: 7px;
+  color: var(--player-chrome-ink);
+}
+
+.club-player-eq-note {
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--player-chrome-ink);
+  margin: 10px 0 0;
+}
+
+.club-player-info div {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  padding: 3px 0;
+  color: var(--player-chrome-ink);
+}
+
+.club-player-info dt {
+  width: 58px;
+  font-weight: bold;
+}
+
+.club-player-info dd {
+  margin: 0;
+}
+
+.club-player-audio {
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+@media (max-width: 600px) {
+  .club-player {
+    margin: 8px;
+    padding: 6px;
+  }
+
+  .club-player-volume {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .club-player-volume input {
+    flex: 1;
+  }
+
+  .club-player-transport {
+    flex-wrap: wrap;
+  }
+}
+
+@media (pointer: coarse) {
+  .club-player-btn {
+    min-height: 44px;
+  }
+}
+
 /* ─── Artist Scramble ─── */
 .scramble-display {
   font-family: monospace;
@@ -3514,7 +3896,8 @@ body {
 /* Square corners everywhere — rounded rectangles are the wrong decade. The
    vinyl disc is exempt: it is a record, and squaring it turned the sleeve's
    backdrop into a black box. */
-:root[data-theme="vintage"] *:not(.vinyl-disc) {
+:root[data-theme="vintage"]
+  *:not(.vinyl-disc):not(.club-player):not(.club-player *) {
   border-radius: 0;
 }
 

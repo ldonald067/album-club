@@ -3,9 +3,7 @@
     "tracks": 12,
     "runtimeMinutes": 53,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1997,
     "mbid": "b1392450-e666-3926-a536-22c65f834433",
     "releaseTitle": "OK Computer"
@@ -14,9 +12,7 @@
     "tracks": 11,
     "runtimeMinutes": 39,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1977,
     "mbid": "416bb5e5-c7d1-3977-8fd7-7c9daf6c2be6",
     "releaseTitle": "Rumours"
@@ -25,9 +21,7 @@
     "tracks": 16,
     "runtimeMinutes": 78,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1998,
     "mbid": "8691d12c-abd8-385c-b1eb-d841190124f7",
     "releaseTitle": "The Miseducation of Lauryn Hill"
@@ -36,9 +30,7 @@
     "tracks": 12,
     "runtimeMinutes": 43,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1991,
     "mbid": "1b022e01-4da6-387b-8658-8678046e4cef",
     "releaseTitle": "Nevermind"
@@ -47,9 +39,7 @@
     "tracks": 17,
     "runtimeMinutes": 47,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1969,
     "mbid": "9162580e-5df4-32de-80cc-f45a8d8a9b1d",
     "releaseTitle": "Abbey Road"
@@ -58,9 +48,7 @@
     "tracks": 10,
     "runtimeMinutes": 36,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1971,
     "mbid": "42d725fb-a8b7-388c-8866-3b02789af326",
     "releaseTitle": "Blue"
@@ -69,9 +57,7 @@
     "tracks": 10,
     "runtimeMinutes": 40,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1994,
     "mbid": "28298e2c-4d70-3eed-a0f5-a3280c662b3d",
     "releaseTitle": "Illmatic"
@@ -80,9 +66,7 @@
     "tracks": 9,
     "runtimeMinutes": 42,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1982,
     "mbid": "f32fab67-77dd-3937-addc-9062e28e4c37",
     "releaseTitle": "Thriller"
@@ -91,9 +75,7 @@
     "tracks": 11,
     "runtimeMinutes": 49,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1991,
     "mbid": "cb76227e-3ac0-3002-9a10-615a5b73cc59",
     "releaseTitle": "Loveless"
@@ -102,9 +84,7 @@
     "tracks": 11,
     "runtimeMinutes": 38,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1972,
     "mbid": "6c9ae3dd-32ad-472c-96be-69d0a3536261",
     "releaseTitle": "The Rise and Fall of Ziggy Stardust and the Spiders From Mars"
@@ -113,9 +93,7 @@
     "tracks": 16,
     "runtimeMinutes": 75,
     "longestMinutes": 9,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1998,
     "mbid": "eb655897-6cc5-3fc1-b9ed-5008eb80c682",
     "releaseTitle": "Aquemini"
@@ -124,9 +102,7 @@
     "tracks": 11,
     "runtimeMinutes": 40,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1998,
     "mbid": "8f310800-045b-3e12-8268-50b3d33a2267",
     "releaseTitle": "In the Aeroplane Over the Sea"
@@ -135,9 +111,7 @@
     "tracks": 17,
     "runtimeMinutes": 69,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1994,
     "mbid": "5afcfeac-118a-35e6-af0d-35ec9003354d",
     "releaseTitle": "Ready to Die"
@@ -146,9 +120,7 @@
     "tracks": 17,
     "runtimeMinutes": 60,
     "longestMinutes": 9,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2016,
     "mbid": "0da340a0-6ad7-4fc2-a272-6f94393a7831",
     "releaseTitle": "Blonde"
@@ -157,9 +129,7 @@
     "tracks": 11,
     "runtimeMinutes": 36,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2001,
     "mbid": "efea26d1-a016-30f6-b8e2-bc8c02336b0a",
     "releaseTitle": "Is This It"
@@ -168,9 +138,7 @@
     "tracks": 11,
     "runtimeMinutes": 49,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1994,
     "mbid": "48140466-cff6-3222-bd55-63c27e43190d",
     "releaseTitle": "Dummy"
@@ -179,9 +147,7 @@
     "tracks": 5,
     "runtimeMinutes": 44,
     "longestMinutes": 14,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1975,
     "mbid": "1a272023-10d3-38ee-bab3-317b55fcc21d",
     "releaseTitle": "Wish You Were Here"
@@ -190,9 +156,7 @@
     "tracks": 12,
     "runtimeMinutes": 58,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1993,
     "mbid": "610fb60f-900a-3c42-ac7d-f6b6aa8035f9",
     "releaseTitle": "Enter the Wu‐Tang (36 Chambers)"
@@ -201,9 +165,7 @@
     "tracks": 8,
     "runtimeMinutes": 40,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1980,
     "mbid": "f6b1b900-6108-32f0-abbd-2855af9151eb",
     "releaseTitle": "Remain in Light"
@@ -212,9 +174,7 @@
     "tracks": 12,
     "runtimeMinutes": 56,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2001,
     "mbid": "271faeb3-fdd1-3ebb-80aa-97b3116e9341",
     "releaseTitle": "Vespertine"
@@ -223,9 +183,7 @@
     "tracks": 21,
     "runtimeMinutes": 105,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1976,
     "mbid": "ea88b09b-fd34-33cf-a3e5-25a3a2fb4c6f",
     "releaseTitle": "Songs in the Key of Life"
@@ -234,9 +192,7 @@
     "tracks": 12,
     "runtimeMinutes": 72,
     "longestMinutes": 9,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1989,
     "mbid": "494bf606-d2f7-36d0-8340-eadad8601d2b",
     "releaseTitle": "Disintegration"
@@ -245,9 +201,7 @@
     "tracks": 12,
     "runtimeMinutes": 46,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2016,
     "mbid": "c1f22e07-7bdf-4a4f-8b50-7747c1091ef6",
     "releaseTitle": "LEMONADE"
@@ -256,9 +210,7 @@
     "tracks": 16,
     "runtimeMinutes": 74,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1997,
     "mbid": "00054665-89fa-33d5-a8f0-1728ea8c32c3",
     "releaseTitle": "Homework"
@@ -267,9 +219,7 @@
     "tracks": 10,
     "runtimeMinutes": 48,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2004,
     "mbid": "05affa96-5959-32da-8d75-1c9eb985ca59",
     "releaseTitle": "Funeral"
@@ -278,9 +228,7 @@
     "tracks": 16,
     "runtimeMinutes": 79,
     "longestMinutes": 12,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2015,
     "mbid": "d9103c72-3807-4378-9ce7-b6f3e8fdd547",
     "releaseTitle": "To Pimp a Butterfly"
@@ -289,9 +237,7 @@
     "tracks": 5,
     "runtimeMinutes": 45,
     "longestMinutes": 12,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1959,
     "mbid": "8e8a594f-2175-38c7-a871-abb68ec363e7",
     "releaseTitle": "Kind of Blue"
@@ -300,9 +246,7 @@
     "tracks": 3,
     "runtimeMinutes": 33,
     "longestMinutes": 18,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1965,
     "mbid": "77cf47ba-58cd-3f3d-a5f9-79bf89860421",
     "releaseTitle": "A Love Supreme"
@@ -311,9 +255,7 @@
     "tracks": 12,
     "runtimeMinutes": 47,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1985,
     "mbid": "017f2a37-a78f-3578-9611-fa40408e5d90",
     "releaseTitle": "Hounds of Love"
@@ -322,9 +264,7 @@
     "tracks": 13,
     "runtimeMinutes": 35,
     "longestMinutes": 3,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1966,
     "mbid": "fdd96703-7b21-365e-bdea-38029fbeb84e",
     "releaseTitle": "Pet Sounds"
@@ -333,9 +273,7 @@
     "tracks": 11,
     "runtimeMinutes": 48,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1967,
     "mbid": "5cbd9d7b-597a-3c5e-bfd1-c2b364215560",
     "releaseTitle": "The Velvet Underground & Nico"
@@ -344,9 +282,7 @@
     "tracks": 9,
     "runtimeMinutes": 35,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1971,
     "mbid": "c1fa4d2c-ec62-37d5-b01d-6df7f8fd2c90",
     "releaseTitle": "What’s Going On"
@@ -355,9 +291,7 @@
     "tracks": 10,
     "runtimeMinutes": 43,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1973,
     "mbid": "f5093c06-23e3-404f-aeaa-40f72885ee3a",
     "releaseTitle": "The Dark Side of the Moon"
@@ -366,9 +300,7 @@
     "tracks": 8,
     "runtimeMinutes": 39,
     "longestMinutes": 10,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1975,
     "mbid": "39b22944-7503-3937-8bba-09b17281cc6a",
     "releaseTitle": "Born to Run"
@@ -377,9 +309,7 @@
     "tracks": 19,
     "runtimeMinutes": 65,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1979,
     "mbid": "8d73e45e-7ca1-3cb4-ae28-6da76196c17c",
     "releaseTitle": "London Calling"
@@ -388,9 +318,7 @@
     "tracks": 10,
     "runtimeMinutes": 39,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1979,
     "mbid": "42352def-1aab-3000-b548-895ebd869cb6",
     "releaseTitle": "Unknown Pleasures"
@@ -399,9 +327,7 @@
     "tracks": 15,
     "runtimeMinutes": 39,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1989,
     "mbid": "1aa41b19-5a72-341b-bd91-4cf61d1dab6b",
     "releaseTitle": "Doolittle"
@@ -410,9 +336,7 @@
     "tracks": 12,
     "runtimeMinutes": 49,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1994,
     "mbid": "b8048f24-c026-3398-b23a-b5e50716cbc7",
     "releaseTitle": "The Bends"
@@ -421,9 +345,7 @@
     "tracks": 10,
     "runtimeMinutes": 44,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1997,
     "mbid": "810272e0-aef1-3d85-b2d3-e512e87fc38c",
     "releaseTitle": "Homogenic"
@@ -432,9 +354,7 @@
     "tracks": 10,
     "runtimeMinutes": 50,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2000,
     "mbid": "e75c0549-ad55-39e3-8025-c72c5d4a3c5d",
     "releaseTitle": "Kid A"
@@ -443,9 +363,7 @@
     "tracks": 24,
     "runtimeMinutes": 73,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2000,
     "mbid": "00d2cd53-21c9-3738-b683-56847b7b0040",
     "releaseTitle": "Stankonia"
@@ -454,9 +372,7 @@
     "tracks": 11,
     "runtimeMinutes": 52,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2002,
     "mbid": "95f2ba4b-2dd9-38d1-8158-a416a391489c",
     "releaseTitle": "Yankee Hotel Foxtrot"
@@ -465,9 +381,7 @@
     "tracks": 15,
     "runtimeMinutes": 63,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2001,
     "mbid": "11ae8c9c-27c1-3308-9761-edb87c8f54ea",
     "releaseTitle": "The Blueprint"
@@ -476,9 +390,7 @@
     "tracks": 14,
     "runtimeMinutes": 50,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2003,
     "mbid": "d85b9684-4277-3565-b89b-115c8b4b7fd3",
     "releaseTitle": "Elephant"
@@ -487,9 +399,7 @@
     "tracks": 11,
     "runtimeMinutes": 54,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2010,
     "mbid": "0cfdeff7-4aa7-4df4-918d-88c9421cc512",
     "releaseTitle": "Innerspeaker"
@@ -498,9 +408,7 @@
     "tracks": 17,
     "runtimeMinutes": 91,
     "longestMinutes": 12,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2012,
     "mbid": "499c19c8-0dab-4824-884b-6191d145e95b",
     "releaseTitle": "good kid, m.A.A.d city"
@@ -509,9 +417,7 @@
     "tracks": 17,
     "runtimeMinutes": 62,
     "longestMinutes": 10,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2012,
     "mbid": "f8f4167d-897c-4b25-a171-638374d1dfa4",
     "releaseTitle": "channel ORANGE"
@@ -520,9 +426,7 @@
     "tracks": 13,
     "runtimeMinutes": 69,
     "longestMinutes": 9,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2010,
     "mbid": "5d6e21e1-deb5-428e-bb42-c2a567f3619b",
     "releaseTitle": "My Beautiful Dark Twisted Fantasy"
@@ -531,9 +435,7 @@
     "tracks": 10,
     "runtimeMinutes": 43,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2007,
     "mbid": "6e335887-60ba-38f0-95af-fae7774336bf",
     "releaseTitle": "In Rainbows"
@@ -542,9 +444,7 @@
     "tracks": 13,
     "runtimeMinutes": 51,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2015,
     "mbid": "08aa7a6c-3e43-4459-87b2-e47faf3a088a",
     "releaseTitle": "Currents"
@@ -553,9 +453,7 @@
     "tracks": 12,
     "runtimeMinutes": 40,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2019,
     "mbid": "0f1b9e07-b38b-4bba-9794-55e0924d7177",
     "releaseTitle": "IGOR"
@@ -564,9 +462,7 @@
     "tracks": 14,
     "runtimeMinutes": 43,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2019,
     "mbid": "72375978-a9a1-4254-b957-85565c716b7e",
     "releaseTitle": "WHEN WE ALL FALL ASLEEP, WHERE DO WE GO?"
@@ -575,9 +471,7 @@
     "tracks": 10,
     "runtimeMinutes": 42,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2019,
     "mbid": "b30447b9-8e32-4e98-a128-9c18d9378e8d",
     "releaseTitle": "Titanic Rising"
@@ -586,9 +480,7 @@
     "tracks": 14,
     "runtimeMinutes": 55,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2017,
     "mbid": "b88655ba-7469-48b8-a296-b9011ab73ef3",
     "releaseTitle": "DAMN."
@@ -597,9 +489,7 @@
     "tracks": 11,
     "runtimeMinutes": 41,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2017,
     "mbid": "668e80e0-b35e-4471-9788-0a3d797fe42c",
     "releaseTitle": "Melodrama"
@@ -608,9 +498,7 @@
     "tracks": 14,
     "runtimeMinutes": 49,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2017,
     "mbid": "8f892c1b-0709-4cf4-9711-493892a9eb9b",
     "releaseTitle": "Ctrl"
@@ -619,9 +507,7 @@
     "tracks": 14,
     "runtimeMinutes": 47,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2017,
     "mbid": "e248e931-c26c-4c94-aba2-2f89ce583901",
     "releaseTitle": "Flower Boy"
@@ -630,9 +516,7 @@
     "tracks": 12,
     "runtimeMinutes": 42,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2013,
     "mbid": "a348ba2f-f8b3-4686-b928-e63d8d94d543",
     "releaseTitle": "AM"
@@ -641,9 +525,7 @@
     "tracks": 13,
     "runtimeMinutes": 74,
     "longestMinutes": 9,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2013,
     "mbid": "aa997ea0-2936-40bd-884d-3af8a0e064dc",
     "releaseTitle": "Random Access Memories"
@@ -652,9 +534,7 @@
     "tracks": 13,
     "runtimeMinutes": 41,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2012,
     "mbid": "aa0b4e86-358e-4c92-aecd-94f5f59233f7",
     "releaseTitle": "The Money Store"
@@ -663,9 +543,7 @@
     "tracks": 10,
     "runtimeMinutes": 39,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2011,
     "mbid": "2cb36662-3560-4b90-a0a5-7924ac039490",
     "releaseTitle": "Bon Iver, Bon Iver"
@@ -674,9 +552,7 @@
     "tracks": 12,
     "runtimeMinutes": 52,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2012,
     "mbid": "b0864c80-2726-4761-bf66-a97610162a2c",
     "releaseTitle": "Lonerism"
@@ -685,9 +561,7 @@
     "tracks": 13,
     "runtimeMinutes": 49,
     "longestMinutes": 13,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2012,
     "mbid": "0d8562eb-7f72-427b-8a0b-984cc5ee7766",
     "releaseTitle": "An Awesome Wave"
@@ -696,9 +570,7 @@
     "tracks": 10,
     "runtimeMinutes": 37,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2013,
     "mbid": "8e8a1db7-1d43-44d3-9796-fd69f12730cb",
     "releaseTitle": "Pure Heroine"
@@ -707,9 +579,7 @@
     "tracks": 11,
     "runtimeMinutes": 41,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2020,
     "mbid": "cf75fd5a-ca84-4371-94d7-27410360f06b",
     "releaseTitle": "Punisher"
@@ -718,9 +588,7 @@
     "tracks": 13,
     "runtimeMinutes": 52,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2020,
     "mbid": "882db6d8-e28b-46ba-8a30-277e86fbddf7",
     "releaseTitle": "Fetch the Bolt Cutters"
@@ -729,9 +597,7 @@
     "tracks": 14,
     "runtimeMinutes": 58,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2020,
     "mbid": "1a19e11b-106c-45fc-8452-387216ed18f7",
     "releaseTitle": "Circles"
@@ -740,9 +606,7 @@
     "tracks": 14,
     "runtimeMinutes": 56,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2020,
     "mbid": "78570bea-2a26-467c-a3db-c52723ceb394",
     "releaseTitle": "After Hours"
@@ -751,9 +615,7 @@
     "tracks": 11,
     "runtimeMinutes": 37,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2020,
     "mbid": "aa366795-92d7-4d67-91fa-6741f82a4858",
     "releaseTitle": "Future Nostalgia"
@@ -762,9 +624,7 @@
     "tracks": 17,
     "runtimeMinutes": 67,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2020,
     "mbid": "f1d08326-c23b-4b43-be3b-20b33ab10bf6",
     "releaseTitle": "folklore"
@@ -773,9 +633,7 @@
     "tracks": 19,
     "runtimeMinutes": 65,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "e95de3f4-84db-4d24-8d06-fd970576a6ef",
     "releaseTitle": "Sometimes I Might Be Introvert"
@@ -784,9 +642,7 @@
     "tracks": 11,
     "runtimeMinutes": 35,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "2ae2e504-7116-4b4f-b632-9748bb18ccd2",
     "releaseTitle": "SOUR"
@@ -795,9 +651,7 @@
     "tracks": 10,
     "runtimeMinutes": 37,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "f4e55ff9-2fe6-417c-a631-f4cf528edc61",
     "releaseTitle": "Jubilee"
@@ -806,9 +660,7 @@
     "tracks": 18,
     "runtimeMinutes": 73,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2022,
     "mbid": "6bd70eee-bd46-4738-851a-f50c19d8d6db",
     "releaseTitle": "Mr. Morale & the Big Steppers"
@@ -817,9 +669,7 @@
     "tracks": 16,
     "runtimeMinutes": 62,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2022,
     "mbid": "2c385052-5083-43a2-b1e5-36566d2ae3c0",
     "releaseTitle": "RENAISSANCE"
@@ -828,9 +678,7 @@
     "tracks": 13,
     "runtimeMinutes": 44,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2022,
     "mbid": "0dcc84fb-c592-46e9-ba92-a52bb44dd553",
     "releaseTitle": "Midnights"
@@ -839,9 +687,7 @@
     "tracks": 23,
     "runtimeMinutes": 68,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2022,
     "mbid": "1646286a-d0ad-4288-bfab-34b0fb7b22c1",
     "releaseTitle": "SOS"
@@ -850,9 +696,7 @@
     "tracks": 15,
     "runtimeMinutes": 41,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2024,
     "mbid": "e0fdb431-0109-420d-8a37-f99eaeb4d671",
     "releaseTitle": "BRAT"
@@ -861,9 +705,7 @@
     "tracks": 14,
     "runtimeMinutes": 49,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2023,
     "mbid": "eda0f5d3-44eb-42cf-bcfd-5c9f93e05c7a",
     "releaseTitle": "The Rise and Fall of a Midwest Princess"
@@ -872,9 +714,7 @@
     "tracks": 10,
     "runtimeMinutes": 42,
     "longestMinutes": 9,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2023,
     "mbid": "56dba069-d0a1-4353-b786-db6fc8269139",
     "releaseTitle": "Javelin"
@@ -883,9 +723,7 @@
     "tracks": 16,
     "runtimeMinutes": 78,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2023,
     "mbid": "247ec1bd-06a6-4faa-af47-f64d7caa1f71",
     "releaseTitle": "Did you know that there’s a tunnel under Ocean Blvd"
@@ -894,9 +732,7 @@
     "tracks": 12,
     "runtimeMinutes": 77,
     "longestMinutes": 11,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2023,
     "mbid": "a0b7b436-94db-4df6-8c5f-bc0e5932a90e",
     "releaseTitle": "72 Seasons"
@@ -905,9 +741,7 @@
     "tracks": 10,
     "runtimeMinutes": 38,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1990,
     "mbid": "12fab6b9-4eaf-33b0-963e-cae03ac332fe",
     "releaseTitle": "Heaven or Las Vegas"
@@ -916,9 +750,7 @@
     "tracks": 10,
     "runtimeMinutes": 41,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1993,
     "mbid": "46482030-ef12-319c-9c5a-5d04c39d574b",
     "releaseTitle": "Souvlaki"
@@ -927,9 +759,7 @@
     "tracks": 10,
     "runtimeMinutes": 37,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1986,
     "mbid": "d8dde278-482c-3cc8-a530-fea70476f3a5",
     "releaseTitle": "The Queen Is Dead"
@@ -938,9 +768,7 @@
     "tracks": 12,
     "runtimeMinutes": 71,
     "longestMinutes": 14,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1988,
     "mbid": "24769a99-8189-3d8c-947e-dbc8574dad5c",
     "releaseTitle": "Daydream Nation"
@@ -949,9 +777,7 @@
     "tracks": 6,
     "runtimeMinutes": 40,
     "longestMinutes": 9,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1991,
     "mbid": "e9f4b96a-94df-36be-9659-c9a811caead6",
     "releaseTitle": "Spiderland"
@@ -960,9 +786,7 @@
     "tracks": 13,
     "runtimeMinutes": 74,
     "longestMinutes": 9,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1992,
     "mbid": "6842c81d-ea77-3dfd-abf7-4323add3f4d4",
     "releaseTitle": "Selected Ambient Works 85–92"
@@ -971,9 +795,7 @@
     "tracks": 11,
     "runtimeMinutes": 64,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1998,
     "mbid": "6f9f6899-c0d3-311d-ae87-a10ae6bc53a9",
     "releaseTitle": "Mezzanine"
@@ -982,9 +804,7 @@
     "tracks": 6,
     "runtimeMinutes": 41,
     "longestMinutes": 9,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1988,
     "mbid": "fd29e2cd-9bd7-32c6-adf9-ce80ab1cadfc",
     "releaseTitle": "Spirit of Eden"
@@ -993,9 +813,7 @@
     "tracks": 23,
     "runtimeMinutes": 66,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2002,
     "mbid": "8183834a-6c8a-39ef-a7bc-a82f79b929e9",
     "releaseTitle": "Geogaddi"
@@ -1004,9 +822,7 @@
     "tracks": 18,
     "runtimeMinutes": 62,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2000,
     "mbid": "28438e4f-3710-459f-a332-a1eba9dd1f26",
     "releaseTitle": "Since I Left You"
@@ -1015,9 +831,7 @@
     "tracks": 13,
     "runtimeMinutes": 64,
     "longestMinutes": 9,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1996,
     "mbid": "4b2186f5-ff00-3227-ae11-783ba93e1089",
     "releaseTitle": "Endtroducing....."
@@ -1026,9 +840,7 @@
     "tracks": 10,
     "runtimeMinutes": 72,
     "longestMinutes": 10,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1999,
     "mbid": "62b427b8-1c52-34e7-b250-da2aa3e44860",
     "releaseTitle": "Ágætis byrjun"
@@ -1037,9 +849,7 @@
     "tracks": 12,
     "runtimeMinutes": 37,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1997,
     "mbid": "dfb85157-313b-3f5f-8739-a5162bcb6345",
     "releaseTitle": "Either/Or"
@@ -1048,9 +858,7 @@
     "tracks": 10,
     "runtimeMinutes": 52,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1994,
     "mbid": "ea29c347-696f-3165-986d-7bad1394b178",
     "releaseTitle": "Grace"
@@ -1059,9 +867,7 @@
     "tracks": 16,
     "runtimeMinutes": 64,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2010,
     "mbid": "bf306022-c851-449d-a619-7864caddf5c7",
     "releaseTitle": "The Suburbs"
@@ -1070,9 +876,7 @@
     "tracks": 10,
     "runtimeMinutes": 52,
     "longestMinutes": 9,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2009,
     "mbid": "99f7d50f-6b7c-3fd8-aa75-4b97b61970e5",
     "releaseTitle": "Hospice"
@@ -1081,9 +885,7 @@
     "tracks": 9,
     "runtimeMinutes": 37,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2007,
     "mbid": "187935b5-a0a4-3e6f-9684-48b67a5190a1",
     "releaseTitle": "For Emma, Forever Ago"
@@ -1092,9 +894,7 @@
     "tracks": 11,
     "runtimeMinutes": 49,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2002,
     "mbid": "e7227840-5ef2-3813-af26-15dab34e1a51",
     "releaseTitle": "Turn On the Bright Lights"
@@ -1103,9 +903,7 @@
     "tracks": 9,
     "runtimeMinutes": 56,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2007,
     "mbid": "5cbcdd9f-4b7d-3b3c-b9f2-6b0e75971157",
     "releaseTitle": "Sound of Silver"
@@ -1114,9 +912,7 @@
     "tracks": 11,
     "runtimeMinutes": 55,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2009,
     "mbid": "b059890c-d415-3e65-aaed-52c810565922",
     "releaseTitle": "Merriweather Post Pavilion"
@@ -1125,9 +921,7 @@
     "tracks": 11,
     "runtimeMinutes": 37,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "1834b1fc-5dd9-4f57-b8b6-d4b7ce056831",
     "releaseTitle": "The Long and Short of It"
@@ -1136,9 +930,7 @@
     "tracks": 4,
     "runtimeMinutes": 42,
     "longestMinutes": 17,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1978,
     "mbid": "5fdd6ba8-83c1-3a87-b378-d5f61dec5ddd",
     "releaseTitle": "Ambient 1: Music for Airports"
@@ -1147,9 +939,7 @@
     "tracks": 15,
     "runtimeMinutes": 45,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2011,
     "mbid": "4fc4a789-7a5d-4c2a-ab57-c3ddf51646c9",
     "releaseTitle": "An Empty Bliss Beyond This World"
@@ -1158,9 +948,7 @@
     "tracks": 12,
     "runtimeMinutes": 41,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2016,
     "mbid": "f39fcefa-6489-4f50-84c8-265546584f14",
     "releaseTitle": "Everywhere at the End of Time"
@@ -1169,9 +957,7 @@
     "tracks": 10,
     "runtimeMinutes": 31,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1976,
     "mbid": "c062737f-a5af-4119-84a6-d8b105801f75",
     "releaseTitle": "Mother Earth’s Plantasia"
@@ -1180,9 +966,7 @@
     "tracks": 1,
     "runtimeMinutes": 57,
     "longestMinutes": 57,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1978,
     "mbid": "4885c9c3-5026-3bc6-a5bc-1d7ac896dab1",
     "releaseTitle": "Music for 18 Musicians"
@@ -1191,9 +975,7 @@
     "tracks": 3,
     "runtimeMinutes": 59,
     "longestMinutes": 29,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1984,
     "mbid": "88b07bcb-9337-3ca5-9245-760a84b10996",
     "releaseTitle": "Structures From Silence"
@@ -1202,9 +984,7 @@
     "tracks": 7,
     "runtimeMinutes": 60,
     "longestMinutes": 15,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2013,
     "mbid": "8a061d0e-fa0c-4571-91ff-8bc3911b6428",
     "releaseTitle": "Sunbather"
@@ -1213,9 +993,7 @@
     "tracks": 13,
     "runtimeMinutes": 85,
     "longestMinutes": 11,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2008,
     "mbid": "bb449522-eefd-3d7e-b712-b2cf7e9de0b1",
     "releaseTitle": "DEATHCONSCIOUSNESS"
@@ -1224,9 +1002,7 @@
     "tracks": 2,
     "runtimeMinutes": 38,
     "longestMinutes": 21,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1997,
     "mbid": "01d06c6e-a4e6-3d8b-8a45-42a598fe87d7",
     "releaseTitle": "F♯ A♯ ∞"
@@ -1235,9 +1011,7 @@
     "tracks": 4,
     "runtimeMinutes": 87,
     "longestMinutes": 23,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2000,
     "mbid": "3822abb6-ca53-3ae1-a4ec-7718cb321e9b",
     "releaseTitle": "Lift Yr. Skinny Fists Like Antennas to Heaven!"
@@ -1246,9 +1020,7 @@
     "tracks": 20,
     "runtimeMinutes": 66,
     "longestMinutes": 9,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2001,
     "mbid": "f478fad9-a746-3625-9f14-bc4a74918c0e",
     "releaseTitle": "the Glow, pt. 2"
@@ -1257,9 +1029,7 @@
     "tracks": 10,
     "runtimeMinutes": 71,
     "longestMinutes": 16,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2018,
     "mbid": "eeab54c6-ad8d-40c9-b595-87bae6a42397",
     "releaseTitle": "Twin Fantasy (Face to Face)"
@@ -1268,9 +1038,7 @@
     "tracks": 12,
     "runtimeMinutes": 53,
     "longestMinutes": 13,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2004,
     "mbid": "264f585d-9a28-37b7-88b3-d8e090b4d2e7",
     "releaseTitle": "Sung Tongs"
@@ -1279,9 +1047,7 @@
     "tracks": 12,
     "runtimeMinutes": 55,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2010,
     "mbid": "f382cd44-9195-46ce-9362-dadbe16cefe9",
     "releaseTitle": "Black Sands"
@@ -1290,9 +1056,7 @@
     "tracks": 12,
     "runtimeMinutes": 62,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2017,
     "mbid": "d9a5aa9a-6e35-47b1-b74e-b83cb5b3beed",
     "releaseTitle": "Migration"
@@ -1301,9 +1065,7 @@
     "tracks": 8,
     "runtimeMinutes": 60,
     "longestMinutes": 12,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2013,
     "mbid": "1c58a37a-24dc-493d-a40e-227ba1523d35",
     "releaseTitle": "Immunity"
@@ -1312,9 +1074,7 @@
     "tracks": 9,
     "runtimeMinutes": 62,
     "longestMinutes": 12,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2018,
     "mbid": "7b49f37f-06a6-4c71-970f-c1905c19906f",
     "releaseTitle": "Singularity"
@@ -1323,9 +1083,7 @@
     "tracks": 7,
     "runtimeMinutes": 35,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2012,
     "mbid": "025f705a-75db-46b8-a766-858165054a3f",
     "releaseTitle": "Movement"
@@ -1334,9 +1092,7 @@
     "tracks": 11,
     "runtimeMinutes": 63,
     "longestMinutes": 10,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1998,
     "mbid": "58726780-ad15-3b77-8da8-4baa681862e4",
     "releaseTitle": "LP5"
@@ -1345,9 +1101,7 @@
     "tracks": 8,
     "runtimeMinutes": 42,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2010,
     "mbid": "97fe625f-49f4-41b5-a4e1-95c6fb7444ba",
     "releaseTitle": "Returnal"
@@ -1356,9 +1110,7 @@
     "tracks": 10,
     "runtimeMinutes": 43,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2013,
     "mbid": "87bc3567-325f-4032-9ad7-ac4018b22a90",
     "releaseTitle": "R Plus Seven"
@@ -1367,9 +1119,7 @@
     "tracks": 17,
     "runtimeMinutes": 46,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2010,
     "mbid": "ddae2c76-1433-4a9a-be05-3447bda75eee",
     "releaseTitle": "Cosmogramma"
@@ -1378,9 +1128,7 @@
     "tracks": 19,
     "runtimeMinutes": 38,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2014,
     "mbid": "a1d4a471-bae9-4d0c-82d5-751ce37a5793",
     "releaseTitle": "You’re Dead!"
@@ -1389,9 +1137,7 @@
     "tracks": 10,
     "runtimeMinutes": 35,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2015,
     "mbid": "a2feaa87-54bf-4afd-92dc-9a07a96a01e6",
     "releaseTitle": "another eternity"
@@ -1400,9 +1146,7 @@
     "tracks": 9,
     "runtimeMinutes": 41,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "6dad7139-7cd5-41bc-b7fc-6bf20fc1155a",
     "releaseTitle": "Afrique victime"
@@ -1411,9 +1155,7 @@
     "tracks": 16,
     "runtimeMinutes": 46,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1998,
     "mbid": "24a451c9-a8f3-33f9-a4fc-5e2d00cb7816",
     "releaseTitle": "Clandestino"
@@ -1422,9 +1164,7 @@
     "tracks": 14,
     "runtimeMinutes": 59,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1997,
     "mbid": "32bbab8e-02c0-30d2-9e23-a19739864b84",
     "releaseTitle": "Buena Vista Social Club"
@@ -1433,9 +1173,7 @@
     "tracks": 11,
     "runtimeMinutes": 44,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2020,
     "mbid": "b96fd011-b59f-46f2-8ed5-1b970923908f",
     "releaseTitle": "Miss Colombia"
@@ -1444,9 +1182,7 @@
     "tracks": 9,
     "runtimeMinutes": 34,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1983,
     "mbid": "33eaf398-1164-32e3-9055-3bcbff8f3b12",
     "releaseTitle": "Clics modernos"
@@ -1455,9 +1191,7 @@
     "tracks": 10,
     "runtimeMinutes": 31,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1971,
     "mbid": "5da13507-7e60-3dec-b2e7-0e75dba03997",
     "releaseTitle": "Construção"
@@ -1466,9 +1200,7 @@
     "tracks": 12,
     "runtimeMinutes": 40,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "9700de59-1397-4375-ba4b-058e094e5f7a",
     "releaseTitle": "Collapsed in Sunbeams"
@@ -1477,9 +1209,7 @@
     "tracks": 14,
     "runtimeMinutes": 59,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "e2cc165d-b935-4e7c-8728-77cf01ab21ed",
     "releaseTitle": "Nurture"
@@ -1488,9 +1218,7 @@
     "tracks": 8,
     "runtimeMinutes": 42,
     "longestMinutes": 10,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "2ef2d793-4fe4-4947-a476-828ccfad19ad",
     "releaseTitle": "Cavalcade"
@@ -1499,9 +1227,7 @@
     "tracks": 11,
     "runtimeMinutes": 55,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "1cda298d-bffd-40e5-b4b7-a5fc35a3e5a1",
     "releaseTitle": "Bright Green Field"
@@ -1510,9 +1236,7 @@
     "tracks": 6,
     "runtimeMinutes": 35,
     "longestMinutes": 10,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "968b13bb-026b-410e-831e-a7bb7418ea60",
     "releaseTitle": "For the First Time"
@@ -1521,9 +1245,7 @@
     "tracks": 10,
     "runtimeMinutes": 41,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "297db407-0049-42c3-8640-e05174f3b5b8",
     "releaseTitle": "Ignorance"
@@ -1532,9 +1254,7 @@
     "tracks": 12,
     "runtimeMinutes": 44,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "2ae8fedc-5287-422e-998b-c1f38b81fb12",
     "releaseTitle": "Sling"
@@ -1543,9 +1263,7 @@
     "tracks": 11,
     "runtimeMinutes": 46,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "5cc3fbf0-bfcd-4b2d-9242-c353626764e6",
     "releaseTitle": "Home Video"
@@ -1554,9 +1272,7 @@
     "tracks": 14,
     "runtimeMinutes": 39,
     "longestMinutes": 3,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2022,
     "mbid": "0e68df76-a5fc-4d70-9ff6-e71e2ad83330",
     "releaseTitle": "Blue Rev"
@@ -1565,9 +1281,7 @@
     "tracks": 20,
     "runtimeMinutes": 80,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2022,
     "mbid": "d705a3ed-be7a-459c-ac74-58cddaf98576",
     "releaseTitle": "Dragon New Warm Mountain I Believe in You"
@@ -1576,9 +1290,7 @@
     "tracks": 10,
     "runtimeMinutes": 59,
     "longestMinutes": 13,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2022,
     "mbid": "d622ed70-ccc3-4658-8a0a-b7a2d577c28d",
     "releaseTitle": "Ants From Up There"
@@ -1587,9 +1299,7 @@
     "tracks": 10,
     "runtimeMinutes": 39,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2022,
     "mbid": "d9ca78a8-e6d1-442c-bad1-4e5f26542111",
     "releaseTitle": "Hellfire"
@@ -1598,9 +1308,7 @@
     "tracks": 8,
     "runtimeMinutes": 32,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2022,
     "mbid": "4d49427b-f9d9-46f6-9922-5e9499433880",
     "releaseTitle": "Cool It Down"
@@ -1609,9 +1317,7 @@
     "tracks": 13,
     "runtimeMinutes": 44,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2020,
     "mbid": "972644cd-431d-4001-8913-0b59b975cfbc",
     "releaseTitle": "SAWAYAMA"
@@ -1620,9 +1326,7 @@
     "tracks": 13,
     "runtimeMinutes": 51,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2020,
     "mbid": "cbf252c7-bb3f-484f-825e-fc2a42b55849",
     "releaseTitle": "Set My Heart on Fire Immediately"
@@ -1631,9 +1335,7 @@
     "tracks": 13,
     "runtimeMinutes": 48,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2012,
     "mbid": "3f3a6d95-326e-4384-80b0-0744f20f24ff",
     "releaseTitle": "Visions"
@@ -1642,9 +1344,7 @@
     "tracks": 9,
     "runtimeMinutes": 40,
     "longestMinutes": 9,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2018,
     "mbid": "e11aa3a6-9820-483c-98f8-603b5823178b",
     "releaseTitle": "OIL OF EVERY PEARL’S UN‐INSIDES"
@@ -1653,9 +1353,7 @@
     "tracks": 10,
     "runtimeMinutes": 23,
     "longestMinutes": 3,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2019,
     "mbid": "9bbc8220-9f72-4595-a0f7-55dfdbab569a",
     "releaseTitle": "1000 gecs (instrumentals)"
@@ -1664,9 +1362,7 @@
     "tracks": 10,
     "runtimeMinutes": 37,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2020,
     "mbid": "79bab2d9-d118-4d17-8693-92d9a7fc4a66",
     "releaseTitle": "Orca"
@@ -1675,9 +1371,7 @@
     "tracks": 10,
     "runtimeMinutes": 44,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2020,
     "mbid": "22d131b0-4de5-4cd8-a07f-e30555769934",
     "releaseTitle": "Color Theory"
@@ -1686,9 +1380,7 @@
     "tracks": 14,
     "runtimeMinutes": 57,
     "longestMinutes": 9,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2002,
     "mbid": "c6881bae-1bce-3e06-bb3d-e57c2670e16c",
     "releaseTitle": "The Private Press"
@@ -1697,9 +1389,7 @@
     "tracks": 31,
     "runtimeMinutes": 44,
     "longestMinutes": 3,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2006,
     "mbid": "6b78c33a-64c4-3472-99e9-be45a392acb4",
     "releaseTitle": "Donuts"
@@ -1708,9 +1398,7 @@
     "tracks": 14,
     "runtimeMinutes": 64,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2005,
     "mbid": "bd62a5df-6643-3aef-b129-9d4e6e296022",
     "releaseTitle": "Modal Soul"
@@ -1719,9 +1407,7 @@
     "tracks": 15,
     "runtimeMinutes": 62,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2003,
     "mbid": "2e52bd6a-53e6-325c-925b-19eaa449db44",
     "releaseTitle": "Metaphorical Music"
@@ -1730,9 +1416,7 @@
     "tracks": 24,
     "runtimeMinutes": 63,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2000,
     "mbid": "c3a6dd79-a28d-3280-931c-42a0c6ac9b42",
     "releaseTitle": "The Unseen"
@@ -1741,9 +1425,7 @@
     "tracks": 17,
     "runtimeMinutes": 60,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2014,
     "mbid": "6b9a9e04-abd7-4666-86ba-bb220ef4c3b2",
     "releaseTitle": "Piñata"
@@ -1752,9 +1434,7 @@
     "tracks": 15,
     "runtimeMinutes": 46,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2019,
     "mbid": "148c7725-95f1-424c-bee8-84d5f1d24c49",
     "releaseTitle": "Bandana"
@@ -1763,9 +1443,7 @@
     "tracks": 15,
     "runtimeMinutes": 49,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2004,
     "mbid": "ec84ab32-eb41-3d91-a099-7a01c72f21d2",
     "releaseTitle": "MM..FOOD"
@@ -1774,9 +1452,7 @@
     "tracks": 19,
     "runtimeMinutes": 58,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1999,
     "mbid": "66f1ac02-2eb6-31dc-ab33-6eaa603f41cd",
     "releaseTitle": "Operation: Doomsday"
@@ -1785,9 +1461,7 @@
     "tracks": 17,
     "runtimeMinutes": 57,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2003,
     "mbid": "c9c53dc7-fe1a-35ba-84e3-bb66e8318ee9",
     "releaseTitle": "Vaudeville Villain"
@@ -1796,9 +1470,7 @@
     "tracks": 12,
     "runtimeMinutes": 41,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2015,
     "mbid": "5613f475-9235-49cd-bcfb-d69c196d91a7",
     "releaseTitle": "Adventure"
@@ -1807,9 +1479,7 @@
     "tracks": 8,
     "runtimeMinutes": 37,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2014,
     "mbid": "b4eab0c5-3d27-411f-b2b7-a03a30ced66b",
     "releaseTitle": "Awake"
@@ -1818,9 +1488,7 @@
     "tracks": 10,
     "runtimeMinutes": 51,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2011,
     "mbid": "2761652b-4e8b-4e94-bb42-0f42f3998d54",
     "releaseTitle": "Dive"
@@ -1829,9 +1497,7 @@
     "tracks": 12,
     "runtimeMinutes": 58,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2014,
     "mbid": "6df00711-624a-4960-9f15-39baf9332cbb",
     "releaseTitle": "Worlds"
@@ -1840,9 +1506,7 @@
     "tracks": 13,
     "runtimeMinutes": 49,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2014,
     "mbid": "a7fcb5d4-4ae6-4a29-9e0f-2a7c678357d1",
     "releaseTitle": "In Return (Instrumentals)"
@@ -1851,9 +1515,7 @@
     "tracks": 16,
     "runtimeMinutes": 60,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2017,
     "mbid": "724699f1-9153-4c72-9ac4-cbf2d598582b",
     "releaseTitle": "A Moment Apart"
@@ -1862,9 +1524,7 @@
     "tracks": 16,
     "runtimeMinutes": 61,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2016,
     "mbid": "325b927d-72df-4e71-a5f9-7c717f72fb42",
     "releaseTitle": "Skin"
@@ -1873,9 +1533,7 @@
     "tracks": 11,
     "runtimeMinutes": 46,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2014,
     "mbid": "75f62ce7-2b19-4e54-8e53-c043eb847650",
     "releaseTitle": "ZABA"
@@ -1884,9 +1542,7 @@
     "tracks": 15,
     "runtimeMinutes": 15,
     "longestMinutes": 1,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2018,
     "mbid": "fa186762-6114-452b-8d89-a7c7c7c8b400",
     "releaseTitle": "Whack World"
@@ -1895,9 +1551,7 @@
     "tracks": 16,
     "runtimeMinutes": 61,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2016,
     "mbid": "4be291f2-4faf-4fe5-b60f-4515e08ada99",
     "releaseTitle": "Malibu"
@@ -1906,9 +1560,7 @@
     "tracks": 15,
     "runtimeMinutes": 47,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2018,
     "mbid": "57561634-f7bb-4e27-aa14-16d0ff79a001",
     "releaseTitle": "Isolation"
@@ -1917,9 +1569,7 @@
     "tracks": 11,
     "runtimeMinutes": 35,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2018,
     "mbid": "a32980ce-a8cd-4472-9e3c-0101236f21a1",
     "releaseTitle": "Room 25"
@@ -1928,9 +1578,7 @@
     "tracks": 16,
     "runtimeMinutes": 49,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2018,
     "mbid": "a1ee0d2c-2c29-43d0-836f-53a26ff422dc",
     "releaseTitle": "Negro Swan"
@@ -1939,9 +1587,7 @@
     "tracks": 10,
     "runtimeMinutes": 45,
     "longestMinutes": 10,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2017,
     "mbid": "ba660007-8e88-4301-ba89-5574d06d29cc",
     "releaseTitle": "Freudian"
@@ -1950,9 +1596,7 @@
     "tracks": 20,
     "runtimeMinutes": 57,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "c89e9cff-c0c9-4e34-95e7-185056956caf",
     "releaseTitle": "OFFLINE!"
@@ -1961,9 +1605,7 @@
     "tracks": 19,
     "runtimeMinutes": 47,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2018,
     "mbid": "4dca0a1a-c7a4-453a-8ae1-543cae89c5df",
     "releaseTitle": "Veteran"
@@ -1972,9 +1614,7 @@
     "tracks": 15,
     "runtimeMinutes": 25,
     "longestMinutes": 3,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2018,
     "mbid": "9ba97882-489e-41c1-a0b4-a7c7749716e7",
     "releaseTitle": "Some Rap Songs"
@@ -1983,9 +1623,7 @@
     "tracks": 10,
     "runtimeMinutes": 30,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2014,
     "mbid": "a2499c0a-6c87-413c-9f4f-f08a67ab4441",
     "releaseTitle": "bury me at makeout creek"
@@ -1994,9 +1632,7 @@
     "tracks": 11,
     "runtimeMinutes": 31,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2016,
     "mbid": "de3537cf-8dac-475a-b456-42227e314d7e",
     "releaseTitle": "Puberty 2"
@@ -2005,9 +1641,7 @@
     "tracks": 14,
     "runtimeMinutes": 33,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2018,
     "mbid": "18564a20-d557-4f7c-81e7-8d1d40a1be55",
     "releaseTitle": "Be the Cowboy"
@@ -2016,9 +1650,7 @@
     "tracks": 12,
     "runtimeMinutes": 43,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "03e8da57-fd08-4864-89e7-4919ddfe4735",
     "releaseTitle": "Little Oblivions"
@@ -2027,9 +1659,7 @@
     "tracks": 13,
     "runtimeMinutes": 43,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2019,
     "mbid": "b55e7a4f-cd74-47cc-a40b-60b968c5a6ea",
     "releaseTitle": "Beware of the Dogs"
@@ -2038,9 +1668,7 @@
     "tracks": 12,
     "runtimeMinutes": 43,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2019,
     "mbid": "f480ab60-a5c1-4472-8789-393d0b0e4a7a",
     "releaseTitle": "U.F.O.F."
@@ -2049,9 +1677,7 @@
     "tracks": 11,
     "runtimeMinutes": 42,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2017,
     "mbid": "3fd9b616-15ec-4a3d-81df-866bd9942202",
     "releaseTitle": "Capacity"
@@ -2060,9 +1686,7 @@
     "tracks": 11,
     "runtimeMinutes": 44,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2017,
     "mbid": "0dac7ff9-b4d1-423e-bf6b-7d194abb0e14",
     "releaseTitle": "Stranger in the Alps"
@@ -2071,9 +1695,7 @@
     "tracks": 10,
     "runtimeMinutes": 48,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2018,
     "mbid": "4206db7f-7de6-4e0c-9619-2e0b50a3a3fa",
     "releaseTitle": "Historian"
@@ -2082,9 +1704,7 @@
     "tracks": 6,
     "runtimeMinutes": 22,
     "longestMinutes": 4,
-    "types": [
-      "EP"
-    ],
+    "types": ["EP"],
     "releaseYear": 2018,
     "mbid": "93ac0ca3-6e5c-4a97-98ed-c17c1defffca",
     "releaseTitle": "boygenius"
@@ -2093,9 +1713,7 @@
     "tracks": 12,
     "runtimeMinutes": 42,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2023,
     "mbid": "1339f18d-220a-4405-8ae9-e52993b1ef70",
     "releaseTitle": "the record"
@@ -2104,9 +1722,7 @@
     "tracks": 11,
     "runtimeMinutes": 43,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2015,
     "mbid": "a903a977-5932-4cc2-a064-57a596658b3d",
     "releaseTitle": "In Colour"
@@ -2115,9 +1731,7 @@
     "tracks": 14,
     "runtimeMinutes": 56,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2017,
     "mbid": "065cf7e0-83b8-4946-96d4-f2346df3fcbb",
     "releaseTitle": "New Energy"
@@ -2126,9 +1740,7 @@
     "tracks": 10,
     "runtimeMinutes": 45,
     "longestMinutes": 10,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2003,
     "mbid": "cf688036-4ffa-36f5-ab81-9c7efecf63cd",
     "releaseTitle": "Rounds"
@@ -2137,9 +1749,7 @@
     "tracks": 13,
     "runtimeMinutes": 51,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2007,
     "mbid": "fddedc4f-7a2e-3d7d-9ec5-1705c416f3f4",
     "releaseTitle": "Untrue"
@@ -2148,9 +1758,7 @@
     "tracks": 11,
     "runtimeMinutes": 49,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2008,
     "mbid": "163339ab-813b-3d29-bba8-e1d5acf63cab",
     "releaseTitle": "Third"
@@ -2159,9 +1767,7 @@
     "tracks": 14,
     "runtimeMinutes": 61,
     "longestMinutes": 10,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2001,
     "mbid": "48117b90-a16e-34ca-a514-19c702df1158",
     "releaseTitle": "Discovery"
@@ -2170,9 +1776,7 @@
     "tracks": 10,
     "runtimeMinutes": 35,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2019,
     "mbid": "12eff34f-f0a1-474e-a746-23dc70c99fbf",
     "releaseTitle": "Good Faith"
@@ -2181,9 +1785,7 @@
     "tracks": 13,
     "runtimeMinutes": 42,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2017,
     "mbid": "d9482256-62b0-4409-b60f-9f52ff00ea4b",
     "releaseTitle": "Brutalism"
@@ -2192,9 +1794,7 @@
     "tracks": 9,
     "runtimeMinutes": 43,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2019,
     "mbid": "c65fb96b-08dc-44b4-b0ca-3576317b5513",
     "releaseTitle": "Schlagenheim"
@@ -2203,9 +1803,7 @@
     "tracks": 11,
     "runtimeMinutes": 40,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2019,
     "mbid": "84c01ae7-82e5-4965-a5b6-7aeaf539f85c",
     "releaseTitle": "Dogrel"
@@ -2214,9 +1812,7 @@
     "tracks": 12,
     "runtimeMinutes": 42,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2018,
     "mbid": "45003bef-d379-441d-b246-358f0b78985c",
     "releaseTitle": "Joy as an Act of Resistance."
@@ -2225,9 +1821,7 @@
     "tracks": 9,
     "runtimeMinutes": 45,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2020,
     "mbid": "43ca5aa6-92de-47e9-8f0b-9112e4881426",
     "releaseTitle": "The New Abnormal"
@@ -2236,9 +1830,7 @@
     "tracks": 10,
     "runtimeMinutes": 45,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2022,
     "mbid": "aa2f908a-5aba-40c1-a198-3d0ad4f43486",
     "releaseTitle": "Skinty Fia"
@@ -2247,9 +1839,7 @@
     "tracks": 14,
     "runtimeMinutes": 47,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "da9a2af4-e97d-43aa-92a9-f8e6c0eab37d",
     "releaseTitle": "CRAWLER"
@@ -2258,9 +1848,7 @@
     "tracks": 8,
     "runtimeMinutes": 64,
     "longestMinutes": 14,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2007,
     "mbid": "97c06f4a-0206-3547-b5f4-c44be9334bc1",
     "releaseTitle": "Colors"
@@ -2269,9 +1857,7 @@
     "tracks": 7,
     "runtimeMinutes": 50,
     "longestMinutes": 13,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2009,
     "mbid": "defcc444-7255-320d-bf21-888eb4d53ff9",
     "releaseTitle": "Crack the Skye"
@@ -2280,9 +1866,7 @@
     "tracks": 8,
     "runtimeMinutes": 67,
     "longestMinutes": 12,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2001,
     "mbid": "1f4a9f6f-9621-3e46-977d-8503e8386768",
     "releaseTitle": "Blackwater Park"
@@ -2291,9 +1875,7 @@
     "tracks": 12,
     "runtimeMinutes": 75,
     "longestMinutes": 17,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2008,
     "mbid": "3f702793-d03a-3eff-9870-4759bda52e0f",
     "releaseTitle": "The Way of All Flesh"
@@ -2302,9 +1884,7 @@
     "tracks": 13,
     "runtimeMinutes": 79,
     "longestMinutes": 11,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2001,
     "mbid": "02f79295-21e1-34cc-82f2-63219eec4f0a",
     "releaseTitle": "Lateralus"
@@ -2313,9 +1893,7 @@
     "tracks": 10,
     "runtimeMinutes": 61,
     "longestMinutes": 12,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2003,
     "mbid": "605124dd-0f2a-382b-a8ba-720658c1fe45",
     "releaseTitle": "De‐Loused in the Comatorium"
@@ -2324,9 +1902,7 @@
     "tracks": 11,
     "runtimeMinutes": 43,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2018,
     "mbid": "0810452a-10ba-4069-b6c0-f0fb30814aae",
     "releaseTitle": "Holy Hell"
@@ -2335,9 +1911,7 @@
     "tracks": 10,
     "runtimeMinutes": 41,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2019,
     "mbid": "a8ed767b-cb92-4c1c-bf97-147fa56b1180",
     "releaseTitle": "SOUND & FURY"
@@ -2346,9 +1920,7 @@
     "tracks": 13,
     "runtimeMinutes": 46,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2018,
     "mbid": "56713bde-f9de-4097-bbe3-41d9d7af32c4",
     "releaseTitle": "Golden Hour"
@@ -2357,9 +1929,7 @@
     "tracks": 12,
     "runtimeMinutes": 47,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2013,
     "mbid": "47e4fe0d-8be7-4bdc-b5e7-5b0409ed6afc",
     "releaseTitle": "Southeastern"
@@ -2368,9 +1938,7 @@
     "tracks": 15,
     "runtimeMinutes": 54,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2022,
     "mbid": "99bea649-be72-4e3b-a892-bce7ad6f3d3f",
     "releaseTitle": "Bronco"
@@ -2379,9 +1947,7 @@
     "tracks": 12,
     "runtimeMinutes": 40,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2018,
     "mbid": "a554e3c8-cc10-40ce-a9b1-586e3433946d",
     "releaseTitle": "See You Around"
@@ -2390,9 +1956,7 @@
     "tracks": 9,
     "runtimeMinutes": 39,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2016,
     "mbid": "4ac57a19-921e-4dca-8a0e-bbdc0a2b5240",
     "releaseTitle": "A Sailor’s Guide to Earth"
@@ -2401,9 +1965,7 @@
     "tracks": 14,
     "runtimeMinutes": 51,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1993,
     "mbid": "c2afedfb-034a-3683-ad47-e4404cd7c485",
     "releaseTitle": "Midnight Marauders"
@@ -2412,9 +1974,7 @@
     "tracks": 27,
     "runtimeMinutes": 74,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1991,
     "mbid": "0be4cdd5-ed37-3842-82ba-7f9983a34473",
     "releaseTitle": "De La Soul Is Dead"
@@ -2423,9 +1983,7 @@
     "tracks": 16,
     "runtimeMinutes": 58,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1992,
     "mbid": "c799ef0c-f038-364b-972b-51f52d794781",
     "releaseTitle": "Bizarre Ride II the Pharcyde"
@@ -2434,9 +1992,7 @@
     "tracks": 13,
     "runtimeMinutes": 65,
     "longestMinutes": 9,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1996,
     "mbid": "d1935561-e375-317b-b49b-ddbc78c52603",
     "releaseTitle": "Ridin’ Dirty"
@@ -2445,9 +2001,7 @@
     "tracks": 15,
     "runtimeMinutes": 56,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1996,
     "mbid": "672fa6be-ae6a-38a2-a0d3-6a393a3929bf",
     "releaseTitle": "ATLiens"
@@ -2456,9 +2010,7 @@
     "tracks": 15,
     "runtimeMinutes": 60,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1996,
     "mbid": "a7f852ba-08bc-36f1-92f3-4dc127f4b70a",
     "releaseTitle": "Reasonable Doubt"
@@ -2467,9 +2019,7 @@
     "tracks": 21,
     "runtimeMinutes": 106,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1987,
     "mbid": "e124668d-731c-3d2f-bd38-facf91df5e27",
     "releaseTitle": "Paid in Full"
@@ -2478,9 +2028,7 @@
     "tracks": 24,
     "runtimeMinutes": 67,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1989,
     "mbid": "5243f39c-c344-3989-a0f6-2a2f75a9d827",
     "releaseTitle": "3 Feet High and Rising"
@@ -2489,9 +2037,7 @@
     "tracks": 12,
     "runtimeMinutes": 44,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2024,
     "mbid": "32cb822c-a14e-49ce-a169-f209c5f31e0f",
     "releaseTitle": "GNX"
@@ -2500,9 +2046,7 @@
     "tracks": 14,
     "runtimeMinutes": 53,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2024,
     "mbid": "ae229bdd-2179-440c-bc78-acf0952914d4",
     "releaseTitle": "Chromakopia"
@@ -2511,9 +2055,7 @@
     "tracks": 15,
     "runtimeMinutes": 63,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2024,
     "mbid": "ff1a34ea-5589-42d5-a5a1-2b338c57c501",
     "releaseTitle": "The Auditorium, Vol. 1"
@@ -2522,9 +2064,7 @@
     "tracks": 15,
     "runtimeMinutes": 54,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2024,
     "mbid": "9c710cb4-6b20-47d7-a31a-5adb064c6c6b",
     "releaseTitle": "Imaginal Disk"
@@ -2533,9 +2073,7 @@
     "tracks": 11,
     "runtimeMinutes": 40,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2024,
     "mbid": "8ba0ce4a-5fd3-48bf-8b36-da3d58760e32",
     "releaseTitle": "Tangk"
@@ -2544,9 +2082,7 @@
     "tracks": 10,
     "runtimeMinutes": 46,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2024,
     "mbid": "eaa72e4a-0e22-471f-bc92-97fd5d93d7d3",
     "releaseTitle": "Lives Outgrown"
@@ -2555,9 +2091,7 @@
     "tracks": 10,
     "runtimeMinutes": 47,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2024,
     "mbid": "91ee3856-0ee6-467d-b01d-9d529affc9f4",
     "releaseTitle": "Only God Was Above Us"
@@ -2566,9 +2100,7 @@
     "tracks": 8,
     "runtimeMinutes": 45,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2024,
     "mbid": "87f4d5ae-5e94-4768-b8ee-f52fbabfbaa6",
     "releaseTitle": "Wall of Eyes"
@@ -2577,9 +2109,7 @@
     "tracks": 11,
     "runtimeMinutes": 48,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2011,
     "mbid": "86c8d6a2-397a-4231-af6a-6b0e198fa407",
     "releaseTitle": "Floral Shoppe"
@@ -2588,9 +2118,7 @@
     "tracks": 20,
     "runtimeMinutes": 38,
     "longestMinutes": 3,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2013,
     "mbid": "f076873c-32fc-421f-b9a3-ceb9467e906f",
     "releaseTitle": "Late Night Delight"
@@ -2599,9 +2127,7 @@
     "tracks": 13,
     "runtimeMinutes": 36,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2013,
     "mbid": "bed11da2-10d5-471d-b810-fd7f855a4d64",
     "releaseTitle": "Hit Vibes"
@@ -2610,9 +2136,7 @@
     "tracks": 14,
     "runtimeMinutes": 44,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2020,
     "mbid": "bf625f1a-fe24-44fd-9030-4ff8e4dbdcdd",
     "releaseTitle": "Modus Vivendi"
@@ -2621,9 +2145,7 @@
     "tracks": 13,
     "runtimeMinutes": 62,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "fa402a46-b4b1-40d6-8d3b-b051550eb687",
     "releaseTitle": "Isles"
@@ -2632,9 +2154,7 @@
     "tracks": 12,
     "runtimeMinutes": 38,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2020,
     "mbid": "ad20ce4b-6596-4335-b170-64452181fa1b",
     "releaseTitle": "KiCk i"
@@ -2643,9 +2163,7 @@
     "tracks": 11,
     "runtimeMinutes": 31,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2010,
     "mbid": "878037b5-613a-4b09-9c7b-2c8fa40c8b14",
     "releaseTitle": "Geidi Primes"
@@ -2654,9 +2172,7 @@
     "tracks": 14,
     "runtimeMinutes": 50,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2010,
     "mbid": "32a68832-d5d7-40d4-95e4-349ad035ece6",
     "releaseTitle": "Halfaxa"
@@ -2665,9 +2181,7 @@
     "tracks": 14,
     "runtimeMinutes": 50,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2015,
     "mbid": "cac0be2c-509f-40a9-b1ac-a70aa2243a54",
     "releaseTitle": "Art Angels"
@@ -2676,9 +2190,7 @@
     "tracks": 10,
     "runtimeMinutes": 45,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2019,
     "mbid": "ab58a63b-a5a5-4e2c-b9fd-f3312b5828a6",
     "releaseTitle": "Miss Anthropocene"
@@ -2687,9 +2199,7 @@
     "tracks": 13,
     "runtimeMinutes": 58,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2018,
     "mbid": "57d84f17-7b18-4800-b7c2-15833b468637",
     "releaseTitle": "Hive Mind"
@@ -2698,9 +2208,7 @@
     "tracks": 12,
     "runtimeMinutes": 57,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2015,
     "mbid": "e00039c9-cb40-4b18-ad39-6efc6d36331a",
     "releaseTitle": "Ego Death"
@@ -2709,9 +2217,7 @@
     "tracks": 14,
     "runtimeMinutes": 52,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2010,
     "mbid": "d87ba9d0-358e-4707-acbf-881fc66f0d65",
     "releaseTitle": "‘Plastic Beach’ Instrumentals"
@@ -2720,9 +2226,7 @@
     "tracks": 15,
     "runtimeMinutes": 51,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2005,
     "mbid": "f959a46a-a136-3134-9412-6572b23fad95",
     "releaseTitle": "Demon Days"
@@ -2731,9 +2235,7 @@
     "tracks": 22,
     "runtimeMinutes": 74,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2005,
     "mbid": "1fb75447-c513-38c4-ad8f-1bfc441aa74c",
     "releaseTitle": "Illinois"
@@ -2742,9 +2244,7 @@
     "tracks": 11,
     "runtimeMinutes": 43,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2015,
     "mbid": "21666540-83c8-4c54-9be1-0363a0848f33",
     "releaseTitle": "Carrie & Lowell"
@@ -2753,9 +2253,7 @@
     "tracks": 10,
     "runtimeMinutes": 40,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2019,
     "mbid": "7b95343d-835d-474c-bba0-0025462b36c5",
     "releaseTitle": "Two Hands"
@@ -2764,9 +2262,7 @@
     "tracks": 10,
     "runtimeMinutes": 34,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2016,
     "mbid": "f0e8f425-a941-48df-b5d7-2ceeaaf77c71",
     "releaseTitle": "22, a Million"
@@ -2775,9 +2271,7 @@
     "tracks": 13,
     "runtimeMinutes": 40,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2019,
     "mbid": "e53d381a-3b37-4154-9a6e-7d343b3e182e",
     "releaseTitle": "i,i"
@@ -2786,9 +2280,7 @@
     "tracks": 14,
     "runtimeMinutes": 68,
     "longestMinutes": 10,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2019,
     "mbid": "24fd0887-9e83-42e3-b27e-e7f89ead4c03",
     "releaseTitle": "NFR!"
@@ -2797,9 +2289,7 @@
     "tracks": 9,
     "runtimeMinutes": 39,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2019,
     "mbid": "5d78819e-18b5-4d1a-a286-d816ce868044",
     "releaseTitle": "MAGDALENE"
@@ -2808,9 +2298,7 @@
     "tracks": 10,
     "runtimeMinutes": 41,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2014,
     "mbid": "c390b47b-71c0-461d-b563-e5344b4f84e5",
     "releaseTitle": "LP1"
@@ -2819,9 +2307,7 @@
     "tracks": 10,
     "runtimeMinutes": 35,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2019,
     "mbid": "c41347b7-c93c-42d8-825b-529c7de0bed2",
     "releaseTitle": "Grey Area"
@@ -2830,9 +2316,7 @@
     "tracks": 10,
     "runtimeMinutes": 38,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2018,
     "mbid": "aab57d48-aa8f-48ed-bba0-c8dc56aba8ab",
     "releaseTitle": "Lush"
@@ -2841,9 +2325,7 @@
     "tracks": 10,
     "runtimeMinutes": 32,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "294e4822-77bd-499e-ae6f-4c890d79b699",
     "releaseTitle": "Valentine"
@@ -2852,9 +2334,7 @@
     "tracks": 10,
     "runtimeMinutes": 42,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "adfb59fc-f1ea-4e2c-9de9-25be31c3019d",
     "releaseTitle": "New Long Leg"
@@ -2863,9 +2343,7 @@
     "tracks": 15,
     "runtimeMinutes": 35,
     "longestMinutes": 3,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "0f06bec9-22c7-4f7d-8784-5e902096246b",
     "releaseTitle": "GLOW ON"
@@ -2874,9 +2352,7 @@
     "tracks": 14,
     "runtimeMinutes": 46,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "fda72ebb-16e5-4a19-8be5-8e41906e3c86",
     "releaseTitle": "Mercurial World"
@@ -2885,9 +2361,7 @@
     "tracks": 7,
     "runtimeMinutes": 32,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "f27e47f4-86b0-42cf-a8f5-0d5c5ffe44b8",
     "releaseTitle": "An Overview on Phenomenal Nature"
@@ -2896,9 +2370,7 @@
     "tracks": 9,
     "runtimeMinutes": 44,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1973,
     "mbid": "e626b377-74c5-3b97-8f16-8cef5e1c04ea",
     "releaseTitle": "Innervisions"
@@ -2907,9 +2379,7 @@
     "tracks": 4,
     "runtimeMinutes": 42,
     "longestMinutes": 16,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1973,
     "mbid": "322f18bb-5491-38e9-9044-c0a468651eec",
     "releaseTitle": "Head Hunters"
@@ -2918,9 +2388,7 @@
     "tracks": 6,
     "runtimeMinutes": 94,
     "longestMinutes": 27,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1970,
     "mbid": "a9e30282-5b37-3f92-b897-b9659a1a312b",
     "releaseTitle": "Bitches Brew"
@@ -2929,9 +2397,7 @@
     "tracks": 9,
     "runtimeMinutes": 46,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1959,
     "mbid": "48ec720b-2fc2-35dd-8130-5b186c4abcbc",
     "releaseTitle": "Mingus Ah Um"
@@ -2940,9 +2406,7 @@
     "tracks": 4,
     "runtimeMinutes": 39,
     "longestMinutes": 19,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1963,
     "mbid": "48070ee2-1865-3b11-ba36-360b1453a37a",
     "releaseTitle": "The Black Saint and the Sinner Lady"
@@ -2951,9 +2415,7 @@
     "tracks": 7,
     "runtimeMinutes": 38,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1959,
     "mbid": "035a7881-3e2c-39d2-b110-fe26a4de94e5",
     "releaseTitle": "Time Out"
@@ -2962,9 +2424,7 @@
     "tracks": 5,
     "runtimeMinutes": 42,
     "longestMinutes": 10,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1965,
     "mbid": "c5e5e8ad-dc89-319e-8b2d-b3ff5e59fcea",
     "releaseTitle": "Maiden Voyage"
@@ -2973,9 +2433,7 @@
     "tracks": 6,
     "runtimeMinutes": 44,
     "longestMinutes": 11,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1958,
     "mbid": "495c22f5-90b3-3e87-8be1-2c55aef3ed82",
     "releaseTitle": "Somethin’ Else"
@@ -2984,9 +2442,7 @@
     "tracks": 11,
     "runtimeMinutes": 65,
     "longestMinutes": 10,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1991,
     "mbid": "48a1839c-f4e0-3223-831f-fc36ca6ff7cf",
     "releaseTitle": "Screamadelica"
@@ -2995,9 +2451,7 @@
     "tracks": 12,
     "runtimeMinutes": 57,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1995,
     "mbid": "9fd2415f-182f-39c1-aa02-5acb36f99bef",
     "releaseTitle": "Maxinquaye"
@@ -3006,9 +2460,7 @@
     "tracks": 9,
     "runtimeMinutes": 45,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1991,
     "mbid": "8b6f133a-2fdf-3cc2-b84d-1c889adc0939",
     "releaseTitle": "Blue Lines"
@@ -3017,9 +2469,7 @@
     "tracks": 12,
     "runtimeMinutes": 52,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1995,
     "mbid": "88f69eab-8f07-343b-847c-b944ad33dfcf",
     "releaseTitle": "Different Class"
@@ -3028,9 +2478,7 @@
     "tracks": 11,
     "runtimeMinutes": 49,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1989,
     "mbid": "88b86fe0-26f5-3949-817a-8082145e704d",
     "releaseTitle": "The Stone Roses"
@@ -3039,9 +2487,7 @@
     "tracks": 6,
     "runtimeMinutes": 12,
     "longestMinutes": 3,
-    "types": [
-      "EP"
-    ],
+    "types": ["EP"],
     "releaseYear": 2023,
     "mbid": "d2b0e110-fe62-4c91-9504-5dbfbedf1374",
     "releaseTitle": "Get Up"
@@ -3050,9 +2496,7 @@
     "tracks": 13,
     "runtimeMinutes": 38,
     "longestMinutes": 3,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2023,
     "mbid": "be1d9f08-297f-4832-99cc-015003e051ae",
     "releaseTitle": "UNFORGIVEN"
@@ -3061,9 +2505,7 @@
     "tracks": 10,
     "runtimeMinutes": 49,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2010,
     "mbid": "4114f899-a9d2-48a8-b597-8a5ca8bb6847",
     "releaseTitle": "Teen Dream"
@@ -3072,9 +2514,7 @@
     "tracks": 11,
     "runtimeMinutes": 35,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2014,
     "mbid": "99c195d6-0247-48d0-83ab-640ecca7a74f",
     "releaseTitle": "Salad Days"
@@ -3083,9 +2523,7 @@
     "tracks": 24,
     "runtimeMinutes": 72,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2019,
     "mbid": "ae655e0b-e6fd-4e5d-bc5f-72364d60c4f1",
     "releaseTitle": "Oncle Jazz"
@@ -3094,9 +2532,7 @@
     "tracks": 10,
     "runtimeMinutes": 47,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2017,
     "mbid": "90a85020-515c-427e-9a59-5cc4dbcac0e3",
     "releaseTitle": "Cigarettes After Sex"
@@ -3105,9 +2541,7 @@
     "tracks": 11,
     "runtimeMinutes": 40,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2020,
     "mbid": "5ff627e4-b8a0-43af-8ee2-4d84adf4541f",
     "releaseTitle": "songs"
@@ -3116,9 +2550,7 @@
     "tracks": 1,
     "runtimeMinutes": 35,
     "longestMinutes": 35,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1996,
     "mbid": "fc38cdba-ea52-328c-aa3d-41edf8811a0c",
     "releaseTitle": "Long Season"
@@ -3127,9 +2559,7 @@
     "tracks": 12,
     "runtimeMinutes": 41,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2019,
     "mbid": "485d3241-ef02-49a4-88df-a03eaa86d9cd",
     "releaseTitle": "thank u, next"
@@ -3138,9 +2568,7 @@
     "tracks": 19,
     "runtimeMinutes": 59,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2021,
     "mbid": "6c90cb91-e615-4545-854b-6d6f10c5cb6d",
     "releaseTitle": "Planet Her"
@@ -3149,9 +2577,7 @@
     "tracks": 11,
     "runtimeMinutes": 44,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2022,
     "mbid": "1273cb92-8775-404b-bc1b-4381a8c6a5b1",
     "releaseTitle": "Being Funny in a Foreign Language"
@@ -3160,9 +2586,7 @@
     "tracks": 6,
     "runtimeMinutes": 17,
     "longestMinutes": 3,
-    "types": [
-      "EP"
-    ],
+    "types": ["EP"],
     "releaseYear": 2025,
     "mbid": "4d566dec-e72a-49b2-a48e-28ded2832fc1",
     "releaseTitle": "Fe3O4: FORWARD"
@@ -3171,9 +2595,7 @@
     "tracks": 12,
     "runtimeMinutes": 41,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2013,
     "mbid": "964773ee-faec-4c35-a8fb-b2ac15617d91",
     "releaseTitle": "Pink Tape"
@@ -3182,9 +2604,7 @@
     "tracks": 15,
     "runtimeMinutes": 63,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2004,
     "mbid": "43b19142-c9e1-390b-8214-dcb825ce00cf",
     "releaseTitle": "Instant Pig"
@@ -3193,9 +2613,7 @@
     "tracks": 27,
     "runtimeMinutes": 132,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1996,
     "mbid": "e2621417-9236-36b4-9f9e-376c416dc4b0",
     "releaseTitle": "All Eyez on Me"
@@ -3204,9 +2622,7 @@
     "tracks": 16,
     "runtimeMinutes": 67,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1995,
     "mbid": "03f3c216-bd40-322b-ac8a-254816ff5573",
     "releaseTitle": "The Infamous…"
@@ -3215,9 +2631,7 @@
     "tracks": 13,
     "runtimeMinutes": 55,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1995,
     "mbid": "6075a004-e983-3a00-8a13-50af32f0e200",
     "releaseTitle": "Liquid Swords"
@@ -3226,9 +2640,7 @@
     "tracks": 18,
     "runtimeMinutes": 74,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1995,
     "mbid": "ab981b48-9a7b-34c4-b46a-f6266317ce7c",
     "releaseTitle": "Only Built 4 Cuban Linx…"
@@ -3237,9 +2649,7 @@
     "tracks": 15,
     "runtimeMinutes": 49,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2016,
     "mbid": "88f4f8e5-ee88-4050-84ad-cf73f7c2b19a",
     "releaseTitle": "Atrocity Exhibition"
@@ -3248,9 +2658,7 @@
     "tracks": 11,
     "runtimeMinutes": 39,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2014,
     "mbid": "581d7ac8-8f1d-4d4a-a224-de9c9cd76b39",
     "releaseTitle": "Run the Jewels 2"
@@ -3259,9 +2667,7 @@
     "tracks": 13,
     "runtimeMinutes": 43,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2018,
     "mbid": "34dc9a45-487f-4ea7-8b39-3e8ad825c314",
     "releaseTitle": "TA13OO"
@@ -3270,9 +2676,7 @@
     "tracks": 20,
     "runtimeMinutes": 59,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2015,
     "mbid": "ce0c3be2-5d01-4640-9bb8-9ced890ea989",
     "releaseTitle": "Summertime ’06"
@@ -3281,9 +2685,7 @@
     "tracks": 17,
     "runtimeMinutes": 72,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1999,
     "mbid": "d6658b47-463a-390e-9417-99c818aea004",
     "releaseTitle": "Black on Both Sides"
@@ -3292,9 +2694,7 @@
     "tracks": 20,
     "runtimeMinutes": 79,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1998,
     "mbid": "248b3e39-8504-3253-97be-e6afdf6c22fa",
     "releaseTitle": "Moment of Truth"
@@ -3303,9 +2703,7 @@
     "tracks": 12,
     "runtimeMinutes": 49,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2006,
     "mbid": "e0c24b92-5192-35a7-ae44-bc9759b36a86",
     "releaseTitle": "Hell Hath No Fury"
@@ -3314,9 +2712,7 @@
     "tracks": 15,
     "runtimeMinutes": 74,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2001,
     "mbid": "3c06ec78-508f-3282-876d-a029794bab85",
     "releaseTitle": "The Cold Vein"
@@ -3325,9 +2721,7 @@
     "tracks": 19,
     "runtimeMinutes": 74,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 1997,
     "mbid": "e6e03027-2955-38b5-ba9f-2076297f8528",
     "releaseTitle": "Funcrusher Plus"
@@ -3336,9 +2730,7 @@
     "tracks": 14,
     "runtimeMinutes": 61,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2001,
     "mbid": "43f0606f-38ce-3d7c-891b-3e089cc150e0",
     "releaseTitle": "Labor Days"
@@ -3347,9 +2739,7 @@
     "tracks": 18,
     "runtimeMinutes": 65,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2003,
     "mbid": "ee563217-8183-310d-a750-4769ceca92e4",
     "releaseTitle": "The Listening"
@@ -3358,9 +2748,7 @@
     "tracks": 13,
     "runtimeMinutes": 44,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2007,
     "mbid": "e7c6c955-75f9-421f-ad1b-b50ba5d63027",
     "releaseTitle": "Paprika"
@@ -3369,9 +2757,7 @@
     "tracks": 17,
     "runtimeMinutes": 62,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2025,
     "mbid": "b3073a10-2d7c-484c-b387-e49ae629da3d",
     "releaseTitle": "DeBÍ TiRAR MáS FOToS"
@@ -3380,9 +2766,7 @@
     "tracks": 18,
     "runtimeMinutes": 60,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2025,
     "mbid": "bb3ec118-57df-4eb9-a8fe-a26a70a7dbe0",
     "releaseTitle": "LUX"
@@ -3391,9 +2775,7 @@
     "tracks": 13,
     "runtimeMinutes": 41,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2025,
     "mbid": "18cdc08c-03a1-4e55-9624-b7f9dbb968f5",
     "releaseTitle": "Let God Sort Em Out"
@@ -3402,9 +2784,7 @@
     "tracks": 14,
     "runtimeMinutes": 53,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2025,
     "mbid": "4174e53c-90e8-4630-993f-1f7466178398",
     "releaseTitle": "MAYHEM"
@@ -3413,9 +2793,7 @@
     "tracks": 12,
     "runtimeMinutes": 38,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2025,
     "mbid": "1a1e8337-cd16-40e6-b04d-e1b5801b4c89",
     "releaseTitle": "Baby"
@@ -3424,9 +2802,7 @@
     "tracks": 11,
     "runtimeMinutes": 41,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2025,
     "mbid": "9026098c-a577-4097-8274-944db1536d13",
     "releaseTitle": "Glory"
@@ -3435,9 +2811,7 @@
     "tracks": 11,
     "runtimeMinutes": 46,
     "longestMinutes": 7,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2025,
     "mbid": "3c18308c-9072-4810-b26e-0c573e46fb07",
     "releaseTitle": "Getting Killed"
@@ -3446,9 +2820,7 @@
     "tracks": 14,
     "runtimeMinutes": 47,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2025,
     "mbid": "778e2320-736e-4634-ae65-354d408c40e9",
     "releaseTitle": "Essex Honey"
@@ -3457,9 +2829,7 @@
     "tracks": 19,
     "runtimeMinutes": 58,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2025,
     "mbid": "f71e145d-6dfe-4748-9d68-a8e774ca5b20",
     "releaseTitle": "GOLLIWOG"
@@ -3468,9 +2838,7 @@
     "tracks": 12,
     "runtimeMinutes": 37,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2025,
     "mbid": "5bed2109-60ce-4c13-804a-fc04946ba7f7",
     "releaseTitle": "Bleeds"
@@ -3479,9 +2847,7 @@
     "tracks": 20,
     "runtimeMinutes": 67,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2025,
     "mbid": "15c3b397-9652-4537-a14b-7eb8489092ff",
     "releaseTitle": "Ego Death at a Bachelorette Party"
@@ -3490,9 +2856,7 @@
     "tracks": 11,
     "runtimeMinutes": 42,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2025,
     "mbid": "5e9a3ca5-82ce-47da-9409-83f6f953b4a2",
     "releaseTitle": "private music"
@@ -3501,9 +2865,7 @@
     "tracks": 13,
     "runtimeMinutes": 51,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2026,
     "mbid": "4c4eee61-da1e-4115-8eb9-07e5b671fefe",
     "releaseTitle": "you seem pretty sad for a girl so in love"
@@ -3512,9 +2874,7 @@
     "tracks": 14,
     "runtimeMinutes": 41,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2026,
     "mbid": "21159e3f-172e-43f6-aa7d-8e06a81fea49",
     "releaseTitle": "ARIRANG"
@@ -3523,9 +2883,7 @@
     "tracks": 9,
     "runtimeMinutes": 30,
     "longestMinutes": 4,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2026,
     "mbid": "ebe6e41d-3f9e-4633-b5b9-8752e31ceec7",
     "releaseTitle": "Sexistential"
@@ -3534,9 +2892,7 @@
     "tracks": 17,
     "runtimeMinutes": 78,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2026,
     "mbid": "09d6c4af-2545-468e-8b44-4d5eb3e9aa85",
     "releaseTitle": "The Great Divide"
@@ -3545,9 +2901,7 @@
     "tracks": 10,
     "runtimeMinutes": 51,
     "longestMinutes": 8,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2026,
     "mbid": "65ec81b0-acff-4dc3-bb3b-a27ec5d1a9e4",
     "releaseTitle": "With Every Breath I Take"
@@ -3556,9 +2910,7 @@
     "tracks": 9,
     "runtimeMinutes": 34,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseYear": 2026,
     "mbid": "cec81633-5419-4f92-b0ac-6e9c508a042f",
     "releaseTitle": "U"
@@ -3567,10 +2919,7 @@
     "tracks": 9,
     "runtimeMinutes": 44,
     "longestMinutes": 9,
-    "types": [
-      "Album",
-      "Soundtrack"
-    ],
+    "types": ["Album", "Soundtrack"],
     "releaseTitle": "Purple Rain",
     "releaseYear": 1984,
     "mbid": "b93a7c47-a6d4-33f2-9034-53fdd991f4ba"
@@ -3579,10 +2928,7 @@
     "tracks": 9,
     "runtimeMinutes": 50,
     "longestMinutes": 8,
-    "types": [
-      "Album",
-      "Mixtape/Street"
-    ],
+    "types": ["Album", "Mixtape/Street"],
     "releaseTitle": "House of Balloons",
     "releaseYear": 2011,
     "mbid": "6fe82196-df5d-4938-aa39-920df5b4517d"
@@ -3591,10 +2937,7 @@
     "tracks": 28,
     "runtimeMinutes": 72,
     "longestMinutes": 4,
-    "types": [
-      "Album",
-      "Compilation"
-    ],
+    "types": ["Album", "Compilation"],
     "releaseTitle": "Chillhop Essentials: Winter 2023",
     "releaseYear": 2023,
     "mbid": "8c8ec18c-f466-4996-aeaa-54a6e8d51a12"
@@ -3603,10 +2946,7 @@
     "tracks": 3,
     "runtimeMinutes": 52,
     "longestMinutes": 29,
-    "types": [
-      "Album",
-      "Live"
-    ],
+    "types": ["Album", "Live"],
     "releaseTitle": "Shakti with John McLaughlin",
     "releaseYear": 1976,
     "mbid": "d4fbe619-8eda-3529-ac2b-974613f281d1"
@@ -3615,10 +2955,7 @@
     "tracks": 4,
     "runtimeMinutes": 68,
     "longestMinutes": 26,
-    "types": [
-      "Album",
-      "Live"
-    ],
+    "types": ["Album", "Live"],
     "releaseTitle": "The Köln Concert",
     "releaseYear": 1975,
     "mbid": "516d4629-7bf3-3ac3-907a-ed9a022db840"
@@ -3627,10 +2964,7 @@
     "tracks": 14,
     "runtimeMinutes": 54,
     "longestMinutes": 5,
-    "types": [
-      "Album",
-      "Live"
-    ],
+    "types": ["Album", "Live"],
     "releaseTitle": "MTV Unplugged in New York",
     "releaseYear": 1994,
     "mbid": "fb3770f6-83fb-32b7-85c4-1f522a92287e"
@@ -3639,11 +2973,7 @@
     "tracks": 9,
     "runtimeMinutes": 47,
     "longestMinutes": 7,
-    "types": [
-      "Album",
-      "Live",
-      "Soundtrack"
-    ],
+    "types": ["Album", "Live", "Soundtrack"],
     "releaseTitle": "Stop Making Sense",
     "releaseYear": 1984,
     "mbid": "2b85ba4e-53bf-4473-87f5-59d0b53020ad"
@@ -3652,10 +2982,7 @@
     "tracks": 9,
     "runtimeMinutes": 38,
     "longestMinutes": 6,
-    "types": [
-      "Album",
-      "Live"
-    ],
+    "types": ["Album", "Live"],
     "releaseTitle": "Live at the Harlem Square Club, 1963",
     "releaseYear": 1985,
     "mbid": "1c17ea9a-97d1-33ed-930f-f4c28222d37f"
@@ -3664,10 +2991,7 @@
     "tracks": 13,
     "runtimeMinutes": 53,
     "longestMinutes": 6,
-    "types": [
-      "Album",
-      "Live"
-    ],
+    "types": ["Album", "Live"],
     "releaseTitle": "Live at Third Man Records 04/19/2014",
     "releaseYear": 2019,
     "mbid": "5d48803a-b2f0-4a22-afaa-3059ea2ff69d"
@@ -3676,10 +3000,7 @@
     "tracks": 19,
     "runtimeMinutes": 66,
     "longestMinutes": 5,
-    "types": [
-      "Album",
-      "Soundtrack"
-    ],
+    "types": ["Album", "Soundtrack"],
     "releaseTitle": "The Social Network",
     "releaseYear": 2010,
     "mbid": "68d34935-78f4-4dfc-8891-7155de2d2f6b"
@@ -3688,10 +3009,7 @@
     "tracks": 13,
     "runtimeMinutes": 40,
     "longestMinutes": 6,
-    "types": [
-      "Album",
-      "Soundtrack"
-    ],
+    "types": ["Album", "Soundtrack"],
     "releaseTitle": "Her",
     "releaseYear": 2013,
     "mbid": "b062f1b9-6cbb-48a4-8d81-95f1a3d9e399"
@@ -3700,10 +3018,7 @@
     "tracks": 10,
     "runtimeMinutes": 33,
     "longestMinutes": 5,
-    "types": [
-      "Album",
-      "Mixtape/Street"
-    ],
+    "types": ["Album", "Mixtape/Street"],
     "releaseTitle": "Telefone",
     "releaseYear": 2016,
     "mbid": "e9b2a5dc-26e2-4bf4-9993-b5ab39dff8af"
@@ -3712,10 +3027,7 @@
     "tracks": 10,
     "runtimeMinutes": 49,
     "longestMinutes": 7,
-    "types": [
-      "Album",
-      "Compilation"
-    ],
+    "types": ["Album", "Compilation"],
     "releaseTitle": "Ride on Time キャンペーン",
     "releaseYear": 1980,
     "mbid": "ce2841d9-9806-4858-9625-e20d34855668"
@@ -3724,10 +3036,7 @@
     "tracks": 23,
     "runtimeMinutes": 69,
     "longestMinutes": 5,
-    "types": [
-      "Album",
-      "Soundtrack"
-    ],
+    "types": ["Album", "Soundtrack"],
     "releaseTitle": "WOLF’S RAIN O.S.T.2",
     "releaseYear": 2004,
     "mbid": "57084d7c-27ac-3686-8e59-fd14ffe6f1b0"
@@ -3736,9 +3045,7 @@
     "tracks": 14,
     "runtimeMinutes": 54,
     "longestMinutes": 5,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseTitle": "Presence",
     "releaseYear": 2017,
     "mbid": "853efecc-3abb-4a1b-af80-f843dacf3d9a"
@@ -3747,10 +3054,7 @@
     "tracks": 8,
     "runtimeMinutes": 66,
     "longestMinutes": 16,
-    "types": [
-      "Album",
-      "Live"
-    ],
+    "types": ["Album", "Live"],
     "releaseTitle": "Colors_Live",
     "releaseYear": 2008,
     "mbid": "6a54ccfb-4865-3f3f-a58f-108a855fb644"
@@ -3759,10 +3063,7 @@
     "tracks": 19,
     "runtimeMinutes": 70,
     "longestMinutes": 7,
-    "types": [
-      "Album",
-      "Soundtrack"
-    ],
+    "types": ["Album", "Soundtrack"],
     "releaseTitle": "Drive: Original Motion Picture Soundtrack",
     "releaseYear": 2011,
     "mbid": "57dbf641-99ac-42f5-9981-5c11c0d1e48a"
@@ -3771,9 +3072,7 @@
     "tracks": 7,
     "runtimeMinutes": 21,
     "longestMinutes": 6,
-    "types": [
-      "Album"
-    ],
+    "types": ["Album"],
     "releaseTitle": "Soy Pablo",
     "releaseYear": 2018,
     "mbid": "eb33a1ae-d0cf-4f8f-8d34-0fe274b1d785"
@@ -3782,10 +3081,7 @@
     "tracks": 16,
     "runtimeMinutes": 72,
     "longestMinutes": 8,
-    "types": [
-      "Album",
-      "Soundtrack"
-    ],
+    "types": ["Album", "Soundtrack"],
     "releaseTitle": "Interstellar",
     "releaseYear": 2014,
     "mbid": "4513c7b9-854e-457f-81d6-3dbeb001beb8"
@@ -3794,10 +3090,7 @@
     "tracks": 52,
     "runtimeMinutes": 114,
     "longestMinutes": 5,
-    "types": [
-      "Album",
-      "Soundtrack"
-    ],
+    "types": ["Album", "Soundtrack"],
     "releaseTitle": "TVアニメ「メイドインアビス」オリジナルサウンドトラック",
     "releaseYear": 2017,
     "mbid": "34b98c09-ac78-4549-8ea3-bb839223afd5"
@@ -3806,10 +3099,7 @@
     "tracks": 12,
     "runtimeMinutes": 58,
     "longestMinutes": 9,
-    "types": [
-      "Album",
-      "Soundtrack"
-    ],
+    "types": ["Album", "Soundtrack"],
     "releaseTitle": "Blade Runner",
     "releaseYear": 1993,
     "mbid": "f393097a-b567-3253-9bdf-df353ee3e9e1"
