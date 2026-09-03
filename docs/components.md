@@ -154,7 +154,15 @@ panel says outright that its sliders are scenery. Do not "finish" the EQ by
 wiring it to something — there is nothing to wire it to.
 
 The LCD readout is the sourced facts from `lib/album-facts.json` — track count
-and runtime are exactly what that strip was always for. 135 of 424 albums have
+and runtime are exactly what that strip was always for — with genre pinned to
+the right-hand end, because without it the row ran out of content halfway and
+the gap read as something failing to load. The spectrum is only rendered when
+there is an audio source at all: with none it could never move, so it would be
+a dead ornament holding the best space on the display. The marquee always
+scrolls and runs **two identical copies** with identical trailing space, which
+is what makes a `-50%` loop seamless; a single copy slid out of frame and left
+the row blank for most of the cycle. The unit is centred in its panel rather
+than left-aligned. 135 of 424 albums have
 a `youtubeId`; without one the transport is replaced by an explicit note and a
 YouTube search link, the same shape as Heardle's rollover.
 

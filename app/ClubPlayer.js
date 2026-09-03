@@ -53,6 +53,9 @@ function buildReadout(album) {
   if (facts?.tracks) parts.push(`${facts.tracks} TRK`);
   if (facts?.runtimeMinutes) parts.push(`${facts.runtimeMinutes} MIN`);
   parts.push(String(album.year));
+  /* Genre earns the right-hand end of the strip. Without it the row ran out of
+     content halfway and left a gap that read as something failing to load. */
+  parts.push(album.genre.toUpperCase());
   return parts;
 }
 
@@ -251,19 +254,31 @@ export default function ClubPlayer({ album }) {
               </span>
             ))}
           </span>
-          {/* Costume. It moves only while audio is genuinely playing, so it
-              never implies analysis of a stream we cannot read. */}
-          <span
-            className={`club-player-spectrum${playing ? " active" : ""}`}
-            aria-hidden="true"
-          >
-            {Array.from({ length: 12 }).map((_, i) => (
-              <i key={i} style={{ animationDelay: `${i * 70}ms` }} />
-            ))}
-          </span>
+          {/* Costume, and only rendered where it could ever mean something: with
+              no audio source it can never move, so it would be a dead ornament
+              taking the best space on the display. It moves only while audio is
+              genuinely playing, never implying analysis of a stream we cannot
+              read. */}
+          {hasAudio && (
+            <span
+              className={`club-player-spectrum${playing ? " active" : ""}`}
+              aria-hidden="true"
+            >
+              {Array.from({ length: 12 }).map((_, i) => (
+                <i key={i} style={{ animationDelay: `${i * 70}ms` }} />
+              ))}
+            </span>
+          )}
         </div>
+        {/* Always scrolling, and doubled. A single run of short text slid out of
+            frame and left the row blank for most of the cycle; two identical
+            copies with identical trailing space make -50% a seamless loop. The
+            copy is aria-hidden so it is not announced twice. */}
         <div className="club-player-marquee">
-          <span className={playing ? "scrolling" : ""}>{marquee}</span>
+          <div className="club-player-marquee-track">
+            <span>{marquee}</span>
+            <span aria-hidden="true">{marquee}</span>
+          </div>
         </div>
       </div>
 

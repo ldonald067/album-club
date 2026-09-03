@@ -1865,7 +1865,10 @@ body {
     inset 1px 1px 0 var(--player-face-lit),
     inset -1px -1px 0 var(--player-face-dim);
   padding: 8px;
-  margin: 12px;
+  /* Centred, not left-aligned. The unit is capped at 560px and the panel it
+     sits in is much wider, so hugging the left edge left a column of empty
+     panel beside it that read as a layout bug rather than a margin. */
+  margin: 12px auto;
   max-width: 560px;
 }
 
@@ -1908,6 +1911,14 @@ body {
   flex-wrap: wrap;
 }
 
+/* The readout grows into whatever the clock and spectrum do not use. Before
+   this it hugged its content and the row ended in a gap wide enough to read as
+   something that had failed to load. */
+.club-player-readout {
+  flex: 1;
+  flex-wrap: wrap;
+}
+
 .club-player-state,
 .club-player-clock {
   font-family: var(--font-pixel), "Courier New", monospace;
@@ -1918,6 +1929,10 @@ body {
 .club-player-readout {
   display: flex;
   gap: 5px;
+}
+
+.club-player-chip:last-child {
+  margin-left: auto;
 }
 
 .club-player-chip {
@@ -1965,7 +1980,7 @@ body {
     animation: none;
     height: 9px;
   }
-  .club-player-marquee span.scrolling {
+  .club-player-marquee-track {
     animation: none;
   }
 }
@@ -1978,24 +1993,30 @@ body {
   padding-top: 5px;
 }
 
+.club-player-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: club-player-scroll 18s linear infinite;
+}
+
 .club-player-marquee span {
   display: inline-block;
   font-family: var(--font-pixel), "Courier New", monospace;
   font-size: 11px;
   letter-spacing: 1px;
   color: var(--player-lcd-ink);
+  /* Identical trailing space on both copies is what makes -50% seamless. */
+  padding-right: 3rem;
 }
 
-.club-player-marquee span.scrolling {
-  animation: club-player-scroll 14s linear infinite;
-}
-
+/* -50%, not -100%: the track holds two identical copies, so half a track is
+   exactly one loop and the text never leaves the row empty. */
 @keyframes club-player-scroll {
   from {
     transform: translateX(0);
   }
   to {
-    transform: translateX(-100%);
+    transform: translateX(-50%);
   }
 }
 
