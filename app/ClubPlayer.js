@@ -2,7 +2,10 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { getListenUrl } from "@/lib/albums";
-import { getAlbumFacts } from "@/lib/soundtrack-corner";
+/* From lib/album-facts.js, not lib/soundtrack-corner.js. Importing it from the
+   corner pulled the 348KB generator onto the home page, which is exactly what
+   that module's next/dynamic boundary exists to prevent. */
+import { getAlbumFacts } from "@/lib/album-facts";
 
 /* A 2004 media-player homage for today's album, offered as an alternative view
    of the album hero. Deliberately NOT a Winamp reproduction: no wordmark, no
