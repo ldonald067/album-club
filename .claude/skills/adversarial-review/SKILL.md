@@ -53,24 +53,44 @@ Create a temp directory for reviewer output:
 REVIEW_DIR=$(mktemp -d /tmp/adversarial-review.XXXXXX)
 ```
 
-Determine which model you are, then spawn reviewers on the opposite:
+**Build each prompt as a FILE and feed it in on stdin. Do not assemble a multi-kilobyte prompt
+inline in the shell command.**
 
-**If you are Claude** → spawn Codex reviewers via `codex exec`:
+On 2026-09-03 all three reviewers, spawned with the inline `"$(cat <<EOF … EOF)"` form and
+`2>/dev/null`, ran for twenty minutes and exited having written nothing. Re-running the same
+lenses with prompts built as files and piped on stdin worked first time. **The precise cause was
+never isolated** — a follow-up test showed the shell was _not_ mangling backticks, and a short
+inline prompt succeeds — so treat this as a robustness rule rather than a fix for a known bug:
+prompt files are inspectable after a failure, and an inline heredoc is not.
+
+Build them with something that does no shell expansion (Python, or plain `cat` concatenation
+into a file):
 
 ```sh
-codex exec --skip-git-repo-check -o "$REVIEW_DIR/skeptic.md" "prompt" 2>/dev/null
+{ cat lens.txt; echo; cat CLAUDE.md; } > "$REVIEW_DIR/prompt-skeptic.txt"
 ```
 
-Use `--profile edit` only if the reviewer needs to run tests. Default to read-only.
-Run with `run_in_background: true`, monitor via `TaskOutput` with `block: true, timeout: 600000`.
+Determine which model you are, then spawn reviewers on the opposite:
+
+**If you are Claude** → spawn Codex reviewers via `codex exec`, reading the prompt from stdin
+with `-`:
+
+```sh
+codex exec --skip-git-repo-check -s read-only \
+  -o "$REVIEW_DIR/skeptic.md" - < "$REVIEW_DIR/prompt-skeptic.txt" \
+  > "$REVIEW_DIR/skeptic.log" 2>&1
+```
 
 **If you are Codex** → spawn Claude reviewers via `claude` CLI:
 
 ```sh
-claude -p "prompt" > "$REVIEW_DIR/skeptic.md" 2>/dev/null
+claude -p "$(cat "$REVIEW_DIR/prompt-skeptic.txt")" \
+  > "$REVIEW_DIR/skeptic.md" 2> "$REVIEW_DIR/skeptic.log"
 ```
 
-Run with `run_in_background: true`.
+**Keep stderr.** Redirect it to a `.log` beside the output, never to `/dev/null` — a reviewer
+that dies needs to say why. Use `-s read-only` (or `--profile edit` only if the reviewer must
+run tests). Run with `run_in_background: true`.
 
 Name each output file after the lens: `skeptic.md`, `architect.md`, `minimalist.md`.
 
@@ -91,15 +111,20 @@ Spawn all reviewers in parallel.
 
 ## Step 4 — Verify and Synthesize Verdict
 
-Before reading reviewer output, log which CLI was used and confirm the output files exist:
+Before reading reviewer output, log which CLI was used and confirm the output files are present
+**and non-empty** — a reviewer that fails writes a zero-byte file, and `ls` alone will not tell
+you:
 
 ```sh
 echo "reviewer_cli=codex|claude"
-ls "$REVIEW_DIR"/*.md
+for f in skeptic architect minimalist; do
+  [ -s "$REVIEW_DIR/$f.md" ] && echo "$f: ok" || echo "$f: MISSING/EMPTY — see $f.log"
+done
 ```
 
-If any output file is missing or empty, note the failure in the verdict — do not silently skip
-a reviewer.
+If any output is missing or empty, read its `.log`, fix the cause, and re-run that reviewer.
+Do not silently skip one, and do not fall back to a subagent — that would run on your own model
+and defeat the entire point.
 
 Read each reviewer's output file from `$REVIEW_DIR/`. Deduplicate overlapping findings.
 Produce a single verdict:

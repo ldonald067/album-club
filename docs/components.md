@@ -185,14 +185,21 @@ Player.
 - **`onClose` has to switch the view back.** Closing Webamp's own window
   otherwise leaves the view selected with nothing on screen.
 
-**It is ~917KB minified against a home page that ships 191KB of JS**, so it is
-behind `next/dynamic` and only fetched when the view is chosen. Verified: no
-webamp chunk loads on the default view, and `dispose()` removes it from the
-body when switching away.
+**It is ~917KB minified against a home page that ships ~190KB of JS**, and
+`next/dynamic` was **not** enough: Turbopack prefetches dynamic chunks, so the
+295KB chunk went over the wire on the default view for everyone who never
+opened it. It is loaded from `/vendor/webamp.bundle.min.js` with a script tag
+instead, the same way the YouTube IFrame API is. Verified on a fresh production
+visit: nothing under `/vendor` is requested and `window.Webamp` is undefined
+until the view is selected; `dispose()` removes it from the body on the way out.
+
+To be exact, since "no bundle cost" was an overclaim: the ~150-line adapter in
+`WebampView.js` **is** in the default bundle. Only the library is deferred. That
+is a rounding error next to 917KB and not worth another dynamic boundary.
 
 The author notes that "the Winamp name, interface, and sample audio file are
-surely property of Nullsoft", which is why this is opt-in and why the Club
-Player — drawn from scratch, no Winamp artwork — remains the house player.
+surely property of Nullsoft", which is why this is opt-in rather than the site's
+default face.
 
 **The player keeps one look under every skin**, by decision — it already reads
 as period costume, so re-chroming it for Vintage would be work with no payoff.

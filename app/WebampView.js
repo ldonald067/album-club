@@ -9,8 +9,7 @@ import { getListenUrl } from "@/lib/albums";
    ATTRIBUTION AND LICENCE. The code is MIT (© Jordan Eldredge and
    contributors). Its author is explicit that "the Winamp name, interface, and
    sample audio file are surely property of Nullsoft", which is why this is an
-   opt-in view rather than the site's default face, and why our own Club Player
-   — drawn from scratch, no Winamp artwork — remains the house player.
+   opt-in view rather than the site's default face.
 
    WHAT IT CANNOT DO, stated plainly because it is the whole shape of this
    component: Webamp plays audio through the Web Audio API, which means audio
@@ -18,8 +17,8 @@ import { getListenUrl } from "@/lib/albums";
    YouTube iframe is opaque to Web Audio. So this cannot play the album of the
    day, and no wiring makes it. It opens with an empty playlist and accepts
    files the visitor drags in, which is Webamp's own native behaviour and the
-   only honest way to offer it here. The album's own audio stays with the Club
-   Player and the YouTube link beneath.
+   only honest way to offer it here. The album's own audio plays inline in the
+   default Album view instead (app/AlbumPlayback.js).
 
    WEIGHT, and why this loads from a script tag rather than an import. The
    bundle is ~917KB minified against a home page that ships ~190KB of JS in
@@ -33,25 +32,36 @@ import { getListenUrl } from "@/lib/albums";
 
 const WEBAMP_SRC = "/vendor/webamp.bundle.min.js";
 
-/** Load the UMD bundle once and hand back the global it defines. */
+/* One in-flight promise, cleared on failure. The first version looked for an
+   existing <script> and, finding one, attached fresh load/error listeners to
+   it. That is only correct while the request is still in flight: after a
+   failure the element is still in the DOM but both events have already fired,
+   so the new listeners never ran and the promise never settled. One transient
+   404 therefore turned an honest "failed" state into a spinner that hung for
+   the rest of the session. The failed tag is now removed and the cached
+   promise dropped, so switching away and back is a real retry. */
+let webampPromise = null;
+
 function loadWebamp() {
   if (window.Webamp) return Promise.resolve(window.Webamp);
+  if (webampPromise) return webampPromise;
 
-  const existing = document.querySelector(`script[src="${WEBAMP_SRC}"]`);
-  if (existing) {
-    return new Promise((resolve, reject) => {
-      existing.addEventListener("load", () => resolve(window.Webamp));
-      existing.addEventListener("error", reject);
-    });
-  }
-
-  return new Promise((resolve, reject) => {
+  webampPromise = new Promise((resolve, reject) => {
     const tag = document.createElement("script");
     tag.src = WEBAMP_SRC;
-    tag.onload = () => resolve(window.Webamp);
-    tag.onerror = reject;
+    tag.onload = () => {
+      if (window.Webamp) resolve(window.Webamp);
+      else reject(new Error("webamp bundle loaded but defined no global"));
+    };
+    tag.onerror = () => reject(new Error(`failed to load ${WEBAMP_SRC}`));
     document.head.appendChild(tag);
+  }).catch((error) => {
+    webampPromise = null;
+    document.querySelector(`script[src="${WEBAMP_SRC}"]`)?.remove();
+    throw error;
   });
+
+  return webampPromise;
 }
 
 export default function WebampView({ album, onClose }) {
@@ -113,7 +123,7 @@ export default function WebampView({ album, onClose }) {
         <a href={getListenUrl(album)} target="_blank" rel="noopener noreferrer">
           {album.title} on YouTube
         </a>
-        , or switch the view to Player to hear it here.
+        , or switch the view back to Album, where it plays inline.
       </p>
       <p className="webamp-note">
         It opens as a floating window over the page — drag it by its title bar,
@@ -122,7 +132,8 @@ export default function WebampView({ album, onClose }) {
 
       {status === "failed" && (
         <p className="webamp-note" role="alert">
-          Webamp failed to load. Switch the view back to Album or Player.
+          Webamp failed to load. Switch the view back to Album — today&apos;s
+          album still plays there.
         </p>
       )}
 

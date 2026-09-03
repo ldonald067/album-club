@@ -33,6 +33,7 @@ export default function AlbumPlayback({ album }) {
   const tickRef = useRef(null);
 
   const [ready, setReady] = useState(false);
+  const [failed, setFailed] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -42,6 +43,14 @@ export default function AlbumPlayback({ album }) {
   useEffect(() => {
     if (!hasAudio) return undefined;
     let cancelled = false;
+
+    /* The API script can be blocked outright — a content blocker, an offline
+       tab, a corporate proxy — in which case no callback of any kind fires and
+       nothing below ever runs. Ten seconds without a ready player is a failure,
+       and a link the visitor can use beats a spinner they cannot. */
+    const failTimer = setTimeout(() => {
+      if (!cancelled) setFailed(true);
+    }, 10000);
 
     function initPlayer() {
       if (cancelled || playerRef.current) return;
@@ -59,9 +68,19 @@ export default function AlbumPlayback({ album }) {
         events: {
           onReady: (event) => {
             if (cancelled) return;
+            clearTimeout(failTimer);
             event.target.setVolume(VOLUME);
             setDuration(event.target.getDuration() || 0);
             setReady(true);
+          },
+          /* A video can be deleted, made private, or have embedding disabled
+             long after its id was written into the catalog. Without this the
+             controls simply stayed disabled forever with no explanation —
+             silently killing the one capability this component exists for. */
+          onError: () => {
+            if (cancelled) return;
+            clearTimeout(failTimer);
+            setFailed(true);
           },
           onStateChange: (event) => {
             if (cancelled) return;
@@ -90,6 +109,7 @@ export default function AlbumPlayback({ album }) {
 
     return () => {
       cancelled = true;
+      clearTimeout(failTimer);
       clearInterval(tickRef.current);
       if (playerRef.current?.destroy) {
         try {
@@ -132,7 +152,10 @@ export default function AlbumPlayback({ album }) {
     setElapsed(0);
   }, []);
 
-  if (!hasAudio) {
+  /* Same fallback as an album with no id at all: whether the catalog never had
+     audio or the audio turned out to be unplayable, what the visitor needs is a
+     working way to hear the record. */
+  if (!hasAudio || failed) {
     return (
       <a
         href={getListenUrl(album)}
@@ -140,7 +163,7 @@ export default function AlbumPlayback({ album }) {
         rel="noopener noreferrer"
         className="listen-btn"
       >
-        ▶ Search on YouTube
+        ▶ {hasAudio ? "Play on YouTube" : "Search on YouTube"}
       </a>
     );
   }

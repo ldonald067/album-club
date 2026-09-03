@@ -9,9 +9,13 @@
  * from a script tag takes the bundler out of it entirely, the same way the
  * YouTube IFrame API is already loaded on this site.
  *
- * Runs as a prebuild step, so the file tracks whatever version package.json
- * resolves rather than a copy committed once and forgotten. public/vendor is
- * gitignored for the same reason.
+ * Runs on `predev` AND `prebuild`. It used to run only on prebuild, which meant
+ * a clean clone following the documented `npm install && npm run dev` served
+ * the bundle as a 404 until somebody happened to run a production build —
+ * the feature worked only on machines that had already built it once.
+ *
+ * The file tracks whatever version package.json resolves rather than a copy
+ * committed once and forgotten, which is why public/vendor is gitignored.
  */
 
 import fs from "node:fs";
@@ -26,9 +30,16 @@ const from = path.join(root, "node_modules", "webamp", "built");
 const licenceFrom = path.join(root, "licenses", "webamp-MIT-LICENSE.txt");
 const to = path.join(root, "public", "vendor");
 
+/* Fail, do not skip. Exiting 0 here meant a dependency-pruned or otherwise
+   incomplete install still produced a green `npm run build` and deployed a
+   permanent 404 behind a view the UI advertises. "Optional" describes when the
+   visitor loads the bundle, not whether the artifact has to exist. */
 if (!fs.existsSync(from)) {
-  console.error("webamp is not installed — skipping the vendor copy.");
-  process.exit(0);
+  console.error(
+    "webamp is not installed, so /vendor/webamp.bundle.min.js cannot be built.\n" +
+      "Run `npm install` — the Webamp view 404s without it.",
+  );
+  process.exit(1);
 }
 
 fs.mkdirSync(to, { recursive: true });
