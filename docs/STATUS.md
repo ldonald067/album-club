@@ -1,12 +1,21 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-08-25.
+session. Last updated: 2026-09-03.
 
 ## Handoff — read this first
 
 **Nothing is in flight.** `master` is clean, pushed, and deployed; verify with
 `GET /api/health`, which returns the running commit SHA.
+
+**2026-09-02 → 09-03 was the album-hero player stretch, and it ended with less
+code than it started.** A hand-built "Club Player" — a 2004 media-player view of
+the hero — was built, polished twice, and then **deleted**, because Webamp
+landed beside it and beat it on looks while the plain album view beat it on
+substance. What survived is the one thing it did that nothing else did: today's
+record now plays **inline in the default album hero**. The `View` dropdown is
+Album / Webamp. Two adversarial review rounds followed and both found real
+defects — see Recent work.
 
 **2026-08-20 → 08-22 was one long stretch on Soundtrack Corner and on being
 findable at all.** In order: the generated tier repaired and guarded (two faults
@@ -163,6 +172,69 @@ Node 22) runs `npm test` then `npm run build`.
   upgrade (not wired).
 
 ## Recent work (this stretch of sessions)
+
+- **The album hero learned to play, and a player was deleted to get there
+  (2026-09-02 → 09-03).** Built, then removed, in that order.
+
+  **The Club Player** was a third view of the hero styled as a 2004 media
+  player: LCD strip, scrolling marquee, transport, spectrum, and an EQ panel
+  with a graph window and five presets. Real: play/pause/stop, seek, volume and
+  the clock, all on the YouTube IFrame API. Costume, and labelled as such: the
+  spectrum and the equaliser, because a cross-origin YouTube iframe is opaque to
+  Web Audio and the API has no EQ.
+
+  **Then it was deleted (2026-09-03).** It could not play on the **68% of days**
+  whose album has no video id, over half its height shaped nothing, and it
+  replaced real cover art with an emoji. Once Webamp existed it sat between two
+  neighbours that each did its job better. `AlbumPlayback` now puts play/pause,
+  stop, a clock and a seek bar in the default hero where the cover art already
+  is; albums without audio get a link. Net **1,075 lines deleted against 39
+  added**. **Do not rebuild it** — playback belongs where the album is.
+
+  **Webamp (`captbaritone/webamp`, MIT) is a third view now**, opt-in. It
+  **cannot play the album of the day** and nothing will change that: it needs
+  audio files it can fetch, and YouTube's is sealed off. It opens empty and takes
+  files dragged into it. Three integration facts in `docs/components.md`, two of
+  them found by breaking: it attaches to `document.body`; React must never render
+  children into its mount node; and `onClose` has to switch the view back.
+
+  **`next/dynamic` was not enough for the bundle.** Turbopack prefetches dynamic
+  chunks, so a 295KB Webamp chunk went over the wire on the _default_ view for
+  everyone who never opened it — measured in production. It loads from
+  `/vendor/webamp.bundle.min.js` via a script tag now, copied by a `predev` /
+  `prebuild` step. Measuring that also caught an unrelated regression: the Club
+  Player had imported `getAlbumFacts` from `lib/soundtrack-corner.js` and dragged
+  the 348KB generator onto the home page. Hence `lib/album-facts.js`. Fresh
+  production visit is back to **212KB, biggest chunk 70KB**.
+
+- **Two adversarial review rounds, and the second one earned its keep
+  (2026-09-03).** Three Codex reviewers per round.
+
+  Round one found five real defects: a clean clone could not open Webamp at all
+  (the vendored bundle was `prebuild`-only while `public/vendor` is gitignored);
+  a failed script load became a permanent spinner because the loader attached
+  listeners to an already-settled `<script>`; the copy script exited 0 when
+  webamp was missing, so a broken install could still deploy; inline playback had
+  no failure path whatsoever; and the Webamp copy pointed at the "Player" view
+  deleted an hour earlier.
+
+  **Round two reviewed the fixes and found two of mine wrong.** The failure
+  fallback called `getListenUrl`, which returns the _stored video URL_ whenever
+  an id exists — so after an error it sent the visitor back to the same dead
+  video. And a ten-second timeout turned a slow connection into permanent
+  failure, could not be taken back by a late `onReady`, and removed the player's
+  DOM node without cancelling initialisation. **Both replaced by real signals
+  only** — the script erroring, or the player reporting the video unplayable.
+  The lesson worth keeping: a timeout that converts "slow" into "broken" looks
+  responsible and is not.
+
+  **The skill itself was broken and is fixed.** All three reviewers ran twenty
+  minutes and wrote nothing, and `2>/dev/null` in its template hid why.
+  `.claude/skills/adversarial-review/SKILL.md` now builds prompts as files fed on
+  stdin, keeps stderr in a `.log`, and verifies outputs are non-empty rather than
+  merely present. **The root cause was never isolated** — an initial diagnosis
+  blaming backtick expansion was tested and disproved — so the note says so
+  rather than leaving a confident wrong cause for the next person.
 
 - **Cozy embed widened, and fullscreen moved to the site (2026-08-09 → 08-13).**
   At
@@ -516,6 +588,14 @@ docs. This section is only what is still open.
    which is the point — see the rule in `CLAUDE.md` before proposing anything
    adjacent to it.
 
+8. **The Club Player is not coming back (2026-09-03).** A 2004 media-player view
+   of the album hero was built and deleted in the same stretch. It could not
+   play on the 68% of days with no video id, over half its height was scenery,
+   and it replaced real cover art with an emoji. Webamp does the retro look
+   better and the plain hero does the information job better; there is no gap
+   between them for it to fill. Playback lives in the hero now
+   (`app/AlbumPlayback.js`). Reasoning in `docs/components.md`.
+
 ## Gotchas worth knowing
 
 Full list lives in `docs/gotchas.md` — read it before touching JSX text, the
@@ -527,3 +607,14 @@ game samplers, or the lyric data. The three most expensive ones:
   whenever the pool size shares a factor with the rotation cadence.
   `pickRotatingPoolAlbum` uses the appearance ordinal; `eval-site` guards it.
 - **Vote totals count rows, not people** — see open item 2.
+- **`next/dynamic` is not a bundle guarantee (2026-09-03).** Turbopack
+  prefetches dynamic chunks, so a "lazy" 295KB Webamp chunk shipped on the
+  default view to everyone who never opened it. For anything genuinely heavy,
+  load it from `/vendor` with a script tag and **measure a fresh production
+  visit** — the chunk names are hashed, so grepping the filename for the
+  library's name proves nothing.
+- **Fail on evidence, never on a stopwatch (2026-09-03).** A ten-second timeout
+  added to inline playback turned a slow connection into permanent failure, and
+  a late success could not undo it. Real signals only: the script erroring, the
+  player reporting the media unplayable. A timeout that converts "slow" into
+  "broken" looks responsible and is not.
