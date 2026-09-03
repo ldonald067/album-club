@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/copy-webamp.mjs",
     "build": "next build",
     "start": "next start",
     "fetch-albums": "node scripts/fetch-albums.mjs",

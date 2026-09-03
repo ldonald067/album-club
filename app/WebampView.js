@@ -21,9 +21,38 @@ import { getListenUrl } from "@/lib/albums";
    only honest way to offer it here. The album's own audio stays with the Club
    Player and the YouTube link beneath.
 
-   WEIGHT. The bundle is ~917KB minified against a home page that ships 191KB
-   of JS in total, so it is imported dynamically and only when this view is
-   actually chosen. Selecting "Album" or "Player" must never pay for it. */
+   WEIGHT, and why this loads from a script tag rather than an import. The
+   bundle is ~917KB minified against a home page that ships ~190KB of JS in
+   total. Wrapping the component in next/dynamic was NOT enough: Turbopack
+   prefetches dynamic chunks, so the 295KB chunk went over the wire on the
+   default view for every visitor, including everyone who never opened it —
+   measured in production, not assumed. Loading the UMD build from
+   /vendor/webamp.bundle.min.js takes the bundler out of it entirely, the same
+   way this site already loads the YouTube IFrame API. Nothing is fetched until
+   this component mounts. */
+
+const WEBAMP_SRC = "/vendor/webamp.bundle.min.js";
+
+/** Load the UMD bundle once and hand back the global it defines. */
+function loadWebamp() {
+  if (window.Webamp) return Promise.resolve(window.Webamp);
+
+  const existing = document.querySelector(`script[src="${WEBAMP_SRC}"]`);
+  if (existing) {
+    return new Promise((resolve, reject) => {
+      existing.addEventListener("load", () => resolve(window.Webamp));
+      existing.addEventListener("error", reject);
+    });
+  }
+
+  return new Promise((resolve, reject) => {
+    const tag = document.createElement("script");
+    tag.src = WEBAMP_SRC;
+    tag.onload = () => resolve(window.Webamp);
+    tag.onerror = reject;
+    document.head.appendChild(tag);
+  });
+}
 
 export default function WebampView({ album, onClose }) {
   const hostRef = useRef(null);
@@ -35,8 +64,8 @@ export default function WebampView({ album, onClose }) {
 
     async function boot() {
       try {
-        const { default: Webamp } = await import("webamp");
-        if (disposed || !hostRef.current) return;
+        const Webamp = await loadWebamp();
+        if (disposed || !hostRef.current || !Webamp) return;
 
         instance = new Webamp({
           // No initialTracks: there is no album audio it could legally or

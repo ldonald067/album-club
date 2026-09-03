@@ -25,12 +25,11 @@ import {
 import { loadJson } from "@/lib/safe-fetch";
 import ClubPlayer from "./ClubPlayer";
 
-/* Webamp is ~917KB minified against a 191KB home page, so it is never part of
-   the default bundle — only fetched when someone actually picks that view. */
-const WebampView = dynamic(() => import("./WebampView"), {
-  ssr: false,
-  loading: () => <p className="webamp-note">Loading Webamp…</p>,
-});
+/* A plain import: the component is small, and the 917KB Webamp bundle it drives
+   is not bundled at all — it is fetched from /vendor at runtime. next/dynamic
+   was tried first and was not enough, because Turbopack prefetched the chunk
+   onto the default view. See app/WebampView.js. */
+import WebampView from "./WebampView";
 
 /* ─── Constants ─── */
 const MAX_SUGGESTIONS = 5;

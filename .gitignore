@@ -11,3 +11,6 @@ data/
 .codex-devserver.err.log
 .codex-devserver.stdout.log
 .codex-devserver.stderr.log
+
+# Vendored third-party bundles, copied by scripts/copy-webamp.mjs at build time
+public/vendor/
