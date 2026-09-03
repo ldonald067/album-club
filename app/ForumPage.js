@@ -23,7 +23,7 @@ import {
   getTastePair,
 } from "@/lib/albums";
 import { loadJson } from "@/lib/safe-fetch";
-import ClubPlayer from "./ClubPlayer";
+import AlbumPlayback from "./AlbumPlayback";
 
 /* A plain import: the component is small, and the 917KB Webamp bundle it drives
    is not bundled at all — it is fetched from /vendor at runtime. next/dynamic
@@ -3994,9 +3994,11 @@ export default function ForumPage({ album, dateString }) {
   const [albumView, setAlbumView] = useState("album");
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("aotd_album_view");
-      if (saved === "player" || saved === "webamp") {
-        setAlbumView(saved);
+      /* "player" was a third view — the Club Player — and it is gone. Anyone
+         still carrying it in storage falls through to the album, which now
+         does the one thing that view uniquely did. */
+      if (localStorage.getItem("aotd_album_view") === "webamp") {
+        setAlbumView("webamp");
       }
     } catch {
       // Private mode: the default view is a perfectly good answer
@@ -4429,7 +4431,6 @@ export default function ForumPage({ album, dateString }) {
                     onChange={(e) => chooseAlbumView(e.target.value)}
                   >
                     <option value="album">Album</option>
-                    <option value="player">Player</option>
                     <option value="webamp">Webamp</option>
                   </select>
                 </span>
@@ -4439,8 +4440,6 @@ export default function ForumPage({ album, dateString }) {
                   album={album}
                   onClose={() => chooseAlbumView("album")}
                 />
-              ) : albumView === "player" ? (
-                <ClubPlayer album={album} />
               ) : (
                 <div
                   className="album-display"
@@ -4516,14 +4515,7 @@ export default function ForumPage({ album, dateString }) {
                         ))}
                       </tbody>
                     </table>
-                    <a
-                      href={getListenUrl(album)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="listen-btn"
-                    >
-                      ▶ Listen on YouTube
-                    </a>
+                    <AlbumPlayback album={album} />
                   </div>
                 </div>
               )}

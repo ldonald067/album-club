@@ -136,42 +136,27 @@ Shows tomorrow's album emoji + genre + decade (e.g., `🎷 Tomorrow's Album — 
 - **Session state**: `sessionStorage` for welcome-back dismissal (resets per tab)
 - **Animation guards**: `justRevealed`/`justSubmitted` booleans prevent re-animating on reload
 
-## Club Player (`app/ClubPlayer.js`)
+## Inline album playback (`app/AlbumPlayback.js`)
 
-A 2004 media-player homage offered as an alternative face for the album hero. A
-`View` dropdown in the panel header switches `Album` / `Player`, persisted to
-`aotd_album_view` (a new key — nothing was renamed). **`Album` is the default**,
-so the hero nobody asked to change is the one everybody still gets.
+The album hero plays today's record in place, using the same YouTube IFrame API
+as Heardle and Blind Taste Test: play/pause, stop, a clock and a seek bar,
+replacing what used to be a "Listen on YouTube" link. 135 of 424 albums have a
+`youtubeId`; without one it falls back to that link, so the no-audio day is a
+link rather than a dead player.
 
-**What is real and what is costume**, because a transport that lies is worse
-than no transport. Play/pause/stop, seek, volume and the clock all drive the
-same YouTube IFrame API that Heardle and Blind Taste Test already use, so
-pressing play plays the record. The spectrum and the equaliser are period
-scenery: a cross-origin YouTube iframe exposes no audio data to Web Audio, and
-the API has no EQ. The spectrum animates **only while audio is genuinely
-playing** so it never implies analysis of a stream we cannot read, and the EQ
-panel says outright that its sliders are scenery. Do not "finish" the EQ by
-wiring it to something — there is nothing to wire it to.
+No volume control on purpose — the browser and the OS each have one, and a
+third would put a second row back into a hero that was trimmed for taking up
+too much space.
 
-The LCD readout is the sourced facts from `lib/album-facts.json` — track count
-and runtime are exactly what that strip was always for — with genre pinned to
-the right-hand end, because without it the row ran out of content halfway and
-the gap read as something failing to load. The spectrum is only rendered when
-there is an audio source at all: with none it could never move, so it would be
-a dead ornament holding the best space on the display. The marquee always
-scrolls and runs **two identical copies** with identical trailing space, which
-is what makes a `-50%` loop seamless; a single copy slid out of frame and left
-the row blank for most of the cycle. The unit is centred in its panel rather
-than left-aligned. 135 of 424 albums have
-a `youtubeId`; without one the transport is replaced by an explicit note and a
-YouTube search link, the same shape as Heardle's rollover.
-
-**The EQ panel earns its place without shaping audio.** It has a graph window
-drawing the curve the faders describe, five presets (FLAT / ROCK / JAZZ /
-VOCAL / BASS) that genuinely move the faders, a dB scale, slotted faders with
-grip thumbs, and PREAMP divided off from the ten bands. The curve reports a
-**setting**, never a measurement — there is no signal to measure — and preamp
-shifts it, which is the only way that control can show its work here.
+**This is what survived the Club Player, removed 2026-09-03.** That was a third
+view of the hero styled as a 2004 media player, and it did not earn ~450px:
+more than half its height was an equaliser and a spectrum that shaped nothing,
+it replaced real cover art with an emoji, and it could not play at all on the
+**68% of days** whose album has no video id. Once Webamp existed it was beaten
+on looks by the real thing and on substance by the plain album view, so the one
+capability nothing else had — playing the record without leaving the page —
+moved into the hero and the other ~1,000 lines went. **Do not rebuild it**: the
+`View` dropdown is Album / Webamp, and playback belongs where the album is.
 
 ## Webamp view (`app/WebampView.js`)
 
