@@ -2141,6 +2141,79 @@ body {
   margin: 0;
 }
 
+/* The graph window and the preset row, side by side above the faders — the
+   arrangement these panels always used, and the reason they read as an
+   instrument rather than a settings form. */
+/* Stacked, not side by side. A 2-column preset grid stood three rows tall
+   beside a 44px graph, which left a band of empty panel between them wider
+   than the graph itself. */
+.club-player-eq-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.club-player-eq-curve {
+  width: 100%;
+  height: 56px;
+  background: var(--player-lcd);
+  border-radius: 2px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.club-player-eq-curve .curve-zero {
+  stroke: var(--player-lcd-dim);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  vector-effect: non-scaling-stroke;
+}
+
+/* non-scaling-stroke matters here: the viewBox is stretched to whatever width
+   the panel has, and without it the line thins and thickens with the container. */
+.club-player-eq-curve .curve-line {
+  fill: none;
+  stroke: var(--player-lcd-ink);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.club-player-presets {
+  display: flex;
+  gap: 3px;
+}
+
+.club-player-preset {
+  flex: 1;
+}
+
+.club-player-preset {
+  font-family: var(--font-pixel), "Courier New", monospace;
+  font-size: 7px;
+  letter-spacing: 0.5px;
+  padding: 3px 7px;
+  cursor: pointer;
+  color: var(--player-chrome-ink);
+  background: linear-gradient(
+    180deg,
+    var(--player-face-lit),
+    var(--player-face)
+  );
+  border: 1px solid var(--player-face-dim);
+  border-radius: 2px;
+}
+
+.club-player-preset:active {
+  background: var(--player-face-dim);
+}
+
+@media (pointer: coarse) {
+  .club-player-preset {
+    min-height: 44px;
+  }
+}
+
 .club-player-eq-row {
   display: flex;
   gap: 8px;
@@ -2165,8 +2238,13 @@ body {
   flex: none;
 }
 
+/* Spread across the row rather than bunched at the left. Ten 16px slots and the
+   scale used barely half the panel width, which left the faders looking like a
+   fragment of a bigger control that had been cropped. */
 .club-player-bands {
   display: flex;
+  flex: 1;
+  justify-content: space-between;
   gap: 3px;
 }
 

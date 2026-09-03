@@ -166,6 +166,23 @@ than left-aligned. 135 of 424 albums have
 a `youtubeId`; without one the transport is replaced by an explicit note and a
 YouTube search link, the same shape as Heardle's rollover.
 
+**The EQ panel earns its place without shaping audio.** It has a graph window
+drawing the curve the faders describe, five presets (FLAT / ROCK / JAZZ /
+VOCAL / BASS) that genuinely move the faders, a dB scale, slotted faders with
+grip thumbs, and PREAMP divided off from the ten bands. The curve reports a
+**setting**, never a measurement — there is no signal to measure — and preamp
+shifts it, which is the only way that control can show its work here.
+
+**On Webamp** (`captbaritone/webamp`): its code is MIT and genuinely usable,
+but its author is explicit that "the Winamp name, interface, and sample audio
+file are surely property of Nullsoft". Embedding it would put Winamp's actual
+interface and branding on the site — the thing this component was written to
+avoid — and add a large dependency to the home path. **The one thing it is
+worth copying is its equaliser**, which is real because it plays audio through
+an AudioContext where ten `BiquadFilterNode`s do the work. If this site ever
+gains audio it can route through Web Audio, that is the reference to use, with
+attribution.
+
 **The player keeps one look under every skin**, by decision — it already reads
 as period costume, so re-chroming it for Vintage would be work with no payoff.
 That is why its colours are a separate `--player-*` token family rather than

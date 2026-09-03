@@ -36,8 +36,40 @@ const EQ_BANDS = [
   "14K",
   "16K",
 ];
+/* Presets are the one part of this panel that genuinely does something: they
+   move the faders, and the curve above them redraws to match. The sliders still
+   shape no audio — see the note in the panel — but "does nothing" and "is not
+   wired to anything" are different claims, and this is the second one. */
+const EQ_PRESETS = {
+  FLAT: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ROCK: [5, 4, 2, -1, -2, 0, 3, 5, 6, 6],
+  JAZZ: [3, 2, 1, 2, -1, -1, 0, 1, 3, 4],
+  VOCAL: [-3, -2, 0, 3, 5, 5, 3, 1, 0, -1],
+  BASS: [7, 6, 4, 2, 0, -2, -3, -3, -3, -3],
+};
+
 const EQ_KEY = "aotd_player_eq";
 const VOLUME_KEY = "aotd_player_volume";
+
+/* The response curve, drawn from the faders themselves. It reports the setting,
+   never a measurement — there is no signal to measure — but a setting is a real
+   thing to draw, and the little graph window is what made these panels look
+   like instruments. Preamp shifts the whole curve, which is the only way that
+   control ever shows its work here. */
+function buildCurvePath(bands, preamp, width, height) {
+  const step = width / (bands.length - 1);
+  const toY = (db) => {
+    const clamped = Math.max(-12, Math.min(12, db + preamp / 2));
+    return height / 2 - (clamped / 12) * (height / 2 - 3);
+  };
+
+  return bands
+    .map(
+      (db, i) =>
+        `${i === 0 ? "M" : "L"} ${(i * step).toFixed(1)} ${toY(db).toFixed(1)}`,
+    )
+    .join(" ");
+}
 
 function formatTime(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
@@ -217,6 +249,13 @@ export default function ClubPlayer({ album }) {
     persistEq(eq, value);
   };
 
+  const applyPreset = (name) => {
+    const bands = EQ_PRESETS[name];
+    setEq(bands);
+    setPreamp(0);
+    persistEq(bands, 0);
+  };
+
   function persistEq(bands, preampValue) {
     try {
       localStorage.setItem(
@@ -376,6 +415,36 @@ export default function ClubPlayer({ album }) {
 
       {tab === "equalizer" ? (
         <div className="club-player-eq">
+          {/* The graph window, which is what these panels were recognisable
+              for. It shows the curve the faders describe — a setting, drawn
+              honestly — not an analysis of a signal we do not have. */}
+          <div className="club-player-eq-head">
+            <svg
+              className="club-player-eq-curve"
+              viewBox="0 0 200 44"
+              preserveAspectRatio="none"
+              role="img"
+              aria-label={`Response curve: ${eq.map((v, i) => `${EQ_BANDS[i]} ${v > 0 ? "+" : ""}${v}`).join(", ")}`}
+            >
+              <line x1="0" y1="22" x2="200" y2="22" className="curve-zero" />
+              <path
+                d={buildCurvePath(eq, preamp, 200, 44)}
+                className="curve-line"
+              />
+            </svg>
+            <div className="club-player-presets">
+              {Object.keys(EQ_PRESETS).map((name) => (
+                <button
+                  key={name}
+                  type="button"
+                  className="club-player-preset"
+                  onClick={() => applyPreset(name)}
+                >
+                  {name}
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="club-player-eq-row">
             {/* The dB scale is the detail that makes the panel read as a
                 machine rather than a row of sliders. Marks only — the sliders
