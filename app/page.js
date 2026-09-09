@@ -1,5 +1,4 @@
-import ForumPage from "./ForumPage";
-import { getTodayAlbum, getDateString } from "@/lib/albums";
+import { SectionPage, sectionMetadata } from "./section-page";
 
 export const dynamic = "force-dynamic";
 
@@ -8,23 +7,13 @@ export const dynamic = "force-dynamic";
    listening to instead of a bare URL — and a crawler that returns tomorrow
    sees a different page rather than the same static string.
 
-   force-dynamic above already prevents this being cached past midnight UTC. */
+   The copy for every tab lives in app/section-page.js; force-dynamic stays
+   here because route segment config is only read from a page or layout file.
+   It also prevents this being cached past midnight UTC. */
 export function generateMetadata() {
-  const album = getTodayAlbum();
-  const title = `${album.title} by ${album.artist} — Album Of The Day Club`;
-  const description = `Today's album is ${album.title} by ${album.artist} (${album.year}, ${album.genre}). Rate it, call the vibe, and argue about where it belongs.`;
-
-  return {
-    title,
-    description,
-    openGraph: { title, description, type: "website" },
-    twitter: { card: "summary_large_image", title, description },
-  };
+  return sectionMetadata("home");
 }
 
 export default function Home() {
-  const album = getTodayAlbum();
-  const dateString = getDateString();
-
-  return <ForumPage album={album} dateString={dateString} />;
+  return <SectionPage section="home" />;
 }

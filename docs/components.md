@@ -2,6 +2,43 @@
 
 ForumPage.js is a single client component (~5200 lines) containing most of the UI. Shared components are defined at the top of the file, game components in the middle, and the main render at the bottom.
 
+## Routing — one component, six URLs
+
+Every tab is a real route. `app/sections.js` is the single list of them (key,
+path, icon, label) and the nav, the route folders and `app/sitemap.js` all read
+it, so adding a tab is one entry there plus a two-line `app/<key>/page.js`.
+
+- `/` → home, `/soundtrack`, `/cozy`, `/archive`, `/stats`, `/faq`
+- Each `page.js` exports `dynamic = "force-dynamic"`, a `generateMetadata` that
+  calls `sectionMetadata(key)`, and a body that renders
+  `<SectionPage section={key} />` — both from `app/section-page.js`, where the
+  per-tab title and description copy lives.
+- Each tab folder also carries a two-line `opengraph-image.js` re-exporting the
+  root one. **Image metadata files are not inherited by nested segments** —
+  measured: `/archive` shipped a text-only card until that file existed. The
+  `dynamic` export has to be declared in each of those files rather than
+  re-exported; Next parses route config statically and rejects a re-export.
+- `ForumPage` takes `section` as a prop. It was `useState("home")` until
+  2026-09-08, which is what put the whole site at one address: no tab could be
+  linked to or bookmarked, a reload always landed on Home, the back button left
+  the site, and a crawler only ever saw the home page.
+- The nav items and both `MiniTeaser` rows are `next/link` anchors, so they can
+  be opened in a new tab, copied, and followed. The teaser was a `div` with
+  `role="button"` and a hand-rolled Enter/Space handler; the link makes all of
+  that native.
+- Tab switching costs no network: the nav links carry `prefetch`, so the
+  payloads are already in the router cache. Measured against a production build
+  — a click issues no request, and a cold server render of any tab is ~5ms.
+
+**ForumPage remounts on every tab change now.** Anything in it that is not
+persisted resets — the clicked-through tagline, an in-flight vinyl spin. Things
+that are day-guarded in localStorage (`updateStreak`, `incrementVisitCount`) are
+idempotent and were already safe. The one thing that had to change is
+`pageTitleRef`: it holds a borrowed page title while the "now spinning" or
+tab-away title is showing, and it never used to be cleared, so the unmount
+cleanup would paint the previous tab's title over the one the new route had just
+set. `restoreTitle()` clears it on every restore.
+
 ## Shared Components
 
 Three small shared components eliminate duplication across the core game/activity flows.

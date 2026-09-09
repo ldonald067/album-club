@@ -71,7 +71,9 @@ Each of these has already cost real time or shipped a live bug.
 
 The tree is mostly self-explanatory. The parts that aren't:
 
-- `app/ForumPage.js` — one client component holding every game and all UI
+- `app/ForumPage.js` — one client component holding every game and all UI,
+  rendered by all six tab routes; the tab it shows comes from the URL
+- `app/sections.js` — the tab list the nav, the routes and the sitemap share
 - `lib/safe-fetch.js` — `loadJson()` throws on non-2xx so a bad response can't
   poison client state
 - `lib/albums.js` — seeded shuffle, daily rotation, and the game samplers

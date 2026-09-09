@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect, useRef, useMemo, memo } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { SECTIONS, sectionPath } from "./sections";
 import {
   getListenUrl,
   getTodayKey,
@@ -81,7 +84,9 @@ function ResultsPending({ label, onRetry }) {
 }
 
 /** Soundtrack Corner — today's album as game / film / TV cue music */
-function SoundtrackCornerPanel({ album, onNavigate }) {
+function SoundtrackCornerPanel({ album }) {
+  const router = useRouter();
+
   return (
     <div className="panel">
       <div className="panel-header">
@@ -94,10 +99,9 @@ function SoundtrackCornerPanel({ album, onNavigate }) {
       <div className="panel-body">
         <SoundtrackCorner
           album={album}
-          onPlayToday={() => {
-            onNavigate("home");
-            window.scrollTo(0, 0);
-          }}
+          /* Home is a route now, so this is a real navigation — which also
+             means the scroll reset comes free with it. */
+          onPlayToday={() => router.push("/")}
         />
       </div>
     </div>
@@ -105,17 +109,12 @@ function SoundtrackCornerPanel({ album, onNavigate }) {
 }
 
 /** Home-page teaser row for the Soundtrack Corner tab */
-function SoundtrackMini({ onNavigate }) {
+function SoundtrackMini() {
   const todayKey = getTodayKey();
   const [myPick, setMyPick] = useState(null);
   useEffect(() => {
     setMyPick(localStorage.getItem(`aotd_soundtrack_${todayKey}`));
   }, [todayKey]);
-
-  const open = () => {
-    onNavigate("soundtrack");
-    window.scrollTo(0, 0);
-  };
 
   return (
     <MiniTeaser
@@ -126,7 +125,7 @@ function SoundtrackMini({ onNavigate }) {
           ? `You cast it for ${myPick} — see the room`
           : "Game, film, or TV? Cast today's cue"
       }
-      onOpen={open}
+      href={sectionPath("soundtrack")}
     />
   );
 }
@@ -3537,20 +3536,14 @@ const FAQ_ITEMS = [
   },
 ];
 
-function MiniTeaser({ icon, title, subtitle, onOpen }) {
+/* A real anchor now that tabs are routes. It used to be a div wearing
+   role="button" with a hand-rolled Enter/Space handler, because there was
+   nowhere to link to; pointing it at a URL gets keyboard activation, the status
+   bar preview, middle-click and open-in-new-tab back for free, and deletes the
+   handler that was imitating them. */
+function MiniTeaser({ icon, title, subtitle, href }) {
   return (
-    <div
-      className="mini-teaser"
-      onClick={onOpen}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onOpen();
-        }
-      }}
-    >
+    <Link href={href} className="mini-teaser">
       <span className="mini-teaser-icon" aria-hidden="true">
         {icon}
       </span>
@@ -3561,7 +3554,7 @@ function MiniTeaser({ icon, title, subtitle, onOpen }) {
       <span className="mini-teaser-chevron" aria-hidden="true">
         ›
       </span>
-    </div>
+    </Link>
   );
 }
 
@@ -3793,13 +3786,13 @@ function CozyVibesSection() {
   );
 }
 
-function CozyMini({ onNavigate }) {
+function CozyMini() {
   return (
     <MiniTeaser
       icon="🕯️"
       title="Cozy Vibes"
       subtitle="Somewhere to sit between albums"
-      onOpen={() => onNavigate("cozy")}
+      href={sectionPath("cozy")}
     />
   );
 }
@@ -3964,6 +3957,21 @@ function updateStreak(todayKey) {
 }
 
 /* ─── Main Page ─── */
+/* Puts back the real page title after a temporary one — the "now spinning"
+   title and the tab-away title both borrow it. The ref means "a temporary
+   title is on screen right now", so restoring clears it.
+
+   Clearing it is the whole point. It used to keep whatever title was captured
+   on the first spin, forever, which was harmless while ForumPage never
+   unmounted. Each tab is a route now, so ForumPage unmounts on every
+   navigation, and a stale ref would have the unmount cleanup paint the
+   previous tab's title over the one the new route had just set. */
+function restoreTitle(ref) {
+  if (ref.current === null) return;
+  document.title = ref.current;
+  ref.current = null;
+}
+
 const SECRET_TAGLINES = [
   "“One album. One day. A thousand opinions.”",
   "“Zero ads. Zero logins. One album.”",
@@ -3975,8 +3983,14 @@ const SECRET_TAGLINES = [
   "“Your streak misses you already.”",
 ];
 
-export default function ForumPage({ album, dateString }) {
-  const [activeSection, setActiveSection] = useState("home");
+/* `section` is the URL, not state. It was useState("home") for a long time,
+   which is what made the whole site one address: no tab could be linked to,
+   bookmarked, or reached again after a reload, the back button left the site,
+   and a crawler only ever saw Home. The route decides now — app/sections.js
+   maps each key to its folder — and this component just renders the one it is
+   told to. */
+export default function ForumPage({ album, dateString, section = "home" }) {
+  const activeSection = section;
 
   const [imgError, setImgError] = useState(false);
   const [streak, setStreak] = useState(0);
@@ -4043,7 +4057,7 @@ export default function ForumPage({ album, dateString }) {
     spinTimerRef.current = setTimeout(() => {
       setVinylSpinning(false);
       setVinylFlipped(false);
-      document.title = pageTitleRef.current;
+      restoreTitle(pageTitleRef);
     }, 3000);
 
     if (isFlip) {
@@ -4207,9 +4221,7 @@ export default function ForumPage({ album, dateString }) {
         awaySince = Date.now();
         document.title = AWAY_TITLES[getDayOfYear() % AWAY_TITLES.length];
       } else {
-        if (pageTitleRef.current !== null) {
-          document.title = pageTitleRef.current;
-        }
+        restoreTitle(pageTitleRef);
         const awayMs = awaySince ? Date.now() - awaySince : 0;
         awaySince = 0;
         // Only for a real listening-length absence, and only ever once
@@ -4229,8 +4241,10 @@ export default function ForumPage({ album, dateString }) {
       window.removeEventListener("aotd-activity", onActivity);
       window.removeEventListener("keydown", handleKey);
       document.removeEventListener("visibilitychange", onVisibility);
-      // Never leave the away-title behind on unmount
-      if (pageTitleRef.current !== null) document.title = pageTitleRef.current;
+      // Never leave a borrowed title behind on unmount — but only ever one
+      // that is actually showing, or navigating between tabs would restore the
+      // title of the tab being left.
+      restoreTitle(pageTitleRef);
     };
   }, [todayKey]);
 
@@ -4294,30 +4308,23 @@ export default function ForumPage({ album, dateString }) {
             {SECRET_TAGLINES[taglineIdx]}
           </div>
         </div>
-        <nav className="nav">
-          {[
-            { key: "home", icon: "hn hn-home", label: "Home" },
-            {
-              key: "soundtrack",
-              icon: "hn hn-headphones",
-              label: "Soundtrack Corner",
-            },
-            { key: "cozy", icon: "hn hn-play", label: "Cozy Vibes" },
-            { key: "archive", icon: "hn hn-calender", label: "Archive" },
-            { key: "stats", icon: "hn hn-trending", label: "Stats" },
-            { key: "faq", icon: "hn hn-question", label: "FAQ" },
-          ].map((item) => (
-            <button
+        {/* Links, not buttons. Each tab is a URL (app/sections.js), so these
+            can be opened in a new tab, copied, and followed by a crawler —
+            none of which a button could do. aria-current is what tells a
+            screen reader which one you are on now that "active" is a route
+            rather than a pressed state. Next scrolls to top on navigation, so
+            the old manual scrollTo went with the button. */}
+        <nav className="nav" aria-label="Sections">
+          {SECTIONS.map((item) => (
+            <Link
               key={item.key}
-              type="button"
+              href={item.path}
+              prefetch
               className={`nav-item ${activeSection === item.key ? "active" : ""}`}
-              onClick={() => {
-                setActiveSection(item.key);
-                window.scrollTo(0, 0);
-              }}
+              aria-current={activeSection === item.key ? "page" : undefined}
             >
               <i className={item.icon} aria-hidden="true" /> {item.label}
-            </button>
+            </Link>
           ))}
         </nav>
       </div>
@@ -4555,11 +4562,11 @@ export default function ForumPage({ album, dateString }) {
             <BlindTasteTest />
 
             {/* Soundtrack Corner teaser */}
-            <SoundtrackMini onNavigate={setActiveSection} />
+            <SoundtrackMini />
 
             {/* Cozy Vibes teaser — the game itself lives on its own tab so the
                 home page doesn't carry a game iframe */}
-            <CozyMini onNavigate={setActiveSection} />
+            <CozyMini />
 
             {/* Yesterday's Recap */}
             <YesterdayRecap />
@@ -4646,7 +4653,7 @@ export default function ForumPage({ album, dateString }) {
         {activeSection === "cozy" && <CozyVibesSection />}
         {activeSection === "archive" && <ArchiveSection />}
         {activeSection === "soundtrack" && (
-          <SoundtrackCornerPanel album={album} onNavigate={setActiveSection} />
+          <SoundtrackCornerPanel album={album} />
         )}
         {activeSection === "stats" && <StatsSection />}
         {activeSection === "faq" && <FAQSection />}

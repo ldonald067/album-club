@@ -3496,6 +3496,11 @@ body {
 
 /* ─── Mini teaser cards (Soundtrack Corner on home) ─── */
 .mini-teaser {
+  /* It is an anchor now that each tab is a route, so the link defaults have to
+     be undone: the children carry their own colours, and an underline on a
+     card-shaped target reads as damage. */
+  text-decoration: none;
+  color: inherit;
   display: flex;
   align-items: center;
   gap: 12px;

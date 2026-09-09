@@ -1,12 +1,24 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-09-03.
+session. Last updated: 2026-09-08.
 
 ## Handoff — read this first
 
 **Nothing is in flight.** `master` is clean, pushed, and deployed; verify with
 `GET /api/health`, which returns the running commit SHA.
+
+**2026-09-08: every tab is a URL.** The six sections — Home, Soundtrack Corner,
+Cozy Vibes, Archive, Stats, FAQ — were `activeSection` state on a single route,
+which meant the entire site lived at `/`. Nothing could be linked to or
+bookmarked, a reload always landed on Home, the back button left the site, and a
+crawler only ever saw the home page. They are real routes now (`/soundtrack`,
+`/cozy`, `/archive`, `/stats`, `/faq`), each with its own title, description and
+Open Graph card, all six in the sitemap. `ForumPage` takes the tab as a prop.
+Tab switching still costs no network — the nav links prefetch. Full write-up in
+`docs/components.md` under "Routing". Two things it turned up: image metadata
+files are **not** inherited by nested segments, and `ForumPage` now unmounts on
+every tab change, which is what made the borrowed-page-title ref a bug.
 
 **2026-09-02 → 09-03 was the album-hero player stretch, and it ended with less
 code than it started.** A hand-built "Club Player" — a 2004 media-player view of
@@ -172,6 +184,27 @@ Node 22) runs `npm test` then `npm run build`.
   upgrade (not wired).
 
 ## Recent work (this stretch of sessions)
+
+- **Every section became a route (2026-09-08).** Six tabs, six URLs, one
+  component. `app/sections.js` is the list the nav, the route folders and the
+  sitemap share, so a new tab is one entry plus a two-line `page.js`; the per-tab
+  copy lives in `app/section-page.js`. The nav items and both `MiniTeaser` rows
+  became `next/link` anchors — the teaser had been a `div` with `role="button"`
+  and a hand-rolled Enter/Space handler, all of which the link does natively.
+
+  **Two things were only found by measuring.** Image metadata files are not
+  inherited by nested segments: `/archive` served a text-only card while `/` had
+  the image, so every tab folder now re-exports the root `opengraph-image` (and
+  has to declare `dynamic` itself — Next rejects a re-exported one). And
+  `ForumPage` unmounts on every tab change now, which turned `pageTitleRef` into
+  a live bug: it held a borrowed title forever after the first vinyl spin, so the
+  unmount cleanup painted the previous tab's title over the new route's.
+  `restoreTitle()` clears it on every restore; verified by spinning the record
+  and navigating away inside the three-second window.
+
+  Tab switching costs no network — the nav links carry `prefetch`, so a click
+  issues no request at all. Measured against a production build; a cold render of
+  any tab route is ~5ms.
 
 - **The album hero learned to play, and a player was deleted to get there
   (2026-09-02 → 09-03).** Built, then removed, in that order.

@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { SOUNDTRACK_OVERRIDES } from "../lib/soundtrack-corner-data.js";
+import { SECTIONS } from "../app/sections.js";
 import {
   buildSoundtrackCorner,
   getAngleLabel,
@@ -20,6 +21,7 @@ const forumPagePath = path.join(rootDir, "app", "ForumPage.js");
 const homePagePath = path.join(rootDir, "app", "page.js");
 const ogImagePath = path.join(rootDir, "app", "opengraph-image.js");
 const soundtrackCornerPath = path.join(rootDir, "app", "SoundtrackCorner.js");
+const sectionPagePath = path.join(rootDir, "app", "section-page.js");
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -137,6 +139,7 @@ const soundtrackSource = readText(soundtrackDataPath);
 const forumSource = readText(forumPagePath);
 const homePageSource = readText(homePagePath);
 const soundtrackCornerSource = readText(soundtrackCornerPath);
+const sectionPageSource = readText(sectionPagePath);
 const layoutSource = readText(path.join(rootDir, "app", "layout.js"));
 
 const recognizableAlbums = albums.filter((album) => album.recognizable);
@@ -556,11 +559,31 @@ failures += printGuardrail(
 
 failures += printGuardrail(
   homePageSource.includes("export function generateMetadata") &&
-    homePageSource.includes("album.title") &&
-    homePageSource.includes("openGraph"),
+    sectionPageSource.includes("album.title") &&
+    sectionPageSource.includes("openGraph"),
   "A shared link names the day's album",
-  "app/page.js must build its title, description and card from today's album — a daily site whose metadata never changes is a static link.",
+  "app/page.js must export generateMetadata and app/section-page.js must build the title, description and card from today's album — a daily site whose metadata never changes is a static link.",
 );
+/* Every tab in the nav is a route now. A tab whose folder is missing is a 404
+   in the middle of the site's own navigation, and nothing else would catch it:
+   the nav renders the link happily, and the build only fails for a route that
+   exists and is broken, never for one that was never created. */
+{
+  const missing = SECTIONS.filter(
+    (section) =>
+      section.path !== "/" &&
+      !fs.existsSync(path.join(rootDir, "app", section.key, "page.js")),
+  ).map((section) => section.key);
+
+  missing.forEach((key) => console.log(`  ! no app/${key}/page.js`));
+  failures += printGuardrail(
+    missing.length === 0,
+    "Every tab in the nav is a real route",
+    missing.length
+      ? `${missing.length} tab(s) in app/sections.js have no page — the nav links to a 404`
+      : `All ${SECTIONS.length} tabs resolve to a page under app/.`,
+  );
+}
 failures += printGuardrail(
   fs.existsSync(ogImagePath) &&
     readText(ogImagePath).includes("ImageResponse") &&
