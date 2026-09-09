@@ -358,6 +358,18 @@ body {
   border-radius: 2px 2px 0 0;
 }
 
+/* The section title inside a panel header. It was a bare <span>, which made
+   every section of the site invisible to heading navigation — nine titles on
+   the home page and a document outline of exactly two headings, and on /faq,
+   /archive and /stats the only heading was the site banner. It is an <h2> now
+   and this rule makes that free: inside a flex container an inline span and a
+   block h2 are both flex items, so nothing moves. */
+.panel-header .panel-title {
+  margin: 0;
+  font: inherit;
+  color: inherit;
+}
+
 .panel-body {
   background: var(--bg-panel);
   padding: 15px;
@@ -2648,6 +2660,14 @@ body {
 }
 
 .faq-question {
+  /* An <h3> since 2026-09-09 — an FAQ with no headings is the worst case for
+     heading navigation. Everything else it needs (display, font, colour) this
+     rule already set, and a class beats the UA element rule, so `margin` is the
+     single default left to clear. Deliberately not a shared reset with the
+     other promoted titles: `.playlist-question` and friends carry a negative
+     margin, and an `h2.playlist-question { margin: 0 }` would outrank it and
+     tear their title bars off the card edge. */
+  margin: 0;
   display: flex;
   gap: 8px;
   padding: 12px 15px;
@@ -3445,8 +3465,14 @@ body {
   .nav-item,
   .listen-btn,
   .theme-select,
+  /* Both containers. `.guess-input` is ScrambleGame alone; the shared
+     AlbumAutocomplete (Guess, Cover, Heardle) and LyricGame both render
+     `.guess-input-wrap`, so four of the five games sat at 33px on touch while
+     this rule looked like it covered them. Measured at 375px, not read. */
   .guess-input input,
   .guess-input button,
+  .guess-input-wrap input,
+  .guess-input-wrap .btn-submit,
   .soundtrack-vote-skip {
     min-height: 44px;
   }

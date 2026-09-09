@@ -90,10 +90,10 @@ function SoundtrackCornerPanel({ album }) {
   return (
     <div className="panel">
       <div className="panel-header">
-        <span>
+        <h2 className="panel-title">
           <i className="hn hn-headphones" aria-hidden="true" /> SOUNDTRACK
           CORNER
-        </span>
+        </h2>
         <span className="panel-header-note">Game / film / TV</span>
       </div>
       <div className="panel-body">
@@ -602,10 +602,10 @@ function RateReveal({ albumKey }) {
     return (
       <div className="panel">
         <div className="panel-header">
-          <span>
+          <h2 className="panel-title">
             <i className="hn hn-star" aria-hidden="true" /> RATE &amp; REVEAL —
             YOUR RESULTS
-          </span>
+          </h2>
         </div>
         <div className="panel-body">
           <ResultsPending
@@ -627,10 +627,10 @@ function RateReveal({ albumKey }) {
         aria-live="polite"
       >
         <div className="panel-header">
-          <span>
+          <h2 className="panel-title">
             <i className="hn hn-star" aria-hidden="true" /> RATE &amp; REVEAL —
             YOUR RESULTS
-          </span>
+          </h2>
         </div>
         <div className="panel-body">
           {hotTake && (
@@ -691,9 +691,9 @@ function RateReveal({ albumKey }) {
   return (
     <div className="panel">
       <div className="panel-header">
-        <span>
+        <h2 className="panel-title">
           <i className="hn hn-star" aria-hidden="true" /> RATE &amp; REVEAL
-        </span>
+        </h2>
       </div>
       <div className="panel-body rate-input">
         <p className="activity-prompt">
@@ -912,9 +912,9 @@ function PlaylistPoll({ albumKey }) {
 
   return (
     <div className="playlist-poll">
-      <div className="playlist-question">
+      <h2 className="playlist-question">
         Would you add this to your playlist?
-      </div>
+      </h2>
       {error && (
         <p className="submit-error" role="alert">
           {error}
@@ -1093,9 +1093,9 @@ const VersusMatchup = memo(function VersusMatchup() {
 
   return (
     <div className="versus-matchup">
-      <div className="versus-header">
+      <h2 className="versus-header">
         &#x2694;&#xFE0F; Album vs Album &mdash; pick your favorite
-      </div>
+      </h2>
       {error && (
         <p className="submit-error" role="alert">
           {error}
@@ -1393,9 +1393,9 @@ const BlindTasteTest = memo(function BlindTasteTest() {
 
   return (
     <div className="taste-test">
-      <div className="taste-header">
+      <h2 className="taste-header">
         &#x1F3A7; Blind Taste Test &mdash; listen, then pick
-      </div>
+      </h2>
       <p className="taste-desc">
         Two 1-minute mystery clips. Listen to both, then pick your favorite. No
         peeking!
@@ -1505,11 +1505,34 @@ function VibeCheck({ albumKey }) {
         setSelected(restored);
         setSubmitted(true);
         loadResults();
-      } else {
-        // Unreadable participation record — start clean rather than report a
-        // room we can't actually measure.
-        localStorage.removeItem(`aotd_vibed_${albumKey}`);
+        // A submitted record supersedes any draft of the same day
+        localStorage.removeItem(`aotd_draft_vibes_${albumKey}`);
+        return;
       }
+      // Unreadable participation record — start clean rather than report a
+      // room we can't actually measure.
+      localStorage.removeItem(`aotd_vibed_${albumKey}`);
+    }
+
+    /* Picks made but not yet submitted. ForumPage unmounts on every tab
+       change now, so two chosen vibes used to vanish the moment someone
+       followed the Soundtrack Corner row sitting directly below them — and
+       Vibe Check is the worst case for that, because it asks for up to three
+       picks and then a separate Submit. Validated on the way in exactly like
+       the submitted record above: a draft is still untrusted input. */
+    try {
+      const draft = JSON.parse(
+        localStorage.getItem(`aotd_draft_vibes_${albumKey}`) || "null",
+      );
+      const labels = VIBES.map((v) => v.label);
+      if (Array.isArray(draft)) {
+        const clean = [...new Set(draft)]
+          .filter((v) => labels.includes(v))
+          .slice(0, 3);
+        if (clean.length) setSelected(clean);
+      }
+    } catch {
+      // Private mode or a mangled entry — an empty selection is fine
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [albumKey]);
@@ -1523,8 +1546,22 @@ function VibeCheck({ albumKey }) {
       return;
     }
     setSelected((prev) => {
-      if (prev.includes(label)) return prev.filter((v) => v !== label);
-      return [...prev, label];
+      const next = prev.includes(label)
+        ? prev.filter((v) => v !== label)
+        : [...prev, label];
+      try {
+        if (next.length) {
+          localStorage.setItem(
+            `aotd_draft_vibes_${albumKey}`,
+            JSON.stringify(next),
+          );
+        } else {
+          localStorage.removeItem(`aotd_draft_vibes_${albumKey}`);
+        }
+      } catch {
+        // The draft is a convenience; never let storage break the activity
+      }
+      return next;
     });
     if (isAdding) {
       setJustToggledVibe(label);
@@ -1548,6 +1585,8 @@ function VibeCheck({ albumKey }) {
       }
       const data = await res.json();
       localStorage.setItem(`aotd_vibed_${albumKey}`, JSON.stringify(selected));
+      // The real record exists now; the draft would only shadow it
+      localStorage.removeItem(`aotd_draft_vibes_${albumKey}`);
       window.dispatchEvent(new Event("aotd-activity"));
       setResults(data);
       setSubmitted(true);
@@ -1589,10 +1628,10 @@ function VibeCheck({ albumKey }) {
     return (
       <div className="panel">
         <div className="panel-header">
-          <span>
+          <h2 className="panel-title">
             <i className="hn hn-headphones" aria-hidden="true" /> VIBE CHECK —
             RESULTS
-          </span>
+          </h2>
         </div>
         <div className="panel-body">
           <ResultsPending
@@ -1607,10 +1646,10 @@ function VibeCheck({ albumKey }) {
   return (
     <div className={`panel${justSubmitted ? " animate-reveal" : ""}`}>
       <div className="panel-header">
-        <span>
+        <h2 className="panel-title">
           <i className="hn hn-headphones" aria-hidden="true" />{" "}
           {submitted ? "VIBE CHECK — RESULTS" : "VIBE CHECK"}
-        </span>
+        </h2>
         {submitted && results && (
           <span className="panel-header-note">{results.total} vibes cast</span>
         )}
@@ -1744,6 +1783,49 @@ function VibeCheck({ albumKey }) {
   );
 }
 
+/* A day-scoped draft of an answer nobody has submitted yet.
+
+   Every tab is a route now, so ForumPage unmounts whenever someone follows the
+   nav or one of the teaser rows — and a half-typed guess went with it.
+   Submitted work always survived, because it is written to localStorage on
+   submit; unsubmitted work was component state only, and the home page
+   actively invites you to leave mid-activity. Reproduced by typing a guess,
+   opening the Archive, and coming back to an empty box.
+
+   Restored once on mount, written on every keystroke, and removed the moment
+   the answer is submitted or the game ends. A draft is a convenience, so every
+   access is wrapped: Safari private mode throws on localStorage. */
+function useDraft(key, value, setValue, active) {
+  const restored = useRef(false);
+
+  useEffect(() => {
+    if (restored.current) return;
+    restored.current = true;
+    if (!active) return;
+    try {
+      const saved = localStorage.getItem(key);
+      // Only trust a draft of the shape this caller actually holds — a
+      // hand-edited entry should be ignored, never fed into state.
+      if (typeof saved === "string" && typeof value === "string") {
+        setValue(saved);
+      }
+    } catch {
+      // Private mode, or a cleared profile — an empty box is a fine answer
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+
+  useEffect(() => {
+    if (!restored.current) return;
+    try {
+      if (active && value) localStorage.setItem(key, value);
+      else localStorage.removeItem(key);
+    } catch {
+      // As above: never let a storage failure break the activity itself
+    }
+  }, [key, value, active]);
+}
+
 /* ─── Guess the Album ─── */
 function GuessGame() {
   const todayKey = getTodayKey();
@@ -1754,6 +1836,12 @@ function GuessGame() {
   const [guesses, setGuesses] = useState([]);
   const [currentGuess, setCurrentGuess] = useState("");
   const [gameOver, setGameOver] = useState(false);
+  useDraft(
+    `aotd_draft_guess_${todayKey}`,
+    currentGuess,
+    setCurrentGuess,
+    !gameOver,
+  );
   const [solved, setSolved] = useState(false);
   const [stats, setStats] = useState(null);
   const [shaking, setShaking] = useState(false);
@@ -1844,10 +1932,10 @@ function GuessGame() {
   return (
     <div className="panel">
       <div className="panel-header">
-        <span>
+        <h2 className="panel-title">
           <i className="hn hn-question" aria-hidden="true" /> GUESS THE ALBUM —
           DAILY PUZZLE
-        </span>
+        </h2>
         <span className="panel-header-note">
           {gameOver
             ? solved
@@ -1980,6 +2068,12 @@ function CoverChallenge({ fallbackNote = null }) {
   const [guesses, setGuesses] = useState([]);
   const [currentGuess, setCurrentGuess] = useState("");
   const [gameOver, setGameOver] = useState(false);
+  useDraft(
+    `aotd_draft_cover_${todayKey}`,
+    currentGuess,
+    setCurrentGuess,
+    !gameOver,
+  );
   const [solved, setSolved] = useState(false);
   const [stats, setStats] = useState(null);
   const [shaking, setShaking] = useState(false);
@@ -2066,9 +2160,9 @@ function CoverChallenge({ fallbackNote = null }) {
   return (
     <div className="panel">
       <div className="panel-header">
-        <span>
+        <h2 className="panel-title">
           <i className="hn hn-star" aria-hidden="true" /> COVER ART CHALLENGE
-        </span>
+        </h2>
         <span className="panel-header-note">
           {gameOver
             ? solved
@@ -2175,6 +2269,12 @@ function HeardleGame() {
   const [guesses, setGuesses] = useState([]);
   const [currentGuess, setCurrentGuess] = useState("");
   const [gameOver, setGameOver] = useState(false);
+  useDraft(
+    `aotd_draft_heardle_${todayKey}`,
+    currentGuess,
+    setCurrentGuess,
+    !gameOver,
+  );
   const [solved, setSolved] = useState(false);
   const [stats, setStats] = useState(null);
   const [shaking, setShaking] = useState(false);
@@ -2360,10 +2460,10 @@ function HeardleGame() {
   return (
     <div className="panel">
       <div className="panel-header">
-        <span>
+        <h2 className="panel-title">
           <i className="hn hn-sound-on" aria-hidden="true" /> HEARDLE — NAME
           THAT TUNE
-        </span>
+        </h2>
         <span className="panel-header-note">
           {gameOver
             ? solved
@@ -2474,6 +2574,12 @@ function LyricGame() {
   const [guesses, setGuesses] = useState([]);
   const [currentGuess, setCurrentGuess] = useState("");
   const [gameOver, setGameOver] = useState(false);
+  useDraft(
+    `aotd_draft_lyric_${todayKey}`,
+    currentGuess,
+    setCurrentGuess,
+    !gameOver,
+  );
   const [solved, setSolved] = useState(false);
   const [stats, setStats] = useState(null);
   const [shaking, setShaking] = useState(false);
@@ -2544,9 +2650,9 @@ function LyricGame() {
     return (
       <div className="panel">
         <div className="panel-header">
-          <span>
+          <h2 className="panel-title">
             <i className="hn hn-music" aria-hidden="true" /> LYRIC CHALLENGE
-          </span>
+          </h2>
         </div>
         <div
           className="panel-body"
@@ -2678,9 +2784,9 @@ function LyricGame() {
   return (
     <div className="panel">
       <div className="panel-header">
-        <span>
+        <h2 className="panel-title">
           <i className="hn hn-music" aria-hidden="true" /> LYRIC CHALLENGE
-        </span>
+        </h2>
         <span className="panel-header-note">
           {gameOver
             ? solved
@@ -2788,6 +2894,12 @@ function ScrambleGame() {
   const [guesses, setGuesses] = useState([]);
   const [currentGuess, setCurrentGuess] = useState("");
   const [gameOver, setGameOver] = useState(false);
+  useDraft(
+    `aotd_draft_scramble_${todayKey}`,
+    currentGuess,
+    setCurrentGuess,
+    !gameOver,
+  );
   const [solved, setSolved] = useState(false);
   const [stats, setStats] = useState(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -2903,9 +3015,9 @@ function ScrambleGame() {
   return (
     <div className="panel">
       <div className="panel-header">
-        <span>
+        <h2 className="panel-title">
           <i className="hn hn-question" aria-hidden="true" /> ARTIST SCRAMBLE
-        </span>
+        </h2>
         <span className="panel-header-note">
           {gameOver
             ? solved
@@ -3308,10 +3420,10 @@ function ArchiveSection() {
   return (
     <div className="panel">
       <div className="panel-header">
-        <span>
+        <h2 className="panel-title">
           <i className="hn hn-calender" aria-hidden="true" /> ARCHIVE — RECENT
           ALBUMS
-        </span>
+        </h2>
         <span className="panel-header-note">
           Last 30 days{showCueLog ? " · cue log" : ""}
         </span>
@@ -3319,16 +3431,34 @@ function ArchiveSection() {
       <div className="panel-body" style={{ padding: 0 }}>
         <table className="archive-table">
           <thead>
+            {/* scope="col" on every header: 30 rows of eight columns is exactly
+                the shape where a screen reader needs to be told which header
+                belongs to which cell, and it cannot infer it. */}
             <tr>
-              <th>Date</th>
-              <th></th>
-              <th>Album</th>
-              <th>Artist</th>
-              <th className="archive-hide-mobile">Genre</th>
-              <th className="archive-hide-mobile">Year</th>
-              {showRoom && <th className="archive-cue-head">Room</th>}
+              <th scope="col">Date</th>
+              <th scope="col">
+                <span className="sr-only">Cover</span>
+              </th>
+              <th scope="col">Album</th>
+              <th scope="col">Artist</th>
+              <th scope="col" className="archive-hide-mobile">
+                Genre
+              </th>
+              <th scope="col" className="archive-hide-mobile">
+                Year
+              </th>
+              {showRoom && (
+                <th scope="col" className="archive-cue-head">
+                  Room
+                </th>
+              )}
               {showMine && (
-                <th className="archive-cue-head archive-hide-mobile">You</th>
+                <th
+                  scope="col"
+                  className="archive-cue-head archive-hide-mobile"
+                >
+                  You
+                </th>
               )}
             </tr>
           </thead>
@@ -3380,9 +3510,9 @@ function StatsSection() {
     return (
       <div className="panel">
         <div className="panel-header">
-          <span>
+          <h2 className="panel-title">
             <i className="hn hn-trending" aria-hidden="true" /> SITE STATISTICS
-          </span>
+          </h2>
         </div>
         <div className="panel-body">
           <p className="activity-prompt stats-state-copy">
@@ -3397,9 +3527,9 @@ function StatsSection() {
     return (
       <div className="panel">
         <div className="panel-header">
-          <span>
+          <h2 className="panel-title">
             <i className="hn hn-trending" aria-hidden="true" /> SITE STATISTICS
-          </span>
+          </h2>
         </div>
         <div className="panel-body">
           <ActivityStatusNote tone="error">
@@ -3420,9 +3550,9 @@ function StatsSection() {
     <>
       <div className="panel">
         <div className="panel-header">
-          <span>
+          <h2 className="panel-title">
             <i className="hn hn-trending" aria-hidden="true" /> SITE STATISTICS
-          </span>
+          </h2>
         </div>
         <div className="panel-body">
           {stats.totalRatings === 0 ? (
@@ -3463,10 +3593,10 @@ function StatsSection() {
       {stats.topVibes.length > 0 && (
         <div className="panel">
           <div className="panel-header">
-            <span>
+            <h2 className="panel-title">
               <i className="hn hn-headphones" aria-hidden="true" /> TOP VIBES —
               ALL TIME
-            </span>
+            </h2>
           </div>
           <div className="panel-body">
             <div className="top-vibes-list">
@@ -3734,9 +3864,9 @@ function CozyVibesSection() {
   return (
     <div className="panel cozy-panel">
       <div className="panel-header">
-        <span>
+        <h2 className="panel-title">
           <i className="hn hn-play" aria-hidden="true" /> COZY VIBES
-        </span>
+        </h2>
       </div>
       <div className="panel-body cozy-body">
         <p className="activity-prompt" style={{ textAlign: "center" }}>
@@ -3801,18 +3931,18 @@ function FAQSection() {
   return (
     <div className="panel">
       <div className="panel-header">
-        <span>
+        <h2 className="panel-title">
           <i className="hn hn-question" aria-hidden="true" /> FREQUENTLY ASKED
           QUESTIONS
-        </span>
+        </h2>
       </div>
       <div className="panel-body" style={{ padding: 0 }}>
         {FAQ_ITEMS.map((item, i) => (
           <div key={i} className="faq-thread">
-            <div className="faq-question">
+            <h3 className="faq-question">
               <span className="faq-icon">Q:</span>
               <span>{item.q}</span>
-            </div>
+            </h3>
             <div className="faq-answer">
               <span className="faq-icon faq-icon-a">A:</span>
               <span>{item.a}</span>
@@ -4383,7 +4513,10 @@ export default function ForumPage({ album, dateString, section = "home" }) {
         <ThemePicker />
       </div>
 
-      <div
+      {/* A real landmark, not a div with an id. The skip link worked either way,
+          but landmark navigation found only the nav — a screen reader had no
+          "main" to jump to on any of the six routes. */}
+      <main
         className="content"
         id="main-content"
         style={{
@@ -4425,10 +4558,10 @@ export default function ForumPage({ album, dateString, section = "home" }) {
             {/* Album of the Day */}
             <div className="panel">
               <div className="panel-header">
-                <span>
+                <h2 className="panel-title">
                   <i className="hn hn-music" aria-hidden="true" /> TODAY&apos;S
                   ALBUM — {dateString.toUpperCase()}
-                </span>
+                </h2>
                 <span className="album-view-picker">
                   <label htmlFor="album-view">View</label>
                   <select
@@ -4575,10 +4708,10 @@ export default function ForumPage({ album, dateString, section = "home" }) {
             {allDone && (
               <div className="panel daily-wrap">
                 <div className="panel-header">
-                  <span>
+                  <h2 className="panel-title">
                     <i className="hn hn-star" aria-hidden="true" /> DAILY
                     WRAP-UP
-                  </span>
+                  </h2>
                 </div>
                 <div className="panel-body" style={{ textAlign: "center" }}>
                   <div className="wrap-streak">
@@ -4780,7 +4913,7 @@ export default function ForumPage({ album, dateString, section = "home" }) {
             </>
           )}
         </div>
-      </div>
+      </main>
     </>
   );
 }

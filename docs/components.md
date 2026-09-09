@@ -29,6 +29,35 @@ it, so adding a tab is one entry there plus a two-line `app/<key>/page.js`.
 - Tab switching costs no network: the nav links carry `prefetch`, so the
   payloads are already in the router cache. Measured against a production build
   — a click issues no request, and a cold server render of any tab is ~5ms.
+- Section titles are real headings. `.panel-header`'s title span is an
+  `<h2 className="panel-title">`, `.playlist-question` / `.versus-header` /
+  `.taste-header` are `<h2>`, and each FAQ question is an `<h3>`. Before that the
+  whole site had two headings, and `/faq`, `/archive` and `/stats` had exactly
+  one — the site banner. **Do not add a shared `h2.playlist-question { margin: 0 }`
+  reset**: those three carry a deliberate negative margin, and an element+class
+  selector outranks it and tears the title bar off the card edge. Only
+  `.faq-question`, whose rule sets no margin, needed the default cleared.
+  `.yesterday-recap`'s header stays a `role="button"` disclosure and is
+  deliberately not a heading — a heading inside a button is flattened into its
+  name.
+
+### `useDraft(key, value, setValue, active)`
+
+Day-scoped localStorage draft of an answer that has not been submitted yet.
+Restores once on mount, writes on every change, and removes itself the moment
+the real record is written or the game ends. Keys are `aotd_draft_<game>_<date>`
+and `aotd_draft_vibes_<date>`.
+
+It exists because of the routing change: a half-typed guess and two chosen
+vibes were `useState` only, so following the nav — or one of the teaser rows
+sitting directly under Vibe Check — threw them away. Submitted work always
+survived; this closes the gap for unsubmitted work.
+
+Vibe Check does not use the hook. It already owns a restore effect for the
+submitted record, and a second restore racing it would overwrite real votes with
+a stale draft, so it reads and writes the draft inline — after the submitted
+record has had its say, and validated the same way (1–3 entries, real labels
+only; a draft is still untrusted input).
 
 **ForumPage remounts on every tab change now.** Anything in it that is not
 persisted resets — the clicked-through tagline, an in-flight vinyl spin. Things
