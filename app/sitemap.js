@@ -25,12 +25,22 @@ const CHANGE_FREQUENCY = {
   faq: "monthly",
 };
 
+/* Only the routes that genuinely turn over daily carry a date. Stamping every
+   route with `new Date()` on every request told a crawler that the FAQ — which
+   the line above declares monthly, and which has not changed in months — was
+   modified the instant it asked. A lastmod that always says "just now" is a
+   lastmod worth ignoring, which costs the three routes where the claim is true
+   and useful: the album turns over at midnight UTC, and Home, Soundtrack Corner
+   and the Archive all change with it. Omitted elsewhere, because no honest
+   value is available. */
+const DATED = new Set(["home", "soundtrack", "archive"]);
+
 export default function sitemap() {
-  const lastModified = new Date();
+  const today = new Date();
 
   return SECTIONS.map((section) => ({
     url: section.path === "/" ? SITE_URL : `${SITE_URL}${section.path}`,
-    lastModified,
+    ...(DATED.has(section.key) ? { lastModified: today } : {}),
     changeFrequency: CHANGE_FREQUENCY[section.key] || "weekly",
     priority: section.key === "home" ? 1 : 0.6,
   }));

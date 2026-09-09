@@ -31,7 +31,13 @@ export const SECTIONS = [
 
 const PATH_BY_KEY = Object.fromEntries(SECTIONS.map((s) => [s.key, s.path]));
 
-/** Href for a section key. Unknown keys fall back to home rather than 404. */
+/** Href for a section key. Both call sites pass a literal, so an unknown key is
+    always a typo — and it used to resolve to "/", which meant a misspelled
+    `sectionPath("soundtrak")` silently sent the Soundtrack Corner teaser to the
+    home page instead of failing where the mistake was. Throwing surfaces it on
+    the first render in dev, which is the only place it can ever happen. */
 export function sectionPath(key) {
-  return PATH_BY_KEY[key] || "/";
+  const path = PATH_BY_KEY[key];
+  if (!path) throw new Error(`Unknown section key: ${key}`);
+  return path;
 }

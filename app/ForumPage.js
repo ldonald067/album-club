@@ -37,8 +37,17 @@ import WebampView from "./WebampView";
 /* ─── Constants ─── */
 const MAX_SUGGESTIONS = 5;
 const SHAKE_MS = 400;
+/* Code-split, but server-rendered. `ssr: false` was right while the corner was
+   a hidden tab of the one home page — the server had no reason to render a
+   panel nobody had opened. It became wrong the day /soundtrack was a route of
+   its own: the whole point of that route is being linkable and findable, and a
+   crawler was served "Opening Soundtrack Corner..." and nothing else.
+
+   Removing the flag costs the home page nothing. The corner only renders when
+   the soundtrack tab is the one being shown, so Home never pulls it either way;
+   the dynamic boundary that keeps its weight out of the main chunk is the
+   import, not the flag. Measured before and after on a production build. */
 const SoundtrackCorner = dynamic(() => import("./SoundtrackCorner"), {
-  ssr: false,
   loading: () => (
     <p className="soundtrack-intro">Opening Soundtrack Corner...</p>
   ),
@@ -1480,7 +1489,18 @@ function VibeCheck({ albumKey }) {
   };
 
   useEffect(() => {
-    const saved = localStorage.getItem(`aotd_vibed_${albumKey}`);
+    /* One try around the whole restore. It used to guard only the JSON parse,
+       so three bare localStorage calls sat outside it — and a browser that
+       blocks site data throws on access, not on parse, which would have taken
+       the whole page to the error boundary before Vibe Check ever rendered.
+       The draft hook these keys were added alongside wraps every access; this
+       path did not, and the inconsistency was the bug. */
+    let saved = null;
+    try {
+      saved = localStorage.getItem(`aotd_vibed_${albumKey}`);
+    } catch {
+      return; // No storage: an unvoted Vibe Check is the correct render
+    }
     if (saved) {
       // roomHasOthers subtracts selected.length from the row count, so a bad
       // restore doesn't just lose your picks — it makes a lone voter look like
@@ -1506,12 +1526,20 @@ function VibeCheck({ albumKey }) {
         setSubmitted(true);
         loadResults();
         // A submitted record supersedes any draft of the same day
-        localStorage.removeItem(`aotd_draft_vibes_${albumKey}`);
+        try {
+          localStorage.removeItem(`aotd_draft_vibes_${albumKey}`);
+        } catch {
+          // Readable but not writable; the draft is superseded either way
+        }
         return;
       }
       // Unreadable participation record — start clean rather than report a
       // room we can't actually measure.
-      localStorage.removeItem(`aotd_vibed_${albumKey}`);
+      try {
+        localStorage.removeItem(`aotd_vibed_${albumKey}`);
+      } catch {
+        // As above
+      }
     }
 
     /* Picks made but not yet submitted. ForumPage unmounts on every tab

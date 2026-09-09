@@ -564,24 +564,54 @@ failures += printGuardrail(
   "A shared link names the day's album",
   "app/page.js must export generateMetadata and app/section-page.js must build the title, description and card from today's album — a daily site whose metadata never changes is a static link.",
 );
-/* Every tab in the nav is a route now. A tab whose folder is missing is a 404
-   in the middle of the site's own navigation, and nothing else would catch it:
-   the nav renders the link happily, and the build only fails for a route that
-   exists and is broken, never for one that was never created. */
-{
-  const missing = SECTIONS.filter(
-    (section) =>
-      section.path !== "/" &&
-      !fs.existsSync(path.join(rootDir, "app", section.key, "page.js")),
-  ).map((section) => section.key);
+/* Every tab in the nav is a route now, and this checks that each one is the
+   route it claims to be — not merely that a folder exists.
 
-  missing.forEach((key) => console.log(`  ! no app/${key}/page.js`));
+   The first version only ran existsSync, and an adversarial review showed what
+   that misses: copy app/stats/page.js to app/history/page.js without touching
+   its two "stats" literals and you get a live /history whose nav highlights
+   nothing and whose body and metadata are Stats, while this check reports
+   success. A route's identity lives in three places — the folder name, the
+   sectionMetadata argument and the SectionPage prop — and the failure mode is
+   always that they disagree, so all three are compared. The opengraph-image is
+   checked with them because image metadata is not inherited by nested
+   segments: a tab without that file silently serves a text-only card. */
+{
+  const problems = [];
+
+  for (const section of SECTIONS) {
+    const dir = section.path === "/" ? "" : section.key;
+    const pagePath = path.join(rootDir, "app", dir, "page.js");
+    if (!fs.existsSync(pagePath)) {
+      problems.push(`no app/${dir}/page.js`);
+      continue;
+    }
+    const source = readText(pagePath);
+    if (!source.includes(`sectionMetadata("${section.key}")`)) {
+      problems.push(
+        `app/${dir}/page.js does not call sectionMetadata("${section.key}")`,
+      );
+    }
+    if (!source.includes(`section="${section.key}"`)) {
+      problems.push(
+        `app/${dir}/page.js does not render section="${section.key}"`,
+      );
+    }
+    if (!fs.existsSync(path.join(rootDir, "app", dir, "opengraph-image.js"))) {
+      problems.push(`app/${dir}/ has no opengraph-image.js — text-only card`);
+    }
+    if (!forumSource.includes(`activeSection === "${section.key}"`)) {
+      problems.push(`ForumPage renders nothing for section "${section.key}"`);
+    }
+  }
+
+  problems.forEach((p) => console.log(`  ! ${p}`));
   failures += printGuardrail(
-    missing.length === 0,
-    "Every tab in the nav is a real route",
-    missing.length
-      ? `${missing.length} tab(s) in app/sections.js have no page — the nav links to a 404`
-      : `All ${SECTIONS.length} tabs resolve to a page under app/.`,
+    problems.length === 0,
+    "Every tab is the route it claims to be",
+    problems.length
+      ? `${problems.length} mismatch(es) between app/sections.js, the route folders and ForumPage`
+      : `All ${SECTIONS.length} tabs agree across folder, metadata, rendered section and card.`,
   );
 }
 failures += printGuardrail(

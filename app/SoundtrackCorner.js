@@ -39,11 +39,23 @@ const CUE_NAMES = { game: "game", film: "film", tv: "TV" };
 function readCuePicks(days = 30) {
   const today = new Date();
   const entries = [];
-  for (let i = 0; i < days; i++) {
-    const key = new Date(today.getTime() - i * 86400000)
-      .toISOString()
-      .slice(0, 10);
-    entries.push({ key, pick: localStorage.getItem(`aotd_soundtrack_${key}`) });
+  try {
+    for (let i = 0; i < days; i++) {
+      const key = new Date(today.getTime() - i * 86400000)
+        .toISOString()
+        .slice(0, 10);
+      entries.push({
+        key,
+        pick: localStorage.getItem(`aotd_soundtrack_${key}`),
+      });
+    }
+  } catch {
+    /* No storage to read: a browser blocking site data, or the server, which
+       renders this component now that /soundtrack is a route. Its only callers
+       are the streak and the lean, and both treat an empty history as "no
+       memory line to show" — which is the right answer when there is no
+       history to read. */
+    return [];
   }
   return entries;
 }
