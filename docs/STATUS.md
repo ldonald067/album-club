@@ -20,6 +20,9 @@ Tab switching still costs no network — the nav links prefetch. Full write-up i
 files are **not** inherited by nested segments, and `ForumPage` now unmounts on
 every tab change, which is what made the borrowed-page-title ref a bug.
 
+Live and verified as `456544a`: all six routes return 200 with their own titles,
+`/archive/opengraph-image` returns a real PNG, and `sitemap.xml` lists six URLs.
+
 **2026-09-02 → 09-03 was the album-hero player stretch, and it ended with less
 code than it started.** A hand-built "Club Player" — a 2004 media-player view of
 the hero — was built, polished twice, and then **deleted**, because Webamp
@@ -205,6 +208,15 @@ Node 22) runs `npm test` then `npm run build`.
   Tab switching costs no network — the nav links carry `prefetch`, so a click
   issues no request at all. Measured against a production build; a cold render of
   any tab route is ~5ms.
+
+  **Behaviour change worth knowing:** unpersisted `ForumPage` state now resets on
+  a tab switch — the clicked-through secret tagline, an in-flight vinyl spin.
+  Everything that matters is in localStorage and survives, and the two day-guarded
+  writes (`updateStreak`, `incrementVisitCount`) are idempotent, so remounting
+  cannot inflate a streak or a visit rank. Checked before shipping, not after.
+
+  Verified in production after the deploy: six routes at 200 with their own
+  titles, a real PNG at `/archive/opengraph-image`, six URLs in `sitemap.xml`.
 
 - **The album hero learned to play, and a player was deleted to get there
   (2026-09-02 → 09-03).** Built, then removed, in that order.
@@ -646,6 +658,11 @@ game samplers, or the lyric data. The three most expensive ones:
   load it from `/vendor` with a script tag and **measure a fresh production
   visit** — the chunk names are hashed, so grepping the filename for the
   library's name proves nothing.
+- **Two commits share a subject line, deliberately (2026-09-08).** `ae1314c`
+  and `e25fa7b` both read "Club Player: make the equalizer look like an
+  equalizer". Their bodies differ, they describe a component deleted four commits
+  later, and fixing it means force-pushing eight rewritten SHAs onto a branch
+  that auto-deploys production. Decided: leave it. Do not tidy this.
 - **Fail on evidence, never on a stopwatch (2026-09-03).** A ten-second timeout
   added to inline playback turned a slow connection into permanent failure, and
   a late success could not undo it. Real signals only: the script erroring, the
