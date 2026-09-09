@@ -20,8 +20,16 @@ Optional: specific route to audit (e.g., "rate", "vibe", "guess") — defaults t
 - `app/api/guess/route.js` — POST game result stats, GET aggregate stats
 - `app/api/playlist/route.js` — playlist poll votes
 - `app/api/matchup/route.js` — versus matchup picks
+- `app/api/soundtrack/route.js` — Soundtrack Corner cue votes (game/film/tv)
+- `app/api/soundtrack/history/route.js` — past days' cue results
 - `app/api/stats/route.js` — aggregate site stats
 - `app/api/health/route.js` — deploy/commit status probe
+- `app/api/backup/route.js` — **audit this one first.** It streams a full SQLite
+  snapshot. It is 404 when `BACKUP_TOKEN` is unset, takes the token via
+  `Authorization: Bearer` or `?token=`, compares it in constant time, and is
+  rate limited. Check that all four of those still hold, that the token cannot
+  leak through an error body or a redirect, and that `?token=` in a URL is an
+  accepted trade-off rather than an oversight
 - `lib/db.js` — SQLite queries (check for injection, error handling)
 - `lib/rate-limit.js` — Rate limiter implementation
 - `lib/api-helpers.js` — shared validation/response helpers
@@ -56,13 +64,15 @@ Optional: specific route to audit (e.g., "rate", "vibe", "guess") — defaults t
 
 **Data Integrity**
 
-- Are album_key and puzzle_key validated against expected formats?
+- Are album_key, puzzle_key and matchup_key validated against expected formats? (`matchup_key` is `versus-YYYY-MM-DD` / `taste-YYYY-MM-DD`)
 - Could someone inject data for future dates?
 - Is there any risk of SQLite write contention under concurrent requests?
 
 ### SQLite-Specific
 
 - WAL mode is enabled — is this sufficient for concurrent reads/writes?
+- Eight GET routes hold an in-memory response cache. Can a cache key be poisoned by a crafted request, and does a cached error ever get served as a success?
+- `pruneExpiredVotes` runs at startup — is its retention window right, and can it delete rows a live request is mid-read of?
 - Are prepared statements cached or re-created per request?
 - Is the connection properly shared (singleton pattern)?
 

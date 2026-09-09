@@ -19,11 +19,40 @@ The user provides album name(s) and/or artist(s). If details are incomplete, sea
    - If the user only gave a name, search the web to confirm: full title, artist, year, genre
    - Pick an appropriate cover emoji that represents the album's theme or artwork
    - Pick a hex color that matches the album's artwork or mood (dark/muted tones work best with the UI)
-   - Set `recognizable: true` only for widely-known albums (these enter the puzzle/heardle pool)
+   - Set `recognizable: true` only for widely-known albums — see "What recognizable costs you" below
    - Fetch cover art for `image` (run `npm run fetch-covers` after adding, or find the URL manually)
-3. Add the new entries to `lib/albums.json`, maintaining alphabetical order by artist
-4. Report what was added and the new total album count
-5. Note: adding albums shifts the daily rotation schedule (the rotation is a year-seeded permutation over `ALBUMS.length`)
+3. **Append the new entries to the end of `lib/albums.json`.** The file is _not_
+   sorted — not by artist, not by year, not by anything; entry one is Radiohead.
+   Do not reorder it to "fix" that. Order is the file's own history, and the
+   daily rotation is a seeded permutation over the array, so shuffling entries
+   silently rewrites which album airs on which day.
+4. Run `npm run fetch-album-facts` — sourced MusicBrainz facts are keyed
+   `artist::title`, so a new album has none until this runs, and Soundtrack
+   Corner and the recommendation scorer both read them
+5. **Run `npm run eval-site`.** This is the guardrail for album data and it
+   exits nonzero on real faults: duplicate accent colours or cover emoji, a
+   missing or non-https image, and pool-size interactions with the game cadence.
+   `npm test && npm run build` too, per `CLAUDE.md`
+6. Report what was added and the new total album count
+7. Note: adding albums shifts the daily rotation schedule (the rotation is a year-seeded permutation over `ALBUMS.length`)
+
+## What `recognizable` costs you
+
+`recognizable: true` enters the album into **four** pools, not one, each with a
+different extra requirement:
+
+| Pool            | Also needs  |
+| --------------- | ----------- |
+| Guess the Album | —           |
+| Artist Scramble | —           |
+| Cover Challenge | `image`     |
+| Heardle         | `youtubeId` |
+
+Lyric Challenge is separate: it draws from `lib/lyrics.json`, keyed
+`Artist - Title`, and ignores `recognizable` entirely. **Wrong data is worse
+than missing data** — read `git diff lib/lyrics.json` before committing any
+lyric refill; a fetch that guessed once put a rap verse under a Miles Davis
+record.
 
 ## Format
 
