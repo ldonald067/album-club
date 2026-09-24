@@ -34,6 +34,28 @@ automatically as long as it uses a token.
 
 **Adding a rule:** use a token. If none fits, add one — do not hardcode.
 
+## The daily tint (default skin only)
+
+Each day's album colour tints the panel title bars and washes the hero, so the
+page looks like the day. Four tokens in `:root` control the bars:
+`--header-tint-top` / `--header-tint-bottom` (how much album colour) and
+`--header-ink-top` / `--header-ink-bottom` (the dark neutral it is mixed into).
+The hero wash is set per day as `--album-wash` on `.album-display` and drawn in
+CSS at 18% fading to 6%.
+
+- **The ink base is the point, not the percentage.** Mixing more album colour
+  into the old fixed blue failed contrast (70/60 gave 3.93:1 white text);
+  mixing it into a neutral ink doubled the day-to-day spread (98 → 195 on a
+  441 scale) and kept every album at 4.67:1 or better.
+- **`eval-site` owns the margin.** "White header text stays readable on every
+  day's tint" reads those four tokens from `globals.css` and computes white
+  text against every album in the catalog. The margin is thin on purpose —
+  stronger colour is what the change is for — so the next bright album is the
+  thing most likely to break it, and the check names it when it does.
+- **Vintage opts out of both.** Its bars are a fixed teal and its hero wash is
+  `none`. The wash used to be an inline style, which bled into Vintage; moving
+  it into CSS is what made the opt-out possible.
+
 ## Contrast is a hard requirement
 
 Both skins must clear WCAG AA (4.5:1 for body text). Measured values worth

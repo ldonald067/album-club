@@ -37,7 +37,11 @@ function formatTime(seconds) {
   return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`;
 }
 
-export default function AlbumPlayback({ album }) {
+/* `onDeckChange` reports where the record is, so the hero's vinyl can show it:
+   "playing" spins, "paused" is parked out of the sleeve and still, "off" is
+   back in the sleeve. Paused and off are different on purpose — a record you
+   paused is still on the platter; one you stopped has been put away. */
+export default function AlbumPlayback({ album, onDeckChange }) {
   const playerRef = useRef(null);
   const tickRef = useRef(null);
 
@@ -144,6 +148,17 @@ export default function AlbumPlayback({ album }) {
       playerRef.current = null;
     };
   }, [hasAudio, album.youtubeId]);
+
+  // Tell the hero where the record is. Derived, so it only fires on a change of
+  // state and never on the 500ms clock tick.
+  const deck = playing ? "playing" : elapsed > 0 ? "paused" : "off";
+  const deckRef = useRef(onDeckChange);
+  deckRef.current = onDeckChange;
+  useEffect(() => {
+    deckRef.current?.(failed ? "off" : deck);
+  }, [deck, failed]);
+  // Unmounting — the Webamp view, a tab change — puts the record away.
+  useEffect(() => () => deckRef.current?.("off"), []);
 
   // Only tick while something is actually playing.
   useEffect(() => {

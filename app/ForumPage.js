@@ -629,6 +629,15 @@ function RateReveal({ albumKey }) {
   if (revealed && results) {
     const maxCount = Math.max(...Object.values(results.distribution), 1);
     const hotTake = getHotTake();
+    /* Nobody else has rated today. With the audience the site has, that is the
+       reveal nearly every visitor gets, and it used to be four stats and a
+       histogram that each restated one number: Average 8/10 (theirs), Total
+       Ratings 1, Rated Higher Than 0% — a deflating first result on the site —
+       and ten bars growing in one after another, nine of them at zero. Vibe
+       Check already refuses to quote a room of one ("You and 100% felt Dreamy"
+       is just you, restated); this is the same rule. The full view comes back
+       on its own once a second rating lands, which is what "check back" means. */
+    const alone = results.total <= 1;
     return (
       <div
         className={`panel${justRevealed ? " animate-reveal" : ""}`}
@@ -647,51 +656,66 @@ function RateReveal({ albumKey }) {
               {hotTake.emoji} {hotTake.text}
             </div>
           )}
-          <div className="rate-summary">
-            <div className="rate-stat">
-              <div className="rate-stat-num">{myRating}/10</div>
-              <div className="rate-stat-label">Your Rating</div>
+          {alone ? (
+            <div className="rate-solo">
+              <div className="rate-solo-num">
+                {myRating}
+                <span className="rate-solo-of">/10</span>
+              </div>
+              <p className="rate-solo-line">
+                First number on the board today. Come back later and see where
+                the room lands around it.
+              </p>
             </div>
-            <div className="rate-stat">
-              <div className="rate-stat-num">{results.average}/10</div>
-              <div className="rate-stat-label">Average</div>
-            </div>
-            <div className="rate-stat">
-              <div className="rate-stat-num">{results.total}</div>
-              <div className="rate-stat-label">Total Ratings</div>
-            </div>
-            <div className="rate-stat">
-              <div className="rate-stat-num">{getPercentile()}%</div>
-              <div className="rate-stat-label">Rated Higher Than</div>
-            </div>
-          </div>
-          {results.total <= 1 && (
-            <p className="activity-prompt" style={{ textAlign: "center" }}>
-              You&apos;re the first to rate! Check back later to see how others
-              voted.
-            </p>
-          )}
-          <div className="histogram">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
-              <div key={n} className="histo-col">
-                <div className="histo-bar-wrap">
-                  <div
-                    className={`histo-bar ${n === myRating ? "mine" : ""}${justRevealed ? " animate-grow" : ""}`}
-                    style={{
-                      height: `${(results.distribution[n] / maxCount) * 100}%`,
-                      animationDelay: justRevealed ? `${n * 80}ms` : undefined,
-                    }}
-                  />
+          ) : (
+            <>
+              <div className="rate-summary">
+                <div className="rate-stat">
+                  <div className="rate-stat-num">{myRating}/10</div>
+                  <div className="rate-stat-label">Your Rating</div>
                 </div>
-                <div className={`histo-count ${n === myRating ? "mine" : ""}`}>
-                  {results.distribution[n]}
+                <div className="rate-stat">
+                  <div className="rate-stat-num">{results.average}/10</div>
+                  <div className="rate-stat-label">Average</div>
                 </div>
-                <div className={`histo-label ${n === myRating ? "mine" : ""}`}>
-                  {n}
+                <div className="rate-stat">
+                  <div className="rate-stat-num">{results.total}</div>
+                  <div className="rate-stat-label">Total Ratings</div>
+                </div>
+                <div className="rate-stat">
+                  <div className="rate-stat-num">{getPercentile()}%</div>
+                  <div className="rate-stat-label">Rated Higher Than</div>
                 </div>
               </div>
-            ))}
-          </div>
+              <div className="histogram">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                  <div key={n} className="histo-col">
+                    <div className="histo-bar-wrap">
+                      <div
+                        className={`histo-bar ${n === myRating ? "mine" : ""}${justRevealed ? " animate-grow" : ""}`}
+                        style={{
+                          height: `${(results.distribution[n] / maxCount) * 100}%`,
+                          animationDelay: justRevealed
+                            ? `${n * 80}ms`
+                            : undefined,
+                        }}
+                      />
+                    </div>
+                    <div
+                      className={`histo-count ${n === myRating ? "mine" : ""}`}
+                    >
+                      {results.distribution[n]}
+                    </div>
+                    <div
+                      className={`histo-label ${n === myRating ? "mine" : ""}`}
+                    >
+                      {n}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
     );
@@ -4201,6 +4225,96 @@ export default function ForumPage({ album, dateString, section = "home" }) {
   const [konamiTriggered, setKonamiTriggered] = useState(false);
   const [vinylSpinning, setVinylSpinning] = useState(false);
   const [vinylFlipped, setVinylFlipped] = useState(false);
+
+  /* 💿 The record turns while the record plays.
+
+     The hero's vinyl used to move only as an easter egg — click it, hover it —
+     while the one thing it depicts, today's album playing, left it standing
+     still. `deck` comes from AlbumPlayback: "playing" slides the disc out of
+     the sleeve and spins it at a real 33⅓ rpm (one turn per 1.8s), "paused"
+     leaves it parked out and still, "off" puts it away.
+
+     The speed changes are ramped rather than switched. A CSS loop removed on
+     pause snaps back to 0° and a paused one freezes mid-turn; a platter does
+     neither, it winds up and spins down. So `turning` (the class that keeps the
+     animation running) lags `deck` by the length of the spin-down, and the ramp
+     drives the running animation's playbackRate in between. With reduced motion
+     the site switches every animation off, getAnimations() comes back empty,
+     the ramp does nothing, and the parked-out disc is the whole signal. */
+  const [deck, setDeck] = useState("off");
+  const [onDeck, setOnDeck] = useState(false);
+  const [turning, setTurning] = useState(false);
+  // The load-time greeting spin; dropped once played (see .vinyl-intro)
+  const [vinylIntro, setVinylIntro] = useState(true);
+  useEffect(() => {
+    const t = setTimeout(() => setVinylIntro(false), 1600);
+    return () => clearTimeout(t);
+  }, []);
+  const vinylRef = useRef(null);
+  const rampRef = useRef(null);
+
+  useEffect(() => {
+    const el = vinylRef.current;
+    cancelAnimationFrame(rampRef.current);
+    const reduce =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+    const spin = () =>
+      el?.getAnimations?.().find((a) => a.animationName === "vinylPlay");
+
+    // Ramps start from the rate the platter is actually at, so pressing Play
+    // halfway through a spin-down picks the speed up rather than jumping it.
+    const ramp = (to, ms, done) => {
+      const from = spin()?.playbackRate ?? (to > 0 ? 0.2 : 1);
+      const start = performance.now();
+      const step = (now) => {
+        const t = Math.min(1, (now - start) / ms);
+        // ease-out: quick at first and settling at the end, like a platter
+        const rate = from + (to - from) * (1 - (1 - t) * (1 - t));
+        spin()?.updatePlaybackRate(Math.max(rate, 0.01));
+        if (t < 1) rampRef.current = requestAnimationFrame(step);
+        else done?.();
+      };
+      rampRef.current = requestAnimationFrame(step);
+    };
+
+    /* Back into the sleeve. Explicit rather than left to the transform
+       transition: removing the running animation and the on-deck class in the
+       same commit did not transition at all in Chrome — it snapped 40px home,
+       measured. Starting from the live transform also unwinds whatever angle
+       the platter stopped at, so the label comes home upright. A script
+       animation is not covered by the site's reduced-motion rule, so that
+       preference is checked here by hand. */
+    const putAway = () => {
+      const from = el ? getComputedStyle(el).transform : "none";
+      setOnDeck(false);
+      if (el?.animate && !reduce && from !== "none") {
+        el.animate([{ transform: from }, { transform: "none" }], {
+          duration: 450,
+          easing: "ease-in-out",
+        });
+      }
+    };
+
+    if (deck === "playing") {
+      setOnDeck(true);
+      setTurning(true);
+      ramp(1, 500);
+    } else if (turning) {
+      // Paused or stopped mid-spin: wind down first, on the deck
+      ramp(0, 900, () => {
+        setTurning(false);
+        spin()?.updatePlaybackRate(1);
+        if (deck === "off") putAway();
+      });
+    } else if (deck === "off" && onDeck) {
+      putAway();
+    }
+    return () => cancelAnimationFrame(rampRef.current);
+    // `turning` and `onDeck` are read, never triggers: the ramp flips them
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deck]);
   /* Which face the album hero wears. Read on mount rather than during render:
      the server has no localStorage, and guessing here is how you get a
      hydration mismatch. "album" is the default and the fallback. */
@@ -4664,10 +4778,8 @@ export default function ForumPage({ album, dateString, section = "home" }) {
                 />
               ) : (
                 <div
-                  className="album-display"
-                  style={{
-                    background: `linear-gradient(135deg, ${album.color}18, ${album.color}08)`,
-                  }}
+                  className={`album-display${album.youtubeId ? " has-deck" : ""}`}
+                  style={{ "--album-wash": album.color }}
                 >
                   <div className="album-cover-wrap">
                     <div
@@ -4690,9 +4802,12 @@ export default function ForumPage({ album, dateString, section = "home" }) {
                       )}
                     </div>
                     <div
-                      className={`vinyl-disc${vinylSpinning ? " spinning" : ""}${
+                      ref={vinylRef}
+                      className={`vinyl-disc${vinylIntro ? " vinyl-intro" : ""}${
+                        vinylSpinning ? " spinning" : ""
+                      }${
                         vinylFlipped ? " flipped" : ""
-                      }`}
+                      }${onDeck ? " on-deck" : ""}${turning ? " turning" : ""}`}
                       role="button"
                       tabIndex={0}
                       aria-label="Spin the vinyl record"
@@ -4705,7 +4820,23 @@ export default function ForumPage({ album, dateString, section = "home" }) {
                       }}
                       style={{ cursor: "pointer" }}
                       title="Click to spin!"
-                    />
+                    >
+                      {/* The label. Grooves are concentric, so a bare disc
+                          looks identical at every angle and a spin is barely
+                          visible; the label is what the eye reads as turning —
+                          and it puts today's record on the record. */}
+                      <span
+                        className="vinyl-label"
+                        aria-hidden="true"
+                        style={{
+                          backgroundColor: album.color,
+                          backgroundImage:
+                            album.image && !imgError
+                              ? `url("${album.image}")`
+                              : undefined,
+                        }}
+                      />
+                    </div>
                   </div>
                   <div className="album-info">
                     <h2 className="album-title">{album.title}</h2>
@@ -4737,7 +4868,7 @@ export default function ForumPage({ album, dateString, section = "home" }) {
                         ))}
                       </tbody>
                     </table>
-                    <AlbumPlayback album={album} />
+                    <AlbumPlayback album={album} onDeckChange={setDeck} />
                   </div>
                 </div>
               )}

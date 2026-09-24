@@ -833,6 +833,60 @@ failures += printGuardrail(
     : "No raw light background hexes outside the palette.",
 );
 
+/* The daily header tint. Each panel bar mixes the album's own colour into a
+   dark ink, and the bar carries white 13px bold text — normal-size text, so
+   4.5:1. The mix was raised on 2026-09-24 from a barely-visible 35/25 into
+   blue to 70/60 into ink, which passes for every album today at 4.67:1. The
+   margin is thin by design (stronger colour is the point), which is exactly
+   why it is measured here: the next bright green added to the catalog could
+   take it under, and nothing on screen would say so until someone squinted.
+
+   Reads the four tokens out of globals.css rather than copying them, so this
+   tracks the real CSS. The light-colour substitution mirrors isLightColor() in
+   ForumPage.js: an album whose colour is light by luma is shown with #2a4570,
+   because that is what --accent-color actually receives. */
+{
+  const token = (name) => {
+    const m = cssSource.match(new RegExp(`${name}:\\s*([^;]+);`));
+    return m ? m[1].trim() : null;
+  };
+  const pct = (v) => parseFloat(v) / 100;
+  const hex3 = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+  const tintTop = pct(token("--header-tint-top"));
+  const tintBottom = pct(token("--header-tint-bottom"));
+  const inkTop = hex3(token("--header-ink-top"));
+  const inkBottom = hex3(token("--header-ink-bottom"));
+  const lin = (c) => {
+    const v = c / 255;
+    return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  };
+  const lum = ([r, g, b]) =>
+    0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+  const whiteOn = (c) => 1.05 / (lum(c) + 0.05);
+  const mixInto = (c, base, p) => c.map((v, i) => v * p + base[i] * (1 - p));
+  const isLight = ([r, g, b]) =>
+    (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.5;
+
+  let worst = { ratio: Infinity, album: null };
+  for (const album of albums) {
+    const own = hex3(album.color);
+    const accent = isLight(own) ? hex3("#2a4570") : own;
+    const ratio = Math.min(
+      whiteOn(mixInto(accent, inkTop, tintTop)),
+      whiteOn(mixInto(accent, inkBottom, tintBottom)),
+    );
+    if (ratio < worst.ratio) worst = { ratio, album };
+  }
+  const tokensFound = [tintTop, tintBottom].every(Number.isFinite);
+  failures += printGuardrail(
+    tokensFound && worst.ratio >= 4.5,
+    "White header text stays readable on every day's tint",
+    !tokensFound
+      ? "Could not read --header-tint-* / --header-ink-* from globals.css"
+      : `Worst day: ${worst.album.artist} — ${worst.album.title} (${worst.album.color}) at ${worst.ratio.toFixed(2)}:1${worst.ratio < 4.5 ? " — under 4.5:1; darken the ink or lower the tint" : ""}.`,
+  );
+}
+
 // The lyric game blanks words longer than three characters and needs two of
 // them to make a two-blank puzzle.
 const blankable = (line) =>

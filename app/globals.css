@@ -16,6 +16,14 @@
   --bg-panel-alt: #f9f5ea;
   --bg-sidebar: #f5f0e3;
   --bg-header: linear-gradient(to bottom, #3a5f8f, #2a4570);
+  /* The daily header tint: how much of the album's own colour goes into each
+     end of the bar, and the ink it is mixed into. scripts/eval-site.mjs reads
+     these four values and fails if white header text drops under 4.5:1 for
+     any album in the catalog — change them here and it re-measures. */
+  --header-tint-top: 70%;
+  --header-tint-bottom: 60%;
+  --header-ink-top: #2b3446;
+  --header-ink-bottom: #1c2230;
   --bg-banner: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
   --bg-nav: linear-gradient(to bottom, #2a3f5f, #1e3050);
   --bg-footer: linear-gradient(to bottom, #2a3f5f, #1e3050);
@@ -379,20 +387,53 @@ body {
 /* Genre-accent theming — set via --accent-color on .content.
    The activity-card bars belong here too: they wear the same bar as .panel,
    so they should take the same daily tint. Left out, they sat on the flat
-   --bg-header blue while every panel beside them shifted with the album. */
+   --bg-header blue while every panel beside them shifted with the album.
+
+   The tint used to be 35%/25% of the album's colour mixed into that fixed
+   blue, which measured as the same site every day: across all 424 albums the
+   two most different header colours were 98 apart on a 441 scale, Nevermind
+   and Blue rendered one RGB step apart, and Sawayama's orange came out a
+   mauve-grey. Mixing more into the blue failed contrast (70/60 gave 3.93:1
+   white text), so the base is a neutral ink instead: twice the day-to-day
+   spread (195) with white text at 4.67:1 or better for every album. */
 .content .panel-header,
 .content .versus-header,
 .content .taste-header,
 .content .playlist-question {
   background: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--accent-color, #3a5f8f) 35%, #3a5f8f),
-    color-mix(in srgb, var(--accent-color, #2a4570) 25%, #2a4570)
+    color-mix(
+      in srgb,
+      var(--accent-color, #3a5f8f) var(--header-tint-top),
+      var(--header-ink-top)
+    ),
+    color-mix(
+      in srgb,
+      var(--accent-color, #2a4570) var(--header-tint-bottom),
+      var(--header-ink-bottom)
+    )
+  );
+  /* The fixed navy rule under a now-orange bar read as a seam */
+  border-bottom-color: color-mix(
+    in srgb,
+    var(--accent-color, #1a3050) 45%,
+    var(--header-ink-bottom)
   );
 }
 
 /* ─── Album display ─── */
+/* A wash of the album's colour behind the sleeve. It used to be an inline
+   gradient at 9% fading to 3% — below what anyone would notice — and, being
+   inline, it bled into Vintage, which has no business wearing the day's
+   colour. The colour still arrives inline, as --album-wash; the gradient lives
+   here, at 18% fading to 6%. Measured against all 424 albums at the wash's
+   strongest corner: the title stays above 11:1 and the artist line above 6:1. */
 .album-display {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--album-wash, transparent) 18%, transparent),
+    color-mix(in srgb, var(--album-wash, transparent) 6%, transparent)
+  );
   padding: 20px;
   display: flex;
   gap: 25px;
@@ -411,6 +452,8 @@ body {
   width: 230px;
   height: 200px;
   flex-shrink: 0;
+  /* How far the record comes out of its sleeve while it is on the deck */
+  --vinyl-slide: 40px;
 }
 
 .album-cover {
@@ -504,12 +547,86 @@ body {
   }
 }
 
-.vinyl-disc {
+/* The one-turn greeting on page load. A class rather than a base rule, and
+   removed once it has played: while the base .vinyl-disc owned an animation,
+   putting the record away after playback handed `transform` straight back to
+   it — so Stop snapped the disc 40px into the sleeve and replayed the greeting.
+   With no base animation, the transform transition below carries the disc home
+   from wherever the platter left it. */
+.vinyl-disc.vinyl-intro {
   animation: vinylIntro 1.5s ease-out;
 }
 
 .album-cover-wrap:hover .vinyl-disc {
   animation: vinylSpin 2s linear infinite;
+}
+
+/* The record label. It sits on the disc's existing dark centre (the 18% radial
+   stop above) and carries today's cover, so the thing that turns is recognisably
+   today's record. A concentric groove pattern is identical at every angle; the
+   label is what makes rotation visible at all. */
+.vinyl-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 34%;
+  height: 34%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+/* The spindle hole */
+.vinyl-label::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12%;
+  height: 12%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #111;
+}
+
+/* 33⅓ rpm is 60 / 33.33 = 1.8 seconds a revolution. */
+@keyframes vinylPlay {
+  from {
+    transform: translateX(var(--vinyl-slide)) rotate(0deg);
+  }
+  to {
+    transform: translateX(var(--vinyl-slide)) rotate(360deg);
+  }
+}
+
+/* On the deck: out of the sleeve. Static on purpose, so reduced motion — which
+   switches every animation off — still shows the record out and ready.
+
+   Four-part selectors are deliberate. The hover spin above and the
+   `(hover: none)` rule that disables it on touch screens are both three-part,
+   and at equal specificity the later touch rule would stop a playing record on
+   every phone. `.spinning` keeps its !important, so the click easter egg still
+   wins for its three seconds and then hands the platter back. */
+.album-display .album-cover-wrap .vinyl-disc.on-deck {
+  transform: translateX(var(--vinyl-slide));
+  animation: vinylPlay 1.8s linear infinite;
+  animation-play-state: paused;
+}
+
+.album-display .album-cover-wrap .vinyl-disc.on-deck.turning {
+  animation-play-state: running;
+}
+
+/* Room for the record to come out. Measured without it: the slid-out disc
+   covered 35px of the title and the Year/Genre labels. The space is reserved
+   from the first paint and only on days whose album can actually play — set
+   server-side from the catalog — so nothing but the record ever moves, and the
+   68% of days without audio keep the tighter layout they have always had. */
+.album-display.has-deck .album-cover-wrap {
+  margin-right: var(--vinyl-slide);
 }
 
 .album-info {
@@ -1274,6 +1391,37 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-top: 2px;
+}
+
+/* A room of one. Nobody else has rated yet, so there is no average, no
+   percentile and no distribution worth drawing — just the number you set. It
+   takes the same Georgia score-card face as .rate-stat-num, at a size that
+   reads as the result rather than one stat among four restating it. */
+.rate-solo {
+  text-align: center;
+  padding: 4px 0 2px;
+}
+
+.rate-solo-num {
+  font-family: Georgia, serif;
+  font-size: 46px;
+  font-weight: bold;
+  line-height: 1;
+  color: var(--text-link);
+}
+
+.rate-solo-of {
+  font-size: 18px;
+  font-weight: normal;
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+
+.rate-solo-line {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 10px auto 0;
+  max-width: 32em;
 }
 
 /* Histogram */
@@ -2728,6 +2876,16 @@ body {
     right: -20px;
   }
 
+  .album-cover-wrap {
+    --vinyl-slide: 28px;
+  }
+
+  /* Stacked layout: nothing sits beside the cover, and a right margin would
+     only pull the centred sleeve off-centre. */
+  .album-display.has-deck .album-cover-wrap {
+    margin-right: 0;
+  }
+
   .content {
     padding: 10px;
   }
@@ -3639,9 +3797,16 @@ body {
 
 /* Square corners everywhere — rounded rectangles are the wrong decade. The
    vinyl disc is exempt: it is a record, and squaring it turned the sleeve's
-   backdrop into a black box. */
-:root[data-theme="vintage"] *:not(.vinyl-disc) {
+   backdrop into a black box. Its label is exempt for the same reason — a square
+   label on a round record reads as a rendering fault, not as the nineties. */
+:root[data-theme="vintage"] *:not(.vinyl-disc):not(.vinyl-label) {
   border-radius: 0;
+}
+
+/* The fixed palette is the point of this skin: no daily wash behind the
+   sleeve (the header bars are already a fixed teal further down). */
+:root[data-theme="vintage"] .album-display {
+  background: none;
 }
 
 /* The outset bevel that every 90s dialog, button and panel wore. */

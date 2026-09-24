@@ -54,6 +54,48 @@ it, so adding a tab is one entry there plus a two-line `app/<key>/page.js`.
   deliberately not a heading — a heading inside a button is flattened into its
   name.
 
+### Rate & Reveal: a room of one
+
+When nobody else has rated (`results.total <= 1`) the result is the visitor's
+number, large, and one line — not four stats and a histogram. Given the site's
+audience that is the reveal nearly everyone gets, and the full view restated one
+number four ways: Average (theirs), Total 1, **Rated Higher Than 0%**, and ten
+bars growing in one after another with nine at zero. Same rule Vibe Check
+already follows. The full view returns on its own once a second rating exists.
+
+### The record on the deck
+
+The hero's vinyl reflects playback. `AlbumPlayback` reports `onDeckChange`
+("playing" / "paused" / "off") and `ForumPage` drives three classes on the
+disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
+`vinyl-intro`.
+
+- **33⅓ rpm is real:** `vinylPlay` is 1.8s a revolution.
+- **The disc carries a label** — today's cover, on its dark centre. The grooves
+  are concentric, so a bare disc looks the same at every angle; the label is
+  what makes rotation visible.
+- **Speed is ramped, not switched.** Play winds up over 0.5s; Pause and Stop
+  spin down over 0.9s by driving the CSS animation's `playbackRate`, so the
+  platter neither snaps back to 0° nor freezes mid-turn. `turning` therefore
+  lags the reported state by the length of the spin-down.
+- **Stop puts it away with the Web Animations API,** from the live transform
+  back to none. Removing the animation and `on-deck` in one commit did not
+  transition in Chrome — it snapped 40px, measured — which is also why the
+  load-time spin became a removable class: while the base rule owned an
+  animation, putting the record away replayed it.
+- **Room is reserved only on playable days.** Slid out, the disc covered 35px
+  of the title; `.album-display.has-deck` adds a right margin from first paint,
+  set server-side from `album.youtubeId`, so nothing but the record moves and
+  the ~68% of days without audio keep their tighter layout.
+- **Four-part selectors on purpose:** the `(hover: none)` rule that stops the
+  hover spin on touch screens would otherwise stop a playing record on every
+  phone. The click easter egg keeps its `!important` and still wins.
+- **Reduced motion:** the site's global rule switches CSS animations off, so the
+  disc just sits out of the sleeve while playing — a still "now playing" cue.
+  The put-away is a script animation, which that rule cannot reach, so it checks
+  the preference itself.
+- Vintage squares every corner except the disc's and, now, the label's.
+
 ### Blind Taste Test players are lazy
 
 The two YouTube players are created on the **first Play click**, not on mount.
