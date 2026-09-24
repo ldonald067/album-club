@@ -1163,6 +1163,22 @@ const BlindTasteTest = memo(function BlindTasteTest() {
   const [readyA, setReadyA] = useState(false);
   const [readyB, setReadyB] = useState(false);
 
+  /* The two clips are not fetched until someone asks for one.
+
+     Both players used to be built on mount, which put two full cross-origin
+     YouTube embeds on the home page of every visitor — measured on a production
+     build: iframes for both clip albums before any interaction, on a page that
+     otherwise pulls 212KB. They are the heaviest thing here by a wide margin,
+     they are invisible in our own byte counts because they are cross-origin,
+     and on most days nobody plays either one.
+
+     `armed` flips on the first Play click and the effect below builds the
+     players then. `pendingSideRef` remembers which button was pressed so the
+     clip starts by itself once its player reports ready — the click still means
+     "play this", it just waits for the thing it is playing. */
+  const [armed, setArmed] = useState(false);
+  const pendingSideRef = useRef(null);
+
   const loadResults = () => {
     loadJson("/api/matchup?type=taste")
       .then(setResults)
@@ -1179,9 +1195,9 @@ const BlindTasteTest = memo(function BlindTasteTest() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [todayKey]);
 
-  // Load YouTube IFrame API + two players
+  // Load YouTube IFrame API + two players — only once a clip has been asked for
   useEffect(() => {
-    if (submitted) return;
+    if (submitted || !armed) return;
     let cancelled = false;
 
     function initPlayers() {
@@ -1192,7 +1208,13 @@ const BlindTasteTest = memo(function BlindTasteTest() {
           width: "0",
           videoId: albumA.youtubeId,
           playerVars: { autoplay: 0, controls: 0, disablekb: 1, fs: 0 },
-          events: { onReady: () => !cancelled && setReadyA(true) },
+          events: {
+            onReady: () => {
+              if (cancelled) return;
+              setReadyA(true);
+              if (pendingSideRef.current === "A") startClip("A");
+            },
+          },
         });
       }
       if (!playerBRef.current) {
@@ -1201,7 +1223,13 @@ const BlindTasteTest = memo(function BlindTasteTest() {
           width: "0",
           videoId: albumB.youtubeId,
           playerVars: { autoplay: 0, controls: 0, disablekb: 1, fs: 0 },
-          events: { onReady: () => !cancelled && setReadyB(true) },
+          events: {
+            onReady: () => {
+              if (cancelled) return;
+              setReadyB(true);
+              if (pendingSideRef.current === "B") startClip("B");
+            },
+          },
         });
       }
     }
@@ -1234,14 +1262,27 @@ const BlindTasteTest = memo(function BlindTasteTest() {
         ref.current = null;
       });
     };
-  }, [submitted, albumA.youtubeId, albumB.youtubeId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [armed, submitted, albumA.youtubeId, albumB.youtubeId]);
 
+  /* First click builds the players and remembers what to do when they arrive;
+     every later click plays immediately. */
   const playClip = (side) => {
+    pendingSideRef.current = side;
+    if (!armed) {
+      setArmed(true);
+      return;
+    }
+    startClip(side);
+  };
+
+  const startClip = (side) => {
     const player = side === "A" ? playerARef.current : playerBRef.current;
     const timerRef = side === "A" ? timerARef : timerBRef;
     const otherPlayer = side === "A" ? playerBRef.current : playerARef.current;
     const otherTimerRef = side === "A" ? timerBRef : timerARef;
     if (!player) return;
+    pendingSideRef.current = null;
 
     // Pause other player. Its timer has to go too: pausing does not cancel it,
     // so it would still fire a minute later and mark that clip listened —
@@ -1423,11 +1464,11 @@ const BlindTasteTest = memo(function BlindTasteTest() {
           <button
             className={`taste-play-btn${playingA ? " playing" : ""}`}
             onClick={() => playClip("A")}
-            disabled={!readyA || playingA}
+            disabled={playingA || (armed && !readyA)}
           >
             {playingA
               ? "\u23F8 Playing..."
-              : !readyA
+              : armed && !readyA
                 ? "Loading audio..."
                 : "\u25B6 Play Clip A"}
           </button>
@@ -1437,11 +1478,11 @@ const BlindTasteTest = memo(function BlindTasteTest() {
           <button
             className={`taste-play-btn${playingB ? " playing" : ""}`}
             onClick={() => playClip("B")}
-            disabled={!readyB || playingB}
+            disabled={playingB || (armed && !readyB)}
           >
             {playingB
               ? "\u23F8 Playing..."
-              : !readyB
+              : armed && !readyB
                 ? "Loading audio..."
                 : "\u25B6 Play Clip B"}
           </button>
@@ -4471,13 +4512,26 @@ export default function ForumPage({ album, dateString, section = "home" }) {
             none of which a button could do. aria-current is what tells a
             screen reader which one you are on now that "active" is a route
             rather than a pressed state. Next scrolls to top on navigation, so
-            the old manual scrollTo went with the button. */}
+            the old manual scrollTo went with the button.
+
+            `prefetch={false}`, and explicitly rather than by omission —
+            omitting the prop leaves Link on its default, which still prefetches
+            links in the viewport. It was set to true here on the theory that it
+            made a tab click free, and measuring proved otherwise: every page
+            load fired five prefetch requests, one per other tab, and each came
+            back ~235 bytes against a 54KB document — these routes are
+            force-dynamic with no loading boundary, so there is nothing for a
+            prefetch to usefully fill. The click issued its own RSC request
+            regardless. Turning it off drops five requests per visit and costs
+            the click nothing. (The earlier claim that clicks made no request
+            came from resource timing, which does not record them; the browser's
+            own network log does.) */}
         <nav className="nav" aria-label="Sections">
           {SECTIONS.map((item) => (
             <Link
               key={item.key}
               href={item.path}
-              prefetch
+              prefetch={false}
               className={`nav-item ${activeSection === item.key ? "active" : ""}`}
               aria-current={activeSection === item.key ? "page" : undefined}
             >

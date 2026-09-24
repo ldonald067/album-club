@@ -26,9 +26,22 @@ it, so adding a tab is one entry there plus a two-line `app/<key>/page.js`.
   be opened in a new tab, copied, and followed. The teaser was a `div` with
   `role="button"` and a hand-rolled Enter/Space handler; the link makes all of
   that native.
-- Tab switching costs no network: the nav links carry `prefetch`, so the
-  payloads are already in the router cache. Measured against a production build
-  — a click issues no request, and a cold server render of any tab is ~5ms.
+- **The nav links set `prefetch={false}`, deliberately and explicitly.** An
+  earlier note here claimed tab switching cost no network because the links
+  prefetched. That was wrong twice over, and the browser's network log says so:
+  every page load fired five prefetch requests (one per other tab), each
+  returning ~235 bytes against a 54KB document — these routes are
+  `force-dynamic` with no loading boundary, so a prefetch has nothing useful to
+  fill — and the click then issued its own RSC request anyway. The original
+  measurement used `performance.getEntriesByType("resource")`, which does not
+  record those requests; CDP does. Turning prefetch off drops five requests per
+  visit and costs the click nothing. Set it explicitly: omitting the prop leaves
+  `Link` on its prefetching default. A server render of any tab is ~1.5–5ms, so
+  a click is roughly one round trip.
+- A `loading.js` would give a click visible feedback, and is **not** the right
+  move while every route renders the whole shell — the fallback would replace
+  the banner and nav too, flashing the entire page. It becomes reasonable only
+  if the shell moves into a shared layout.
 - Section titles are real headings. `.panel-header`'s title span is an
   `<h2 className="panel-title">`, `.playlist-question` / `.versus-header` /
   `.taste-header` are `<h2>`, and each FAQ question is an `<h3>`. Before that the
@@ -40,6 +53,18 @@ it, so adding a tab is one entry there plus a two-line `app/<key>/page.js`.
   `.yesterday-recap`'s header stays a `role="button"` disclosure and is
   deliberately not a heading — a heading inside a button is flattened into its
   name.
+
+### Blind Taste Test players are lazy
+
+The two YouTube players are created on the **first Play click**, not on mount.
+Building them eagerly put two full cross-origin YouTube embeds on the home page
+of every visitor — measured on a production build, before any interaction, on a
+page that otherwise pulls 212KB — and on most days nobody plays either clip.
+`armed` flips on first click and `pendingSideRef` remembers which button was
+pressed, so the clip starts by itself from `onReady`. The Play buttons are
+therefore enabled before a player exists; they only show "Loading audio..."
+once `armed` is true. Verified: 0 iframes on load, 2 after one click, and the
+clicked clip auto-plays.
 
 ### `useDraft(key, value, setValue, active)`
 

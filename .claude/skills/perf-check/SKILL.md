@@ -75,8 +75,8 @@ Optional: focus area (e.g., "bundle", "rendering", "database", "animations")
 
 **Rate Limiter**
 
-- The in-memory Map in `rate-limit.js` — does it grow unbounded?
-- Is the 1% random cleanup sufficient, or will it accumulate stale entries?
+- Two in-memory Maps in `rate-limit.js` (`hits`, `dailyVotes`) — do they grow unbounded?
+- Cleanup is a **deterministic unref'd 60s interval** that purges stale entries from both, not the 1% random sweep this checklist used to describe. Check that it still runs and still purges both maps, rather than looking for a sampling probability that no longer exists.
 
 ### CSS Performance
 
