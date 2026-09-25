@@ -1186,6 +1186,14 @@ const BlindTasteTest = memo(function BlindTasteTest() {
   const timerBRef = useRef(null);
   const [readyA, setReadyA] = useState(false);
   const [readyB, setReadyB] = useState(false);
+  /* Either clip refused by the embedded player. There was no onError here, so
+     a dead id left its button on "Loading audio..." for good — and voting
+     needs both clips heard, so the whole test could not be finished. Measured
+     on 2026-09-24: 13 of 135 stored ids were dead, which put a dead clip in the
+     pair on 59 of 365 days of 2026. The test does not swap in another pair:
+     the room's votes are keyed to the day, and a visitor on a substitute pair
+     would pour a different contest into the same tally. It says so instead. */
+  const [clipFailed, setClipFailed] = useState(false);
 
   /* The two clips are not fetched until someone asks for one.
 
@@ -1238,6 +1246,15 @@ const BlindTasteTest = memo(function BlindTasteTest() {
               setReadyA(true);
               if (pendingSideRef.current === "A") startClip("A");
             },
+            onError: () => {
+              if (cancelled) return;
+              pendingSideRef.current = null;
+              // A clip already playing is removed with the players; its
+              // one-minute "heard" timer should not outlive it
+              clearTimeout(timerARef.current);
+              clearTimeout(timerBRef.current);
+              setClipFailed(true);
+            },
           },
         });
       }
@@ -1252,6 +1269,15 @@ const BlindTasteTest = memo(function BlindTasteTest() {
               if (cancelled) return;
               setReadyB(true);
               if (pendingSideRef.current === "B") startClip("B");
+            },
+            onError: () => {
+              if (cancelled) return;
+              pendingSideRef.current = null;
+              // A clip already playing is removed with the players; its
+              // one-minute "heard" timer should not outlive it
+              clearTimeout(timerARef.current);
+              clearTimeout(timerBRef.current);
+              setClipFailed(true);
             },
           },
         });
@@ -1464,6 +1490,21 @@ const BlindTasteTest = memo(function BlindTasteTest() {
   }
 
   const canPick = listenedA && listenedB;
+
+  if (clipFailed) {
+    return (
+      <div className="taste-test">
+        <h2 className="taste-header">
+          &#x1F3A7; Blind Taste Test &mdash; listen, then pick
+        </h2>
+        <ActivityStatusNote>
+          One of today&apos;s clips won&apos;t play in the embedded player, and
+          a blind test with one side silent isn&apos;t a test. It sits this one
+          out &mdash; back tomorrow with a new pair.
+        </ActivityStatusNote>
+      </div>
+    );
+  }
 
   return (
     <div className="taste-test">
@@ -2358,6 +2399,14 @@ function HeardleGame() {
   const todayKey = getTodayKey();
   const puzzleAlbum = useMemo(() => getHeardleAlbum(), []);
   const hasYouTube = !!puzzleAlbum.youtubeId;
+  /* A video id is not a playable video. An audit on 2026-09-24 found 13 of 135
+     stored ids refused by the embedded player (error 150 — embedding blocked,
+     usually a label claim on a full-album upload), and this game had no
+     onError, so a dead id meant a clip that never played and a puzzle nobody
+     could solve — 6 of 73 Heardle days in 2026. Ids keep dying after they are
+     written, so this is a standing guard rather than a one-off cleanup: the
+     game takes the same Cover Art fallback it already had for a missing id. */
+  const [videoFailed, setVideoFailed] = useState(false);
 
   const [guesses, setGuesses] = useState([]);
   const [currentGuess, setCurrentGuess] = useState("");
@@ -2414,7 +2463,10 @@ function HeardleGame() {
           fs: 0,
           modestbranding: 1,
         },
-        events: { onReady: () => !cancelled && setPlayerReady(true) },
+        events: {
+          onReady: () => !cancelled && setPlayerReady(true),
+          onError: () => !cancelled && setVideoFailed(true),
+        },
       });
     }
 
@@ -2533,15 +2585,23 @@ function HeardleGame() {
   };
 
   // If no YouTube ID, make the fallback explicit instead of silently swapping modes
-  if (!hasYouTube) {
+  if (!hasYouTube || videoFailed) {
     return (
       <CoverChallenge
         fallbackNote={
-          <>
-            <strong>Heardle switched formats.</strong> Today&apos;s puzzle album
-            does not have a stable YouTube source in the rotation yet, so this
-            slot rolls over to Cover Art Challenge.
-          </>
+          videoFailed ? (
+            <>
+              <strong>Heardle switched formats.</strong> Today&apos;s clip
+              won&apos;t play in the embedded player, so this slot rolls over to
+              Cover Art Challenge rather than leave you guessing at silence.
+            </>
+          ) : (
+            <>
+              <strong>Heardle switched formats.</strong> Today&apos;s puzzle
+              album does not have a stable YouTube source in the rotation yet,
+              so this slot rolls over to Cover Art Challenge.
+            </>
+          )
         }
       />
     );

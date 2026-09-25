@@ -96,6 +96,26 @@ disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
   the preference itself.
 - Vintage squares every corner except the disc's and, now, the label's.
 
+### Every YouTube player handles a dead video
+
+A stored id can stop playing at any time — deleted, made private, or blocked
+from embedding — so all three players carry an `onError`:
+
+- **Hero (`AlbumPlayback`):** falls back to a YouTube search link.
+- **Heardle:** takes the existing Cover Art fallback, with a note that says why.
+- **Blind Taste Test:** says plainly that today's test is off. It deliberately
+  does **not** swap in a substitute pair: the room's votes are keyed to the day
+  (`taste-<date>`), and a visitor on a different pair would pour a different
+  contest into the same tally.
+
+Before 2026-09-24 only the hero had one. With 13 dead ids in the catalog, the
+Taste Test drew a dead clip on 59 of 365 days of 2026 — stuck on "Loading
+audio..." with voting locked, because voting needs both clips heard — and
+Heardle landed on a silent clip on 6 of 73 Heardle days. Both error paths were
+verified by pointing today's ids at a dead video in a scratch edit: Heardle
+handed over to Cover Art, and the Taste Test showed its note with no stuck
+buttons and no React errors from the removed player nodes.
+
 ### Blind Taste Test players are lazy
 
 The two YouTube players are created on the **first Play click**, not on mount.

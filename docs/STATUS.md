@@ -626,14 +626,25 @@ docs. This section is only what is still open.
    pasted link finally shows today's record. Nothing has submitted the sitemap
    or put the link in front of anyone; that needs a human with the accounts.
 
-7. **Sharing is closed, permanently (2026-08-25).** Not a backlog item and not
+7. **Album audio needs a proper refetch (2026-09-24).** Only 39 of the
+   catalog's videos are whole albums; most of the rest are one song, and 21 dead
+   or wrong ids were removed after an audit (details in `docs/album-data.md`).
+   Today 114 of 424 albums have any audio, and the inline player therefore
+   works on roughly a quarter of days. The fix is a rewritten
+   `fetch-youtube-ids.mjs` that searches for full albums, checks title and
+   duration before storing anything, and covers all 424 — not just the
+   `recognizable` ones it was written for. **Blocked on a YouTube Data API key**,
+   which needs the owner; the free tier's 100 searches a day make the full
+   catalog four to five days of runs.
+
+8. **Sharing is closed, permanently (2026-08-25).** Not a backlog item and not
    a trade-off to revisit when traffic arrives: the club is somewhere to have
    an opinion, not somewhere to perform having had one. This removes the
    obvious growth lever that a site with no audience would normally reach for,
    which is the point — see the rule in `CLAUDE.md` before proposing anything
    adjacent to it.
 
-8. **The Club Player is not coming back (2026-09-03).** A 2004 media-player view
+9. **The Club Player is not coming back (2026-09-03).** A 2004 media-player view
    of the album hero was built and deleted in the same stretch. It could not
    play on the 68% of days with no video id, over half its height was scenery,
    and it replaced real cover art with an emoji. Webamp does the retro look

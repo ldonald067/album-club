@@ -26,7 +26,11 @@
 - **Color must be unique** — no two albums share the same hex
 - **Emoji must be unique** — single codepoint only (no flags 🇫🇷, ZWJ ❤️‍🔥, or keycaps 3️⃣)
 - **`recognizable: true`** only for albums a general listener could guess from clues. Niche/experimental = false
-- **`youtubeId` coverage is intentionally partial across the full catalog**: many albums are mixtapes, lofi compilations, DJ sets, or niche releases without obvious full-album uploads. That is expected. The current recognizable pool is fully covered, which keeps Heardle and Blind Taste Test on stable daily picks.
+- **`youtubeId` coverage is partial, and a stored id is not a playable album.** Audited 2026-09-24 against all 135 ids that existed then — each one's title, its length from the public watch page, the album's MusicBrainz tracklist, and a real load in the site's own embedded player:
+  - **39** were the full album or full performance; **73** were one song from the right album; **13** were refused by the embedded player (error 150 — usually a label blocking embeds on a full-album upload); **8** were not the album's music at all (three songs from other albums, plus 6- and 18-second clips, two teasers and a Pitchfork explainer); **2** were music-video films.
+  - **The 21 dead and wrong ids were removed** (the two films were kept). Wrong data is worse than missing data, and the dead ones were breaking two games — see `docs/components.md`.
+  - **Why so few are whole albums:** `scripts/fetch-youtube-ids.mjs` searched `"{artist} {title} official audio"` and kept the **first result, unchecked**, and only for `recognizable` albums — the ids were collected for Heardle and the Taste Test, where a single song is fine. The hero's inline player reused the field later. A refetch that targets full albums, checks title and duration, and covers the whole catalog is the real fix and needs a YouTube Data API key.
+  - Removing ids shrinks the Heardle and Taste Test pools, and pool size drives the daily rotation, so it reshuffles which album those games pick on future days. `eval-site` checks the new Heardle pool against the 5-day cadence.
 - **`image` must not be null, and must be https** — fetch via MusicBrainz/iTunes before committing. `eval-site` fails on a missing, duplicated, or `http://` cover: production is https, so an insecure URL is mixed content and local dev cannot reveal it
 - **No duplicates** — check artist+title before adding. Run `/add-album` skill for validation
 - After renaming an album, set `image` to `null` and re-run fetch-covers to get correct artwork
