@@ -748,7 +748,9 @@ docs. This section is only what is still open.
    duration before storing anything, and covers all 424 — not just the
    `recognizable` ones it was written for. **Blocked on a YouTube Data API key**,
    which needs the owner; the free tier's 100 searches a day make the full
-   catalog four to five days of runs.
+   catalog four to five days of runs. Audit the result with
+   `npm run audit-youtube-ids -- --albums <candidate>` before it replaces the
+   catalog.
 
 8. **Sharing is closed, permanently (2026-08-25).** Not a backlog item and not
    a trade-off to revisit when traffic arrives: the club is somewhere to have

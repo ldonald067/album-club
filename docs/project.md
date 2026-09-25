@@ -127,6 +127,7 @@ npm run fetch-albums         # Grow the album list from Last.fm (needs LASTFM_AP
 npm run fetch-covers         # MusicBrainz/iTunes cover art
 npm run fetch-lyrics         # Genius API lyric lines (needs GENIUS_ACCESS_TOKEN)
 npm run fetch-youtube-ids    # YouTube Data API (needs YOUTUBE_API_KEY, 100/day free)
+npm run audit-youtube-ids    # Read-only: which stored videos are dead, clips, or the wrong album (~4 min)
 npm run soundtrack-corner-report  # Corner coverage + air-date queue + generator-floor gaps
 npm run eval-site            # Whole-site quality pass: albums, games, soundtrack, UI/API guardrails
 ```
