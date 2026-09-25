@@ -1,12 +1,42 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-09-08.
+session. Last updated: 2026-09-25.
 
 ## Handoff — read this first
 
 **Nothing is in flight.** `master` is clean, pushed, and deployed; verify with
 `GET /api/health`, which returns the running commit SHA.
+
+**2026-09-08 → 09-25 was one long stretch of reviews, each one fixed and
+shipped.** In order, all live on `master`:
+
+- **Every tab became a URL** (below) — six routes, one component.
+- **Five project skills were brought back in line** with the code; two gave
+  advice that would have caused harm (`add-album` said to sort a catalog whose
+  order drives the rotation).
+- **A UX review** found that a tab switch now discarded half-finished answers,
+  that nine section titles were not headings, and that four of five game inputs
+  missed the 44px touch rule. All five findings fixed.
+- **An adversarial review** (three Codex reviewers) found `/soundtrack` served
+  a crawler nothing, the routing guardrail proved only that folders existed,
+  and three smaller faults. Fixed; the shared-layout question it raised is
+  still open (open item 10).
+- **A perf check** found the Blind Taste Test built two YouTube players on
+  every home load, and that the nav's `prefetch` was buying nothing — which
+  corrected a claim made twice, that tab clicks cost no request.
+- **A design review** with the bar "meaningful": the solo Rate & Reveal, the
+  vinyl that turns at 33⅓ while the album plays, and a daily header tint strong
+  enough that each day finally looks like itself.
+- **An audio audit** of all 135 stored video ids: only 39 are whole albums, 13
+  were dead in the embed and 8 were not the album's music. The dead ones were
+  breaking two games on ~1 day in 6; both now handle a dead video, and the 21
+  bad ids are gone. The real fix is open item 7 and needs an API key.
+- **An API hardening pass**: IPv6 was rate-limited per address (a /64 holder
+  could rotate past every limit); now per /64. The backup token is header-only
+  and compared in constant time.
+
+Details for each are in Recent work below. Last deploy verified: `bc81a38`.
 
 **2026-09-08: every tab is a URL.** The six sections — Home, Soundtrack Corner,
 Cozy Vibes, Archive, Stats, FAQ — were `activeSection` state on a single route,
@@ -15,7 +45,8 @@ bookmarked, a reload always landed on Home, the back button left the site, and a
 crawler only ever saw the home page. They are real routes now (`/soundtrack`,
 `/cozy`, `/archive`, `/stats`, `/faq`), each with its own title, description and
 Open Graph card, all six in the sitemap. `ForumPage` takes the tab as a prop.
-Tab switching still costs no network — the nav links prefetch. Full write-up in
+(An earlier claim here, that tab switching cost no network because the nav
+links prefetched, was wrong — see the perf check in Recent work.) Full write-up in
 `docs/components.md` under "Routing". Two things it turned up: image metadata
 files are **not** inherited by nested segments, and `ForumPage` now unmounts on
 every tab change, which is what made the borrowed-page-title ref a bug.
@@ -89,14 +120,19 @@ visitor.
    Chrome refuses fullscreen to a synthesized click; the preview pane's
    screenshot lags a programmatic scroll. Each produced a confident wrong
    answer this stretch, and one nearly became a change request against working
-   code. `docs/gotchas.md` → "Verifying with browser automation".
+   code. Four more in September: resource timing cannot see RSC fetches (which
+   produced a wrong "tab clicks are free" claim, twice), a hidden pane clamps
+   timers to one second, a scripted click is not a media gesture on mobile, and
+   a hidden pane can return blank screenshots. `docs/gotchas.md` → "Verifying
+   with browser automation".
 
-**Where to pick up:** the open items below. None is a coding task — items 2 and
-6 are standing decisions and the rest are context. The one genuinely open action
-is not code: **nothing has put the link anywhere.** The share surface exists
-now; submitting the sitemap and telling anyone the site exists needs a human
-with the accounts, and until that happens the community features have no room to
-hold.
+**Where to pick up:** the open items below. Two genuinely open actions both need
+a human rather than code. **Nothing has put the link anywhere** — submitting the
+sitemap and telling anyone the site exists needs someone with the accounts, and
+until that happens the community features have no room to hold. And **album
+audio needs a YouTube Data API key** (open item 7): without one the refetch
+cannot run, and inline playback stays at roughly a quarter of days. The one open
+_coding_ question is item 10, the shared layout — measure before building.
 
 ## What this is
 
@@ -188,6 +224,80 @@ Node 22) runs `npm test` then `npm run build`.
 
 ## Recent work (this stretch of sessions)
 
+- **API hardening (2026-09-25, `bc81a38`).** Every route attacked directly: 27
+  malformed payloads (including a 1MB chunked body with no declared length),
+  future date keys, a 32-request flood, a ballot-stuffing run. Validation, body
+  caps, bound SQL, safe error bodies and the caches all held. Four fixes:
+  **IPv6 is now limited per /64** (`ipv6Prefix64` in `lib/rate-limit.js`) —
+  per-address keys let one holder rotate past every limit, shown locally when
+  `::2` got 200 right after `::1` got 429; **`/api/backup` is Bearer-only**, the
+  unused `?token=` path removed as a leak into logs; the token compare **hashes
+  both sides** (`lib/token-match.js`, unit-tested) so a wrong length answers no
+  faster; three comments claiming a daily cap of 3 now defer to
+  `checkDailyLimit` (it is 12). Accepted by design: one address can still cast
+  12 votes a day per endpoint (the NAT allowance), and the Guess "solved" flag
+  is client-reported. Tests 34 → 44. The backup auth path was exercised end to
+  end with a throwaway token in a temporary `.env.local`; on production only
+  the reject paths were probed, so the first real proof is the next scheduled
+  backup run.
+
+- **Audio audit (2026-09-24/25, `d42081c`).** All 135 stored `youtubeId`s checked
+  by title, watch-page length, MusicBrainz tracklist and a real load in the
+  site's embedded player: **39 full albums, 73 single songs, 13 dead (error
+  150), 8 not the album's music, 2 music-video films.** The fetcher had kept the
+  first search result for "artist title official audio", unchecked, and only
+  for `recognizable` albums — the ids were for the games; the hero reused them.
+  The dead ones broke two games: run through every day of 2026, the Blind Taste
+  Test drew a dead clip on **59 of 365 days** (stuck, voting locked) and Heardle
+  on 6 of 73. Both now handle a dead video (`docs/components.md`), and the 21
+  bad ids are removed — re-simulated to 0 and 0. Full breakdown in
+  `docs/album-data.md`; the refetch is open item 7.
+
+- **Design review (2026-09-24, `22bfdec`).** Bar: motion and colour that say
+  something true about the day and the record, not more novelty. **Solo
+  reveal** — a room of one now gets the visitor's number and one line, not four
+  stats restating it and nine empty histogram bars. **The record on the deck**
+  — Play slides the vinyl out and spins it at a real 33⅓ rpm with today's cover
+  as its label; Pause spins it down and parks it; Stop puts it away. Testing
+  caught three faults (it covered 35px of the title; Stop snapped and replayed
+  the load spin; touch screens would have stopped it). **The day's colour** —
+  the header tint was measurably the same every day (Nevermind and Blue one RGB
+  step apart); mixing into a neutral ink doubled the spread with white text
+  still ≥4.67:1 for all 424 albums, now an `eval-site` guardrail. Details in
+  `docs/components.md` and `docs/skins.md`.
+
+- **Perf check (2026-09-24, `7ce59e2`).** The Blind Taste Test built both
+  YouTube players on mount — two cross-origin embeds on every home load; now
+  built on first Play. The nav's `prefetch` fired five requests per page load
+  that each returned a ~235-byte stub, and the click still made its own
+  request; now `prefetch={false}`, explicitly (omitting it leaves Link
+  prefetching). This corrected a claim made twice that tab clicks were free —
+  resource timing had hidden the requests. No `loading.js`: while every route
+  renders the whole shell, its fallback would flash the banner and nav.
+
+- **Adversarial review (2026-09-09, `c6fd733`).** Three Codex reviewers, verdict
+  PASS. Fixed: `/soundtrack` served a crawler only "Opening Soundtrack
+  Corner..." (`ssr: false` removed — home page unchanged at 13 requests,
+  215KB → 212KB — though the panel still streams in behind a Suspense
+  fallback); the routing guardrail now checks each route's identity, proved by
+  breaking one on purpose; Vibe Check's restore path made storage-safe; the
+  sitemap only dates routes that change daily; `sectionPath` throws on a typo.
+  Deferred: the shared-layout question (open item 10).
+
+- **UX review (2026-09-09, `84e60be`).** Five fixes: unsubmitted answers now
+  survive a tab switch (`useDraft`, plus inline drafts in Vibe Check); section
+  titles are real headings (home 2 → 9, FAQ 1 → 9); the game text input meets
+  44px on touch in all five games, not one; the Archive table has `scope`; the
+  content is a `<main>` landmark. Contrast came back clean — 12 apparent
+  failures, 11 of them measurement artefacts.
+
+- **Five skills repaired (2026-09-09, `6ea0171`).** `add-album` said to keep the
+  catalog sorted by artist (it is not sorted, and reordering rewrites the
+  rotation); `deploy` still guessed the Railway volume was unmounted;
+  `reset-day` cleared 3 of 6 vote tables; `perf-check` forbade code splitting
+  "because the app is a single page"; `ux-review` never mentioned the
+  no-sharing rule. All five now match the code.
+
 - **Every section became a route (2026-09-08).** Six tabs, six URLs, one
   component. `app/sections.js` is the list the nav, the route folders and the
   sitemap share, so a new tab is one entry plus a two-line `page.js`; the per-tab
@@ -205,9 +315,12 @@ Node 22) runs `npm test` then `npm run build`.
   `restoreTitle()` clears it on every restore; verified by spinning the record
   and navigating away inside the three-second window.
 
-  Tab switching costs no network — the nav links carry `prefetch`, so a click
-  issues no request at all. Measured against a production build; a cold render of
-  any tab route is ~5ms.
+  ~~Tab switching costs no network — the nav links carry `prefetch`, so a click
+  issues no request at all.~~ **Wrong, corrected 2026-09-24:** that measurement
+  used resource timing, which does not record RSC fetches. The network log
+  showed five prefetch requests per page load and a fresh request on the click
+  anyway; prefetch is now off (see the perf check above). A cold server render
+  of any tab route is ~5ms — that part stands.
 
   **Behaviour change worth knowing:** unpersisted `ForumPage` state now resets on
   a tab switch — the clicked-through secret tagline, an in-flight vinyl spin.
@@ -652,6 +765,16 @@ docs. This section is only what is still open.
    between them for it to fill. Playback lives in the hero now
    (`app/AlbumPlayback.js`). Reasoning in `docs/components.md`.
 
+10. **Shared layout — measure before building (raised 2026-09-09).** Every tab
+    route renders the whole `ForumPage`, so a tab change remounts the banner,
+    nav and every piece of shell state. The adversarial review's three
+    reviewers all flagged it, and it is why a `loading.js` would flash the
+    whole page. Moving the shell into a shared App Router layout is the right
+    long-term shape and a large refactor of a ~5,200-line client component.
+    What is **not** yet known is what a cold tab click costs a real visitor —
+    it could not be measured this stretch (the pane was hidden, which clamps
+    timers). Measure that on a real device first; build only if it is felt.
+
 ## Gotchas worth knowing
 
 Full list lives in `docs/gotchas.md` — read it before touching JSX text, the
@@ -674,6 +797,10 @@ game samplers, or the lyric data. The three most expensive ones:
   equalizer". Their bodies differ, they describe a component deleted four commits
   later, and fixing it means force-pushing eight rewritten SHAs onto a branch
   that auto-deploys production. Decided: leave it. Do not tidy this.
+- **A stored `youtubeId` is not a playable album (2026-09-24).** Only 39 of
+  135 were whole albums; the rest were single songs, clips, teasers or dead in
+  the embed, and nothing checked. Any new player needs an `onError`, and any
+  refetch must verify title and duration before storing — see open item 7.
 - **Fail on evidence, never on a stopwatch (2026-09-03).** A ten-second timeout
   added to inline playback turned a slow connection into permanent failure, and
   a late success could not undo it. Real signals only: the script erroring, the

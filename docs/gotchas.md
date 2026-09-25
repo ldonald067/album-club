@@ -124,6 +124,26 @@ next reader can tell whether their harness is covered.
   click aimed at the top control row hit the room buttons. Drive an embedded app
   at its own origin, where `contentDocument` is readable and one frame level
   keeps coordinates honest
+- **Resource timing does not see RSC fetches (2026-09-24).**
+  `performance.getEntriesByType("resource")` recorded no request on a tab
+  click, so it was reported — twice — that prefetch made tab switching free.
+  The browser's own network log (`read_network_requests`, which is CDP) showed
+  five prefetch requests on every page load and a fresh RSC request on the
+  click anyway. Count requests from the network log, never from resource
+  timing
+- **A hidden pane throttles timers to one second.** Every click-to-navigate
+  latency measured with `setTimeout` polling came back at exactly 1000ms, and
+  `requestAnimationFrame` loops simply stalled. A suspiciously round or uniform
+  timing is the throttle, not the site; `tabs_context` says when the pane is
+  hidden. Measure server cost with curl instead, and do not report a
+  client-side latency taken while hidden
+- **A scripted `.click()` is not a user gesture for media on mobile.** Under
+  the mobile preset, JS-clicking Play left YouTube unstarted (autoplay policy);
+  a real tap through `computer`/`left_click` played. On desktop the same
+  scripted click worked, so it looks like a mobile-only bug when it is the tool
+- **A screenshot can come back blank while the pane is hidden** — solid page
+  background, no content. It is not a rendering failure; confirm with
+  `getBoundingClientRect` and computed styles, which are unaffected
 
 The habit, same as for colour: **before filing what a tool reports, name the
 specific thing the tool does differently from the user's path.** If you can name
