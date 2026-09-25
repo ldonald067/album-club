@@ -69,8 +69,9 @@ export async function POST(request) {
       );
     }
 
-    // Daily vote cap: 3 ratings per IP per day — checked after validation
-    // so malformed requests don't consume the quota
+    // Daily cap per address — the number lives in checkDailyLimit, not here,
+    // so this comment can't go stale (it said 3 long after the cap became
+    // 12). Checked after validation so malformed requests don't spend it.
     if (!checkDailyLimit(ip, "rate")) {
       return jsonRateLimited("Daily rating limit reached", {
         retryAfter: getSecondsUntilNextUtcDay(),

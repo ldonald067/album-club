@@ -73,8 +73,9 @@ export async function POST(request) {
     }
     const { type, attempts, solved } = validation;
 
-    // Daily vote cap: 3 submissions per IP per game type per day — checked
-    // after validation so malformed requests don't consume the quota
+    // Daily cap per address and game type — the number lives in
+    // checkDailyLimit. Checked after validation so malformed requests don't
+    // spend it.
     if (!checkDailyLimit(ip, `guess-${type}`)) {
       return jsonRateLimited("Daily guess limit reached", {
         retryAfter: getSecondsUntilNextUtcDay(),

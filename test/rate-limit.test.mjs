@@ -86,3 +86,52 @@ test("getRealIp prefers x-real-ip and falls back to a shared bucket", () => {
     "garbage must not become its own bucket",
   );
 });
+
+/* IPv6 is limited per /64, not per address. A home connection or a cheap VPS
+   is routinely handed a whole /64 — 2^64 addresses — so keying by the full
+   address let one holder rotate sources and walk past every limit. Shown in
+   the 2026-09-25 API review: after 30 calls from ::1 hit 429, ::2 in the same
+   /64 was served immediately. */
+test("IPv6 addresses in one /64 share a single bucket", () => {
+  const a = getRealIp(headers({ "x-real-ip": "2001:db8:abcd:12::1" }));
+  const b = getRealIp(
+    headers({ "x-real-ip": "2001:db8:abcd:12:ffff:ee:dd:2" }),
+  );
+  assert.equal(a, b, "same /64, same bucket");
+
+  for (let i = 0; i < 5; i++) checkRateLimit(a, 5);
+  assert.equal(checkRateLimit(b, 5), false, "a neighbour is already limited");
+});
+
+test("different /64 prefixes stay separate", () => {
+  assert.notEqual(
+    getRealIp(headers({ "x-real-ip": "2001:db8:abcd:12::1" })),
+    getRealIp(headers({ "x-real-ip": "2001:db8:abcd:13::1" })),
+  );
+});
+
+test("IPv6 grouping is not fooled by compression or case", () => {
+  // The same /64 written three ways
+  const forms = [
+    "2001:0db8:ABCD:0012:0000:0000:0000:0001",
+    "2001:db8:abcd:12::1",
+    "2001:DB8:abcd:12:0:0:0:9",
+  ].map((ip) => getRealIp(headers({ "x-real-ip": ip })));
+  assert.equal(new Set(forms).size, 1);
+});
+
+test("IPv4 and IPv4-mapped IPv6 are unchanged by the /64 rule", () => {
+  assert.equal(getRealIp(headers({ "x-real-ip": "5.6.7.8" })), "5.6.7.8");
+  assert.equal(
+    getRealIp(headers({ "x-real-ip": "::ffff:5.6.7.8" })),
+    "5.6.7.8",
+  );
+});
+
+test("malformed IPv6 is not treated as an address", () => {
+  // Two "::" is invalid; so is a 5-digit group. Neither may become a bucket
+  // key of its own — they fall back to the shared bucket like any junk value.
+  for (const junk of ["2001::db8::1", "2001:db8:12345::1"]) {
+    assert.equal(getRealIp(headers({ "x-real-ip": junk })), "unknown");
+  }
+});

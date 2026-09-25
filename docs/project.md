@@ -47,7 +47,11 @@ volume at `data/aotd.db`, which is gitignored. Back it up off-volume.
 **Mechanism (shipped):** `GET /api/backup` streams a consistent SQLite
 snapshot (better-sqlite3 online backup). It is **inert (404) until you set
 `BACKUP_TOKEN`** in the Railway service. Auth via `Authorization: Bearer
-<token>` or `?token=<token>`; wrong/absent token returns 404. Rate-limited.
+<token>` **only**; wrong/absent token returns 404. Rate-limited. The
+`?token=` fallback was removed on 2026-09-25: nothing used it, and a token in a
+URL lands in request logs, proxy logs and browser history. The compare hashes
+both sides (`lib/token-match.js`, unit-tested) so it is constant-time for any
+length.
 
 **To turn it on:**
 

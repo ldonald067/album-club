@@ -26,10 +26,17 @@ Optional: specific route to audit (e.g., "rate", "vibe", "guess") — defaults t
 - `app/api/health/route.js` — deploy/commit status probe
 - `app/api/backup/route.js` — **audit this one first.** It streams a full SQLite
   snapshot. It is 404 when `BACKUP_TOKEN` is unset, takes the token via
-  `Authorization: Bearer` or `?token=`, compares it in constant time, and is
-  rate limited. Check that all four of those still hold, that the token cannot
-  leak through an error body or a redirect, and that `?token=` in a URL is an
-  accepted trade-off rather than an oversight
+  `Authorization: Bearer` **only**, compares it in constant time
+  (`lib/token-match.js` — hashed, so equal-length for any input), and is rate
+  limited before auth. Check all four still hold and that the token cannot leak
+  through an error body or a redirect. `?token=` was removed on 2026-09-25 as a
+  leak path with no caller — if it reappears, that is a regression. Its auth
+  path only runs with a token set: put one in a temporary `.env.local` to test
+  it locally, and delete the file afterwards
+- `lib/token-match.js` — the backup token compare, unit-tested in isolation
+- IPv6 clients are limited per **/64**, not per address (`ipv6Prefix64` in
+  `lib/rate-limit.js`) — a per-address key let one holder rotate past every
+  limit. Check a new limiter still keys through `getRealIp`
 - `lib/db.js` — SQLite queries (check for injection, error handling)
 - `lib/rate-limit.js` — Rate limiter implementation
 - `lib/api-helpers.js` — shared validation/response helpers

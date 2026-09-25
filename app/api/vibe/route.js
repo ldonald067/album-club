@@ -76,8 +76,8 @@ export async function POST(request) {
       }
     }
 
-    // Daily vote cap: 3 vibe submissions per IP per day — checked after
-    // validation so malformed requests don't consume the quota
+    // Daily cap per address — the number lives in checkDailyLimit. Checked
+    // after validation so malformed requests don't spend it.
     if (!checkDailyLimit(ip, "vibe")) {
       return jsonRateLimited("Daily vibe limit reached", {
         retryAfter: getSecondsUntilNextUtcDay(),
