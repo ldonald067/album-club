@@ -35,8 +35,13 @@ shipped.** In order, all live on `master`:
 - **An API hardening pass**: IPv6 was rate-limited per address (a /64 holder
   could rotate past every limit); now per /64. The backup token is header-only
   and compared in constant time.
+- **The audio audit became a project script**, `npm run audit-youtube-ids`,
+  after the session scratchpad holding the original was cleared. Run on the
+  live catalog: 0 dead, 0 clips, 0 wrong-album ids.
+- **An adversarial review of 09-25's work did not run** — the Codex account hit
+  its usage limit (resets 2026-09-29 08:27). No verdict exists; open item 11.
 
-Details for each are in Recent work below. Last deploy verified: `bc81a38`.
+Details for each are in Recent work below. Last deploy verified: `ca78471`.
 
 **2026-09-08: every tab is a URL.** The six sections — Home, Soundtrack Corner,
 Cozy Vibes, Archive, Stats, FAQ — were `activeSection` state on a single route,
@@ -132,7 +137,9 @@ sitemap and telling anyone the site exists needs someone with the accounts, and
 until that happens the community features have no room to hold. And **album
 audio needs a YouTube Data API key** (open item 7): without one the refetch
 cannot run, and inline playback stays at roughly a quarter of days. The one open
-_coding_ question is item 10, the shared layout — measure before building.
+_coding_ question is item 10, the shared layout — measure before building. And
+once Codex's limit resets on **2026-09-29**, run the adversarial review that did
+not happen (item 11) before building anything new on top of it.
 
 ## What this is
 
@@ -223,6 +230,29 @@ Node 22) runs `npm test` then `npm run build`.
   upgrade (not wired).
 
 ## Recent work (this stretch of sessions)
+
+- **The audit is a script now (2026-09-25, `ca78471`).** The first audit ran from
+  the session scratchpad, which was cleared before the day was out — script and
+  raw results both gone. Rewritten as `scripts/audit-youtube-ids.mjs`
+  (`npm run audit-youtube-ids`, read-only, ~4 minutes), and corrected where the
+  first version's calls had been fixed by hand: short track titles match as
+  whole words (it had flagged SZA's "SOS", Charli's "360" and Kendrick's "gnx"),
+  bracketed and " - Remastered" suffixes are stripped, and a sub-minute video
+  naming no track is its own CLIP verdict. **Validated against 22bfdec's
+  catalog from git: it flags exactly the 21 removed ids plus the 2 films, and
+  none of the four false alarms.** The two films sit in `KEPT_AFTER_REVIEW`, so
+  exit 1 keeps meaning something new broke. On the live catalog (114 ids): 37
+  full albums, 72 songs, 2 kept, 3 unverified by design, and nothing dead,
+  clipped or wrong — exit 0. `--albums <file>` audits a candidate catalog; that
+  is how item 7's refetch should land.
+
+- **Adversarial review of 09-25 — did not run (2026-09-25).** Three Codex
+  reviewers were given the three 09-25 commits (`d42081c`, `bc81a38`,
+  `f199106`) and each read ~37k tokens of the diff before failing with a usage
+  limit. `codex exec` still exited 0 and wrote empty output files; the skill's
+  non-empty check is what caught it, exactly as intended. Nothing was
+  substituted — a same-model review is what the skill exists to avoid. See open
+  item 11.
 
 - **API hardening (2026-09-25, `bc81a38`).** Every route attacked directly: 27
   malformed payloads (including a 1MB chunked body with no declared length),
@@ -777,6 +807,17 @@ docs. This section is only what is still open.
     it could not be measured this stretch (the pane was hidden, which clamps
     timers). Measure that on a real device first; build only if it is felt.
 
+11. **Adversarial review pending — run on or after 2026-09-29 (raised
+    2026-09-25).** The review of 09-25's commits failed on Codex's usage limit,
+    which resets **2026-09-29 08:27**. When it runs, widen the scope to
+    **`7ce59e2..HEAD`**: the perf fixes and the three design changes from 09-24
+    — the turning record's ramp and put-away code, the daily tint and its
+    guardrail — have never had an adversarial review either. The prompts
+    rebuild from git in a minute, and the evidence for the 21 removed ids comes
+    from running the audit on the old catalog:
+    `git show 22bfdec:lib/albums.json > /tmp/before.json` then
+    `npm run audit-youtube-ids -- --albums /tmp/before.json`.
+
 ## Gotchas worth knowing
 
 Full list lives in `docs/gotchas.md` — read it before touching JSX text, the
@@ -799,6 +840,13 @@ game samplers, or the lyric data. The three most expensive ones:
   equalizer". Their bodies differ, they describe a component deleted four commits
   later, and fixing it means force-pushing eight rewritten SHAs onto a branch
   that auto-deploys production. Decided: leave it. Do not tidy this.
+- **The session scratchpad is not durable (2026-09-25).** It was cleared
+  between one morning and the next, taking the only copy of the audit script
+  and its results. Anything you would want tomorrow — a script, a data file,
+  evidence behind a data change — goes in the repo, not the scratchpad.
+- **`codex exec` exits 0 when it fails on a usage limit** and writes an empty
+  output file. Check the output is non-empty and read the `.log`; the exit code
+  says nothing.
 - **A stored `youtubeId` is not a playable album (2026-09-24).** Only 39 of
   135 were whole albums; the rest were single songs, clips, teasers or dead in
   the embed, and nothing checked. Any new player needs an `onError`, and any
