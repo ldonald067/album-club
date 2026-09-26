@@ -13,8 +13,8 @@ Optional: number of days to preview (default: 14)
 
 ## Steps
 
-1. Read `lib/albums.js` to get the `ALBUMS` array and the rotation logic
-2. Calculate the schedule with a small Node script that imports the real logic — do NOT hand-compute formulas:
+1. Read `lib/albums.js` and `lib/daily-picks.js`
+2. Calculate the schedule with a small Node script that imports the real logic — do NOT hand-compute formulas. **Use `getDailyPicks(key)` from `lib/daily-picks.js`** (`key` is `YYYY-MM-DD`): days through tomorrow are served from `lib/schedule.json`, and computing them from `lib/albums.js` directly can disagree with what the site actually shows. Mark recorded days in the output. For reference, the unrecorded days compute as:
    - Featured album: `getAlbumForDate(date)` (a year-seeded permutation, not a raw modulo)
    - Puzzle album: filter to `recognizable` albums, then apply the `pickRotatingPoolAlbum` logic with seed `year * 31 + 7` (it also avoids colliding with that day's featured album)
    - Game type: `getGameType(date)` (5-day cycle: guess, cover, lyric, heardle, scramble)

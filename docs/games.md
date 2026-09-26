@@ -47,11 +47,11 @@ Each game's `saveState()` dispatches `window.dispatchEvent(new Event("aotd-activ
 
 ## Album vs Album
 
-Daily head-to-head: two past albums shown side by side with cover art. User picks their favorite, community vote split shown as percentage bar after voting. Deterministic daily pairing via `getVersusPair()` using seed `year * 83 + 23` — draws from the full catalog, avoids today's featured album. Posts to `/api/matchup` with `type: "versus"`. State: `aotd_versus_{date}`.
+Daily head-to-head: two past albums shown side by side with cover art. User picks their favorite, community vote split shown as percentage bar after voting. Deterministic daily pairing via `getVersusPair()` (served from the pinned schedule, `lib/daily-picks.js`) using seed `year * 83 + 23` — draws from the full catalog, avoids today's featured album. Posts to `/api/matchup` with `type: "versus"`. State: `aotd_versus_{date}`.
 
 ## Blind Taste Test
 
-Two 60-second audio clips from YouTube (no album info visible). User must listen to both before voting is unlocked. After picking, both albums are revealed with cover art + community preference bar. Uses `getTastePair()` with seed `year * 97 + 31` — draws from albums with a `youtubeId`. Two simultaneous `YT.Player` instances; only one plays at a time. Posts to `/api/matchup` with `type: "taste"`. State: `aotd_taste_{date}`.
+Two 60-second audio clips from YouTube (no album info visible). User must listen to both before voting is unlocked. After picking, both albums are revealed with cover art + community preference bar. Uses `getTastePair()` (served from the pinned schedule) with seed `year * 97 + 31` — draws from albums with a `youtubeId`. Two simultaneous `YT.Player` instances; only one plays at a time. Posts to `/api/matchup` with `type: "taste"`. State: `aotd_taste_{date}`.
 
 ## State Persistence
 

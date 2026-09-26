@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { SOUNDTRACK_OVERRIDES } from "../lib/soundtrack-corner-data.js";
 import { SECTIONS } from "../app/sections.js";
+import { catalogFingerprint } from "../lib/catalog-fingerprint.js";
 import {
   buildSoundtrackCorner,
   getAngleLabel,
@@ -694,7 +695,7 @@ const gamePools = [
 // pool/cadence (80 albums would give 16 a year). Indexing by appearance ordinal
 // removes the coupling, so what must never regress is the ordinal indexing.
 const samplerUsesOrdinal =
-  /const ordinal = Math\.floor\(getDayOfYear\(\)/.test(albumsSource) &&
+  /const ordinal = Math\.floor\(getDayOfYear\((?:date)?\)/.test(albumsSource) &&
   /order\[ordinal % pool\.length\]/.test(albumsSource);
 const coupledPools = gamePools.filter(
   ([, size]) => size > 0 && cadence > 0 && gcd(size, cadence) > 1,
@@ -958,6 +959,81 @@ failures += printGuardrail(
   weakLyricLines.length
     ? `${weakLyricLines.length} line(s) have fewer than two blankable words, e.g. ${weakLyricLines[0]}`
     : "All stored lyric lines have at least two words long enough to blank.",
+);
+
+// ─── Pinned schedule (lib/schedule.json) ───
+// A day's picks are recorded once and never re-derived — see lib/daily-picks.js.
+// These fail when that promise is about to break.
+const schedule = readJson(path.join(rootDir, "lib", "schedule.json"));
+const catalogIds = new Set(albums.map((a) => `${a.artist}::${a.title}`));
+const danglingIds = Object.entries(schedule.days || {}).flatMap(([key, day]) =>
+  Object.values(day)
+    .flat()
+    .filter((id) => !catalogIds.has(id))
+    .map((id) => `${key} ${id}`),
+);
+failures += printGuardrail(
+  danglingIds.length === 0,
+  "Every recorded pick still exists in the catalog",
+  danglingIds.length
+    ? `${danglingIds.length} recorded pick(s) point at an album no longer in lib/albums.json, e.g. ${danglingIds[0]}. Renaming or removing an album that has aired rewrites that day; restore it, or fix the id in lib/schedule.json by hand.`
+    : `All ${Object.keys(schedule.days || {}).length} recorded days resolve.`,
+);
+
+const workingFingerprint = catalogFingerprint(albums, Object.keys(lyrics));
+failures += printGuardrail(
+  workingFingerprint === schedule.catalogFingerprint,
+  "The schedule was pinned against this catalog",
+  workingFingerprint === schedule.catalogFingerprint
+    ? `Fingerprint ${workingFingerprint}; pinned through ${schedule.pinnedThrough}.`
+    : "lib/albums.json or lib/lyrics.json changed since the schedule was pinned. Run `npm run pin-schedule` and commit lib/schedule.json with the edit, or today's picks change on deploy.",
+);
+
+// A change that moves the future must have recorded every day up to tomorrow
+// first, or the days between the last pin and the deploy get re-derived. Only
+// checkable where git can see what production serves.
+let servedFingerprint = null;
+try {
+  const { execFileSync } = await import("node:child_process");
+  servedFingerprint = JSON.parse(
+    execFileSync("git", ["show", "origin/master:lib/schedule.json"], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }),
+  ).catalogFingerprint;
+} catch {
+  // no remote, or production has no schedule yet
+}
+const tomorrowKey = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+const movesFuture =
+  servedFingerprint !== null && servedFingerprint !== workingFingerprint;
+failures += printGuardrail(
+  !movesFuture || schedule.pinnedThrough >= tomorrowKey,
+  "A catalog change is pinned through tomorrow",
+  !movesFuture
+    ? "This catalog picks the same future production does."
+    : schedule.pinnedThrough >= tomorrowKey
+      ? `This change moves the future; days through ${schedule.pinnedThrough} are recorded first.`
+      : `This change moves the future but the schedule stops at ${schedule.pinnedThrough}. Run \`npm run pin-schedule\` again before merging.`,
+);
+
+// The schedule and the lyric file are server-only: pages get picks as props.
+const clientImporters = fs
+  .readdirSync(path.join(rootDir, "app"), { recursive: true })
+  .filter((file) => /\.(js|jsx)$/.test(file))
+  .map((file) => path.join(rootDir, "app", file))
+  .filter((file) => /^["']use client["']/m.test(readText(file)))
+  .filter((file) =>
+    /(?:from|import\()\s*["'][^"']*(?:daily-picks|schedule\.json)["']/.test(
+      readText(file),
+    ),
+  );
+failures += printGuardrail(
+  clientImporters.length === 0,
+  "No client component imports the schedule",
+  clientImporters.length
+    ? `${clientImporters.map((f) => path.relative(rootDir, f)).join(", ")} import lib/daily-picks or lib/schedule.json; read picks from useDailyPicks() instead.`
+    : "Picks reach the browser only as props from app/section-page.js.",
 );
 
 printSection("Manual checklist");

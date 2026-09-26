@@ -1,0 +1,138 @@
+{
+  "about": "Each date's picks, recorded once and never re-derived. Written by scripts/pin-schedule.mjs; read by lib/daily-picks.js. See docs/album-data.md.",
+  "catalogFingerprint": "13adb8e24e0a204f",
+  "pinnedThrough": "2026-09-27",
+  "days": {
+    "2026-07-14": { "album": "A Tribe Called Quest::Midnight Marauders" },
+    "2026-07-15": { "album": "Primal Scream::Screamadelica" },
+    "2026-07-16": { "album": "Beyoncé::Lemonade" },
+    "2026-07-17": { "album": "Purity Ring::Another Eternity" },
+    "2026-07-18": { "album": "Mdou Moctar::Afrique Victime" },
+    "2026-07-19": { "album": "Adrianne Lenker::songs" },
+    "2026-07-20": { "album": "Deafheaven::Sunbather" },
+    "2026-07-21": { "album": "black midi::Cavalcade" },
+    "2026-07-22": { "album": "Porter Robinson::Nurture" },
+    "2026-07-23": { "album": "Ali Farka Touré & Ry Cooder::Talking Timbuktu" },
+    "2026-07-24": {
+      "album": "Hayley Williams::Ego Death at a Bachelorette Party"
+    },
+    "2026-07-25": { "album": "Massive Attack::Mezzanine" },
+    "2026-07-26": { "album": "Madeon::Good Faith" },
+    "2026-07-27": { "album": "SOPHIE::Oil of Every Pearl's Un-Insides" },
+    "2026-07-28": { "album": "Various Artists::Boiler Room: Tokyo" },
+    "2026-07-29": { "album": "Phoebe Bridgers::Stranger in the Alps" },
+    "2026-07-30": { "album": "Animal Collective::Merriweather Post Pavilion" },
+    "2026-07-31": { "album": "Mobb Deep::The Infamous" },
+    "2026-08-01": { "album": "The Smiths::The Queen Is Dead" },
+    "2026-08-02": { "album": "Various Artists::Japanese City Pop Mix" },
+    "2026-08-03": {
+      "album": "Chappell Roan::The Rise and Fall of a Midwest Princess"
+    },
+    "2026-08-04": { "album": "Pink Floyd::Wish You Were Here" },
+    "2026-08-05": { "album": "Harold Budd & Brian Eno::The Pearl" },
+    "2026-08-06": {
+      "album": "Neutral Milk Hotel::In the Aeroplane Over the Sea"
+    },
+    "2026-08-07": { "album": "Noah Kahan::The Great Divide" },
+    "2026-08-08": {
+      "album": "Buena Vista Social Club::Buena Vista Social Club"
+    },
+    "2026-08-09": { "album": "Clipse::Let God Sort Em Out" },
+    "2026-08-10": { "album": "Gang Starr::Moment of Truth" },
+    "2026-08-11": { "album": "Prince::Purple Rain" },
+    "2026-08-12": { "album": "Kendrick Lamar::To Pimp a Butterfly" },
+    "2026-08-13": { "album": "Toshio Masuda::Mushinone" },
+    "2026-08-14": { "album": "Beyoncé::Renaissance" },
+    "2026-08-15": { "album": "Stevie Wonder::Songs in the Key of Life" },
+    "2026-08-16": { "album": "Pink Floyd::The Dark Side of the Moon" },
+    "2026-08-17": { "album": "Blood Orange::Negro Swan" },
+    "2026-08-18": { "album": "Jay-Z::The Blueprint" },
+    "2026-08-19": { "album": "Rina Sawayama::Sawayama" },
+    "2026-08-20": { "album": "NMIXX::Fe3O4: Forward" },
+    "2026-08-21": { "album": "Brian Eno::Music for Airports" },
+    "2026-08-22": { "album": "Bon Iver::For Emma, Forever Ago" },
+    "2026-08-23": { "album": "Opeth::Blackwater Park" },
+    "2026-08-24": { "album": "Earl Sweatshirt::Some Rap Songs" },
+    "2026-08-25": { "album": "Grimes::Halfaxa" },
+    "2026-08-26": {
+      "album": "Yoko Kanno::Ghost in the Shell: Stand Alone Complex O.S.T.+"
+    },
+    "2026-08-27": { "album": "boygenius::Boygenius" },
+    "2026-08-28": { "album": "DJ Shadow::Endtroducing....." },
+    "2026-08-29": { "album": "Gorillaz::Plastic Beach" },
+    "2026-08-30": { "album": "Radiohead::Kid A" },
+    "2026-08-31": { "album": "IDLES::Joy as an Act of Resistance" },
+    "2026-09-01": { "album": "Glass Animals::Zaba" },
+    "2026-09-02": { "album": "Mitski::Be the Cowboy" },
+    "2026-09-03": { "album": "ODESZA::A Moment Apart" },
+    "2026-09-04": { "album": "Weyes Blood::Titanic Rising" },
+    "2026-09-05": {
+      "album": "The Velvet Underground::The Velvet Underground & Nico"
+    },
+    "2026-09-06": { "album": "Tyler, the Creator::Chromakopia" },
+    "2026-09-07": { "album": "black midi::Hellfire" },
+    "2026-09-08": {
+      "album": "Big Thief::Dragon New Warm Mountain I Believe in You"
+    },
+    "2026-09-09": { "album": "Arca::Kick i" },
+    "2026-09-10": { "album": "Kendrick Lamar::DAMN." },
+    "2026-09-11": { "album": "The Pillows::FLCL: Addict" },
+    "2026-09-12": { "album": "Various Artists::Anjunadeep Edition 400" },
+    "2026-09-13": { "album": "Solomun::Cercle: Solomun at Théâtre Antique" },
+    "2026-09-14": { "album": "Kate Bush::Hounds of Love" },
+    "2026-09-15": { "album": "Slint::Spiderland" },
+    "2026-09-16": { "album": "Wilco::Yankee Hotel Foxtrot" },
+    "2026-09-17": { "album": "The Beach Boys::Pet Sounds" },
+    "2026-09-18": { "album": "Kacey Musgraves::Golden Hour" },
+    "2026-09-19": { "album": "Yuki Kajiura::Noir" },
+    "2026-09-20": { "album": "Robyn::Sexistential" },
+    "2026-09-21": { "album": "Bruce Springsteen::Born to Run" },
+    "2026-09-22": { "album": "J Dilla::Donuts" },
+    "2026-09-23": { "album": "Yeah Yeah Yeahs::Cool It Down" },
+    "2026-09-24": {
+      "album": "Nujabes & Fat Jon::Samurai Champloo Music Record: Departure"
+    },
+    "2026-09-25": {
+      "album": "Bonobo::Black Sands",
+      "puzzle": "Weezer::Weezer (Blue Album)",
+      "cover": "Weyes Blood::Titanic Rising",
+      "heardle": "Mac Miller::Circles",
+      "scramble": "Clipse::Let God Sort Em Out",
+      "lyric": "Fleetwood Mac::Rumours",
+      "versus": [
+        "Shakti::Shakti with John McLaughlin",
+        "Daniel Caesar::Freudian"
+      ],
+      "taste": ["Joy Division::Unknown Pleasures", "Slowdive::Souvlaki"]
+    },
+    "2026-09-26": {
+      "album": "Lucy Dacus::Historian",
+      "puzzle": "Weezer::Weezer (Blue Album)",
+      "cover": "Weyes Blood::Titanic Rising",
+      "heardle": "Mac Miller::Circles",
+      "scramble": "Clipse::Let God Sort Em Out",
+      "lyric": "Fleetwood Mac::Rumours",
+      "versus": [
+        "Mac Miller::NPR Tiny Desk: Mac Miller",
+        "Taeko Onuki::Sunshower"
+      ],
+      "taste": [
+        "Gorillaz::Plastic Beach",
+        "Kanye West::My Beautiful Dark Twisted Fantasy"
+      ]
+    },
+    "2026-09-27": {
+      "album": "Dry Cleaning::New Long Leg",
+      "puzzle": "Lana Del Rey::Did You Know That There's a Tunnel Under Ocean Blvd",
+      "cover": "Sigur Rós::Ágætis byrjun",
+      "heardle": "The Beach Boys::Pet Sounds",
+      "scramble": "Arcade Fire::The Suburbs",
+      "lyric": "Rosalía::Lux",
+      "versus": [
+        "Mac Miller::NPR Tiny Desk: Mac Miller",
+        "Wilco::Yankee Hotel Foxtrot"
+      ],
+      "taste": ["Massive Attack::Mezzanine", "Japanese Breakfast::Jubilee"]
+    }
+  }
+}

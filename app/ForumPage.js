@@ -1,6 +1,14 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo, memo } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  memo,
+} from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -12,21 +20,21 @@ import {
   ALBUMS,
   VIBES,
   CAROUSEL_ICONS,
-  getPuzzleAlbum,
   getPuzzleClues,
   getMarqueeMessage,
-  getAlbumForDate,
   getGameType,
-  getCoverPuzzleAlbum,
-  getScrambleAlbum,
-  getHeardleAlbum,
-  pickRotatingPoolAlbum,
   scrambleArtist,
-  getVersusPair,
-  getTastePair,
 } from "@/lib/albums";
 import { loadJson } from "@/lib/safe-fetch";
 import AlbumPlayback from "./AlbumPlayback";
+
+/* The day's picks — every game's album and both pairs — decided once on the
+   server from the recorded schedule (lib/daily-picks.js) and provided here.
+   Components used to compute them in the browser from the catalog they were
+   shipped, which let a mid-day deploy change today's contest for anyone who
+   loaded the new bundle. Read them from here; never recompute. */
+const DailyPicksContext = createContext(null);
+const useDailyPicks = () => useContext(DailyPicksContext);
 
 /* A plain import: the component is small, and the 917KB Webamp bundle it drives
    is not bundled at all — it is fetched from /vendor at runtime. next/dynamic
@@ -980,7 +988,7 @@ function PlaylistPoll({ albumKey }) {
 /* ─── Album vs Album ─── */
 const VersusMatchup = memo(function VersusMatchup() {
   const todayKey = getTodayKey();
-  const { albumA, albumB } = useMemo(() => getVersusPair(), []);
+  const { albumA, albumB } = useDailyPicks().versus;
   const [myPick, setMyPick] = useState(null);
   const [results, setResults] = useState(null);
   const [submitted, setSubmitted] = useState(false);
@@ -1168,7 +1176,7 @@ const VersusMatchup = memo(function VersusMatchup() {
 /* ─── Blind Taste Test ─── */
 const BlindTasteTest = memo(function BlindTasteTest() {
   const todayKey = getTodayKey();
-  const { albumA, albumB } = useMemo(() => getTastePair(), []);
+  const { albumA, albumB } = useDailyPicks().taste;
   const [myPick, setMyPick] = useState(null);
   const [results, setResults] = useState(null);
   const [submitted, setSubmitted] = useState(false);
@@ -1963,7 +1971,7 @@ function useDraft(key, value, setValue, active) {
 /* ─── Guess the Album ─── */
 function GuessGame() {
   const todayKey = getTodayKey();
-  const puzzleAlbum = useMemo(() => getPuzzleAlbum(), []);
+  const { puzzle: puzzleAlbum } = useDailyPicks();
   const clues = useMemo(() => getPuzzleClues(puzzleAlbum), [puzzleAlbum]);
 
   const [cluesRevealed, setCluesRevealed] = useState(2);
@@ -2197,7 +2205,7 @@ const BLUR_LEVELS = [2, 1.5, 1, 0.5, 0];
 
 function CoverChallenge({ fallbackNote = null }) {
   const todayKey = getTodayKey();
-  const puzzleAlbum = useMemo(() => getCoverPuzzleAlbum(), []);
+  const { cover: puzzleAlbum } = useDailyPicks();
 
   const [guesses, setGuesses] = useState([]);
   const [currentGuess, setCurrentGuess] = useState("");
@@ -2397,7 +2405,7 @@ const HEARDLE_CLIP_LENGTHS = [1, 2, 4, 8, 16, 30];
 
 function HeardleGame() {
   const todayKey = getTodayKey();
-  const puzzleAlbum = useMemo(() => getHeardleAlbum(), []);
+  const { heardle: puzzleAlbum } = useDailyPicks();
   const hasYouTube = !!puzzleAlbum.youtubeId;
   /* A video id is not a playable video. An audit on 2026-09-24 found 13 of 135
      stored ids refused by the embedded player (error 150 — embedding blocked,
@@ -2720,6 +2728,7 @@ function HeardleGame() {
 /* ─── Lyric Fill-in-the-Blank ─── */
 function LyricGame() {
   const todayKey = getTodayKey();
+  const { lyric: dailyLyricAlbum } = useDailyPicks();
   const [puzzleAlbum, setPuzzleAlbum] = useState(null);
   const [lyrics, setLyrics] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -2743,18 +2752,9 @@ function LyricGame() {
     import("@/lib/lyrics.json")
       .then((mod) => {
         const data = mod.default || mod;
-        const lyricKeys = new Set(
-          Object.keys(data).map((key) => key.toLowerCase()),
-        );
-        const lyricPool = ALBUMS.filter(
-          (album) =>
-            album.recognizable &&
-            lyricKeys.has(`${album.artist} - ${album.title}`.toLowerCase()),
-        );
-        const lyricAlbum = pickRotatingPoolAlbum(
-          lyricPool,
-          new Date().getUTCFullYear() * 37 + 11,
-        );
+        // Which album is the server's call (the recorded schedule); this
+        // only loads its lines
+        const lyricAlbum = dailyLyricAlbum;
 
         setPuzzleAlbum(lyricAlbum);
         setLyrics(
@@ -3038,7 +3038,7 @@ function LyricGame() {
 /* ─── Artist Scramble ─── */
 function ScrambleGame() {
   const todayKey = getTodayKey();
-  const puzzleAlbum = useMemo(() => getScrambleAlbum(), []);
+  const { scramble: puzzleAlbum } = useDailyPicks();
   const scrambled = useMemo(
     () => scrambleArtist(puzzleAlbum.artist, getDayOfYear()),
     [puzzleAlbum],
@@ -3351,7 +3351,7 @@ function YesterdayRecap() {
     );
   }, []);
   const yesterdayKey = yesterday.toISOString().split("T")[0];
-  const yesterdayAlbum = useMemo(() => getAlbumForDate(yesterday), [yesterday]);
+  const { yesterdayAlbum } = useDailyPicks();
 
   useEffect(() => {
     const rated = localStorage.getItem(`aotd_rated_${yesterdayKey}`);
@@ -3524,6 +3524,7 @@ function ArchiveCue({ pick }) {
 }
 
 function ArchiveSection() {
+  const { archiveAlbums } = useDailyPicks();
   const [history, setHistory] = useState(null);
   const [myCues, setMyCues] = useState(null);
 
@@ -3534,15 +3535,14 @@ function ArchiveSection() {
       year: "numeric",
       timeZone: "UTC",
     });
-    const result = [];
-    const today = new Date();
-    for (let i = 1; i <= 30; i++) {
-      const date = new Date(today.getTime() - i * 86400000);
-      const album = getAlbumForDate(date);
-      result.push({ ...album, dateStr: fmt.format(date) });
-    }
-    return result;
-  }, []);
+    // The server sends the last 30 featured albums, recorded where the
+    // schedule has them — computing them here from the shipped catalog is how
+    // one added album used to relabel every row
+    return (archiveAlbums || []).map((album) => ({
+      ...album,
+      dateStr: fmt.format(new Date(`${album.key}T12:00:00Z`)),
+    }));
+  }, [archiveAlbums]);
 
   useEffect(() => {
     loadJson("/api/soundtrack/history")
@@ -4272,7 +4272,15 @@ const SECRET_TAGLINES = [
    and a crawler only ever saw Home. The route decides now — app/sections.js
    maps each key to its folder — and this component just renders the one it is
    told to. */
-export default function ForumPage({ album, dateString, section = "home" }) {
+export default function ForumPage({
+  album,
+  picks,
+  yesterdayAlbum,
+  tomorrowAlbum,
+  archiveAlbums,
+  dateString,
+  section = "home",
+}) {
   const activeSection = section;
 
   const [imgError, setImgError] = useState(false);
@@ -4469,11 +4477,7 @@ export default function ForumPage({ album, dateString, section = "home" }) {
 
   const todayKey = getTodayKey();
 
-  // Tomorrow's album for teaser (genre only)
-  const tomorrowAlbum = useMemo(() => {
-    const tomorrow = new Date(Date.now() + 86400000);
-    return getAlbumForDate(tomorrow);
-  }, []);
+  // Tomorrow's album for the teaser (genre only) — decided on the server
 
   // Personal stats — recompute when allDone changes to capture latest data
   const personalStats = useMemo(() => {
@@ -4644,8 +4648,14 @@ export default function ForumPage({ album, dateString, section = "home" }) {
   const accentColor = isLightColor(album.color) ? "#2a4570" : album.color;
   const gameType = useMemo(() => getGameType(), []);
 
+  // Server-chosen picks for every game, read through useDailyPicks()
+  const dailyPicks = useMemo(
+    () => ({ ...picks, yesterdayAlbum, archiveAlbums }),
+    [picks, yesterdayAlbum, archiveAlbums],
+  );
+
   return (
-    <>
+    <DailyPicksContext.Provider value={dailyPicks}>
       <a href="#main-content" className="sr-only">
         Skip to main content
       </a>
@@ -5187,6 +5197,6 @@ export default function ForumPage({ album, dateString, section = "home" }) {
           )}
         </div>
       </main>
-    </>
+    </DailyPicksContext.Provider>
   );
 }
