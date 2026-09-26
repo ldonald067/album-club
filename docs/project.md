@@ -19,7 +19,7 @@ link pasted into a chat window rendered as a bare URL, and a daily site's
 metadata never mentioned the day.
 
 - `app/page.js` → `generateMetadata()` builds title, description and card from
-  `getTodayAlbum()`. Already `force-dynamic`, so it cannot be cached past UTC
+  `getFeaturedAlbum()` (the pinned schedule, `lib/daily-picks.js`). Already `force-dynamic`, so it cannot be cached past UTC
   midnight.
 - `app/opengraph-image.js` → a 1200×630 card drawn from the album's own accent
   colour and cover emoji. **Deliberately not the album artwork**: that is a

@@ -18,6 +18,7 @@ it, so adding a tab is one entry there plus a two-line `app/<key>/page.js`.
   measured: `/archive` shipped a text-only card until that file existed. The
   `dynamic` export has to be declared in each of those files rather than
   re-exported; Next parses route config statically and rejects a re-export.
+- `SectionPage` also hands `ForumPage` the day's picks — `picks`, `yesterdayAlbum`, `tomorrowAlbum` and, on `/archive` only, `archiveAlbums` — from `getPageData()` in `lib/daily-picks.js`. `ForumPage` puts them in a context and every game reads its album through `useDailyPicks()`. **Never recompute a pick in a component**: that is what let a mid-day deploy change today's contest for anyone who loaded the new bundle. See the pinned schedule in `docs/album-data.md`.
 - `ForumPage` takes `section` as a prop. It was `useState("home")` until
   2026-09-08, which is what put the whole site at one address: no tab could be
   linked to or bookmarked, a reload always landed on Home, the back button left
@@ -268,7 +269,7 @@ Live countdown to midnight UTC. Wrapped in `React.memo()` — owns its own `setI
 
 ### Enhanced Tomorrow Teaser
 
-Shows tomorrow's album emoji + genre + decade (e.g., `🎷 Tomorrow's Album — Jazz · 1960s`). Uses `getAlbumForDate()` with tomorrow's date.
+Shows tomorrow's album emoji + genre + decade (e.g., `🎷 Tomorrow's Album — Jazz · 1960s`). Uses the `tomorrowAlbum` prop — tomorrow is always pinned, so the teaser cannot promise a record that a deploy then swaps.
 
 ## Activity Completion Detection
 
