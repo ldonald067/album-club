@@ -22,7 +22,7 @@ committed with it — `eval-site` (also run by CI) fails until you do. Re-run
 
 **Where to pick up, in this order:**
 
-1. The catalog identity audit (open item 1) — **do not add albums before it.**
+1. Rule on the catalog audit's findings (open item 1) — **do not add albums before it.**
 2. The review findings in open item 2, cheapest first.
 3. Everything else below.
 
@@ -119,24 +119,40 @@ Deploy = push to `master`. Verify with `GET /api/health` (running commit SHA,
 Only what is still open. Completed work lives in git history and the topic
 docs.
 
-1. **Catalog identity audit — before adding any album (raised 2026-09-26).**
-   The reason not to grow the catalog is not size (424 already exceeds a year)
-   but that **some entries may not be real albums**. About 22 titles read like
-   mixes or playlists; most may be legitimate, but a few borrow real album
-   names under artists that look invented — "Late Night Ambient — Geogaddi
-   Ambient Mix" (_Geogaddi_ is Boards of Canada's), "Late Night Vibes —
-   Vespertine Chill Mix" (_Vespertine_ is Björk's), "Focus Flow — Deep Focus
-   Binaural Beats", "Tiny Desk Concert Collection — Waiting for the Sun to
-   Rot". These air as today's album and get rated. An audit flag, not proof.
-   Do it the way the video audit worked: a read-only script, a report, a person
-   decides; keep real mixes and sessions labelled honestly, quarantine what
-   cannot be tied to a release. **Removing or renaming an entry that has aired
-   breaks its recorded days** — `eval-site` names them. Only then add
-   albums, each for a reason; a new 2026 release should get a set air date or
-   the yearly shuffle may not reach it while it is new. Later ideas from the
-   same reviewer: per-game eligibility instead of one `recognizable` flag;
-   distinct artists in Artist Scramble; measure "the next 30 days are ready"
-   rather than every field for all 424.
+1. **Catalog identity — the audit has run; decisions are open (2026-09-27).**
+   `npm run audit-catalog` (method and its pitfalls in `docs/album-data.md`).
+   345 entries are verified against MusicBrainz; the rest need a person, in
+   this order. **Do not add albums until these are ruled on**, and record each
+   ruling in the script's `DECIDED` map.
+   - **Borrowed or invented (3):** "Late Night Ambient — Geogaddi Ambient Mix"
+     and "Late Night Vibes — Vespertine Chill Mix" wear real albums' names
+     under invented artists; "Tiny Desk Concert Collection — Waiting for the
+     Sun to Rot" has no artist or release anywhere. None has aired yet.
+   - **Mood playlists, not records (19):** "Various Artists — Korean R&B
+     Playlist", "Chill Beats to Code To", "Rain Sounds for Sleep" and the like.
+     Nothing to rate as an album and no tracklist to check. One exception worth
+     keeping in mind: _Serial Experiments Lain: Cyberia Mix_ is a real 1998
+     album that the mix-wording rule catches.
+   - **Metadata faults, the entry itself is real:** Marconi Union's
+     _Weightless_ is a single, not an album; _SIMBI_ is _Sometimes I Might Be
+     Introvert_ (2021, not 2024); _Madvillainy_ (MusicBrainz dates it from
+     the 2002 leak; 2004 is the release — likely keep). A year fix does not
+     break recorded days; a rename or removal does.
+   - **Real but unconfirmed (37):** 11 named sessions (Boiler Room, Essential
+     Mix, Cercle, Tiny Desk, KEXP — confirm each performance exists), 24 real
+     artists whose release is under a native-script title (mostly the anime
+     soundtracks), 2 Various Artists compilations under shortened titles
+     (_Tropicália_, _EGOLI_). Low risk; confirm when convenient.
+   - **Matched, nothing to do (20):** real releases the strict fetcher had
+     skipped over spelling or script (_E•MO•TION_, _MAP OF THE SOUL : 7_, the
+     city pop records), apart from the metadata notes above.
+
+   Keep real mixes and sessions labelled honestly. Only then add albums, each
+   for a reason; a new 2026 release should get a set air date or the yearly
+   shuffle may not reach it while it is new. Later ideas from the same
+   reviewer: per-game eligibility instead of one `recognizable` flag; distinct
+   artists in Artist Scramble; measure "the next 30 days are ready" rather
+   than every field for all 424.
 
 2. **Adversarial review findings 2–8 (raised 2026-09-26).** From a four-reviewer
    Codex pass over every unreviewed commit since `c6fd733`, verdict CONTESTED; finding 1 (High) was

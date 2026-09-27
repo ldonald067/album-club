@@ -172,6 +172,43 @@ back `SA`, _Rumours_ `NL`. It would read as a fact and function as a lie.
 
 Coverage lives in `npm run soundtrack-corner-report`, never in prose here.
 
+## Catalog identity (`npm run audit-catalog`)
+
+**Is each entry a real release, filed under the artist who made it?**
+`scripts/audit-catalog-identity.mjs` answers that per entry, read-only, and a
+person decides what to do — it never edits the catalog. Entries already matched
+in `lib/album-facts.json` are verified without a request; the rest are checked
+against MusicBrainz (~5 minutes). Verdicts and what each one means are in the
+script's header. It exits 1 on `BORROWED_TITLE` or `UNTRACEABLE` entries not
+yet in its `DECIDED` map, keyed on `Artist::Title`.
+
+Every entry's aired and upcoming dates are printed next to its verdict, because
+**renaming or removing an entry that has aired breaks its recorded days** (see
+the pinned schedule below). A metadata fix — year, genre — does not.
+
+**The first run 2026-09-27 was mostly the tool being wrong, and each fault
+looked like a finding.** 21 "borrowed titles" and 11 "untraceable" entries came
+down to 2 and 1 once these were fixed; all are now guarded in the script:
+
+- **MusicBrainz keeps many names in their native script** — BTS is 방탄소년단,
+  Ichiko Aoba is 青葉市子 — so a name search reported real artists as missing.
+  Artists resolve by alias, then their release groups are browsed by id.
+- **A common title always exists under a stranger.** _Zombie_ and _Promises_
+  are albums by dozens of artists, so a full-title hit elsewhere only counts
+  when the credited artist does not exist; for a mix-shaped title only the
+  distinctive core ("Geogaddi Ambient Mix" → _Geogaddi_) is checked.
+- **Collaborations can be their own entity.** _Raising Sand_ belongs to the
+  duo "Robert Plant | Alison Krauss", not to either solo artist.
+- **Search cannot tokenize "E•MO•TION" into "Emotion"**, hence browsing and
+  matching locally.
+- **Nearest-looking is not nearest.** A plain "Weezer" first matched the 2001
+  Green Album; "Essential Mix: Four Tet", stripped of its series name, matched
+  his _DJ-Kicks_; _Akira_ matched a 2024 remix album and then — because
+  normalizing drops Japanese characters — a single titled "AKIRAのテーマ".
+  Albums now outrank singles, the nearest year wins, a loose match more than a
+  year off is discarded, and a title that loses letters to normalization is
+  never "exact".
+
 ## Daily Rotation
 
 Seeded shuffle (mulberry32 PRNG + Fisher-Yates) keyed by year. Same date = same album globally. Rotates through the whole catalog before repeating, so adding an album shifts which record lands on which day — **on unrecorded days only.** See the pinned schedule below.

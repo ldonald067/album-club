@@ -111,16 +111,16 @@ storage bucket + credentials and a container change (run `litestream replicate
 
 ## Skills
 
-| Command             | Trigger | Purpose                                        |
-| ------------------- | ------- | ---------------------------------------------- |
-| `/add-album`        | auto    | Add album to rotation with validation          |
-| `/preview-schedule` | auto    | Check upcoming album schedule                  |
-| `/ux-review`        | auto    | Accessibility + mobile review after UI changes |
-| `/api-harden`       | auto    | Security review after API changes              |
-| `/perf-check`       | auto    | Performance review after new features          |
-| `/deploy`           | manual  | Production build + deploy                      |
-| `/reset-day`        | manual  | Clear today's data for testing                 |
-| `/adversarial-review` | manual | Codex reviewers challenge a range of commits |
+| Command               | Trigger | Purpose                                        |
+| --------------------- | ------- | ---------------------------------------------- |
+| `/add-album`          | auto    | Add album to rotation with validation          |
+| `/preview-schedule`   | auto    | Check upcoming album schedule                  |
+| `/ux-review`          | auto    | Accessibility + mobile review after UI changes |
+| `/api-harden`         | auto    | Security review after API changes              |
+| `/perf-check`         | auto    | Performance review after new features          |
+| `/deploy`             | manual  | Production build + deploy                      |
+| `/reset-day`          | manual  | Clear today's data for testing                 |
+| `/adversarial-review` | manual  | Codex reviewers challenge a range of commits   |
 
 ## Scripts
 
@@ -131,6 +131,7 @@ npm run fetch-lyrics         # Genius API lyric lines (needs GENIUS_ACCESS_TOKEN
 npm run fetch-youtube-ids    # YouTube Data API (needs YOUTUBE_API_KEY, 100/day free)
 npm run fetch-album-facts    # MusicBrainz track count / runtime into lib/album-facts.json (resumable)
 npm run pin-schedule         # Record each day's picks through tomorrow into lib/schedule.json
+npm run audit-catalog        # Read-only: which entries can't be tied to a real release by that artist (~5 min)
 npm run audit-youtube-ids    # Read-only: which stored videos are dead, clips, or the wrong album (~4 min)
 npm run soundtrack-corner-report  # Corner coverage + air-date queue + generator-floor gaps
 npm run eval-site            # Whole-site quality pass: albums, games, soundtrack, UI/API guardrails

@@ -5,7 +5,7 @@
 Two layers of protection, both using in-memory Maps:
 
 - **Per-minute**: `checkRateLimit(ip)` — 30 req/min sliding window per IP
-- **Per-day**: `checkDailyLimit(ip, endpoint)` — 12 submissions per IP per endpoint per day. The limit is per *address*, not per person — 12 is the NAT/CGNAT allowance; the per-person control is the client's localStorage guard. Don't restate the number in comments; defer to the function
+- **Per-day**: `checkDailyLimit(ip, endpoint)` — 12 submissions per IP per endpoint per day. The limit is per _address_, not per person — 12 is the NAT/CGNAT allowance; the per-person control is the client's localStorage guard. Don't restate the number in comments; defer to the function
 - **IP resolution**: `getRealIp()` prefers `x-real-ip` (proxy-controlled on Railway; clients can't set it), falls back to the **rightmost** `x-forwarded-for` hop (the one appended by Railway's edge proxy — leftmost entries are client-supplied and spoofable), and ignores junk header values. **IPv6 is keyed per /64** (`ipv6Prefix64`), because one holder of a /64 could otherwise rotate addresses past every limit
 - **Memory cap**: both maps are bounded (10k tracked IPs; 10× that for daily entries). At the cap both purge stale entries first. Then the per-minute map evicts its coldest 10% and never stops tracking, while the daily map **fails open on purpose** — its keys are day-scoped, so a full table means a genuinely enormous day, and refusing votes is worse than missing a few counts. A 60s `setInterval` purges both maps, and a time-throttled backstop sweep covers traffic spikes between intervals
 - **Date validation**: `isValidDateKey()` validates `YYYY-MM-DD` format, real calendar date, not in the future
@@ -19,7 +19,7 @@ Two layers of protection, both using in-memory Maps:
 - **SQLite** via better-sqlite3, WAL mode, singleton connection
 - **Busy timeout**: `busy_timeout = 5000` reduces transient lock failures under overlapping writes
 - **Prepared statements** cached at module scope, created once on first `getDb()` call
-- **Covering indexes** on all query patterns: `(album_key, rating)`, `(album_key, vibe)`, `(puzzle_key, attempts, solved)`, `(album_key, vote)`, `(matchup_key, pick), `(album_key, pick)` on `soundtrack_votes`
+- **Covering indexes** on all query patterns: `(album_key, rating)`, `(album_key, vibe)`, `(puzzle_key, attempts, solved)`, `(album_key, vote)`, `(matchup_key, pick), `(album_key, pick)`on`soundtrack_votes`
 
 Routes translate SQLite lock/open/corruption errors into safe public responses (`503` with retry language) instead of exposing raw internals.
 
