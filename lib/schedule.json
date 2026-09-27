@@ -1,7 +1,7 @@
 {
   "about": "Each date's picks, recorded once and never re-derived. Written by scripts/pin-schedule.mjs; read by lib/daily-picks.js. See docs/album-data.md.",
-  "catalogFingerprint": "13adb8e24e0a204f",
-  "pinnedThrough": "2026-09-27",
+  "catalogFingerprint": "eca242aba3539e2b",
+  "pinnedThrough": "2026-09-28",
   "days": {
     "2026-07-14": { "album": "A Tribe Called Quest::Midnight Marauders" },
     "2026-07-15": { "album": "Primal Scream::Screamadelica" },
@@ -133,6 +133,19 @@
         "Wilco::Yankee Hotel Foxtrot"
       ],
       "taste": ["Massive Attack::Mezzanine", "Japanese Breakfast::Jubilee"]
+    },
+    "2026-09-28": {
+      "album": "Kensuke Ushio::Devilman Crybaby",
+      "puzzle": "Lana Del Rey::Did You Know That There's a Tunnel Under Ocean Blvd",
+      "cover": "Sigur Rós::Ágætis byrjun",
+      "heardle": "The Beach Boys::Pet Sounds",
+      "scramble": "Arcade Fire::The Suburbs",
+      "lyric": "Rosalía::Lux",
+      "versus": ["Elliott Smith::Either/Or", "Jay-Z::The Blueprint"],
+      "taste": [
+        "Buena Vista Social Club::Buena Vista Social Club",
+        "Death Grips::The Money Store"
+      ]
     }
   }
 }

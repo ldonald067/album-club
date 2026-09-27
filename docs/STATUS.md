@@ -22,8 +22,8 @@ committed with it — `eval-site` (also run by CI) fails until you do. Re-run
 
 **Where to pick up, in this order:**
 
-1. Rule on the catalog audit's findings (open item 1) — **do not add albums before it.**
-2. The review findings in open item 2, cheapest first.
+1. The review findings in open item 2, cheapest first.
+2. The catalog audit's remaining small items (open item 1).
 3. Everything else below.
 
 Two open actions need a human rather than code: **nobody has put the link
@@ -119,40 +119,30 @@ Deploy = push to `master`. Verify with `GET /api/health` (running commit SHA,
 Only what is still open. Completed work lives in git history and the topic
 docs.
 
-1. **Catalog identity — the audit has run; decisions are open (2026-09-27).**
+1. **Catalog identity — audited and mostly ruled on (2026-09-27).**
    `npm run audit-catalog` (method and its pitfalls in `docs/album-data.md`).
-   345 entries are verified against MusicBrainz; the rest need a person, in
-   this order. **Do not add albums until these are ruled on**, and record each
-   ruling in the script's `DECIDED` map.
-   - **Borrowed or invented (3):** "Late Night Ambient — Geogaddi Ambient Mix"
-     and "Late Night Vibes — Vespertine Chill Mix" wear real albums' names
-     under invented artists; "Tiny Desk Concert Collection — Waiting for the
-     Sun to Rot" has no artist or release anywhere. None has aired yet.
-   - **Mood playlists, not records (19):** "Various Artists — Korean R&B
-     Playlist", "Chill Beats to Code To", "Rain Sounds for Sleep" and the like.
-     Nothing to rate as an album and no tracklist to check. One exception worth
-     keeping in mind: _Serial Experiments Lain: Cyberia Mix_ is a real 1998
-     album that the mix-wording rule catches.
-   - **Metadata faults, the entry itself is real:** Marconi Union's
-     _Weightless_ is a single, not an album; _SIMBI_ is _Sometimes I Might Be
-     Introvert_ (2021, not 2024); _Madvillainy_ (MusicBrainz dates it from
-     the 2002 leak; 2004 is the release — likely keep). A year fix does not
-     break recorded days; a rename or removal does.
+   345 entries are verified against MusicBrainz. Ruled: **mixes and playlists
+   stay** (see Standing decisions), including the two that borrow a real
+   album's name ("Geogaddi Ambient Mix", "Vespertine Chill Mix" — recorded in
+   the script's `DECIDED` map); "Tiny Desk Concert Collection — Waiting for
+   the Sun to Rot", which had nothing real behind it, was removed before it
+   aired. Still open, none urgent:
+   - **Metadata faults on real entries:** _SIMBI_ is _Sometimes I Might Be
+     Introvert_, released 2021, not 2024. _Weightless_ is a single (fine under
+     the mixes ruling). _Madvillainy_ 2004 is the official release; MusicBrainz
+     dates the 2002 leak — keep. A year fix does not break recorded days; a
+     rename or removal does.
    - **Real but unconfirmed (37):** 11 named sessions (Boiler Room, Essential
      Mix, Cercle, Tiny Desk, KEXP — confirm each performance exists), 24 real
      artists whose release is under a native-script title (mostly the anime
      soundtracks), 2 Various Artists compilations under shortened titles
-     (_Tropicália_, _EGOLI_). Low risk; confirm when convenient.
-   - **Matched, nothing to do (20):** real releases the strict fetcher had
-     skipped over spelling or script (_E•MO•TION_, _MAP OF THE SOUL : 7_, the
-     city pop records), apart from the metadata notes above.
+     (_Tropicália_, _EGOLI_). Confirm when convenient.
 
-   Keep real mixes and sessions labelled honestly. Only then add albums, each
-   for a reason; a new 2026 release should get a set air date or the yearly
-   shuffle may not reach it while it is new. Later ideas from the same
-   reviewer: per-game eligibility instead of one `recognizable` flag; distinct
-   artists in Artist Scramble; measure "the next 30 days are ready" rather
-   than every field for all 424.
+   Adding albums is unblocked. Add each for a reason; a new 2026 release
+   should get a set air date or the yearly shuffle may not reach it while it
+   is new. Later ideas from the catalog reviewer: per-game eligibility instead
+   of one `recognizable` flag; distinct artists in Artist Scramble; measure
+   "the next 30 days are ready" rather than every field for every entry.
 
 2. **Adversarial review findings 2–8 (raised 2026-09-26).** From a four-reviewer
    Codex pass over every unreviewed commit since `c6fd733`, verdict CONTESTED; finding 1 (High) was
@@ -226,6 +216,11 @@ docs.
   trade-off to revisit when traffic arrives. The rule and its boundary (the
   Open Graph card stays) are in `CLAUDE.md`; `eval-site` enforces it. **An
   activity that ends without a share button is finished, not unfinished.**
+- **Mixes and playlists belong in the catalog (2026-09-27).** Not every entry
+  has to be a released album — DJ sets, sessions, mood playlists and singles
+  are fine, including mixes named after a real record. What is not fine is an
+  entry with nothing real behind it. `audit-catalog` reports these as
+  `MOOD_COMPILATION` without failing; do not "clean them up".
 - **The site is over-featured, not under-featured (2026-07-28).** Genre Bingo
   was removed and a designed replacement was cut. The bar for a seventh
   activity is that it beats improving the six that exist. Parked ideas from the

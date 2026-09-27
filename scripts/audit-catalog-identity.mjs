@@ -86,7 +86,12 @@ const schedule = JSON.parse(
 /* Entries a person has looked at and ruled on despite a flag, keyed on the
    catalog id (artist AND title — never on something an unrelated entry could
    share). Add to this only after actually checking the record. */
-const DECIDED = {};
+const DECIDED = {
+  "Late Night Ambient::Geogaddi Ambient Mix":
+    "kept as a mix by owner decision; mixes are allowed in the catalog (reviewed 2026-09-27)",
+  "Late Night Vibes::Vespertine Chill Mix":
+    "kept as a mix by owner decision; mixes are allowed in the catalog (reviewed 2026-09-27)",
+};
 
 const USER_AGENT =
   "AlbumOfTheDayClub/1.0 (https://littlealbumclub.net) audit-catalog-identity";
