@@ -1,12 +1,30 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-09-25.
+session. Last updated: 2026-09-27.
 
 ## Handoff — read this first
 
-**Nothing is in flight.** `master` is clean, pushed, and deployed; verify with
+**One thing is in flight: PR
+[#5](https://github.com/ldonald067/album-club/pull/5), branch
+`pin-daily-schedule` — pin each day's picks so catalog edits can't rewrite a
+day.** CI passes, it merges cleanly, and merging changes nothing a visitor sees
+today (branch and production render identical picks; checked in the browser).
+Auto-fix is on for it in the session that opened it. It is waiting only on the
+owner to merge. **Once it merges, every edit to `lib/albums.json` or
+`lib/lyrics.json` needs `npm run pin-schedule` and `lib/schedule.json`
+committed with it** — `eval-site` (now also run by CI) fails until you do.
+Details in Recent work and `docs/album-data.md` → "The pinned schedule".
+
+`master` itself is clean and deployed at `667169b`; verify with
 `GET /api/health`, which returns the running commit SHA.
+
+**2026-09-26 → 09-27: the adversarial review ran, and its one High finding is
+fixed in PR #5.** Four Codex reviewers (Skeptic, Architect, Minimalist, plus
+one on the catalog itself) over `c6fd733..HEAD` — every commit from 09-24 and
+09-25 that had never been reviewed. Verdict **CONTESTED**: one High, five
+Medium, two Low. The High one was real and already live — see Recent work.
+Findings 2–8 are open item 11; the catalog question is open item 12.
 
 **2026-09-08 → 09-25 was one long stretch of reviews, each one fixed and
 shipped.** In order, all live on `master`:
@@ -38,8 +56,8 @@ shipped.** In order, all live on `master`:
 - **The audio audit became a project script**, `npm run audit-youtube-ids`,
   after the session scratchpad holding the original was cleared. Run on the
   live catalog: 0 dead, 0 clips, 0 wrong-album ids.
-- **An adversarial review of 09-25's work did not run** — the Codex account hit
-  its usage limit (resets 2026-09-29 08:27). No verdict exists; open item 11.
+- **An adversarial review of 09-25's work did not run at first** (Codex usage
+  limit), then did on 09-26 once it was available — see the paragraph above.
 
 Details for each are in Recent work below. Last deploy verified: `ca78471`.
 
@@ -131,15 +149,16 @@ visitor.
    a hidden pane can return blank screenshots. `docs/gotchas.md` → "Verifying
    with browser automation".
 
-**Where to pick up:** the open items below. Two genuinely open actions both need
+**Where to pick up, in this order:** (1) get PR #5 merged and confirm the
+deploy with `/api/health`; (2) the catalog identity audit, open item 12 —
+**do not add albums before it**; (3) the review findings in open item 11,
+cheapest first. Then the older open items below. Two genuinely open actions both need
 a human rather than code. **Nothing has put the link anywhere** — submitting the
 sitemap and telling anyone the site exists needs someone with the accounts, and
 until that happens the community features have no room to hold. And **album
 audio needs a YouTube Data API key** (open item 7): without one the refetch
 cannot run, and inline playback stays at roughly a quarter of days. The one open
-_coding_ question is item 10, the shared layout — measure before building. And
-once Codex's limit resets on **2026-09-29**, run the adversarial review that did
-not happen (item 11) before building anything new on top of it.
+_coding_ question is item 10, the shared layout — measure before building.
 
 ## What this is
 
@@ -158,12 +177,16 @@ npm run dev                 # local dev
 npm run build               # must pass before pushing
 npm test                    # node:test — rotation, sampler, guess validation
 npm run eval-site           # whole-site quality/guardrail pass
+npm run pin-schedule        # after ANY catalog/lyrics edit (PR #5 onward)
+npm run audit-youtube-ids   # read-only video-id audit, ~4 min
 npm run soundtrack-corner-report  # corner coverage + air-date queue + generator floor
 ```
 
 Deploy = push to `master`. Verify with `GET /api/health` (returns running
 commit SHA, `volumeMounted`, uptime). CI (`.github/workflows/build.yml`,
-Node 22) runs `npm test` then `npm run build`.
+Node 22) runs `npm test` then `npm run build` — and, from PR #5 on,
+`npm run eval-site` between them, with full git history so it can compare the
+schedule against `origin/master`.
 
 ## Operational facts (important)
 
@@ -230,6 +253,49 @@ Node 22) runs `npm test` then `npm run build`.
   upgrade (not wired).
 
 ## Recent work (this stretch of sessions)
+
+- **Each day's picks are pinned (2026-09-26 → 27, PR #5, not yet merged).**
+  Every pick — the featured album, each game's album, the Versus and Taste
+  pairs — was computed in the browser from whatever catalog the visitor was
+  shipped, and votes are keyed by date. So any catalog edit re-derived days
+  already underway: adding one album relabelled all 30 Archive days, and the
+  09-25 removal of 21 dead ids swapped that day's Taste Test pair (_The Bends /
+  Lateralus_ → _Unknown Pleasures / Souvlaki_) and its Heardle album at 12:42
+  UTC, mid-contest. It cost zero votes only because there were none.
+  - `lib/schedule.json` records each date's picks by identity
+    (`Artist::Title`). `lib/daily-picks.js` — **server-only** — serves a
+    recorded day from it and computes only unrecorded days.
+    `app/section-page.js` passes the picks as props; `ForumPage` reads them
+    through `useDailyPicks()`. No component computes a pick any more.
+  - `npm run pin-schedule` records through **tomorrow** from
+    **`origin/master`'s** catalog (what production serves — not your edit, and
+    not `HEAD` on a branch). A catalog change therefore takes effect the day
+    after tomorrow. Recorded days are never rewritten.
+  - `eval-site` fails on: a catalog whose fingerprint differs from the one
+    pinned (order, identity, the three pool flags, lyric keys — colour, year
+    and emoji deliberately excluded); a future-moving change not pinned
+    through tomorrow (**re-run `pin-schedule` before merging a PR that sat
+    overnight**); a recorded id missing from the catalog (a rename of an aired
+    album); a client component importing the schedule. CI now runs it.
+  - Bootstrapped with the featured album for every day from 2026-07-14 (from
+    which it reproduces exactly — the catalog's order and length have not
+    changed since `a532daa`) and full picks from 2026-09-25. Past game picks
+    were not back-filled: nothing shows them.
+  - **Verified:** every pick function gained an optional `date` and is
+    identical to the old code across 134 dates × 11 picks; simulating an added
+    album and re-pinning left today, tomorrow and all 30 Archive days unchanged
+    and moved only the day after; `test/daily-picks.test.mjs` reverses the
+    whole catalog and every recorded day holds; production and the branch
+    render the same picks in the browser; the schedule stays out of the client
+    bundle.
+
+- **Adversarial review of `c6fd733..HEAD` (2026-09-26) — CONTESTED.** Four
+  Codex reviewers; every claim below was checked against code or live data.
+  Finding 1 (High, catalog edits rewrite live days) is PR #5. Findings 2–8 are
+  open item 11. Nobody found a fault in the API hardening, the Taste Test /
+  Heardle error fallbacks, the scope of the 21-id removal or the daily-tint
+  contrast check. The catalog reviewer's answer to "should we add albums?" was
+  **not yet** — open item 12.
 
 - **The audit is a script now (2026-09-25, `ca78471`).** The first audit ran from
   the session scratchpad, which was cleared before the day was out — script and
@@ -807,16 +873,51 @@ docs. This section is only what is still open.
     it could not be measured this stretch (the pane was hidden, which clamps
     timers). Measure that on a real device first; build only if it is felt.
 
-11. **Adversarial review pending — run on or after 2026-09-29 (raised
-    2026-09-25).** The review of 09-25's commits failed on Codex's usage limit,
-    which resets **2026-09-29 08:27**. When it runs, widen the scope to
-    **`7ce59e2..HEAD`**: the perf fixes and the three design changes from 09-24
-    — the turning record's ramp and put-away code, the daily tint and its
-    guardrail — have never had an adversarial review either. The prompts
-    rebuild from git in a minute, and the evidence for the 21 removed ids comes
-    from running the audit on the old catalog:
-    `git show 22bfdec:lib/albums.json > /tmp/before.json` then
-    `npm run audit-youtube-ids -- --albums /tmp/before.json`.
+11. **Adversarial review findings 2–8 (raised 2026-09-26).** All accepted,
+    none fixed yet. Cheapest-first order is fine; none is urgent.
+    - **2 [Medium] Taste Test on a phone may play nothing.** The lazy players
+      start the clip from YouTube's `onReady`, after the tap has ended, and
+      mobile browsers block sound not started by a tap — yet the UI says
+      "Playing…" and credits the clip as heard after 60s. Not verified on a
+      real phone (a scripted click is not a media gesture — gotcha 5). Fix:
+      start the timer and show "Playing" only on the player's PLAYING state;
+      if blocked, re-enable Play so a second tap works.
+    - **3 [Medium] The audit passes any long video as `FULL_ALBUM`** — a
+      30–60 minute unrelated video is never listed. That defeats item 7's
+      refetch check. Require evidence it is the right album, else
+      `UNVERIFIED`.
+    - **4 [Medium] `KEPT_AFTER_REVIEW` matches on video id alone**, so an
+      approved film would pass under the wrong album. Key it on artist, album
+      and id.
+    - **5 [Medium] The record is put away without Stop.** Paused is inferred
+      from `elapsed > 0`, so seeking to 0 while paused, or pausing in the first
+      half-second, sleeves it. Track paused from what was pressed.
+    - **6 [Medium] Resume after pause jumps to full speed** — the spin-down's
+      last step resets the rate to 1 (`spin()?.updatePlaybackRate(1)` in the vinyl deck,
+      `ForumPage.js:4376` on the PR #5 branch). Resuming was never tested.
+    - **7 [Low] Play during the 450ms put-away** lets the old WAAPI animation
+      fight the new spin; nothing cancels it.
+    - **8 [Low] The audit fetches a MusicBrainz tracklist for every id**,
+      including decided ones, and one failed request aborts the run.
+
+12. **Catalog identity audit — before adding any album (raised 2026-09-26).**
+    The catalog reviewer's point: the reason not to grow is not size (424
+    already exceeds a year) but that **some entries may not be real albums**.
+    About 22 titles read like mixes or playlists; most may be legitimate, but
+    a few borrow real album names under artists that look invented — "Late
+    Night Ambient — Geogaddi Ambient Mix" (_Geogaddi_ is Boards of Canada's),
+    "Late Night Vibes — Vespertine Chill Mix" (_Vespertine_ is Björk's),
+    "Focus Flow — Deep Focus Binaural Beats", "Tiny Desk Concert Collection —
+    Waiting for the Sun to Rot". These air as today's album and get rated. An
+    audit flag, not proof. Do it the way the video audit worked: a read-only
+    script, a report, a person decides; keep real mixes and sessions labelled
+    honestly, quarantine what cannot be tied to a release. **Removing or
+    renaming an entry that has aired breaks its recorded days** — `eval-site`
+    names them (PR #5). Only then add albums, each for a reason; a new 2026
+    release should get a set air date or the yearly shuffle may not reach it
+    while it is new. Later ideas from the same reviewer: per-game eligibility
+    instead of one `recognizable` flag; distinct artists in Artist Scramble;
+    measure "the next 30 days are ready" rather than every field for all 424.
 
 ## Gotchas worth knowing
 
