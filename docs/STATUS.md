@@ -10,26 +10,21 @@ it used to carry).
 
 ## Handoff — read this first
 
-**One thing is in flight: PR
-[#5](https://github.com/ldonald067/album-club/pull/5), branch
-`pin-daily-schedule` — pin each day's picks so catalog edits can't rewrite a
-day.** CI passes, it merges cleanly, and merging changes nothing a visitor sees
-today (branch and production render identical picks; checked in the browser).
-It is waiting only on the owner to merge. **Once it merges, every edit to
-`lib/albums.json` or `lib/lyrics.json` needs `npm run pin-schedule` and
-`lib/schedule.json` committed with it** — `eval-site` (also run by CI) fails
-until you do. Re-run `pin-schedule` before merging any PR that sat overnight.
-Details in `docs/album-data.md` → "The pinned schedule".
+**Nothing is in flight.** `master` is clean and deployed at `e8da79d` (PR
+[#5](https://github.com/ldonald067/album-club/pull/5), merged 2026-09-27);
+verify with `GET /api/health`, which returns the running commit SHA.
 
-`master` is clean and deployed at `667169b`; verify with `GET /api/health`,
-which returns the running commit SHA.
+**Each day's picks are pinned now.** Every edit to `lib/albums.json` or
+`lib/lyrics.json` needs `npm run pin-schedule` and `lib/schedule.json`
+committed with it — `eval-site` (also run by CI) fails until you do. Re-run
+`pin-schedule` before merging any PR that sat overnight. Details in
+`docs/album-data.md` → "The pinned schedule".
 
 **Where to pick up, in this order:**
 
-1. Get PR #5 merged and confirm the deploy with `/api/health`.
-2. The catalog identity audit (open item 1) — **do not add albums before it.**
-3. The review findings in open item 2, cheapest first.
-4. Everything else below.
+1. The catalog identity audit (open item 1) — **do not add albums before it.**
+2. The review findings in open item 2, cheapest first.
+3. Everything else below.
 
 Two open actions need a human rather than code: **nobody has put the link
 anywhere** (open item 4), and **album audio needs a YouTube Data API key**
@@ -69,7 +64,7 @@ npm run dev                 # local dev
 npm run build               # must pass before pushing
 npm test                    # node:test — rotation, sampler, guess validation
 npm run eval-site           # whole-site quality/guardrail pass
-npm run pin-schedule        # after ANY catalog/lyrics edit (PR #5 onward)
+npm run pin-schedule        # after ANY catalog/lyrics edit
 npm run audit-youtube-ids   # read-only video-id audit, ~4 min
 npm run soundtrack-corner-report  # corner coverage + air-date queue + generator floor
 ```
@@ -136,7 +131,7 @@ docs.
    Do it the way the video audit worked: a read-only script, a report, a person
    decides; keep real mixes and sessions labelled honestly, quarantine what
    cannot be tied to a release. **Removing or renaming an entry that has aired
-   breaks its recorded days** — `eval-site` names them (PR #5). Only then add
+   breaks its recorded days** — `eval-site` names them. Only then add
    albums, each for a reason; a new 2026 release should get a set air date or
    the yearly shuffle may not reach it while it is new. Later ideas from the
    same reviewer: per-game eligibility instead of one `recognizable` flag;
@@ -144,8 +139,8 @@ docs.
    rather than every field for all 424.
 
 2. **Adversarial review findings 2–8 (raised 2026-09-26).** From a four-reviewer
-   Codex pass over every unreviewed commit since `c6fd733`, verdict CONTESTED; finding 1 (High) is
-   PR #5. All accepted, none fixed yet, none urgent.
+   Codex pass over every unreviewed commit since `c6fd733`, verdict CONTESTED; finding 1 (High) was
+   fixed by PR #5. All accepted, none fixed yet, none urgent.
    - **2 [Medium] Taste Test on a phone may play nothing.** The lazy players
      start the clip from YouTube's `onReady`, after the tap has ended, and
      mobile browsers block sound not started by a tap — yet the UI says
