@@ -90,7 +90,7 @@ storage bucket + credentials and a container change (run `litestream replicate
 
 1. Start from an up-to-date `master`.
 2. Create a short-lived feature branch.
-3. Make the change and run `npm run build`.
+3. Make the change and run `npm test && npm run build` (plus `npm run eval-site` for album or lyric data).
 4. Push the branch and open a pull request.
 5. Merge to `master` only after the build check passes and the live-site risk feels understood.
 6. Smoke-test the deployed site after merge.
@@ -98,14 +98,15 @@ storage bucket + credentials and a container change (run `litestream replicate
 ## Merge Checklist
 
 - `npm install` has been run if dependencies changed.
-- `npm run build` passes locally.
+- `npm test`, `npm run eval-site` and `npm run build` pass locally.
+- Catalog or lyrics changed? `npm run pin-schedule` has been re-run and `lib/schedule.json` is committed (re-run it if the PR sat overnight).
 - PR description explains what changed, why, and how it was validated.
 - The branch merges cleanly into `master`.
 - After merge, confirm the deploy and spot-check the affected feature on the live site.
 
 ## CI Guardrails
 
-- GitHub Actions runs `npm ci` + `npm run build` on pull requests and pushes to `master`.
+- GitHub Actions (`.github/workflows/build.yml`, Node 22) runs `npm ci`, `npm test`, `npm run eval-site` and `npm run build` on pull requests and pushes to `master`, with full git history so `eval-site` can compare the pinned schedule against `origin/master`.
 - If you want stronger protection, enable a required status check on `master` in the GitHub branch protection settings.
 
 ## Skills
@@ -119,14 +120,17 @@ storage bucket + credentials and a container change (run `litestream replicate
 | `/perf-check`       | auto    | Performance review after new features          |
 | `/deploy`           | manual  | Production build + deploy                      |
 | `/reset-day`        | manual  | Clear today's data for testing                 |
+| `/adversarial-review` | manual | Codex reviewers challenge a range of commits |
 
 ## Scripts
 
 ```bash
 npm run fetch-albums         # Grow the album list from Last.fm (needs LASTFM_API_KEY)
-npm run fetch-covers         # MusicBrainz/iTunes cover art
+npm run fetch-covers         # Cover art: Last.fm (optional LASTFM_API_KEY), iTunes fallback
 npm run fetch-lyrics         # Genius API lyric lines (needs GENIUS_ACCESS_TOKEN)
 npm run fetch-youtube-ids    # YouTube Data API (needs YOUTUBE_API_KEY, 100/day free)
+npm run fetch-album-facts    # MusicBrainz track count / runtime into lib/album-facts.json (resumable)
+npm run pin-schedule         # Record each day's picks through tomorrow into lib/schedule.json
 npm run audit-youtube-ids    # Read-only: which stored videos are dead, clips, or the wrong album (~4 min)
 npm run soundtrack-corner-report  # Corner coverage + air-date queue + generator-floor gaps
 npm run eval-site            # Whole-site quality pass: albums, games, soundtrack, UI/API guardrails

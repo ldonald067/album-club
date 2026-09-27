@@ -28,9 +28,8 @@ Scrambled artist name displayed. Guess the album title. Progressive hints: Genre
 
 ## Shared Components
 
-All games use extracted components (see `docs/components.md` for full API):
+All games use extracted components (see `docs/components.md` for full API). No game ends in a share or copy-result button — that is a standing rule (`CLAUDE.md`), not a gap:
 
-- **`ShareResultButton`** — clipboard share with "Copied!" feedback (all 5 games)
 - **`GuessHistory`** — attempt list with correct/wrong styling (all 5 games)
 - **`AlbumAutocomplete`** — filterable dropdown (4 games, not LyricGame)
 
@@ -51,7 +50,7 @@ Daily head-to-head: two past albums shown side by side with cover art. User pick
 
 ## Blind Taste Test
 
-Two 60-second audio clips from YouTube (no album info visible). User must listen to both before voting is unlocked. After picking, both albums are revealed with cover art + community preference bar. Uses `getTastePair()` (served from the pinned schedule) with seed `year * 97 + 31` — draws from albums with a `youtubeId`. Two simultaneous `YT.Player` instances; only one plays at a time. Posts to `/api/matchup` with `type: "taste"`. State: `aotd_taste_{date}`.
+Two 60-second audio clips from YouTube (no album info visible). User must listen to both before voting is unlocked. After picking, both albums are revealed with cover art + community preference bar. Uses `getTastePair()` (served from the pinned schedule) with seed `year * 97 + 31` — draws from albums with a `youtubeId`. Two `YT.Player` instances, built on first Play rather than on mount, and only one plays at a time; a dead video has its own fallback (`docs/components.md`). Posts to `/api/matchup` with `type: "taste"`. State: `aotd_taste_{date}`.
 
 ## State Persistence
 

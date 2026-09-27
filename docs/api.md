@@ -4,10 +4,10 @@
 
 Two layers of protection, both using in-memory Maps:
 
-- **Per-minute**: `checkRateLimit(ip)` — 30 req/min sliding window per IP, hard cap at 2000 tracked IPs
-- **Per-day**: `checkDailyLimit(ip, endpoint)` — max 3 submissions per IP per endpoint per day, hard cap at 20k entries
-- **IP resolution**: `getRealIp()` prefers `x-real-ip` (proxy-controlled on Railway; clients can't set it), falls back to the **rightmost** `x-forwarded-for` hop (the one appended by Railway's edge proxy — leftmost entries are client-supplied and spoofable), normalizes IPv4/IPv6 formats, and ignores junk header values
-- **Cleanup**: Deterministic `setInterval` every 60s purges stale entries from both maps, plus an inline size-triggered sweep (>1000 IPs). When a map hits its cap even after purging, requests are allowed untracked (fail-open) so an attacker flooding fake IPs can't lock out real visitors
+- **Per-minute**: `checkRateLimit(ip)` — 30 req/min sliding window per IP
+- **Per-day**: `checkDailyLimit(ip, endpoint)` — 12 submissions per IP per endpoint per day. The limit is per *address*, not per person — 12 is the NAT/CGNAT allowance; the per-person control is the client's localStorage guard. Don't restate the number in comments; defer to the function
+- **IP resolution**: `getRealIp()` prefers `x-real-ip` (proxy-controlled on Railway; clients can't set it), falls back to the **rightmost** `x-forwarded-for` hop (the one appended by Railway's edge proxy — leftmost entries are client-supplied and spoofable), and ignores junk header values. **IPv6 is keyed per /64** (`ipv6Prefix64`), because one holder of a /64 could otherwise rotate addresses past every limit
+- **Memory cap**: both maps are bounded (10k tracked IPs; 10× that for daily entries). At the cap both purge stale entries first. Then the per-minute map evicts its coldest 10% and never stops tracking, while the daily map **fails open on purpose** — its keys are day-scoped, so a full table means a genuinely enormous day, and refusing votes is worse than missing a few counts. A 60s `setInterval` purges both maps, and a time-throttled backstop sweep covers traffic spikes between intervals
 - **Date validation**: `isValidDateKey()` validates `YYYY-MM-DD` format, real calendar date, not in the future
 - Vote/game POST routes reject bodies over 1024 characters, with a `content-length` precheck before buffering.
 - POST routes require the parsed JSON body to be an object. Arrays / primitives get a clean `400`.
@@ -18,12 +18,12 @@ Two layers of protection, both using in-memory Maps:
 
 - **SQLite** via better-sqlite3, WAL mode, singleton connection
 - **Busy timeout**: `busy_timeout = 5000` reduces transient lock failures under overlapping writes
-- **Prepared statements** cached at module scope (14 statements, created once on first `getDb()` call)
-- **Covering indexes** on all query patterns: `(album_key, rating)`, `(album_key, vibe)`, `(puzzle_key, attempts, solved)`, `(album_key, vote)`, `(matchup_key, pick)`
+- **Prepared statements** cached at module scope, created once on first `getDb()` call
+- **Covering indexes** on all query patterns: `(album_key, rating)`, `(album_key, vibe)`, `(puzzle_key, attempts, solved)`, `(album_key, vote)`, `(matchup_key, pick), `(album_key, pick)` on `soundtrack_votes`
 
 Routes translate SQLite lock/open/corruption errors into safe public responses (`503` with retry language) instead of exposing raw internals.
 
-For caching details, see `docs/performance.md`.
+Every GET route keeps a 30s in-memory cache busted on POST, except `/api/stats` (5 min) and `/api/soundtrack/history` (60s). In-memory is enough for a single-instance deployment.
 
 ## Routes
 
@@ -63,7 +63,7 @@ Aggregate site statistics (total ratings, avg rating, albums rated, top vibes, p
 
 ### POST/GET `/api/soundtrack`
 
-Soundtrack Corner's "where does this cue belong" vote. POST body: `{ pick }` where pick is `"game"`, `"film"`, or `"tv"`. Returns `{ game, film, tv, total }` counts for today's album. GET returns the same distribution (30s in-memory cache, busted on POST). Daily limit 3 per IP (`soundtrack` endpoint key). DB table: `soundtrack_votes` keyed by the daily `album_key`.
+Soundtrack Corner's "where does this cue belong" vote. POST body: `{ pick }` where pick is `"game"`, `"film"`, or `"tv"`. Returns `{ game, film, tv, total }` counts for today's album. GET returns the same distribution (30s in-memory cache, busted on POST). Daily limit per IP as above (`soundtrack` endpoint key). DB table: `soundtrack_votes` keyed by the daily `album_key`.
 
 ### GET `/api/soundtrack/history`
 
@@ -75,4 +75,4 @@ Deploy/status probe: `{ commit, volumeMounted, uptimeSeconds }`. `commit` is the
 
 ### GET `/api/backup`
 
-Returns a consistent SQLite snapshot of the live database, for the daily backup workflow. **Token-gated**: without the `BACKUP_TOKEN` secret it 404s rather than 401ing, so the route does not advertise its own existence. Driven by `.github/workflows/backup.yml` (daily 06:00 UTC, 90-day artifact retention) using the `BACKUP_URL` + `BACKUP_TOKEN` Actions secrets. Operational detail and the Litestream upgrade path live in `docs/project.md` → Database Backups.
+Returns a consistent SQLite snapshot of the live database, for the daily backup workflow. **Token-gated**, `Authorization: Bearer <token>` only (no query-string token — it would leak into logs), compared by hashing both sides (`lib/token-match.js`) so a wrong length answers no faster. Without the token it 404s rather than 401ing, so the route does not advertise its own existence. Driven by `.github/workflows/backup.yml` (daily 06:00 UTC, 90-day artifact retention) using the `BACKUP_URL` + `BACKUP_TOKEN` Actions secrets. Operational detail and the Litestream upgrade path live in `docs/project.md` → Database Backups.

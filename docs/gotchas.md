@@ -9,7 +9,7 @@
 - **`allowedDevOrigins`** in `next.config.mjs`: Required to suppress "Cross origin request detected" warnings when dev server runs on `127.0.0.1` vs `localhost`
 - **Stale `.next` cache**: If you see `Cannot find module` or EBUSY errors (especially on OneDrive-synced folders), delete `.next/` and restart: `rm -rf .next && npm run dev`
 - **Path alias**: `@/*` maps to project root via `jsconfig.json`
-- **Build output target**: <55 kB page JS. Currently 55.1 kB + 102 kB shared = 157 kB First Load
+- **`next/dynamic` is not a bundle guarantee.** Turbopack prefetches dynamic chunks, so a "lazy" 295KB Webamp chunk shipped on the default view to everyone who never opened it. For anything genuinely heavy, load it from `/vendor` with a script tag and **measure a fresh production visit** — chunk names are hashed, so grepping for the library's name proves nothing. See `docs/components.md` → Webamp view
 
 ## JSX text
 
@@ -28,7 +28,7 @@
 - **Confetti**: Uses `canvas-confetti` (cached dynamic import) with `prefers-reduced-motion` check. Module cached in `_confetti` variable to avoid repeated `import()` calls
 - **Welcome-back detection**: Old streak data must be captured BEFORE calling `updateStreak()` — the function overwrites localStorage. Wrong order = lost gap detection
 - **`Array.findLast` compatibility**: Use `[...arr].reverse().find()` pattern (or pre-computed reversed constant like `STREAK_MILESTONES_DESC`) instead of `findLast` for broader browser support
-- **Activity detection**: Event-driven via `CustomEvent("aotd-activity")`, NOT polling. See `docs/performance.md` for rules
+- **Activity detection**: Event-driven via `CustomEvent("aotd-activity")`, NOT polling. See `docs/performance.md`
 
 ## Data
 
@@ -36,10 +36,10 @@
 - **Genius search ranks by popularity, not album membership.** The `/search` endpoint carries no album field, so `"<artist> <album title>"` cheerfully returns the artist's biggest hit from a different record. A 2026-07 refill produced four Kendrick albums all filed under "Not Like Us", _In Rainbows_ → "Creep", _Melodrama_ → "Royals", _Mayhem_ → "Shallow", and — repeating the exact incident the guards were written for — Bon Iver's _For Emma_ → Kanye's "Monster", slurs included. `fetch-lyrics.mjs` now calls `/songs/:id` for each candidate and rejects it unless the album name matches. **There is no artist-only fallback search** — it returns the wrong album by construction. A miss is fine; a confidently wrong entry is not
 - **Lyrics data quality**: Genius search returns wrong-artist songs, fan translation pages, and liner-note credits. This warning existed and was not enforced, and 8 of 88 entries turned out wrong — including a rap verse containing a racial slur filed under Miles Davis' _Kind of Blue_, an instrumental record. `fetch-lyrics.mjs` now enforces four guards (instrumental denylist, translation-page URL/title filter, credits-line filter, minimum two blankable words). **Still audit the results after any fetch** — the guards catch the known failure shapes, not novelty
 - **Never index a per-game pool by `dayOfYear`**: each game airs every `GAME_TYPES.length` days, so `order[dayOfYear % pool.length]` samples the pool at that stride and collapses annual variety to `pool/cadence` whenever the two share a factor — a pool of 80 shows 16 albums a year instead of 73, silently. `pickRotatingPoolAlbum` indexes by _appearance ordinal_ for this reason, and `npm run eval-site` fails if that regresses
-- **`results.total` from `/api/vibe` is not a headcount**: the `vibes` table stores one row per mood and everyone picks up to three, so a mood chosen unanimously reads as ~33%. Neither `vibes` nor `matchup_votes` has a voter column or uniqueness constraint, so neither total counts people (see `docs/STATUS.md` open item 2)
+- **`results.total` from `/api/vibe` is not a headcount**: the `vibes` table stores one row per mood and everyone picks up to three, so a mood chosen unanimously reads as ~33%. Neither `vibes` nor `matchup_votes` has a voter column or uniqueness constraint, so neither total counts people (see `docs/STATUS.md` open item 6)
 - **Carousel duplication**: Track content is rendered twice (two `.map()` loops) so `translateX(-50%)` creates seamless infinite loop
 - **Seeded permutation cache**: `lib/albums.js` caches shuffle permutations in a Map. Most seeds are year-based (few entries), but the daily Versus/Taste pairs seed per-day for full-year variety, so the Map grows ~2 entries/day (~730/year, ~1-2 MB of int arrays). Bounded and reset on every deploy — negligible in practice, but not the old "5-10/year"
-- **Adding albums shifts schedule**: Daily rotation uses `dayOfYear % ALBUMS.length` — changing album count shifts which album appears on which day
+- **Adding albums shifts the rotation**: the featured album is `dayOfYear`-indexed into a seeded shuffle of the whole catalog, so a catalog edit changes which album a future day computes. Days already recorded in `lib/schedule.json` are served from it and never move; run `npm run pin-schedule` after any catalog or lyrics edit — see `docs/album-data.md` → "The pinned schedule"
 
 ## Verifying colour: the ways the measurement lies
 
@@ -194,3 +194,10 @@ Two traps, both hit during the 2026-07 dead-CSS removal:
 - **EST hover**: Hover over timestamp shows timezone tooltip
 - **Forum signatures**: Random retro forum signature at bottom, set in `useEffect`
 - **Visit ranks**: localStorage tracks visit count, displays rank badge in info-bar (7 tiers)
+
+## Process
+
+- **Fail on evidence, never on a stopwatch.** A ten-second timeout added to inline playback turned a slow connection into permanent failure, and a late success could not undo it. Real signals only: the script erroring, the player reporting the media unplayable. A timeout that converts "slow" into "broken" looks responsible and is not
+- **A stored `youtubeId` is not a playable album.** The 2026-09-24 audit found most were single songs, clips, teasers or dead in the embed, and nothing had checked. Any new player needs an `onError`, and any refetch must verify title and duration before storing — run `npm run audit-youtube-ids`
+- **The session scratchpad is not durable.** It was cleared overnight on 2026-09-25, taking the only copy of the audit script and its results. Anything you would want tomorrow — a script, a data file, evidence behind a data change — goes in the repo
+- **`codex exec` exits 0 when it fails on a usage limit** and writes an empty output file. Check the output is non-empty and read the `.log`; the exit code says nothing. The `adversarial-review` skill already checks this
