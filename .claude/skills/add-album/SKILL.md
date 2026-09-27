@@ -29,12 +29,16 @@ The user provides album name(s) and/or artist(s). If details are incomplete, sea
 4. Run `npm run fetch-album-facts` — sourced MusicBrainz facts are keyed
    `artist::title`, so a new album has none until this runs, and Soundtrack
    Corner and the recommendation scorer both read them
-5. **Run `npm run eval-site`.** This is the guardrail for album data and it
+5. **Run `npm run pin-schedule`**, and commit `lib/schedule.json` with the
+   albums. It records every day through tomorrow from the catalog production is
+   serving, so the new albums cannot change a day already started or past —
+   they take effect from the day after tomorrow. `eval-site` fails until it runs.
+6. **Run `npm run eval-site`.** This is the guardrail for album data and it
    exits nonzero on real faults: duplicate accent colours or cover emoji, a
    missing or non-https image, and pool-size interactions with the game cadence.
    `npm test && npm run build` too, per `CLAUDE.md`
-6. Report what was added and the new total album count
-7. Note: adding albums shifts the daily rotation schedule (the rotation is a year-seeded permutation over `ALBUMS.length`)
+7. Report what was added and the new total album count
+8. Note: adding albums reshuffles every **unrecorded** day (the rotation is a year-seeded permutation over `ALBUMS.length`); recorded days, the Archive among them, stay put
 
 ## What `recognizable` costs you
 

@@ -20,7 +20,6 @@ A retro forum-style website where a new album is featured every day. Rate it, pi
 - **Cozy Vibes** — a self-hosted pixel sandbox and a small shelf of cozy games
 - **Skins** — switch the 2004 forum for a Vintage 1990s desktop
 - **Streak Tracking** — tracks your daily participation streak
-- **Shareable Results** — Wordle-style copy-to-clipboard for all activities
 - **Yesterday's Recap** — see what the community thought about yesterday's album
 - **Retro Aesthetic** — 2004 forum vibes with pixel art icons and a vinyl record CSS effect
 
@@ -41,7 +40,9 @@ Open http://localhost:3000. The SQLite database creates itself on first request.
 
 ```
 app/
-  page.js              # Server component — resolves today's album
+  sections.js          # The six tabs, shared by nav, routes and sitemap
+  section-page.js      # Server wrapper — per-tab metadata, today's picks
+  page.js, */page.js   # One route per tab (/, /soundtrack, /cozy, ...)
   ForumPage.js         # Client component — all UI and games
   globals.css          # All styling
   api/                 # rate, vibe, guess, stats, playlist, matchup,
@@ -49,6 +50,7 @@ app/
 lib/
   albums.json          # The album catalog (source of truth)
   albums.js            # Shuffle logic, game helpers, vibes
+  schedule.json        # Each day's recorded picks (npm run pin-schedule)
   lyrics.json          # Lyric lines for the Lyric game
   db.js                # SQLite database
 data/                  # Auto-created, holds aotd.db (gitignored)
@@ -61,10 +63,12 @@ docs/                  # Developer documentation
 These populate game data. The site works without them — games fall back to Cover Art Challenge.
 
 ```bash
-LASTFM_API_KEY=xxx npm run fetch-covers        # Album cover art
-GENIUS_ACCESS_TOKEN=xxx npm run fetch-lyrics    # Lyrics for Lyric game
-YOUTUBE_API_KEY=xxx npm run fetch-youtube-ids   # YouTube IDs for Heardle
+npm run fetch-covers        # Album cover art (LASTFM_API_KEY optional; iTunes fallback)
+npm run fetch-lyrics        # Lyrics for Lyric game (GENIUS_ACCESS_TOKEN)
+npm run fetch-youtube-ids   # YouTube IDs for Heardle (YOUTUBE_API_KEY)
 ```
+
+Keys go in `.env` (copy `.env.example`); see `docs/project.md` → Scripts.
 
 ## Tech Stack
 

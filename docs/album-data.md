@@ -31,10 +31,10 @@
   - **The 21 dead and wrong ids were removed** (the two films were kept). Wrong data is worse than missing data, and the dead ones were breaking two games — see `docs/components.md`.
   - **Re-run it with `npm run audit-youtube-ids`** (read-only, ~4 minutes, exits 1 if anything is dead, a clip or from the wrong album). Videos keep dying after they are stored, so this is worth running now and then. `--albums <file>` audits a candidate catalog — use it on the output of a refetch **before** copying it over `lib/albums.json`. A DEAD verdict comes from the watch page's playability status, a proxy; confirm in a browser that the IFrame player really fires `onError` before removing an id.
   - **Why so few are whole albums:** `scripts/fetch-youtube-ids.mjs` searched `"{artist} {title} official audio"` and kept the **first result, unchecked**, and only for `recognizable` albums — the ids were collected for Heardle and the Taste Test, where a single song is fine. The hero's inline player reused the field later. A refetch that targets full albums, checks title and duration, and covers the whole catalog is the real fix and needs a YouTube Data API key.
-  - Removing ids shrinks the Heardle and Taste Test pools, and pool size drives the daily rotation, so it reshuffles which album those games pick on future days. `eval-site` checks the new Heardle pool against the 5-day cadence.
+  - Removing ids shrinks the Heardle and Taste Test pools, and pool size drives the daily rotation, so it reshuffles which album those games pick on future days — from the day after tomorrow, once `npm run pin-schedule` has recorded the rest (see the pinned schedule under Daily Rotation). `eval-site` checks the new Heardle pool against the 5-day cadence.
 - **`image` must not be null, and must be https** — fetch via MusicBrainz/iTunes before committing. `eval-site` fails on a missing, duplicated, or `http://` cover: production is https, so an insecure URL is mixed content and local dev cannot reveal it
 - **No duplicates** — check artist+title before adding. Run `/add-album` skill for validation
-- After renaming an album, set `image` to `null` and re-run fetch-covers to get correct artwork
+- After renaming an album, set `image` to `null` and re-run fetch-covers to get correct artwork. A rename also breaks the pinned schedule's record of every day that album aired — `eval-site` names them; update those ids in `lib/schedule.json` in the same commit
 
 ## Lyrics Data
 
@@ -174,7 +174,23 @@ Coverage lives in `npm run soundtrack-corner-report`, never in prose here.
 
 ## Daily Rotation
 
-Seeded shuffle (mulberry32 PRNG + Fisher-Yates) keyed by year. Same date = same album globally. Rotates through the whole catalog before repeating, so adding an album shifts which record lands on which day.
+Seeded shuffle (mulberry32 PRNG + Fisher-Yates) keyed by year. Same date = same album globally. Rotates through the whole catalog before repeating, so adding an album shifts which record lands on which day — **on unrecorded days only.** See the pinned schedule below.
+
+### The pinned schedule (`lib/schedule.json`)
+
+**A day's picks are recorded once and never re-derived.** Votes, ratings and matchups are all keyed by date, and every pick used to be computed from the current catalog on demand, in the browser. So any catalog edit rewrote days that had already happened: adding one album relabelled all 30 Archive days, and removing 21 dead video ids on 2026-09-25 swapped that day's Blind Taste Test pair at 12:42 UTC, mid-contest, under votes already cast for the old pair.
+
+Now `lib/daily-picks.js` (server-only) serves each date from `lib/schedule.json` when it is recorded, and computes it from the catalog only when it is not. Pages receive the picks as props; `ForumPage` reads them through `useDailyPicks()`. Albums are recorded by identity (`Artist::Title`) and resolved against the current catalog, so a later data fix — a better video id, a corrected year — still reaches a recorded day.
+
+**The workflow for any change to `lib/albums.json` or `lib/lyrics.json`:**
+
+1. Make the edit.
+2. `npm run pin-schedule` — records every day through **tomorrow** (UTC) from the catalog at `origin/master`, which is what production is serving, not from your edit. Tomorrow, not today, so a deploy landing just after midnight cannot re-derive a day that has begun.
+3. Commit `lib/schedule.json` with the edit. The change takes effect from the day after tomorrow.
+
+`eval-site` enforces it: it fails if the catalog's fingerprint (order, identity, and the `recognizable` / `image` / `youtubeId` flags plus which albums have lyrics — not colour, year or emoji) differs from the one the schedule was pinned against; if a change that moves the future is not pinned through tomorrow — so **re-run `pin-schedule` before merging a PR that sat for a day**; if any recorded identity is missing from the catalog, which is what renaming or removing an aired album does; and if a client component imports the schedule.
+
+What is recorded: the featured album for every day from 2026-07-14 (from which it reproduces exactly — the catalog's order and length have not changed since), and every game's pick from 2026-09-25 on. Past game picks were not back-filled: nothing shows them, and their pools changed along the way. Recorded days are never rewritten by the script; if one is genuinely wrong, edit it by hand and say why in the commit.
 
 **The per-game sampler is different and the difference matters.** `pickRotatingPoolAlbum` indexes by _appearance ordinal_ — how many times that game has aired — not by `dayOfYear`. Indexing on the day samples the pool at a stride of `GAME_TYPES.length`, which collapses a pool sharing that factor to `pool/cadence` distinct albums a year (a pool of 80 gives 16, not 73) with no visible symptom. `npm run eval-site` fails if this regresses.
 

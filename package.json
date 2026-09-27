@@ -18,6 +18,7 @@
     "fetch-lyrics": "node --env-file-if-exists=.env scripts/fetch-lyrics.mjs",
     "fetch-youtube-ids": "node --env-file-if-exists=.env scripts/fetch-youtube-ids.mjs",
     "audit-youtube-ids": "node scripts/audit-youtube-ids.mjs",
+    "pin-schedule": "node scripts/pin-schedule.mjs",
     "soundtrack-corner-report": "node scripts/soundtrack-corner-report.mjs",
     "eval-site": "node --no-warnings scripts/eval-site.mjs",
     "test": "node --no-warnings --test test/*.test.mjs"

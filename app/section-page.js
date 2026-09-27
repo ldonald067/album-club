@@ -1,5 +1,6 @@
 import ForumPage from "./ForumPage";
-import { getTodayAlbum, getDateString } from "@/lib/albums";
+import { getDateString } from "@/lib/albums";
+import { getFeaturedAlbum, getPageData } from "@/lib/daily-picks";
 
 /* One body and one metadata builder shared by all six tab routes, so a tab is
    two exported lines in app/<key>/page.js and nothing else.
@@ -47,7 +48,7 @@ const COPY = {
 /* force-dynamic lives on each page.js, not here: an export from this module is
    not a route segment config, and Next would silently ignore it. */
 export function sectionMetadata(key) {
-  const album = getTodayAlbum();
+  const album = getFeaturedAlbum();
   const { title, description } = (COPY[key] || COPY.home)(album);
 
   return {
@@ -58,10 +59,22 @@ export function sectionMetadata(key) {
   };
 }
 
+/* The day's picks are decided here, on the server, from the recorded schedule
+   (lib/daily-picks.js) and handed to the page. The browser used to compute
+   them itself from the catalog it was shipped, so a deploy that changed the
+   catalog changed today's games for anyone who loaded the new bundle —
+   mid-day, under votes keyed to the date. */
 export function SectionPage({ section }) {
+  const { picks, yesterday, tomorrow, archive } = getPageData({
+    archive: section === "archive",
+  });
   return (
     <ForumPage
-      album={getTodayAlbum()}
+      album={picks.album}
+      picks={picks}
+      yesterdayAlbum={yesterday}
+      tomorrowAlbum={tomorrow}
+      archiveAlbums={archive}
       dateString={getDateString()}
       section={section}
     />

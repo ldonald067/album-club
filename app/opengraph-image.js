@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
-import { getTodayAlbum, getDateString } from "@/lib/albums";
+import { getDateString } from "@/lib/albums";
+import { getFeaturedAlbum } from "@/lib/daily-picks";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -15,7 +16,7 @@ export const dynamic = "force-dynamic";
    depends on a third-party fetch fails silently in exactly the place nobody
    looks — inside someone else's chat client. Colour and emoji always render. */
 export default function OpengraphImage() {
-  const album = getTodayAlbum();
+  const album = getFeaturedAlbum();
   const accent = album.color || "#2a4858";
 
   return new ImageResponse(

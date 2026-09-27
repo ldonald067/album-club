@@ -13,6 +13,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          # eval-site compares the schedule against origin/master's
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -25,6 +28,9 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+      - name: Data guardrails
+        run: npm run eval-site
 
       - name: Build app
         run: npm run build

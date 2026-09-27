@@ -1,6 +1,6 @@
 # Performance Rules
 
-Follow these rules for all CSS, rendering, and database changes. The build target is <55 kB page JS.
+Follow these rules for all CSS and rendering changes. Database, rate-limiter and API-cache patterns live in `docs/api.md`.
 
 ## CSS — Compositor-Friendly Only
 
@@ -64,43 +64,15 @@ setAllDone((prev) => (prev === done ? prev : done));
 
 - `personalStats` depends on `[allDone]` — scans all localStorage keys, only recomputes when wrap-up state actually changes
 
-## Database — Query Patterns
-
-- **Singleton connection** — `db.js` creates one connection, reused across all requests
-- **Prepared statements** — 14 statements cached at module scope, created once on first `getDb()` call
-- **Covering indexes** — `(album_key, rating)`, `(album_key, vibe)`, `(puzzle_key, attempts, solved)`, `(album_key, vote)`, `(matchup_key, pick)`
-- **WAL mode** — concurrent reads while writes complete
-- **Stats cache** — `getSiteStats()` has 5-minute TTL to avoid expensive `COUNT DISTINCT` / `SUM` / `GROUP BY` on every request
-
-## Rate Limiter — Memory Safety
-
-- Hard cap: 2000 tracked IPs (prevents DoS via map exhaustion)
-- Hard cap: 20k daily vote entries
-- Deterministic cleanup every 60s via `setInterval`
-- Probabilistic inline cleanup at 1% of requests
-- Both maps are bounded — no unbounded growth possible
-
-## API Caching
-
-| Route               | TTL                 | Cache-bust |
-| ------------------- | ------------------- | ---------- |
-| GET `/api/rate`     | 30s                 | On POST    |
-| GET `/api/vibe`     | 30s                 | On POST    |
-| GET `/api/guess`    | 30s per game type   | On POST    |
-| GET `/api/playlist` | 30s                 | On POST    |
-| GET `/api/matchup`  | 30s per type        | On POST    |
-| GET `/api/stats`    | 5min (double cache) | Time-based |
-
-All caches are in-memory objects, no external cache layer needed for single-instance deployment.
-
 ## Bundle Budget
 
-Current: **55.1 kB** page JS, **157 kB** First Load. Target: stay under 55 kB page JS.
+Measure a **fresh production visit** (network panel, cache disabled), not the build's route table — chunk names are hashed and Turbopack prefetches dynamic chunks, so neither the build output nor a filename grep tells you what a visitor downloads. Last measured 2026-09-03: 212KB, biggest chunk 70KB.
 
 - `better-sqlite3` stays server-only (never imported in client code)
+- `lib/schedule.json` stays server-only — `lib/daily-picks.js` reads it and passes picks down as props; `eval-site` fails if a client component imports it
 - `lib/albums.json` is intentionally client-bundled — needed for autocomplete. It is the largest single contributor to bundle size, so check it when the budget moves
 - `canvas-confetti` is dynamically imported and cached in `_confetti` variable
-- No code splitting needed — single-page app
+- **Code splitting is real work here, not ruled out.** Soundtrack Corner sits behind `next/dynamic` to keep its generator off the home path; Webamp loads from `/vendor` via a script tag because `next/dynamic` still shipped its chunk to everyone (`docs/components.md` → Webamp view). Anything heavy that only some visitors open deserves the same question
 - **Pixel icons are self-hosted as a subset** (`app/iconfont-subset.css` +
   `public/fonts/iconfont-subset.woff2`, ~1 kB vs the vendor's 20 kB full face).
   If you add a new `hn-*` class, regenerate: add its codepoint to a subset-font
