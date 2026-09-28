@@ -127,11 +127,10 @@ docs.
    the script's `DECIDED` map); "Tiny Desk Concert Collection — Waiting for
    the Sun to Rot", which had nothing real behind it, was removed before it
    aired. Still open, none urgent:
-   - **Metadata faults on real entries:** _SIMBI_ is _Sometimes I Might Be
-     Introvert_, released 2021, not 2024. _Weightless_ is a single (fine under
-     the mixes ruling). _Madvillainy_ 2004 is the official release; MusicBrainz
-     dates the 2002 leak — keep. A year fix does not break recorded days; a
-     rename or removal does.
+   - **Metadata:** _SIMBI_'s year corrected 2024 → 2021. _Weightless_ is a
+     single (fine under the mixes ruling). _Madvillainy_ stays 2004, the
+     official release; MusicBrainz dates the 2002 leak. A year fix does not
+     break recorded days; a rename or removal does.
    - **Real but unconfirmed (37):** 11 named sessions (Boiler Room, Essential
      Mix, Cercle, Tiny Desk, KEXP — confirm each performance exists), 24 real
      artists whose release is under a native-script title (mostly the anime
