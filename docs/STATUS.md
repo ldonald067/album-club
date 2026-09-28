@@ -143,22 +143,17 @@ docs.
    of one `recognizable` flag; distinct artists in Artist Scramble; measure
    "the next 30 days are ready" rather than every field for every entry.
 
-2. **Adversarial review findings 2–8 (raised 2026-09-26).** From a four-reviewer
-   Codex pass over every unreviewed commit since `c6fd733`, verdict CONTESTED; finding 1 (High) was
-   fixed by PR #5. All accepted, none urgent. **2, 5, 6 and 7 fixed 2026-09-28**, each measured in the browser — 6 also against the old code.
+2. **Adversarial review findings 2–8 (raised 2026-09-26) — all fixed
+   2026-09-28, one awaiting a phone.** From a four-reviewer Codex pass over
+   every unreviewed commit since `c6fd733` (finding 1, High, was PR #5). The
+   vinyl deck (5–7) was measured in the browser, 6 also against the old code;
+   the video audit (3, 4, 8) was proved against the old script on a crafted
+   catalog. What is left:
    - **2 [Medium] Taste Test on a phone — fixed 2026-09-28, awaiting a real
      phone.** "Playing" and the one-minute timer now start only on YouTube's
      PLAYING state, and the button stays tappable until then. Verified on
      desktop with a simulated block; **someone should tap through it once on
      an iPhone and an Android phone** (`docs/components.md`).
-   - **3 [Medium] The audit passes any long video as `FULL_ALBUM`** — a 30–60
-     minute unrelated video is never listed. That defeats open item 3's
-     refetch check. Require evidence it is the right album, else `UNVERIFIED`.
-   - **4 [Medium] `KEPT_AFTER_REVIEW` matches on video id alone**, so an
-     approved film would pass under the wrong album. Key it on artist, album
-     and id.
-   - **8 [Low] The audit fetches a MusicBrainz tracklist for every id**,
-     including decided ones, and one failed request aborts the run.
 
 3. **Album audio needs a proper refetch — blocked on a YouTube Data API key.**
    Only a minority of stored videos are whole albums; most are one song, and 21
@@ -170,7 +165,9 @@ docs.
    it was written for. The free tier's 100 searches a day make that four to
    five days of runs. Audit the result with
    `npm run audit-youtube-ids -- --albums <candidate>` before it replaces the
-   catalog, after fixing finding 3 above.
+   catalog. It now demands evidence a long upload is the right album; one live
+   id (Hayley Williams, "EGO [FULL ALBUM]") is UNVERIFIED for abbreviating the
+   title — watch it once and add it to `KEPT_AFTER_REVIEW` if it is right.
 
 4. **There is no audience yet, and that governs what is worth building.**
    As of 2026-08-22, `GET /api/stats` reported **one rating, one puzzle play and

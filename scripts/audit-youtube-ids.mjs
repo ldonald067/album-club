@@ -35,14 +35,19 @@
  *                    "not allowed in embeds"). In the 2026-09-24 run the proxy
  *                    agreed with the real embed for every one of the 13.
  *   FULL_ALBUM       at least half the album's runtime (from album-facts), or
- *                    20+ minutes when no runtime is known.
+ *                    20+ minutes when no runtime is known — AND its title
+ *                    names the album, or two of its tracks. Length alone
+ *                    passed any long upload (review finding, 2026-09-26).
  *   SONG_THIS_ALBUM  shorter, and the title names a track on this album.
  *   CLIP             under a minute and names no track: a teaser or a stub.
  *                    (A real short song still matches its track and passes —
  *                    NewJeans' "Get Up" is 36 seconds.)
  *   NOT_ON_ALBUM     tracklist known, title names none of it.
- *   UNVERIFIED       no tracklist to check against (not in MusicBrainz — DJ
- *                    sets, Tiny Desk concerts). Read these by eye.
+ *   UNVERIFIED       nothing to check it against (not in MusicBrainz — DJ
+ *                    sets, Tiny Desk concerts), or a long upload whose title
+ *                    names neither the album nor its tracks. Read by eye.
+ *   ERROR            a lookup kept failing after retries. Not a verdict on
+ *                    the video; re-run.
  *   KEPT             would have been flagged, but is in KEPT_AFTER_REVIEW: a
  *                    person watched it and kept it. Listed, never counted.
  */
@@ -69,13 +74,17 @@ const facts = JSON.parse(
 /* Ids a person has looked at and decided to keep despite a flag. Reported, but
    not counted toward the exit code — otherwise every run on the real catalog
    exits 1 for the same two known cases, and the code stops meaning "something
-   new broke". Add to this only after actually watching the video. */
+   new broke". Add to this only after actually watching the video.
+   Keyed on artist, album AND id: keyed on the id alone, an approved film
+   copied under a different album would have passed as reviewed there too. */
 const KEPT_AFTER_REVIEW = {
-  S5tedQCR4vM:
+  "Weyes Blood::Titanic Rising::S5tedQCR4vM":
     "Weyes Blood's own 'Titanic Risen' film for the album — its music, as video (reviewed 2026-09-24)",
-  xR55tIcWNVg:
+  "Chappell Roan::The Rise and Fall of a Midwest Princess::xR55tIcWNVg":
     "Chappell Roan's 'Episode 1: Homecoming' visual for the album (reviewed 2026-09-24)",
 };
+const keptKey = (album) =>
+  `${album.artist}::${album.title}::${album.youtubeId}`;
 
 const USER_AGENT =
   "AlbumOfTheDayClub/1.0 (https://littlealbumclub.net) audit-youtube-ids";
@@ -125,8 +134,29 @@ const namesTrack = (videoTitle, tracks) => {
   });
 };
 
+/* One network hiccup used to throw out of the loop and end the whole ~4
+   minute run with nothing written. Each request now retries, and a request
+   that keeps failing becomes that one id's ERROR verdict. */
+async function fetchRetry(url, options = {}) {
+  let lastError;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    if (attempt) await sleep(1500 * attempt);
+    try {
+      const res = await fetch(url, options);
+      if (res.status === 503 || res.status === 429) {
+        lastError = new Error(`HTTP ${res.status}`);
+        continue;
+      }
+      return res;
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  throw lastError;
+}
+
 async function oembed(id) {
-  const res = await fetch(
+  const res = await fetchRetry(
     `https://www.youtube.com/oembed?format=json&url=https://www.youtube.com/watch?v=${id}`,
   );
   if (!res.ok) return { status: res.status };
@@ -135,7 +165,7 @@ async function oembed(id) {
 }
 
 async function watchPage(id) {
-  const res = await fetch(`https://www.youtube.com/watch?v=${id}`, {
+  const res = await fetchRetry(`https://www.youtube.com/watch?v=${id}`, {
     headers: { "User-Agent": "Mozilla/5.0", "Accept-Language": "en" },
   });
   const html = await res.text();
@@ -148,11 +178,11 @@ async function watchPage(id) {
 }
 
 async function tracklist(releaseGroupId) {
-  const res = await fetch(
+  const res = await fetchRetry(
     `https://musicbrainz.org/ws/2/release?release-group=${releaseGroupId}&inc=recordings+media&limit=25&fmt=json`,
     { headers: { "User-Agent": USER_AGENT } },
   );
-  if (!res.ok) return null;
+  if (!res.ok) throw new Error(`MusicBrainz ${res.status}`);
   const body = await res.json();
   const titles = new Set();
   for (const release of body.releases || [])
@@ -161,13 +191,31 @@ async function tracklist(releaseGroupId) {
   return [...titles];
 }
 
-function verdictFor({ oe, page, tracks, matched, albumMinutes }) {
-  if (oe.status !== 200) return "DEAD";
-  if (page.playability && page.playability !== "OK") return "DEAD";
-  if (page.seconds === null) return "DEAD";
+/* The video's title names the album, as whole words. Length alone proved
+   nothing: any 30–60 minute upload passed as the full album. */
+const namesAlbum = (videoTitle, album) => {
+  const key = norm(album.title);
+  return key.length >= 2 && ` ${norm(videoTitle)} `.includes(` ${key} `);
+};
+
+const isDead = (oe, page) =>
+  oe.status !== 200 ||
+  (page.playability && page.playability !== "OK") ||
+  page.seconds === null;
+
+const isLong = (page, albumMinutes) => {
   const minutes = page.seconds / 60;
-  if (albumMinutes ? minutes >= albumMinutes * 0.5 : minutes >= 20)
-    return "FULL_ALBUM";
+  return albumMinutes ? minutes >= albumMinutes * 0.5 : minutes >= 20;
+};
+
+function verdictFor({ oe, page, tracks, matched, albumMinutes, albumNamed }) {
+  if (isDead(oe, page)) return "DEAD";
+  if (isLong(page, albumMinutes)) {
+    // Long enough, and something ties it to this album: its title, or two
+    // of its tracks named in the upload's title
+    if (albumNamed || matched.length >= 2) return "FULL_ALBUM";
+    return "UNVERIFIED";
+  }
   if (matched.length) return "SONG_THIS_ALBUM";
   if (page.seconds < CLIP_SECONDS) return "CLIP";
   if (tracks === null) return "UNVERIFIED";
@@ -182,48 +230,77 @@ console.log(
 const results = [];
 for (const [i, album] of withId.entries()) {
   const fact = facts[`${album.artist}::${album.title}`];
-  const oe = await oembed(album.youtubeId);
-  await sleep(YT_DELAY_MS);
-  const page = await watchPage(album.youtubeId);
-  await sleep(YT_DELAY_MS);
+  const albumMinutes = fact?.runtimeMinutes || null;
+  const keptNote = KEPT_AFTER_REVIEW[keptKey(album)];
+  let oe = { status: null };
+  let page = { seconds: null, playability: null };
   let tracks = null;
-  if (fact?.mbid) {
-    tracks = await tracklist(fact.mbid);
-    await sleep(MB_DELAY_MS);
-  }
-  const matched = oe.title && tracks ? namesTrack(oe.title, tracks) : [];
-  const flaggedVerdict = verdictFor({
-    oe,
-    page,
-    tracks,
-    matched,
-    albumMinutes: fact?.runtimeMinutes || null,
-  });
-  const keptNote = KEPT_AFTER_REVIEW[album.youtubeId];
-  const verdict =
-    keptNote && ["CLIP", "NOT_ON_ALBUM", "UNVERIFIED"].includes(flaggedVerdict)
-      ? "KEPT"
-      : flaggedVerdict;
+  let verdict;
+  let error = null;
 
-  results.push({
-    artist: album.artist,
-    album: album.title,
-    id: album.youtubeId,
-    verdict,
-    videoTitle: oe.title || null,
-    channel: oe.channel || null,
-    oembedStatus: oe.status,
-    playability: page.playability,
-    videoMinutes:
-      page.seconds === null ? null : +(page.seconds / 60).toFixed(1),
-    albumMinutes: fact?.runtimeMinutes || null,
-    matchedTracks: matched.slice(0, 3),
-    ...(verdict === "KEPT" ? { keptBecause: keptNote } : {}),
-  });
+  try {
+    oe = await oembed(album.youtubeId);
+    await sleep(YT_DELAY_MS);
+    page = await watchPage(album.youtubeId);
+    await sleep(YT_DELAY_MS);
+
+    const albumNamed = Boolean(oe.title) && namesAlbum(oe.title, album);
+    /* The tracklist is fetched only when it can change the verdict — not for
+       a dead video, a reviewed one, or a long upload that already names the
+       album. It used to be fetched for every id. */
+    const needsTracks =
+      fact?.mbid &&
+      !keptNote &&
+      !isDead(oe, page) &&
+      !(isLong(page, albumMinutes) && albumNamed);
+    if (needsTracks) {
+      tracks = await tracklist(fact.mbid);
+      await sleep(MB_DELAY_MS);
+    }
+    const matched = oe.title && tracks ? namesTrack(oe.title, tracks) : [];
+    const flaggedVerdict = verdictFor({
+      oe,
+      page,
+      tracks,
+      matched,
+      albumMinutes,
+      albumNamed,
+    });
+    verdict =
+      keptNote &&
+      ["CLIP", "NOT_ON_ALBUM", "UNVERIFIED"].includes(flaggedVerdict)
+        ? "KEPT"
+        : flaggedVerdict;
+    results.push({
+      artist: album.artist,
+      album: album.title,
+      id: album.youtubeId,
+      verdict,
+      videoTitle: oe.title || null,
+      channel: oe.channel || null,
+      oembedStatus: oe.status,
+      playability: page.playability,
+      videoMinutes:
+        page.seconds === null ? null : +(page.seconds / 60).toFixed(1),
+      albumMinutes,
+      matchedTracks: matched.slice(0, 3),
+      ...(verdict === "KEPT" ? { keptBecause: keptNote } : {}),
+    });
+  } catch (err) {
+    error = String(err.message || err);
+    results.push({
+      artist: album.artist,
+      album: album.title,
+      id: album.youtubeId,
+      verdict: "ERROR",
+      error,
+    });
+  }
   process.stdout.write(`\r  ${i + 1}/${withId.length}`);
 }
 
 const ORDER = [
+  "ERROR",
   "DEAD",
   "CLIP",
   "NOT_ON_ALBUM",
@@ -240,17 +317,26 @@ for (const v of ORDER) console.log(`  ${v.padEnd(16)} ${counts[v]}`);
 
 // Everything a person should read before deciding; the healthy verdicts are
 // only counted.
-for (const v of ["DEAD", "CLIP", "NOT_ON_ALBUM", "UNVERIFIED", "KEPT"]) {
+for (const v of [
+  "ERROR",
+  "DEAD",
+  "CLIP",
+  "NOT_ON_ALBUM",
+  "UNVERIFIED",
+  "KEPT",
+]) {
   const rows = results.filter((r) => r.verdict === v);
   if (!rows.length) continue;
   console.log(`\n${v}`);
   for (const r of rows) {
     const why =
-      v === "DEAD"
-        ? `oEmbed ${r.oembedStatus}, watch page ${r.playability ?? "?"}`
-        : v === "KEPT"
-          ? r.keptBecause
-          : `${r.videoMinutes}m — ${JSON.stringify(r.videoTitle)}`;
+      v === "ERROR"
+        ? `lookup failed: ${r.error}`
+        : v === "DEAD"
+          ? `oEmbed ${r.oembedStatus}, watch page ${r.playability ?? "?"}`
+          : v === "KEPT"
+            ? r.keptBecause
+            : `${r.videoMinutes}m — ${JSON.stringify(r.videoTitle)}`;
     console.log(`  ${r.artist} — ${r.album}  (${r.id})  ${why}`);
   }
 }
@@ -260,6 +346,11 @@ if (jsonOut) {
   console.log(`\nFull results: ${jsonOut}`);
 }
 
+if (counts.ERROR) {
+  console.log(
+    `\n${counts.ERROR} id(s) could not be checked — network or rate limit. Re-run before deciding anything about them.`,
+  );
+}
 const flagged = counts.DEAD + counts.CLIP + counts.NOT_ON_ALBUM;
 if (flagged) {
   console.log(
