@@ -4320,10 +4320,16 @@ export default function ForumPage({
   }, []);
   const vinylRef = useRef(null);
   const rampRef = useRef(null);
+  const putAwayRef = useRef(null);
 
   useEffect(() => {
     const el = vinylRef.current;
     cancelAnimationFrame(rampRef.current);
+    /* A put-away still sliding home is a script animation, and those outrank
+       CSS ones — left running, it dragged a record the visitor had just
+       pressed Play on back toward the sleeve for the rest of its 450ms. */
+    putAwayRef.current?.cancel();
+    putAwayRef.current = null;
     const reduce =
       typeof window !== "undefined" &&
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
@@ -4358,10 +4364,10 @@ export default function ForumPage({
       const from = el ? getComputedStyle(el).transform : "none";
       setOnDeck(false);
       if (el?.animate && !reduce && from !== "none") {
-        el.animate([{ transform: from }, { transform: "none" }], {
-          duration: 450,
-          easing: "ease-in-out",
-        });
+        putAwayRef.current = el.animate(
+          [{ transform: from }, { transform: "none" }],
+          { duration: 450, easing: "ease-in-out" },
+        );
       }
     };
 
@@ -4371,9 +4377,12 @@ export default function ForumPage({
       ramp(1, 500);
     } else if (turning) {
       // Paused or stopped mid-spin: wind down first, on the deck
+      /* The rate is left where the spin-down ends. Resetting it to 1 here
+         meant the next Play read 1 as its starting speed and "wound up" from
+         full speed to full speed — a jump, on every resume. A put-away
+         discards the animation anyway, so nothing else needs it reset. */
       ramp(0, 900, () => {
         setTurning(false);
-        spin()?.updatePlaybackRate(1);
         if (deck === "off") putAway();
       });
     } else if (deck === "off" && onDeck) {

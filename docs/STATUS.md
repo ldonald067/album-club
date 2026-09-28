@@ -145,7 +145,8 @@ docs.
 
 2. **Adversarial review findings 2–8 (raised 2026-09-26).** From a four-reviewer
    Codex pass over every unreviewed commit since `c6fd733`, verdict CONTESTED; finding 1 (High) was
-   fixed by PR #5. All accepted, none fixed yet, none urgent.
+   fixed by PR #5. All accepted, none urgent. **5, 6 and 7 (the vinyl deck) fixed
+   2026-09-28**, each measured in the browser — 6 also against the old code.
    - **2 [Medium] Taste Test on a phone may play nothing.** The lazy players
      start the clip from YouTube's `onReady`, after the tap has ended, and
      mobile browsers block sound not started by a tap — yet the UI says
@@ -158,14 +159,6 @@ docs.
    - **4 [Medium] `KEPT_AFTER_REVIEW` matches on video id alone**, so an
      approved film would pass under the wrong album. Key it on artist, album
      and id.
-   - **5 [Medium] The record is put away without Stop.** Paused is inferred
-     from `elapsed > 0`, so seeking to 0 while paused, or pausing in the first
-     half-second, sleeves it. Track paused from what was pressed.
-   - **6 [Medium] Resume after pause jumps to full speed** — the spin-down's
-     last step resets the rate to 1 (`spin()?.updatePlaybackRate(1)` in the
-     vinyl deck). Resuming was never tested.
-   - **7 [Low] Play during the 450ms put-away** lets the old WAAPI animation
-     fight the new spin; nothing cancels it.
    - **8 [Low] The audit fetches a MusicBrainz tracklist for every id**,
      including decided ones, and one failed request aborts the run.
 

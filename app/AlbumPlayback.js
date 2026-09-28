@@ -50,6 +50,8 @@ export default function AlbumPlayback({ album, onDeckChange }) {
   const [playing, setPlaying] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [duration, setDuration] = useState(0);
+  // On the platter since the last Play, until Stop or the end of the record
+  const [started, setStarted] = useState(false);
 
   const hasAudio = Boolean(album.youtubeId);
 
@@ -63,6 +65,7 @@ export default function AlbumPlayback({ album, onDeckChange }) {
     setFailed(false);
     setReady(false);
     setPlaying(false);
+    setStarted(false);
     setElapsed(0);
     setDuration(0);
 
@@ -111,8 +114,13 @@ export default function AlbumPlayback({ album, onDeckChange }) {
           onError: fail,
           onStateChange: (event) => {
             if (cancelled) return;
-            setPlaying(event.data === window.YT.PlayerState.PLAYING);
-            if (event.data === window.YT.PlayerState.ENDED) setElapsed(0);
+            const state = event.data;
+            setPlaying(state === window.YT.PlayerState.PLAYING);
+            if (state === window.YT.PlayerState.PLAYING) setStarted(true);
+            if (state === window.YT.PlayerState.ENDED) {
+              setStarted(false);
+              setElapsed(0);
+            }
           },
         },
       });
@@ -149,9 +157,13 @@ export default function AlbumPlayback({ album, onDeckChange }) {
     };
   }, [hasAudio, album.youtubeId]);
 
-  // Tell the hero where the record is. Derived, so it only fires on a change of
-  // state and never on the 500ms clock tick.
-  const deck = playing ? "playing" : elapsed > 0 ? "paused" : "off";
+  /* Tell the hero where the record is. Derived, so it only fires on a change
+     of state and never on the 500ms clock tick. "Paused" comes from what was
+     pressed, not from the clock: inferring it from `elapsed > 0` put the
+     record away when a visitor paused inside the first half-second (before
+     the first tick) or dragged the seek bar to 0:00 while paused. Only Stop
+     and the end of the record put it away. */
+  const deck = playing ? "playing" : started ? "paused" : "off";
   const deckRef = useRef(onDeckChange);
   deckRef.current = onDeckChange;
   useEffect(() => {
@@ -188,6 +200,7 @@ export default function AlbumPlayback({ album, onDeckChange }) {
     player.pauseVideo?.();
     player.seekTo?.(0, true);
     setElapsed(0);
+    setStarted(false);
   }, []);
 
   /* Same fallback as an album with no id at all: whether the catalog never had
