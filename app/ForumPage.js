@@ -1188,6 +1188,16 @@ const BlindTasteTest = memo(function BlindTasteTest() {
   const [listenedB, setListenedB] = useState(false);
   const [playingA, setPlayingA] = useState(false);
   const [playingB, setPlayingB] = useState(false);
+  /* Asked to play, not yet heard. "Playing" and the one-minute timer used to
+     start the instant playVideo() was called — but a phone blocks sound that
+     no tap started, and the first tap here only builds the players, so the
+     clip was asked for from onReady, outside any tap. The button then said
+     "Playing…" over silence, stayed disabled so the visitor could not tap
+     again, and credited the clip as heard a minute later. Now only YouTube
+     reporting PLAYING shows "Playing" and starts the minute; until then the
+     button stays pressable, and a second tap is a real gesture that plays. */
+  const [startingA, setStartingA] = useState(false);
+  const [startingB, setStartingB] = useState(false);
   const playerARef = useRef(null);
   const playerBRef = useRef(null);
   const timerARef = useRef(null);
@@ -1235,6 +1245,38 @@ const BlindTasteTest = memo(function BlindTasteTest() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [todayKey]);
 
+  /* The minute counts from real playback. A pause or stop from anywhere —
+     the other clip starting, the phone locking, a call — clears it, so only a
+     clip actually heard for a minute is credited. Buffering is not a stop. */
+  const onClipState = (side, state) => {
+    const YTState = window.YT?.PlayerState;
+    if (!YTState || state === YTState.BUFFERING) return;
+    const player = side === "A" ? playerARef.current : playerBRef.current;
+    const timerRef = side === "A" ? timerARef : timerBRef;
+    const setPlaying = side === "A" ? setPlayingA : setPlayingB;
+    const setStarting = side === "A" ? setStartingA : setStartingB;
+    const setListened = side === "A" ? setListenedA : setListenedB;
+
+    if (state === YTState.PLAYING) {
+      setStarting(false);
+      setPlaying(true);
+      if (!timerRef.current) {
+        timerRef.current = setTimeout(() => {
+          timerRef.current = null;
+          setListened(true);
+          try {
+            player?.pauseVideo();
+          } catch {}
+        }, 60000);
+      }
+      return;
+    }
+    setPlaying(false);
+    if (state === YTState.PAUSED || state === YTState.ENDED) setStarting(false);
+    clearTimeout(timerRef.current);
+    timerRef.current = null;
+  };
+
   // Load YouTube IFrame API + two players — only once a clip has been asked for
   useEffect(() => {
     if (submitted || !armed) return;
@@ -1247,12 +1289,22 @@ const BlindTasteTest = memo(function BlindTasteTest() {
           height: "0",
           width: "0",
           videoId: albumA.youtubeId,
-          playerVars: { autoplay: 0, controls: 0, disablekb: 1, fs: 0 },
+          // playsinline: iOS otherwise hands a video to its fullscreen player
+          playerVars: {
+            autoplay: 0,
+            controls: 0,
+            disablekb: 1,
+            fs: 0,
+            playsinline: 1,
+          },
           events: {
             onReady: () => {
               if (cancelled) return;
               setReadyA(true);
               if (pendingSideRef.current === "A") startClip("A");
+            },
+            onStateChange: (event) => {
+              if (!cancelled) onClipState("A", event.data);
             },
             onError: () => {
               if (cancelled) return;
@@ -1271,12 +1323,22 @@ const BlindTasteTest = memo(function BlindTasteTest() {
           height: "0",
           width: "0",
           videoId: albumB.youtubeId,
-          playerVars: { autoplay: 0, controls: 0, disablekb: 1, fs: 0 },
+          // playsinline: iOS otherwise hands a video to its fullscreen player
+          playerVars: {
+            autoplay: 0,
+            controls: 0,
+            disablekb: 1,
+            fs: 0,
+            playsinline: 1,
+          },
           events: {
             onReady: () => {
               if (cancelled) return;
               setReadyB(true);
               if (pendingSideRef.current === "B") startClip("B");
+            },
+            onStateChange: (event) => {
+              if (!cancelled) onClipState("B", event.data);
             },
             onError: () => {
               if (cancelled) return;
@@ -1351,31 +1413,23 @@ const BlindTasteTest = memo(function BlindTasteTest() {
       } catch {}
     }
     clearTimeout(otherTimerRef.current);
+    otherTimerRef.current = null;
     if (side === "A") {
       setPlayingB(false);
+      setStartingB(false);
     } else {
       setPlayingA(false);
+      setStartingA(false);
     }
 
+    // Each play is a fresh minute from the top; onClipState starts it once
+    // YouTube confirms the sound is actually playing.
+    clearTimeout(timerRef.current);
+    timerRef.current = null;
+    if (side === "A") setStartingA(true);
+    else setStartingB(true);
     player.seekTo(0, true);
     player.playVideo();
-    if (side === "A") {
-      setPlayingA(true);
-    } else {
-      setPlayingB(true);
-    }
-
-    clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => {
-      player.pauseVideo();
-      if (side === "A") {
-        setPlayingA(false);
-        setListenedA(true);
-      } else {
-        setPlayingB(false);
-        setListenedB(true);
-      }
-    }, 60000);
   };
 
   const submit = async (pick) => {
@@ -1543,9 +1597,11 @@ const BlindTasteTest = memo(function BlindTasteTest() {
               ? "\u23F8 Playing..."
               : armed && !readyA
                 ? "Loading audio..."
-                : "\u25B6 Play Clip A"}
+                : startingA
+                  ? "Starting... tap if silent"
+                  : "\u25B6 Play Clip A"}
           </button>
-          {listenedA && <span className="taste-heard">&check; heard</span>}
+          {listenedA && <span className="taste-heard">✓ heard</span>}
         </div>
         <div className="taste-player">
           <button
@@ -1557,9 +1613,11 @@ const BlindTasteTest = memo(function BlindTasteTest() {
               ? "\u23F8 Playing..."
               : armed && !readyB
                 ? "Loading audio..."
-                : "\u25B6 Play Clip B"}
+                : startingB
+                  ? "Starting... tap if silent"
+                  : "\u25B6 Play Clip B"}
           </button>
-          {listenedB && <span className="taste-heard">&check; heard</span>}
+          {listenedB && <span className="taste-heard">✓ heard</span>}
         </div>
       </div>
       {!canPick && (

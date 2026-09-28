@@ -145,14 +145,12 @@ docs.
 
 2. **Adversarial review findings 2–8 (raised 2026-09-26).** From a four-reviewer
    Codex pass over every unreviewed commit since `c6fd733`, verdict CONTESTED; finding 1 (High) was
-   fixed by PR #5. All accepted, none urgent. **5, 6 and 7 (the vinyl deck) fixed
-   2026-09-28**, each measured in the browser — 6 also against the old code.
-   - **2 [Medium] Taste Test on a phone may play nothing.** The lazy players
-     start the clip from YouTube's `onReady`, after the tap has ended, and
-     mobile browsers block sound not started by a tap — yet the UI says
-     "Playing…" and credits the clip as heard after 60s. Not verified on a real
-     phone. Fix: start the timer and show "Playing" only on the player's
-     PLAYING state; if blocked, re-enable Play so a second tap works.
+   fixed by PR #5. All accepted, none urgent. **2, 5, 6 and 7 fixed 2026-09-28**, each measured in the browser — 6 also against the old code.
+   - **2 [Medium] Taste Test on a phone — fixed 2026-09-28, awaiting a real
+     phone.** "Playing" and the one-minute timer now start only on YouTube's
+     PLAYING state, and the button stays tappable until then. Verified on
+     desktop with a simulated block; **someone should tap through it once on
+     an iPhone and an Android phone** (`docs/components.md`).
    - **3 [Medium] The audit passes any long video as `FULL_ALBUM`** — a 30–60
      minute unrelated video is never listed. That defeats open item 3's
      refetch check. Require evidence it is the right album, else `UNVERIFIED`.

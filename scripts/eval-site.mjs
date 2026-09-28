@@ -1036,6 +1036,36 @@ failures += printGuardrail(
     : "Picks reach the browser only as props from app/section-page.js.",
 );
 
+/* JSX decodes only the HTML 4 / XHTML named entities. An HTML5-only one —
+   `&check;` was the case, under the Taste Test's "heard" badge — ships its
+   raw characters to the page, the same failure as a literal `\u` escape in
+   JSX text, and it is invisible until the badge renders. Allow the entities
+   known to decode; anything else must be written as the real character. */
+const JSX_SAFE_ENTITIES = new Set(
+  "amp lt gt quot apos nbsp mdash ndash hellip lsquo rsquo ldquo rdquo middot bull copy reg trade times divide deg larr rarr uarr darr laquo raquo".split(
+    " ",
+  ),
+);
+const badEntities = fs
+  .readdirSync(path.join(rootDir, "app"), { recursive: true })
+  .filter((file) => /\.(js|jsx)$/.test(file))
+  .flatMap((file) =>
+    readText(path.join(rootDir, "app", file))
+      .split("\n")
+      .flatMap((line, i) =>
+        [...line.matchAll(/&([a-zA-Z][a-zA-Z0-9]*);/g)]
+          .filter(([, name]) => !JSX_SAFE_ENTITIES.has(name))
+          .map(([entity]) => `app/${file}:${i + 1} ${entity}`),
+      ),
+  );
+failures += printGuardrail(
+  badEntities.length === 0,
+  "Every named entity in JSX is one JSX decodes",
+  badEntities.length
+    ? `${badEntities.join(", ")} would ship as literal text; use the real character.`
+    : "Only HTML 4 entities, which decode; everything else is a real character.",
+);
+
 printSection("Manual checklist");
 [
   "Check the forum at 375px wide and make sure the activity cards still breathe.",

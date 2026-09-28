@@ -129,6 +129,18 @@ therefore enabled before a player exists; they only show "Loading audio..."
 once `armed` is true. Verified: 0 iframes on load, 2 after one click, and the
 clicked clip auto-plays.
 
+**"Playing" means YouTube says so (2026-09-28).** That auto-play happens from
+`onReady`, outside the tap — and phones block sound no tap started. The button
+used to say "Playing…", disable itself and start the one-minute "heard" timer
+the instant `playVideo()` was called, so a blocked clip showed "Playing" over
+silence, could not be tapped again, and was credited as heard. Now
+`onClipState` starts the minute and shows "Playing" only on the player's
+`PLAYING` state; a pause or stop from anywhere clears it. Until then the button
+reads "Starting... tap if silent" and stays enabled: a second tap calls
+`playVideo()` inside a real gesture. The players carry `playsinline: 1` so iOS
+plays inline. Verified on desktop, including a simulated block (nothing
+credited after 73s, second tap plays); **not yet verified on a real phone.**
+
 ### `useDraft(key, value, setValue, active)`
 
 Day-scoped localStorage draft of an answer that has not been submitted yet.

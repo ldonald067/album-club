@@ -15,6 +15,7 @@
 
 - **Escapes do not decode in bare JSX text**: `›` written as JSX text ships those six characters to the page. Use the real character. This shipped twice.
 - **Escapes do not decode in JSX attribute values either**: `label="📋 Share"` also ships verbatim, because attribute quotes are not a JS string literal. `label={"📋 Share"}` (inside braces) does decode. A grep for escapes must cover both forms
+- **JSX decodes only HTML 4 named entities.** `&check;` is HTML5, so the Taste Test's badge shipped the literal text `&check; heard` until 2026-09-28. `eval-site` now fails on any named entity outside a known-safe list; write the real character (✓)
 - **JSX can eat a leading space** before text that follows an element when that text contains an HTML entity: `<strong>{pct}%</strong> of today&apos;s vibes` rendered as `71%of`. Prettier collapses a `{" "}` fix back onto one line, so put the whole run in an expression: `{" of today's vibes"}`
 
 ## React / Hydration
@@ -196,6 +197,8 @@ Two traps, both hit during the 2026-07 dead-CSS removal:
 - **Visit ranks**: localStorage tracks visit count, displays rank badge in info-bar (7 tiers)
 
 ## Process
+
+- **YouTube's `seekTo` plays a clip that has not started.** From the cued state it starts playback on its own — so blocking only `playVideo()` does not simulate a blocked play, and code that "only seeks" may be playing
 
 - **Fail on evidence, never on a stopwatch.** A ten-second timeout added to inline playback turned a slow connection into permanent failure, and a late success could not undo it. Real signals only: the script erroring, the player reporting the media unplayable. A timeout that converts "slow" into "broken" looks responsible and is not
 - **A stored `youtubeId` is not a playable album.** The 2026-09-24 audit found most were single songs, clips, teasers or dead in the embed, and nothing had checked. Any new player needs an `onError`, and any refetch must verify title and duration before storing — run `npm run audit-youtube-ids`
