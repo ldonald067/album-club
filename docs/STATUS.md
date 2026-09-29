@@ -10,9 +10,10 @@ it used to carry).
 
 ## Handoff — read this first
 
-**Nothing is in flight.** `master` is clean and deployed at `27df008`, healthy
-(`GET /api/health` returns the running commit SHA; `uptimeSeconds` should
-climb). No PRs are open. Five old branches remain on GitHub —
+**Nothing is in flight.** `master` is clean and deployed; the last code
+change is `27df008`, and every commit since is docs. `GET /api/health`
+returns the running commit SHA — it should match `git rev-parse --short
+origin/master` — and `uptimeSeconds` should climb. No PRs are open. Five old branches remain on GitHub —
 `pin-daily-schedule` and four `codex/*` from April — all fully merged into
 `master` (checked 2026-09-29), so deleting them loses nothing; not done.
 
