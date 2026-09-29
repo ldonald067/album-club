@@ -13,9 +13,10 @@ it used to carry).
 **Nothing is in flight.** `master` is clean and deployed; the last code
 change is `27df008`, and every commit since is docs. `GET /api/health`
 returns the running commit SHA — it should match `git rev-parse --short
-origin/master` — and `uptimeSeconds` should climb. No PRs are open. Five old branches remain on GitHub —
-`pin-daily-schedule` and four `codex/*` from April — all fully merged into
-`master` (checked 2026-09-29), so deleting them loses nothing; not done.
+origin/master` — and `uptimeSeconds` should climb. No PRs are open, and
+`master` is the only branch, locally and on GitHub. The five merged branches
+(`pin-daily-schedule` and four `codex/*` from April) were deleted 2026-09-29
+after checking that none had a commit `master` lacks.
 
 **What changed 2026-09-27 → 09-29**, all live:
 

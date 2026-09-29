@@ -209,7 +209,10 @@ const titleVariants = (title) =>
    Robert Plant & Alison Krauss as one duo entity, "Robert Plant | Alison
    Krauss", which owns Raising Sand — neither solo artist does. So a
    collaboration is tried whole first, then part by part. */
-const artistKey = (s) => norm(s).replace(/\band\b/g, "").replace(/ /g, "");
+const artistKey = (s) =>
+  norm(s)
+    .replace(/\band\b/g, "")
+    .replace(/ /g, "");
 
 async function resolveArtists(artist) {
   if (/^various artists$/i.test(artist)) return { various: true, found: [] };
@@ -224,8 +227,8 @@ async function resolveArtists(artist) {
       (a) =>
         !a.name.startsWith("[") && // "[no artist]", "[unknown]": placeholders
         (artistKey(a.name) === target ||
-        artistKey(a["sort-name"] || "") === target ||
-        (a.aliases || []).some((al) => artistKey(al.name) === target)),
+          artistKey(a["sort-name"] || "") === target ||
+          (a.aliases || []).some((al) => artistKey(al.name) === target)),
     );
     if (hit && !found.some((f) => f.id === hit.id)) found.push(hit);
   }
@@ -261,7 +264,8 @@ const initials = (s) =>
     .map((w) => w[0])
     .join("");
 
-const rgYear = (rg) => Number((rg["first-release-date"] || "").slice(0, 4)) || null;
+const rgYear = (rg) =>
+  Number((rg["first-release-date"] || "").slice(0, 4)) || null;
 
 async function findUnderArtist(album, artists) {
   const variants = titleVariants(album.title);
@@ -273,7 +277,10 @@ async function findUnderArtist(album, artists) {
       /* norm() drops scripts it cannot fold, so "AKIRAのテーマ" squeezes to
          "akira". A title that loses letters that way is never exact. */
       const lossless = !/\p{L}/u.test(
-        rg.title.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[a-z]/gi, ""),
+        rg.title
+          .normalize("NFKD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[a-z]/gi, ""),
       );
       const exact =
         lossless && variants.some((t) => squeeze(t) === squeeze(rg.title));
