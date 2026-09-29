@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-09-27.
+session. Last updated: 2026-09-29.
 
 This file holds **current state, open items and standing decisions** only.
 How things work lives in the topic docs; what happened and when lives in git
@@ -10,21 +10,40 @@ it used to carry).
 
 ## Handoff — read this first
 
-**Nothing is in flight.** `master` is clean and deployed at `e8da79d` (PR
-[#5](https://github.com/ldonald067/album-club/pull/5), merged 2026-09-27);
-verify with `GET /api/health`, which returns the running commit SHA.
+**Nothing is in flight.** `master` is clean and deployed at `27df008`, healthy
+(`GET /api/health` returns the running commit SHA; `uptimeSeconds` should
+climb). No PRs are open. Five old branches remain on GitHub —
+`pin-daily-schedule` and four `codex/*` from April — all fully merged into
+`master` (checked 2026-09-29), so deleting them loses nothing; not done.
 
-**Each day's picks are pinned now.** Every edit to `lib/albums.json` or
-`lib/lyrics.json` needs `npm run pin-schedule` and `lib/schedule.json`
-committed with it — `eval-site` (also run by CI) fails until you do. Re-run
-`pin-schedule` before merging any PR that sat overnight. Details in
-`docs/album-data.md` → "The pinned schedule".
+**What changed 2026-09-27 → 09-29**, all live:
+
+- **PR #5 merged: each day's picks are pinned.** Every edit to
+  `lib/albums.json` or `lib/lyrics.json` needs `npm run pin-schedule` and
+  `lib/schedule.json` committed with it — `eval-site` (also run by CI) fails
+  until you do. Re-run it before merging any PR that sat overnight.
+  `docs/album-data.md` → "The pinned schedule".
+- **Catalog identity audited** (`npm run audit-catalog`, new). 345 entries
+  verified; one entry with nothing real behind it removed; _SIMBI_'s year
+  fixed; the owner ruled that **mixes and playlists stay** (Standing
+  decisions). Open item 1 holds the small remainder.
+- **Every adversarial-review finding fixed** — the vinyl deck (resume speed,
+  pause parking, Play during put-away), the Taste Test's phone behaviour, and
+  the video audit's three faults. Open item 2 holds the two checks only a
+  person can do.
+- **Found on the way:** the Taste Test's badge had shipped the literal text
+  `&check; heard` — JSX decodes only HTML 4 entities. `eval-site` now fails
+  on any other named entity.
+- **Docs cleaned** — this file cut from ~960 lines to current state only, and
+  a dozen stale claims in the topic docs corrected against the code.
 
 **Where to pick up, in this order:**
 
-1. The review findings in open item 2, cheapest first.
-2. The catalog audit's remaining small items (open item 1).
-3. Everything else below.
+1. **The record — ideas proposed, awaiting the owner's pick** (open item 7).
+   Recommended first: grooves drawn from the tracklist.
+2. **Two quick human checks** (open item 2): the Taste Test on a real phone,
+   and one video to watch.
+3. The catalog audit's remainder (open item 1), then everything else below.
 
 Two open actions need a human rather than code: **nobody has put the link
 anywhere** (open item 4), and **album audio needs a YouTube Data API key**
@@ -46,8 +65,10 @@ anywhere** (open item 4), and **album audio needs a YouTube Data API key**
 5. **The verification tool lies too.** A scripted tab-close skips `pagehide`;
    Chrome refuses fullscreen to a synthesized click; resource timing cannot see
    RSC fetches; a hidden pane clamps timers and can return blank screenshots; a
-   scripted click is not a media gesture on mobile. `docs/gotchas.md` →
-   "Verifying with browser automation".
+   scripted click is not a media gesture on mobile; desktop Chrome plays what
+   a phone would block, so simulate the block — and YouTube's `seekTo` starts
+   a cued clip by itself. `docs/gotchas.md` → "Verifying with browser
+   automation" and "Process".
 
 ## What this is
 
@@ -65,6 +86,7 @@ npm run build               # must pass before pushing
 npm test                    # node:test — rotation, sampler, guess validation
 npm run eval-site           # whole-site quality/guardrail pass
 npm run pin-schedule        # after ANY catalog/lyrics edit
+npm run audit-catalog       # read-only catalog identity audit, ~5 min
 npm run audit-youtube-ids   # read-only video-id audit, ~4 min
 npm run soundtrack-corner-report  # corner coverage + air-date queue + generator floor
 ```
@@ -143,17 +165,19 @@ docs.
    of one `recognizable` flag; distinct artists in Artist Scramble; measure
    "the next 30 days are ready" rather than every field for every entry.
 
-2. **Adversarial review findings 2–8 (raised 2026-09-26) — all fixed
-   2026-09-28, one awaiting a phone.** From a four-reviewer Codex pass over
-   every unreviewed commit since `c6fd733` (finding 1, High, was PR #5). The
-   vinyl deck (5–7) was measured in the browser, 6 also against the old code;
-   the video audit (3, 4, 8) was proved against the old script on a crafted
-   catalog. What is left:
-   - **2 [Medium] Taste Test on a phone — fixed 2026-09-28, awaiting a real
-     phone.** "Playing" and the one-minute timer now start only on YouTube's
-     PLAYING state, and the button stays tappable until then. Verified on
-     desktop with a simulated block; **someone should tap through it once on
-     an iPhone and an Android phone** (`docs/components.md`).
+2. **Two checks only a person can do (2026-09-28).** Everything else from
+   the 2026-09-26 adversarial review is fixed and verified.
+   - **Tap through the Blind Taste Test on an iPhone and an Android phone.**
+     "Playing" and the one-minute "heard" timer now start only when YouTube
+     reports PLAYING, and the button stays tappable until then, so a blocked
+     first play can be retried with a real tap. Verified on desktop with a
+     simulated block; automation cannot produce a real phone tap.
+     `docs/components.md` → "Blind Taste Test players are lazy".
+   - **Watch one video:** Hayley Williams — _Ego Death at a Bachelorette
+     Party_, upload titled "EGO [FULL ALBUM]" (`bVQ-J6J44Ts`). The audit now
+     needs a long upload to name its album and marks this UNVERIFIED for the
+     abbreviation. If it is the album, add it to `KEPT_AFTER_REVIEW` in
+     `scripts/audit-youtube-ids.mjs` (keyed artist::album::id).
 
 3. **Album audio needs a proper refetch — blocked on a YouTube Data API key.**
    Only a minority of stored videos are whole albums; most are one song, and 21
@@ -165,9 +189,8 @@ docs.
    it was written for. The free tier's 100 searches a day make that four to
    five days of runs. Audit the result with
    `npm run audit-youtube-ids -- --albums <candidate>` before it replaces the
-   catalog. It now demands evidence a long upload is the right album; one live
-   id (Hayley Williams, "EGO [FULL ALBUM]") is UNVERIFIED for abbreviating the
-   title — watch it once and add it to `KEPT_AFTER_REVIEW` if it is right.
+   catalog. It now demands evidence a long upload is the right album (one
+   live id to watch — open item 2).
 
 4. **There is no audience yet, and that governs what is worth building.**
    As of 2026-08-22, `GET /api/stats` reported **one rating, one puzzle play and
@@ -196,6 +219,29 @@ docs.
    is a schema change and migration for a cosmetic misfire. **Revisit if
    traffic grows.** Cheap partial mitigation: re-check localStorage at submit
    time rather than only on mount, which closes the multi-tab path.
+
+7. **The record — ideas proposed, awaiting the owner's pick (2026-09-28).**
+   The owner asked for fun things the hero vinyl could do beyond spinning.
+   It already has the click-spin, the Runout Groove flip, the 33⅓ Club and
+   the Konami spin. The bar applied: motion that says something true about
+   the day's record (the 2026-09-24 design review's), not more novelty.
+   - **Grooves drawn from the tracklist — recommended first.** Real vinyl
+     shows the gaps between songs as rings; `lib/album-facts.json` has the
+     track count for ~82% of the catalog, so the disc can show today's real
+     number of songs, and a one-track DJ set gets one unbroken groove. Works
+     on the ~73% of days without audio. Limit: only the count is stored, so
+     rings are evenly spaced unless per-track lengths are fetched too. Check
+     against a real reference on a 3-track and a 20-track record.
+   - **A tonearm that is the progress bar.** On audio days, an arm swings in
+     from the edge toward the label as the album plays and rests in the
+     runout at the end. Audio days only (~27%).
+   - **An anniversary pressing.** `isAlbumBirthday` (round-number years)
+     already exists; on those days the disc could be coloured vinyl in the
+     album's accent colour. Cheap. Smaller: 45 rpm for EPs — true, but only
+     3 entries are EPs.
+   - **Skip:** anything audio-reactive (the YouTube iframe is opaque to Web
+     Audio — the Club Player's spectrum was costume for this reason), and
+     another flip (the Runout Groove is one).
 
 ## Standing decisions — do not "fix" these
 
