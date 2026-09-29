@@ -198,6 +198,8 @@ Two traps, both hit during the 2026-07 dead-CSS removal:
 
 ## Process
 
+- **A hook blocks only on exit 2 or a JSON deny.** Exit 1 is a non-blocking error: the tool runs anyway. The `data/` edit guard in `.claude/settings.json` ended in `exit 1` and never blocked a thing — a live Write to `data/` went straight through (2026-09-29). It is `.claude/hooks/block-db-edits.mjs` now. Prove a new guard by triggering it for real, not by reading it
+
 - **Sessions share this folder's working tree.** On 2026-09-29 a second session committed and pushed two minutes after this one, and its commit carried a file it never meant to touch. Broad staging (`git add -A`, `.`, `-u`, `git commit -a`) is now blocked by `.claude/hooks/block-broad-staging.mjs`; stage by name and read `git status` first. The push itself is safe — git rejects a push that would overwrite another session's commit
 
 - **YouTube's `seekTo` plays a clip that has not started.** From the cued state it starts playback on its own — so blocking only `playVideo()` does not simulate a blocked play, and code that "only seeks" may be playing
