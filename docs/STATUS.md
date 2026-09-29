@@ -41,8 +41,8 @@ after checking that none had a commit `master` lacks.
 
 **Where to pick up, in this order:**
 
-1. **The record — ideas proposed, awaiting the owner's pick** (open item 7).
-   Recommended first: grooves drawn from the tracklist.
+1. **The record** (open item 7): tracklist grooves are built; a tonearm and
+   an anniversary pressing are proposed, not started.
 2. **Two quick human checks** (open item 2): the Taste Test on a real phone,
    and one video to watch.
 3. The catalog audit's remainder (open item 1), then everything else below.
@@ -222,25 +222,18 @@ docs.
    traffic grows.** Cheap partial mitigation: re-check localStorage at submit
    time rather than only on mount, which closes the multi-tab path.
 
-7. **The record — ideas proposed, awaiting the owner's pick (2026-09-28).**
-   The owner asked for fun things the hero vinyl could do beyond spinning.
-   It already has the click-spin, the Runout Groove flip, the 33⅓ Club and
-   the Konami spin. The bar applied: motion that says something true about
-   the day's record (the 2026-09-24 design review's), not more novelty.
-   - **Grooves drawn from the tracklist — recommended first.** Real vinyl
-     shows the gaps between songs as rings; `lib/album-facts.json` has the
-     track count for ~82% of the catalog, so the disc can show today's real
-     number of songs, and a one-track DJ set gets one unbroken groove. Works
-     on the ~73% of days without audio. Limit: only the count is stored, so
-     rings are evenly spaced unless per-track lengths are fetched too. Check
-     against a real reference on a 3-track and a 20-track record.
-   - **A tonearm that is the progress bar.** On audio days, an arm swings in
-     from the edge toward the label as the album plays and rests in the
-     runout at the end. Audio days only (~27%).
-   - **An anniversary pressing.** `isAlbumBirthday` (round-number years)
-     already exists; on those days the disc could be coloured vinyl in the
-     album's accent colour. Cheap. Smaller: 45 rpm for EPs — true, but only
-     3 entries are EPs.
+7. **The record — one idea built, two open (2026-09-29).** The owner asked
+   for fun things the hero vinyl could do beyond spinning; the bar applied is
+   motion that says something true about the day's record.
+   - **Built: grooves drawn from the tracklist.** One ring between each pair
+     of songs; details and limits in `docs/components.md` → "The record on the
+     deck". Rings on 328 of 423 albums; the rest honestly show none.
+   - **Open: a tonearm that is the progress bar.** On audio days, an arm
+     swings in from the edge toward the label as the album plays and rests in
+     the runout at the end. Audio days only (~27%).
+   - **Open: an anniversary pressing.** `isAlbumBirthday` (round-number
+     years) already exists; on those days the disc could be coloured vinyl in
+     the album's accent colour. Smaller: 45 rpm for EPs — only 3 entries.
    - **Skip:** anything audio-reactive (the YouTube iframe is opaque to Web
      Audio — the Club Player's spectrum was costume for this reason), and
      another flip (the Runout Groove is one).

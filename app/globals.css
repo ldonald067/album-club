@@ -9,6 +9,10 @@
 }
 
 :root {
+  /* The record's own sheen. A black disc in every skin, so these are not
+     surfaces — tokens only so the shades live in one place. */
+  --vinyl-groove: rgba(255, 255, 255, 0.035); /* fine grooves, every day */
+  --vinyl-band: rgba(255, 255, 255, 0.09); /* smooth land between songs */
   --bg-page: #e8e0d0;
   --bg-main: #fff;
   --bg-dark: #1a1a2e;
@@ -487,18 +491,14 @@ body {
   background:
     radial-gradient(circle at center, #333 18%, transparent 18.5%),
     radial-gradient(circle at center, #111 19%, transparent 19.5%),
-    radial-gradient(
-      circle at center,
-      transparent 30%,
-      rgba(40, 40, 40, 0.3) 30.5%,
-      transparent 31%,
-      transparent 55%,
-      rgba(40, 40, 40, 0.3) 55.5%,
-      transparent 56%,
-      transparent 80%,
-      rgba(40, 40, 40, 0.3) 80.5%,
-      transparent 81%
-    ),
+    /* Fine grooves only. Three rings used to sit here on every album, which
+       on a real record reads as four songs; the rings between songs are now
+       drawn per album by .vinyl-bands, and only when the count is known. */
+    repeating-radial-gradient(
+        circle closest-side,
+        transparent 0 1.5px,
+        var(--vinyl-groove) 1.5px 2px
+      ),
     linear-gradient(135deg, #1a1a1a, #2a2a2a, #1a1a1a);
   z-index: 1;
   box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
@@ -559,6 +559,16 @@ body {
 
 .album-cover-wrap:hover .vinyl-disc {
   animation: vinylSpin 2s linear infinite;
+}
+
+/* The gaps between songs (lib/vinyl-bands.js builds the gradient from the
+   album's track count). A layer of the disc, so it turns with it — and, like
+   a real record's, looks the same at every angle. */
+.vinyl-bands {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 /* The record label. It sits on the disc's existing dark centre (the 18% radial
@@ -3798,8 +3808,11 @@ body {
 /* Square corners everywhere — rounded rectangles are the wrong decade. The
    vinyl disc is exempt: it is a record, and squaring it turned the sleeve's
    backdrop into a black box. Its label is exempt for the same reason — a square
-   label on a round record reads as a rendering fault, not as the nineties. */
-:root[data-theme="vintage"] *:not(.vinyl-disc):not(.vinyl-label) {
+   label on a round record reads as a rendering fault, not as the nineties.
+   So is the ring layer between songs: transparent at its corners today, but a
+   fill added there later would square off into a box. */
+:root[data-theme="vintage"]
+  *:not(.vinyl-disc):not(.vinyl-label):not(.vinyl-bands) {
   border-radius: 0;
 }
 

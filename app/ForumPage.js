@@ -26,6 +26,7 @@ import {
   scrambleArtist,
 } from "@/lib/albums";
 import { loadJson } from "@/lib/safe-fetch";
+import { trackBandsGradient } from "@/lib/vinyl-bands";
 import AlbumPlayback from "./AlbumPlayback";
 
 /* The day's picks — every game's album and both pairs — decided once on the
@@ -4332,6 +4333,7 @@ const SECRET_TAGLINES = [
    told to. */
 export default function ForumPage({
   album,
+  albumTracks = null,
   picks,
   yesterdayAlbum,
   tomorrowAlbum,
@@ -4377,6 +4379,7 @@ export default function ForumPage({
     return () => clearTimeout(t);
   }, []);
   const vinylRef = useRef(null);
+  const vinylBands = trackBandsGradient(albumTracks);
   const rampRef = useRef(null);
   const putAwayRef = useRef(null);
 
@@ -4956,8 +4959,22 @@ export default function ForumPage({
                         }
                       }}
                       style={{ cursor: "pointer" }}
-                      title="Click to spin!"
+                      title={
+                        vinylBands
+                          ? `${albumTracks} songs, a gap between each — click to spin!`
+                          : "Click to spin!"
+                      }
                     >
+                      {/* The gaps between today's songs, one ring each, as a
+                          real LP shows them (lib/vinyl-bands.js). Absent when
+                          the track count is unknown: no ring beats a wrong one. */}
+                      {vinylBands && (
+                        <span
+                          className="vinyl-bands"
+                          aria-hidden="true"
+                          style={{ backgroundImage: vinylBands }}
+                        />
+                      )}
                       {/* The label. Grooves are concentric, so a bare disc
                           looks identical at every angle and a spin is barely
                           visible; the label is what the eye reads as turning —

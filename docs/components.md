@@ -84,6 +84,20 @@ disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
   transition in Chrome — it snapped 40px, measured — which is also why the
   load-time spin became a removable class: while the base rule owned an
   animation, putting the record away replayed it.
+- **The disc shows today's tracklist (2026-09-29).** One faint ring between
+  each pair of songs, as a real LP's unmodulated land shows them, from the
+  track count in `lib/album-facts.json` — looked up in `app/section-page.js`
+  and passed as `albumTracks`, so the 85KB facts file never reaches the
+  browser. `lib/vinyl-bands.js` builds one radial-gradient layer on
+  `.vinyl-bands` using 12" LP proportions (label 34% of the radius, music
+  42–95%, track 1 outermost). **Only the count is known, not each song's
+  length, so rings are evenly spaced.** No rings at all — never a guess — for
+  a missing count, a single track, or more than 20 songs, where rings under a
+  pixel apart shimmer into moiré (measured). It replaced three decorative rings
+  every album used to carry, which on a real record read as four songs. Two
+  measured traps: gradient stops must ascend or the browser clamps every ring
+  onto the first (tested now), and at 16% white the rings read as drawn lines
+  — `--vinyl-band` is 9%.
 - **Room is reserved only on playable days.** Slid out, the disc covered 35px
   of the title; `.album-display.has-deck` adds a right margin from first paint,
   set server-side from `album.youtubeId`, so nothing but the record moves and

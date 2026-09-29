@@ -1,6 +1,7 @@
 import ForumPage from "./ForumPage";
 import { getDateString } from "@/lib/albums";
 import { getFeaturedAlbum, getPageData } from "@/lib/daily-picks";
+import { getAlbumFacts } from "@/lib/album-facts";
 
 /* One body and one metadata builder shared by all six tab routes, so a tab is
    two exported lines in app/<key>/page.js and nothing else.
@@ -64,6 +65,9 @@ export function sectionMetadata(key) {
    them itself from the catalog it was shipped, so a deploy that changed the
    catalog changed today's games for anyone who loaded the new bundle —
    mid-day, under votes keyed to the date. */
+/* The track count rides along as a prop, looked up here, so the 85KB facts
+   file never reaches the browser — lib/album-facts.js is server-only in
+   practice (docs/performance.md). */
 export function SectionPage({ section }) {
   const { picks, yesterday, tomorrow, archive } = getPageData({
     archive: section === "archive",
@@ -71,6 +75,7 @@ export function SectionPage({ section }) {
   return (
     <ForumPage
       album={picks.album}
+      albumTracks={getAlbumFacts(picks.album)?.tracks ?? null}
       picks={picks}
       yesterdayAlbum={yesterday}
       tomorrowAlbum={tomorrow}
