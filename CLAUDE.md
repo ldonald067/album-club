@@ -21,8 +21,20 @@ npm run eval-site        # data guardrails; also prints live pool counts
 
 YOU MUST run `npm test && npm run build` before committing, plus `npm run eval-site`
 for anything touching album or lyric data — it exits nonzero on real faults. Only
-if they pass: `git add -A && git commit -m "description" && git push`.
+if they pass: `git add <the files you changed> && git commit -m "description" && git push`.
 Use a feature branch + PR for risky changes.
+
+**Other sessions may share this folder.** Several Claude sessions can run in
+this checkout at once, on one working tree. So: stage files **by name** —
+`git add -A`, `git add .`, `-u` and `git commit -a` are blocked by a hook
+(`.claude/hooks/block-broad-staging.mjs`), because they sweep another session's
+unfinished edits into your commit and onto production. Before committing, read
+`git status`; a change you did not make is someone else's — leave it. Never
+leave a scratch edit to tracked code or data (a test id, a debug hook) sitting
+uncommitted longer than the test needs, and never `git stash` without a
+pathspec — the stash is shared too. For long parallel work, start the session in
+a worktree instead: one inside `.claude/worktrees/` installs (`npm ci`), tests
+and builds cleanly and does not disturb the main checkout (checked 2026-09-29).
 
 ## Non-negotiables
 

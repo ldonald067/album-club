@@ -198,6 +198,8 @@ Two traps, both hit during the 2026-07 dead-CSS removal:
 
 ## Process
 
+- **Sessions share this folder's working tree.** On 2026-09-29 a second session committed and pushed two minutes after this one, and its commit carried a file it never meant to touch. Broad staging (`git add -A`, `.`, `-u`, `git commit -a`) is now blocked by `.claude/hooks/block-broad-staging.mjs`; stage by name and read `git status` first. The push itself is safe — git rejects a push that would overwrite another session's commit
+
 - **YouTube's `seekTo` plays a clip that has not started.** From the cued state it starts playback on its own — so blocking only `playVideo()` does not simulate a blocked play, and code that "only seeks" may be playing
 
 - **Fail on evidence, never on a stopwatch.** A ten-second timeout added to inline playback turned a slow connection into permanent failure, and a late success could not undo it. Real signals only: the script erroring, the player reporting the media unplayable. A timeout that converts "slow" into "broken" looks responsible and is not
