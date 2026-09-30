@@ -175,11 +175,19 @@ docs.
      first play can be retried with a real tap. Verified on desktop with a
      simulated block; automation cannot produce a real phone tap.
      `docs/components.md` → "Blind Taste Test players are lazy".
-   - **Watch one video:** Hayley Williams — _Ego Death at a Bachelorette
-     Party_, upload titled "EGO [FULL ALBUM]" (`bVQ-J6J44Ts`). The audit now
-     needs a long upload to name its album and marks this UNVERIFIED for the
-     abbreviation. If it is the album, add it to `KEPT_AFTER_REVIEW` in
-     `scripts/audit-youtube-ids.mjs` (keyed artist::album::id).
+   - **Decide one video — checked 2026-09-30, recommend removing it.**
+     Hayley Williams — _Ego Death at a Bachelorette Party_, "EGO [FULL
+     ALBUM]" (`bVQ-J6J44Ts`), UNVERIFIED in the audit. Its description lists
+     16 songs, and all 16 are on the album — but "Love Me Different" is
+     missing, the order is **alphabetical** (not the album's, which opens
+     with "Ice in My OJ"), it runs 51 minutes against 67, and the channel
+     ("Smino") claims ℗ & © over her record: an unofficial content-farm
+     upload. As the hero's "full album" it plays the record shuffled and
+     incomplete, and it is in the Taste Test pool (every album with an id).
+     **Do not add it to `KEPT_AFTER_REVIEW`.** Removing the id is a catalog
+     edit: run `npm run pin-schedule` with it (the Taste pool shrinks, so
+     future pairs move from the day after tomorrow). Not done — the owner's
+     call. The album is not `recognizable`, so Heardle is unaffected.
 
 3. **Album audio needs a proper refetch — blocked on a YouTube Data API key.**
    Only a minority of stored videos are whole albums; most are one song, and 21
