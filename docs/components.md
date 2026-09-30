@@ -98,6 +98,13 @@ disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
   measured traps: gradient stops must ascend or the browser clamps every ring
   onto the first (tested now), and at 16% white the rings read as drawn lines
   — `--vinyl-band` is 9%.
+- **An anniversary pressing (2026-09-30).** In an album's round-number
+  year — the same year-based `isAlbumBirthday` rule as the "turns N this year"
+  badge, ~20% of the catalog in 2026 — the disc is coloured vinyl in the
+  album's accent colour (`.vinyl-disc.anniversary`, `--vinyl-press` set
+  inline), deepened toward black with `color-mix` so the song rings still read.
+  Checked across the anniversary colours from the brightest (Drive) to the
+  darkest, which stays effectively black — true to that album.
 - **Room is reserved only on playable days.** Slid out, the disc covered 35px
   of the title; `.album-display.has-deck` adds a right margin from first paint,
   set server-side from `album.youtubeId`, so nothing but the record moves and

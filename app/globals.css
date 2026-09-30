@@ -561,6 +561,28 @@ body {
   animation: vinylSpin 2s linear infinite;
 }
 
+/* An anniversary pressing: in the album's round-number year (the same rule as
+   the "turns N this year" badge) the record is coloured vinyl in the album's
+   accent colour, set inline as --vinyl-press. Deepened toward black, as a
+   translucent pressing reads, so the rings between songs still show. Only the
+   base sheen changes; the centre layers sit under the label. */
+.vinyl-disc.anniversary {
+  background:
+    radial-gradient(circle at center, #333 18%, transparent 18.5%),
+    radial-gradient(circle at center, #111 19%, transparent 19.5%),
+    repeating-radial-gradient(
+      circle closest-side,
+      transparent 0 1.5px,
+      var(--vinyl-groove) 1.5px 2px
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--vinyl-press) 45%, #000),
+      color-mix(in srgb, var(--vinyl-press) 75%, #000),
+      color-mix(in srgb, var(--vinyl-press) 45%, #000)
+    );
+}
+
 /* The gaps between songs (lib/vinyl-bands.js builds the gradient from the
    album's track count). A layer of the disc, so it turns with it — and, like
    a real record's, looks the same at every angle. */

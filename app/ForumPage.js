@@ -4947,7 +4947,9 @@ export default function ForumPage({
                         vinylSpinning ? " spinning" : ""
                       }${
                         vinylFlipped ? " flipped" : ""
-                      }${onDeck ? " on-deck" : ""}${turning ? " turning" : ""}`}
+                      }${onDeck ? " on-deck" : ""}${turning ? " turning" : ""}${
+                        isAlbumBirthday ? " anniversary" : ""
+                      }`}
                       role="button"
                       tabIndex={0}
                       aria-label="Spin the vinyl record"
@@ -4958,12 +4960,25 @@ export default function ForumPage({
                           spinVinyl();
                         }
                       }}
-                      style={{ cursor: "pointer" }}
-                      title={
+                      /* An anniversary pressing: in a round-number year the
+                         record comes in coloured vinyl, the album's own
+                         accent colour — the same year-based rule as the
+                         "turns N this year" badge beside it. */
+                      style={{
+                        cursor: "pointer",
+                        ...(isAlbumBirthday
+                          ? { "--vinyl-press": album.color }
+                          : null),
+                      }}
+                      title={`${
+                        isAlbumBirthday
+                          ? `${albumAge}th-anniversary pressing · `
+                          : ""
+                      }${
                         vinylBands
                           ? `${albumTracks} songs, a gap between each — click to spin!`
                           : "Click to spin!"
-                      }
+                      }`}
                     >
                       {/* The gaps between today's songs, one ring each, as a
                           real LP shows them (lib/vinyl-bands.js). Absent when

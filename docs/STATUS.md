@@ -41,8 +41,8 @@ after checking that none had a commit `master` lacks.
 
 **Where to pick up, in this order:**
 
-1. **The record** (open item 7): tracklist grooves are built; a tonearm and
-   an anniversary pressing are proposed, not started.
+1. **The record** (open item 7): tracklist grooves and the anniversary
+   pressing are built; a tonearm is proposed, not started.
 2. **Two quick human checks** (open item 2): the Taste Test on a real phone,
    and one video to watch.
 3. The catalog audit's remainder (open item 1), then everything else below.
@@ -222,7 +222,7 @@ docs.
    traffic grows.** Cheap partial mitigation: re-check localStorage at submit
    time rather than only on mount, which closes the multi-tab path.
 
-7. **The record — one idea built, two open (2026-09-29).** The owner asked
+7. **The record — two ideas built, one open (2026-09-30).** The owner asked
    for fun things the hero vinyl could do beyond spinning; the bar applied is
    motion that says something true about the day's record.
    - **Built: grooves drawn from the tracklist.** One ring between each pair
@@ -231,9 +231,9 @@ docs.
    - **Open: a tonearm that is the progress bar.** On audio days, an arm
      swings in from the edge toward the label as the album plays and rests in
      the runout at the end. Audio days only (~27%).
-   - **Open: an anniversary pressing.** `isAlbumBirthday` (round-number
-     years) already exists; on those days the disc could be coloured vinyl in
-     the album's accent colour. Smaller: 45 rpm for EPs — only 3 entries.
+   - **Built: an anniversary pressing (2026-09-30).** Coloured vinyl in the
+     album's accent colour in its round-number year. Not built: 45 rpm for
+     EPs — only 3 entries.
    - **Skip:** anything audio-reactive (the YouTube iframe is opaque to Web
      Audio — the Club Player's spectrum was costume for this reason), and
      another flip (the Runout Groove is one).
