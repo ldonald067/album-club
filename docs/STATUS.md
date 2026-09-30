@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-09-29.
+session. Last updated: 2026-09-30.
 
 This file holds **current state, open items and standing decisions** only.
 How things work lives in the topic docs; what happened and when lives in git
@@ -10,41 +10,47 @@ it used to carry).
 
 ## Handoff — read this first
 
-**Nothing is in flight.** `master` is clean and deployed; the last code
-change is `27df008`, and every commit since is docs. `GET /api/health`
+**Nothing is in flight.** `master` is clean and deployed. `GET /api/health`
 returns the running commit SHA — it should match `git rev-parse --short
-origin/master` — and `uptimeSeconds` should climb. No PRs are open, and
-`master` is the only branch, locally and on GitHub. The five merged branches
-(`pin-daily-schedule` and four `codex/*` from April) were deleted 2026-09-29
-after checking that none had a commit `master` lacks.
+origin/master` — and `uptimeSeconds` should climb. No PRs are open; `master`
+is the only branch, locally and on GitHub.
 
-**What changed 2026-09-27 → 09-29**, all live:
+**Several Claude sessions share this folder's working tree.** That is now
+guarded: broad staging (`git add -A`, `.`, `-u`, `git commit -a`) is blocked
+by a hook, so stage files by name and read `git status` first. The rules are
+in `CLAUDE.md` → Workflow; for long parallel work, use a worktree (verified to
+install, test and build cleanly).
 
-- **PR #5 merged: each day's picks are pinned.** Every edit to
-  `lib/albums.json` or `lib/lyrics.json` needs `npm run pin-schedule` and
-  `lib/schedule.json` committed with it — `eval-site` (also run by CI) fails
-  until you do. Re-run it before merging any PR that sat overnight.
-  `docs/album-data.md` → "The pinned schedule".
-- **Catalog identity audited** (`npm run audit-catalog`, new). 345 entries
-  verified; one entry with nothing real behind it removed; _SIMBI_'s year
-  fixed; the owner ruled that **mixes and playlists stay** (Standing
-  decisions). Open item 1 holds the small remainder.
-- **Every adversarial-review finding fixed** — the vinyl deck (resume speed,
-  pause parking, Play during put-away), the Taste Test's phone behaviour, and
-  the video audit's three faults. Open item 2 holds the two checks only a
-  person can do.
-- **Found on the way:** the Taste Test's badge had shipped the literal text
-  `&check; heard` — JSX decodes only HTML 4 entities. `eval-site` now fails
-  on any other named entity.
-- **Docs cleaned** — this file cut from ~960 lines to current state only, and
-  a dozen stale claims in the topic docs corrected against the code.
+**What changed 2026-09-29 → 09-30**, all live:
+
+- **The record shows today's tracklist** — one faint ring between each pair
+  of songs, from the real track count (rings on 328 of 423 albums; none rather
+  than a guess on the rest).
+- **Anniversary pressing** — in an album's round-number year the record is
+  coloured vinyl in its accent colour (83 albums in 2026; live today on
+  _ATLiens_, 30 this year).
+- **A second tab can't vote twice.** All six votes re-check the stored vote
+  at submit; proved with two real tabs (open item 6).
+- **Two project hooks fixed and proved live:** the broad-staging block (new)
+  and the `data/` database guard, which had never blocked anything — it
+  exited 1, and hooks block only on exit 2 or a JSON deny.
+- **Evidence on the Hayley Williams video** — an unofficial upload, songs in
+  alphabetical order, one missing. Recommend removing it (open item 2).
+
+Earlier (09-27 → 09-28): PR #5 pinned each day's picks — **every edit to
+`lib/albums.json` or `lib/lyrics.json` needs `npm run pin-schedule` and
+`lib/schedule.json` committed with it** (`docs/album-data.md` → "The pinned
+schedule"); the catalog identity audit (`npm run audit-catalog`) ran and was
+ruled on — mixes stay; every adversarial-review finding was fixed; the docs
+were cut to current state.
 
 **Where to pick up, in this order:**
 
-1. **The record** (open item 7): tracklist grooves and the anniversary
-   pressing are built; a tonearm is proposed, not started.
-2. **Two quick human checks** (open item 2): the Taste Test on a real phone,
-   and one video to watch.
+1. **Two owner decisions** — remove the Hayley Williams video id (evidence
+   in open item 2), and whether the tonearm is worth the room it needs (open
+   item 7: ~15px available, ~40–60px needed).
+2. **One phone check** — tap through the Blind Taste Test on an iPhone and an
+   Android phone (open item 2).
 3. The catalog audit's remainder (open item 1), then everything else below.
 
 Two open actions need a human rather than code: **nobody has put the link
@@ -167,8 +173,8 @@ docs.
    of one `recognizable` flag; distinct artists in Artist Scramble; measure
    "the next 30 days are ready" rather than every field for every entry.
 
-2. **Two checks only a person can do (2026-09-28).** Everything else from
-   the 2026-09-26 adversarial review is fixed and verified.
+2. **A phone check and a decision only a person can make.** Everything else
+   from the 2026-09-26 adversarial review is fixed and verified.
    - **Tap through the Blind Taste Test on an iPhone and an Android phone.**
      "Playing" and the one-minute "heard" timer now start only when YouTube
      reports PLAYING, and the button stays tappable until then, so a blocked
