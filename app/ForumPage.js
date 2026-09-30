@@ -27,6 +27,7 @@ import {
 } from "@/lib/albums";
 import { loadJson } from "@/lib/safe-fetch";
 import { trackBandsGradient } from "@/lib/vinyl-bands";
+import { readStoredVote } from "@/lib/stored-vote";
 import AlbumPlayback from "./AlbumPlayback";
 
 /* The day's picks — every game's album and both pairs — decided once on the
@@ -545,6 +546,15 @@ function RateReveal({ albumKey }) {
 
   const submit = async () => {
     if (myRating === 0 || submitting) return;
+    // Voted in another tab since this one loaded? Show that vote instead of
+    // casting a second one (lib/stored-vote.js).
+    const alreadyRated = readStoredVote(`aotd_rated_${albumKey}`);
+    if (alreadyRated) {
+      setMyRating(parseInt(alreadyRated));
+      setRevealed(true);
+      loadResults();
+      return;
+    }
     setSubmitting(true);
     setError(null);
     try {
@@ -855,6 +865,15 @@ function PlaylistPoll({ albumKey }) {
 
   const submit = async (vote) => {
     if (submitting || locking) return;
+    // Voted in another tab since this one loaded? Show that vote instead of
+    // casting a second one (lib/stored-vote.js).
+    const alreadyVoted = readStoredVote(`aotd_playlist_${albumKey}`);
+    if (alreadyVoted) {
+      setMyVote(alreadyVoted === "yes");
+      setSubmitted(true);
+      loadResults();
+      return;
+    }
     setMyVote(vote);
     setSubmitting(true);
     setError(null);
@@ -1015,6 +1034,15 @@ const VersusMatchup = memo(function VersusMatchup() {
 
   const submit = async (pick) => {
     if (submitting) return;
+    // Voted in another tab since this one loaded? Show that vote instead of
+    // casting a second one (lib/stored-vote.js).
+    const alreadyPicked = readStoredVote(`aotd_versus_${todayKey}`);
+    if (alreadyPicked) {
+      setMyPick(alreadyPicked);
+      setSubmitted(true);
+      loadResults();
+      return;
+    }
     setMyPick(pick);
     setSubmitting(true);
     setError(null);
@@ -1435,6 +1463,15 @@ const BlindTasteTest = memo(function BlindTasteTest() {
 
   const submit = async (pick) => {
     if (submitting) return;
+    // Voted in another tab since this one loaded? Show that vote instead of
+    // casting a second one (lib/stored-vote.js).
+    const alreadyPicked = readStoredVote(`aotd_taste_${todayKey}`);
+    if (alreadyPicked) {
+      setMyPick(alreadyPicked);
+      setSubmitted(true);
+      loadResults();
+      return;
+    }
     setMyPick(pick);
     setSubmitting(true);
     setError(null);
@@ -1645,6 +1682,32 @@ const BlindTasteTest = memo(function BlindTasteTest() {
 });
 
 /* ─── Vibe Check ─── */
+
+/* A stored Vibe Check record, or null. roomHasOthers subtracts
+   selected.length from the row count, so a bad restore doesn't just lose your
+   picks — it makes a lone voter look like a crowd. Only trust a well-formed
+   1-3 entry list of real vibe labels. Shared by the restore on load and the
+   re-check at submit. */
+function parseVibeRecord(saved) {
+  if (!saved) return null;
+  try {
+    const parsed = JSON.parse(saved);
+    const labels = VIBES.map((v) => v.label);
+    if (
+      Array.isArray(parsed) &&
+      parsed.length >= 1 &&
+      parsed.length <= 3 &&
+      new Set(parsed).size === parsed.length &&
+      parsed.every((v) => labels.includes(v))
+    ) {
+      return parsed;
+    }
+  } catch {
+    // Unparseable: treated as no record
+  }
+  return null;
+}
+
 function VibeCheck({ albumKey }) {
   const [selected, setSelected] = useState([]);
   const [submitted, setSubmitted] = useState(false);
@@ -1675,25 +1738,7 @@ function VibeCheck({ albumKey }) {
       return; // No storage: an unvoted Vibe Check is the correct render
     }
     if (saved) {
-      // roomHasOthers subtracts selected.length from the row count, so a bad
-      // restore doesn't just lose your picks — it makes a lone voter look like
-      // a crowd. Only trust a well-formed 1-3 entry list of real vibe labels.
-      let restored = null;
-      try {
-        const parsed = JSON.parse(saved);
-        const labels = VIBES.map((v) => v.label);
-        if (
-          Array.isArray(parsed) &&
-          parsed.length >= 1 &&
-          parsed.length <= 3 &&
-          new Set(parsed).size === parsed.length &&
-          parsed.every((v) => labels.includes(v))
-        ) {
-          restored = parsed;
-        }
-      } catch {
-        restored = null;
-      }
+      const restored = parseVibeRecord(saved);
       if (restored) {
         setSelected(restored);
         setSubmitted(true);
@@ -1772,6 +1817,17 @@ function VibeCheck({ albumKey }) {
 
   const submit = async () => {
     if (selected.length === 0 || submitting) return;
+    // Voted in another tab since this one loaded? Show that vote instead of
+    // casting a second one (lib/stored-vote.js).
+    const alreadyVibed = parseVibeRecord(
+      readStoredVote(`aotd_vibed_${albumKey}`),
+    );
+    if (alreadyVibed) {
+      setSelected(alreadyVibed);
+      setSubmitted(true);
+      loadResults();
+      return;
+    }
     setSubmitting(true);
     setError(null);
     try {

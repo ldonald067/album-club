@@ -317,6 +317,7 @@ Shows tomorrow's album emoji + genre + decade (e.g., `🎷 Tomorrow's Album — 
 ## State Management Patterns
 
 - **Per-activity localStorage**: `aotd_rated_{date}`, `aotd_vibed_{date}`, `aotd_{gameType}_{date}`, `aotd_versus_{date}`, `aotd_taste_{date}`
+- **Votes re-check at submit** (`lib/stored-vote.js`): every vote reads its `aotd_*` key again before POSTing, so a second tab opened before voting shows the first tab's vote instead of casting a second row. Vibe Check validates the stored record through the same `parseVibeRecord` its restore-on-load uses
 - **Streak**: `aotd_streak` → `{ count, lastDate, best }`
 - **Visit count**: `aotd_visit_count` (integer string)
 - **Milestones**: `aotd_milestones_celebrated` → `[3, 7, 14, ...]`

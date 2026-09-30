@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { buildSoundtrackCorner } from "@/lib/soundtrack-corner";
 import { getGameType, getTodayKey, VIBES } from "@/lib/albums";
 import { loadJson } from "@/lib/safe-fetch";
+import { readStoredVote } from "@/lib/stored-vote";
 
 const GAME_LABELS = {
   guess: "Guess the Album",
@@ -166,6 +167,15 @@ function CueVote({ cards, onPick, onSkip, skipped }) {
 
   const submit = async (pick) => {
     if (submittingRef.current) return;
+    // Voted in another tab since this one loaded? Show that vote instead of
+    // casting a second one (lib/stored-vote.js).
+    const alreadyPicked = readStoredVote(storageKey);
+    if (alreadyPicked) {
+      setMyPick(alreadyPicked);
+      onPick(alreadyPicked);
+      loadResults();
+      return;
+    }
     submittingRef.current = true;
     setSubmitting(true);
     setError(null);

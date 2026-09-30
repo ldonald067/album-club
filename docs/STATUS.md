@@ -227,8 +227,13 @@ docs.
    can produce several rows (two tabs opened before voting, a retry, cleared
    storage, a second device) and open a "second voter" gate alone. A proper fix
    is a schema change and migration for a cosmetic misfire. **Revisit if
-   traffic grows.** Cheap partial mitigation: re-check localStorage at submit
-   time rather than only on mount, which closes the multi-tab path.
+   traffic grows.** The cheap partial fix is in (2026-09-30): all six votes —
+   rating, playlist, Album vs Album, Taste Test, Vibe Check, the cue vote —
+   re-read their stored vote at submit (`lib/stored-vote.js`), so a second
+   tab shows the first tab's vote instead of casting another. Proved with two
+   real tabs: tab B sent nothing and showed tab A's pick. Still open by
+   design: cleared storage, a second device, and two tabs clicking in the
+   same instant.
 
 7. **The record — two ideas built, one open (2026-09-30).** The owner asked
    for fun things the hero vinyl could do beyond spinning; the bar applied is
@@ -236,9 +241,14 @@ docs.
    - **Built: grooves drawn from the tracklist.** One ring between each pair
      of songs; details and limits in `docs/components.md` → "The record on the
      deck". Rings on 328 of 423 albums; the rest honestly show none.
-   - **Open: a tonearm that is the progress bar.** On audio days, an arm
-     swings in from the edge toward the label as the album plays and rests in
-     the runout at the end. Audio days only (~27%).
+   - **Open, needs a design call: a tonearm that is the progress bar.** On
+     audio days, an arm swings in from the edge toward the label as the album
+     plays and rests in the runout at the end. **Measured 2026-09-30: there is
+     ~15px beside the slid-out record at 1024px** (the 40px `has-deck`
+     margin minus the disc's overhang); a pivot and arm need ~40–60px. So it
+     means either reserving more room — taken from the title column the
+     2026-09-24 review fought for — or an arm drawn across the record itself.
+     Not started. Audio days only (~27%).
    - **Built: an anniversary pressing (2026-09-30).** Coloured vinyl in the
      album's accent colour in its round-number year. Not built: 45 rpm for
      EPs — only 3 entries.
