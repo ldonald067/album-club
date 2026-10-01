@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-09-30 (evening).
+session. Last updated: 2026-10-01.
 
 This file holds **current state, open items and standing decisions** only.
 How things work lives in the topic docs; what happened and when lives in git
@@ -21,7 +21,7 @@ by a hook, so stage files by name and read `git status` first. The rules are
 in `CLAUDE.md` → Workflow; for long parallel work, use a worktree (verified to
 install, test and build cleanly).
 
-**What changed 2026-09-29 → 09-30**, all live:
+**What changed 2026-09-29 → 10-01**, all live:
 
 - **The record shows today's tracklist** — one faint ring between each pair
   of songs, from the real track count (rings on 328 of 423 albums; none rather
@@ -38,12 +38,16 @@ install, test and build cleanly).
   alphabetical order, one missing. Removed on the owner's call; the album now
   shows no player and wears its real Cover Art Archive cover (its image had
   been that video's thumbnail). Pinned through 2026-10-02.
-- **A tonearm is the progress bar** (owner asked for it). On playable days an
-  arm stands beside the sleeve, swings onto the record on Play, creeps toward
-  the label as the album plays, lifts on Pause and goes home on Stop. The
-  record now slides further out (70px, 55px on phones) and the details column
-  moves right to make room. Geometry and tests in `lib/tonearm.js`; details in
-  `docs/components.md` → "The record on the deck" (open item 7).
+- **A turntable you can play by hand** (owner asked for each piece). On
+  playable days a silver deck stands beside the sleeve. Play slides the record
+  all the way out onto the platter and the tonearm tracks progress. **Click
+  the grooves** to drop the needle there; **drag the arm** to scrub, or off
+  the record to stop; **hear an album through** and the needle rides the
+  run-out while side A's etching appears and the album joins a private "heard
+  all the way through" count; **the needle is remembered** for the rest of
+  the day. Geometry in `lib/tonearm.js`, memory in `lib/needle.js`, both
+  tested; details in `docs/components.md` → "The record on the deck" (open
+  item 7).
 
 Earlier (09-27 → 09-28): PR #5 pinned each day's picks — **every edit to
 `lib/albums.json` or `lib/lyrics.json` needs `npm run pin-schedule` and
@@ -55,8 +59,8 @@ were cut to current state.
 **Where to pick up, in this order:**
 
 1. **One phone check** — tap through the Blind Taste Test on an iPhone and an
-   Android phone, and while there, press Play on an audio day and watch the
-   tonearm (open item 2).
+   Android phone, and while there, on an audio day, press Play, tap the
+   grooves and drag the tonearm with a finger (open item 2).
 2. The catalog audit's remainder (open item 1), then everything else below.
 
 Two open actions need a human rather than code: **nobody has put the link
@@ -187,8 +191,9 @@ docs.
      first play can be retried with a real tap. Verified on desktop with a
      simulated block; automation cannot produce a real phone tap.
      `docs/components.md` → "Blind Taste Test players are lazy".
-   - **The tonearm on a real phone.** Verified in a 375px emulation (centred,
-     no sideways scroll, swings in on Play), not on a device.
+   - **The turntable on a real phone.** Verified in a 375px emulation
+     (centred, no sideways scroll, plays, needle drops) and with a mouse;
+     a finger dragging the arm has not been tried on a device.
    - **Done 2026-09-30: the Hayley Williams video is removed.** _Ego Death at
      a Bachelorette Party_'s "full album" (`bVQ-J6J44Ts`) was an unofficial
      upload — songs in alphabetical order, "Love Me Different" missing, 51 of
@@ -240,19 +245,27 @@ docs.
    design: cleared storage, a second device, and two tabs clicking in the
    same instant.
 
-7. **The record — three ideas built (2026-09-30).** The owner asked for fun
+7. **The record — built out (2026-09-29 → 10-01).** The owner asked for fun
    things the hero vinyl could do beyond spinning; the bar applied is motion
-   that says something true about the day's record. Details and limits for
-   all three in `docs/components.md` → "The record on the deck".
+   that says something true about the day's record. Details and limits in
+   `docs/components.md` → "The record on the deck".
    - **Built: grooves drawn from the tracklist.** One ring between each pair
      of songs. Rings on 328 of 423 albums; the rest honestly show none.
-   - **Built: a tonearm that is the progress bar.** Audio days only (~27%).
-     The owner chose to make room rather than draw the arm across the record:
-     the record slides out 70px (was 40), and the reserved margin runs to the
-     parked arm's reach, which moves the details column ~75px right at
-     desktop widths. Measured: at 1024px the details keep their full width,
-     and between ~600 and ~690px they now wrap under the turntable on audio
+   - **Built: a turntable and a tonearm that is the progress bar.** Audio
+     days only (~27%). The owner found the first version (record 70px out,
+     arm squeezed beside it) cramped and asked for more room: the record now
+     comes all the way out onto a platter on a silver deck, 40px clear of the
+     details. Below ~800px wide the details wrap under the deck on audio
      days, as on phones.
+   - **Built: playing it by hand** — click the grooves to drop the needle,
+     drag the arm, the run-out and side A's etching for an album heard
+     through (90% actually played), and the needle remembered for the day.
+   - **Next, if wanted: real song boundaries.** Only the track count is
+     known, so the rings are evenly spaced and the needle cannot say which
+     song it is on. MusicBrainz has each track's length; with it the rings
+     would sit where songs really change and a needle dropped on a ring would
+     start that song. Needs a check that the video plays the release's
+     running order (the Hayley bootleg did not).
    - **Built: an anniversary pressing (2026-09-30).** Coloured vinyl in the
      album's accent colour in its round-number year. Not built: 45 rpm for
      EPs — only 3 entries.

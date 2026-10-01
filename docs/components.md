@@ -105,38 +105,73 @@ disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
   inline), deepened toward black with `color-mix` so the song rings still read.
   Checked across the anniversary colours from the brightest (Drive) to the
   darkest, which stays effectively black — true to that album.
-- **A tonearm is the progress bar (2026-09-30).** On playable days an arm
-  stands parked beside the sleeve; Play swings it onto the first song, and it
-  creeps toward the label as the album plays — a real stylus moves inward at a
-  steady rate, so radius is linear in time played. Pause lifts it where it is
-  (a bigger shadow, `.lifted`); Stop and the end of the album send it home.
-  `lib/tonearm.js` owns all the geometry, in units of the record's radius:
-  the pivot, arm length, headshell, and the angle for any progress. The CSS
-  reads those as custom properties set inline on `.album-cover-wrap`, so
-  nothing is written down twice. `AlbumPlayback` reports `onProgress` (0–1) on
-  every tick, seek, Stop and end. `ForumPage` writes it straight to
-  `--arm-angle` on the arm rather than into state, because re-rendering every
-  game on the page twice a second to move one arm would be the expensive way
-  round. Tested in `test/tonearm.test.mjs`: it starts on the first song, ends
-  in the run-out, only moves inward, and parks clear of the record.
-- **The record comes further out for it: 70px, 55px on phones** (was 40 / 28).
-  At 40px the sleeve hid the spindle, so the last third of the album would
-  have been played on a part of the record still inside its sleeve. The slide
-  keeps the sleeve's edge at least 0.15 radii left of the spindle; the stylus
-  never goes past +0.03. `--disc`, `--disc-right` and `--vinyl-slide` on
-  `.album-cover-wrap` size the record and the arm together. A record clicked
-  while on the deck spins where it is (`--spin-shift`) rather than jumping
-  back toward the sleeve from under the arm.
+- **A turntable beside the sleeve (2026-10-01).** On playable days the hero
+  shows a silver deck — plinth, a platter with a strobe-dotted rim and a felt
+  slipmat in the club's navy and gold, and a tonearm. Play slides the record
+  all the way out of the sleeve onto the platter (150px; 100px on phones, so
+  the deck fits 375px with the record's edge tucked under the sleeve). The
+  owner found the earlier 70px half-out record cramped; the platter is what
+  makes the extra space read as a deck waiting for a record rather than a gap.
+  `lib/tonearm.js` owns all the geometry in units of the record's radius —
+  pivot, arm, headshell, plinth edges, platter — and hands it to the CSS as
+  custom properties (`DECK_VARS`, inline on `.album-cover-wrap`), so nothing
+  is written down twice. Tested: the plinth holds the platter, parked arm and
+  counterweight; the stylus never reaches the sleeve.
+- **The tonearm is the progress bar.** Play swings it onto the first song and
+  it creeps toward the label as the album plays — a real stylus moves inward
+  at a steady rate, so radius is linear in time played. Pause lifts it where
+  it is (a bigger shadow, `.lifted`); Stop sends it home. `AlbumPlayback`
+  reports `onProgress` (0–1) on every tick, seek, Stop and end; `ForumPage`
+  writes it straight to `--arm-angle` on the arm rather than into state,
+  because re-rendering every game on the page twice a second to move one arm
+  would be the expensive way round.
+- **The record is the controls.** `AlbumPlayback` exposes `drop` / `lift` /
+  `stop` through `controlRef` (`useImperativeHandle`):
+  - **Click the grooves to drop the needle.** The click's distance from the
+    spindle is how far through the album it is (`progressAtRadius`). The
+    label (inside `LABEL_EDGE`) still runs the spin easter egg, as does any
+    click while the record is in its sleeve. Clicking the grooves of a paused
+    record plays from there.
+  - **Drag the arm.** `.tonearm-grip`, a fingertip-sized target round the
+    headshell, is the only part of the arm that takes the pointer
+    (`touch-action: none`, or a phone scrolls instead). Picking it up pauses;
+    it follows the pointer between its rest and the last song; letting go on
+    the record plays from there, letting go back on the rest stops. Picked up
+    from the rest with the record in its sleeve, it can go straight onto the
+    platter to start from that point — `armHeld` keeps it there for the
+    moment before YouTube reports PLAYING. Pointer-only by design: the seek
+    bar is the keyboard's way to do the same.
+  - Reaching for the grip is not hovering the sleeve: a `:has()` rule stops
+    the sleeve sliding and the record spinning in it when a hand goes to the
+    arm.
+- **The end of the album: the run-out (`deck === "runout"`).** The needle
+  rides the run-out groove (`RUNOUT_RADIUS`, between the last song and the
+  label) for 7s with the record still turning, then the arm goes home and the
+  record is put away. If the album was actually heard — at least 90% of its
+  length played, counted as wall-clock time while YouTube says PLAYING, so a
+  seek to the end earns nothing — side A's run-out etching appears under the
+  artist ("heard all the way through · N albums so far") and the album joins
+  `aotd_full_plays`, which "Your Stats" counts. Private to the browser, like
+  every other personal stat.
+- **The needle is remembered for the day (`aotd_needle`, `lib/needle.js`).**
+  Pause, a tab change, closing the page or a phone hiding it saves where the
+  needle was, with the seconds heard and the album's length. A reload the
+  same day puts the record back on the platter, paused, with the arm at that
+  spot, and Play resumes there (via `seekTo`, which starts a cued video by
+  itself). Stop and the end forget it. One key, overwritten, so old days never
+  pile up. **Measured trap:** the deck effect only slid the record out on
+  "playing", so a record that loaded straight into "paused" left the arm
+  hovering over an empty platter — "paused" now slides it out too.
 - **Room is reserved only on playable days.** Slid out, the disc covered 35px
   of the title. `.album-display.has-deck` adds a right margin from first
   paint, set server-side from `album.youtubeId`, so nothing but the record and
-  the arm moves, and the ~73% of days without audio keep their tighter layout.
-  The margin runs to the furthest the parked arm reaches (`ARM_REACH`, the
-  headshell's finger lift — measured, it sat 20px past the bearing and nearly
-  touched Play when only the pivot was counted). On phones the same margin
-  centres the whole turntable rather than the sleeve. Between ~600px and
-  ~690px wide the details now wrap under the turntable on playable days, as
-  they do on phones.
+  the arm moves, and the ~73% of days without audio keep the plain sleeve and
+  their tighter layout. The margin runs to the plinth's right edge, and the
+  gap to the details is 40px. On phones the same margin centres the whole
+  turntable rather than the sleeve. Below ~800px wide the details wrap under
+  the turntable on playable days, as they do on phones.
+- A record clicked while on the deck spins where it is (`--spin-shift`)
+  rather than jumping back toward the sleeve from under the arm.
 - **Four-part selectors on purpose:** the `(hover: none)` rule that stops the
   hover spin on touch screens would otherwise stop a playing record on every
   phone. The click easter egg keeps its `!important` and still wins.
@@ -146,7 +181,8 @@ disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
   the preference itself. The tonearm moves by CSS transition, which the same
   rule zeroes, so it jumps between positions instead of swinging.
 - Vintage squares every corner except the disc's, the label's, the song
-  rings' and the tonearm bearing's.
+  rings', the tonearm bearing's and the platter's (the plinth squares off,
+  which suits the decade).
 
 ### Every YouTube player handles a dead video
 
@@ -328,7 +364,7 @@ Live countdown to midnight UTC. Wrapped in `React.memo()` — owns its own `setI
 
 ### Personal Stats Summary
 
-`computePersonalStats()` scans all `aotd_*` localStorage keys. Returns `{ ratedCount, avgRating, puzzlesSolved, puzzlesAttempted, favoriteVibe }`. Computed via `useMemo([allDone])` — only recomputes when all activities complete.
+`computePersonalStats()` scans all `aotd_*` localStorage keys. Returns `{ ratedCount, avgRating, puzzlesSolved, puzzlesAttempted, fullPlays, favoriteVibe }`. Computed via `useMemo([allDone])` — only recomputes when all activities complete.
 
 ### Enhanced Tomorrow Teaser
 
@@ -351,6 +387,10 @@ Shows tomorrow's album emoji + genre + decade (e.g., `🎷 Tomorrow's Album — 
 - **Streak**: `aotd_streak` → `{ count, lastDate, best }`
 - **Visit count**: `aotd_visit_count` (integer string)
 - **Milestones**: `aotd_milestones_celebrated` → `[3, 7, 14, ...]`
+- **The record on the deck** (`lib/needle.js`): `aotd_needle` →
+  `{ day, id, t, heard, d }`, where today's needle was lifted;
+  `aotd_full_plays` → `["artist::title", ...]`, albums heard all the way
+  through
 - **Session state**: `sessionStorage` for welcome-back dismissal (resets per tab)
 - **Animation guards**: `justRevealed`/`justSubmitted` booleans prevent re-animating on reload
 

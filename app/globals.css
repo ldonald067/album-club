@@ -19,6 +19,17 @@
   --tonearm-mid: #b4b4b4;
   --tonearm-dark: #5c5c5c;
   --tonearm-head: #262626;
+  /* The deck itself: a silver plinth, and a platter whose felt slipmat wears
+     the club's navy and gold, with a strobe-dotted rim. Equipment, so the same
+     in every skin, like the record. */
+  --deck-plinth-light: #ecece8;
+  --deck-plinth-mid: #cacac5;
+  --deck-plinth-dark: #b8b8b2;
+  --deck-strobe-light: #d8d8d8;
+  --deck-strobe-dark: #7c7c7c;
+  --deck-spindle: #c9c9c9;
+  --deck-mat: #2b3a5c;
+  --deck-mat-ring: #c9a227;
   --bg-page: #e8e0d0;
   --bg-main: #fff;
   --bg-dark: #1a1a2e;
@@ -465,12 +476,12 @@ body {
   /* The record's size and how far it overhangs the sleeve at rest */
   --disc: 180px;
   --disc-right: -10px;
-  /* How far the record comes out of its sleeve while it is on the deck. Far
-     enough that the sleeve's edge sits at least 0.15 radii left of the
-     spindle (here 0.22): the tonearm's stylus works in to just right of it
-     (test/tonearm.test.mjs), and at the old 40px the last third of the album
-     was played on a part of the record still inside its sleeve. */
-  --vinyl-slide: 70px;
+  /* How far the record comes out of its sleeve onto the deck: all the way,
+     onto the platter, so the whole record and its label show while it plays.
+     It must at least leave the sleeve's edge 0.15 radii left of the spindle,
+     where the stylus works in to (test/tonearm.test.mjs); 70px did, and still
+     hid half the record and felt cramped, so the owner asked for more. */
+  --vinyl-slide: 150px;
 }
 
 .album-cover {
@@ -553,6 +564,13 @@ body {
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
+/* Under side A's etching once the album has been heard through */
+.runout-heard {
+  display: block;
+  margin-top: 2px;
+  letter-spacing: 0.02em;
+}
+
 @keyframes vinylIntro {
   from {
     transform: rotate(0deg);
@@ -574,6 +592,18 @@ body {
 
 .album-cover-wrap:hover .vinyl-disc {
   animation: vinylSpin 2s linear infinite;
+}
+
+/* Reaching for the tonearm is not hovering the sleeve: the grip sits inside
+   the wrap, so without these the sleeve slid aside and the record spun in it
+   every time a hand went to the arm. `:not(.on-deck)` leaves a playing
+   record's own animation alone. */
+.album-cover-wrap:has(.tonearm-grip:hover) .album-cover {
+  transform: none;
+}
+
+.album-cover-wrap:has(.tonearm-grip:hover) .vinyl-disc:not(.on-deck) {
+  animation: none;
 }
 
 /* An anniversary pressing: in the album's round-number year (the same rule as
@@ -668,26 +698,93 @@ body {
   animation-play-state: running;
 }
 
-/* Room for the record to come out and for the tonearm beside it, out to the
-   furthest the parked arm reaches (--arm-reach, from lib/tonearm.js, set
-   inline on the wrap). Measured without any: the slid-out disc covered 35px
-   of the title and the Year/Genre labels. Reserved from the first paint and
-   only on days whose album can actually play — set server-side from the
-   catalog — so nothing but the record and the arm ever moves, and days
-   without audio keep the tighter layout they have always had. On phones the
-   same margin centres the whole turntable rather than just the sleeve. */
+/* Room for the turntable beside the sleeve, out to the plinth's right edge
+   (--deck-right, from lib/tonearm.js, set inline on the wrap). Measured
+   without any: the slid-out disc covered 35px of the title and the Year/Genre
+   labels. Reserved from the first paint and only on days whose album can
+   actually play — set server-side from the catalog — so nothing but the
+   record and the arm ever moves, and days without audio keep the tighter
+   layout they have always had. On phones the same margin centres the whole
+   turntable rather than just the sleeve. The wider gap keeps the details
+   from crowding the deck. */
+.album-display.has-deck {
+  column-gap: 40px;
+}
+
 .album-display.has-deck .album-cover-wrap {
   margin-right: calc(
     var(--vinyl-slide) - var(--disc-right) + var(--disc) *
-      (var(--arm-reach) - 1) / 2
+      (var(--deck-right) - 1) / 2
   );
+}
+
+/* ─── The turntable (lib/tonearm.js) ───
+   A box the size of the record on the deck, like .tonearm below, so its
+   centre is the spindle and the plinth and platter are placed in radii.
+   Under the record and the sleeve: the sleeve rests on the plinth's edge,
+   and the record lands on the platter. Decoration, never a click target. */
+.turntable {
+  position: absolute;
+  top: 10px;
+  right: calc(var(--disc-right) - var(--vinyl-slide));
+  width: var(--disc);
+  height: var(--disc);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.turntable-plinth {
+  position: absolute;
+  left: calc(50% - var(--deck-left) * 50%);
+  right: calc(50% - var(--deck-right) * 50%);
+  top: calc(50% - var(--deck-top) * 50%);
+  bottom: calc(50% - var(--deck-bottom) * 50%);
+  border-radius: 10px;
+  background: linear-gradient(
+    160deg,
+    var(--deck-plinth-light),
+    var(--deck-plinth-mid) 45%,
+    var(--deck-plinth-light) 60%,
+    var(--deck-plinth-dark)
+  );
+  box-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+}
+
+/* The platter: a strobe-dotted rim, then the slipmat with a gold ring, then
+   the spindle. Wider than the record by --platter, so the rim shows around
+   it while it plays. */
+.turntable-platter {
+  position: absolute;
+  inset: calc(50% - var(--platter) * 50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle,
+      var(--deck-spindle) 0 2%,
+      var(--tonearm-dark) 2.4% 3.2%,
+      var(--deck-mat) 3.6% 60%,
+      var(--deck-mat-ring) 60.5% 61.5%,
+      var(--deck-mat) 62% 86%,
+      transparent 86.5%
+    ),
+    repeating-conic-gradient(
+      var(--deck-strobe-light) 0 1.4deg,
+      var(--deck-strobe-dark) 1.4deg 4.5deg
+    );
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.45);
 }
 
 /* ─── The tonearm (lib/tonearm.js) ───
    A box the size of the record on the deck, so its centre is the spindle and
    every part is placed in units of the record's radius (--r), the same units
-   lib/tonearm.js computes the angles in. Decoration only: it never takes a
-   click from the record under it. */
+   lib/tonearm.js computes the angles in. Only the grip around the headshell
+   takes the pointer; the rest of the arm never steals a click from the
+   record under it. */
 .tonearm {
   --r: calc(var(--disc) / 2);
   --rod: max(3px, calc(var(--disc) * 0.022));
@@ -763,9 +860,47 @@ body {
   transform: rotate(var(--arm-angle));
 }
 
-/* Paused: the cue lever raises the stylus off the record, where it was */
+/* After the last song: the needle rides the run-out groove */
+.tonearm.runout .tonearm-arm {
+  transform: rotate(var(--arm-runout));
+}
+
+/* Paused, or in the hand: the stylus is off the record, where it was */
 .tonearm.lifted .tonearm-arm {
   filter: drop-shadow(4px 7px 3px rgba(0, 0, 0, 0.28));
+}
+
+/* In the hand it follows the pointer exactly, with no transition to lag
+   behind; let go, it is held where it was put down until the record starts
+   under it (ForumPage, armHeld). */
+.tonearm.dragging .tonearm-arm {
+  transform: rotate(var(--arm-angle));
+  transition: filter 0.3s ease;
+}
+
+.tonearm.held .tonearm-arm {
+  transform: rotate(var(--arm-angle));
+}
+
+/* What the hand takes hold of: a target around the headshell, bigger than
+   it for a fingertip, turning with the arm. touch-action: none, or a drag on
+   a phone scrolls the page instead of moving the arm. */
+.tonearm-grip {
+  position: absolute;
+  left: calc(var(--r) * -0.22);
+  top: calc(var(--r) * (var(--arm-len) - 0.38));
+  width: calc(var(--r) * 0.44);
+  height: calc(var(--r) * 0.44);
+  min-width: 32px;
+  min-height: 32px;
+  border-radius: 50%;
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
+}
+
+.tonearm.dragging .tonearm-grip {
+  cursor: grabbing;
 }
 
 /* The rod, from just behind the pivot to the headshell */
@@ -791,9 +926,9 @@ body {
   content: "";
   position: absolute;
   left: calc(var(--r) * -0.085);
-  top: calc(var(--r) * -0.36);
+  top: calc(var(--r) * var(--arm-weight) * -1);
   width: calc(var(--r) * 0.17);
-  height: calc(var(--r) * 0.22);
+  height: calc(var(--r) * (var(--arm-weight) - 0.1));
   border-radius: 2px;
   background: linear-gradient(
     to right,
@@ -3079,7 +3214,10 @@ body {
   .album-cover-wrap {
     --disc: 130px;
     --disc-right: -20px;
-    --vinyl-slide: 55px;
+    /* Slightly short of all the way, so the deck fits a 375px phone: the
+       record's edge stays tucked under the sleeve, well clear of the label
+       and of the stylus. */
+    --vinyl-slide: 100px;
   }
 
   .content {
@@ -3997,9 +4135,11 @@ body {
    label on a round record reads as a rendering fault, not as the nineties.
    So is the ring layer between songs: transparent at its corners today, but a
    fill added there later would square off into a box. And the tonearm's
-   bearing, which is a turned metal part, not a panel. */
+   bearing and the turntable's platter, which are turned parts, not panels. */
 :root[data-theme="vintage"]
-  *:not(.vinyl-disc):not(.vinyl-label):not(.vinyl-bands):not(.tonearm-base) {
+  *:not(.vinyl-disc):not(.vinyl-label):not(.vinyl-bands):not(.tonearm-base):not(
+    .turntable-platter
+  ):not(.tonearm-grip) {
   border-radius: 0;
 }
 

@@ -27,7 +27,18 @@ import {
 } from "@/lib/albums";
 import { loadJson } from "@/lib/safe-fetch";
 import { trackBandsGradient } from "@/lib/vinyl-bands";
-import { armAngle, TONEARM_VARS } from "@/lib/tonearm";
+import {
+  armAngle,
+  angleToward,
+  clampDragAngle,
+  onRecord,
+  progressAtAngle,
+  progressAtRadius,
+  DECK_VARS,
+  LABEL_EDGE,
+  REST_ANGLE,
+} from "@/lib/tonearm";
+import { readFullPlays, recordFullPlay } from "@/lib/needle";
 import { readStoredVote } from "@/lib/stored-vote";
 import AlbumPlayback from "./AlbumPlayback";
 
@@ -4319,6 +4330,8 @@ function computePersonalStats() {
     avgRating: ratedCount > 0 ? (ratingSum / ratedCount).toFixed(1) : null,
     puzzlesSolved,
     puzzlesAttempted,
+    // Albums heard all the way through on the hero's turntable (lib/needle.js)
+    fullPlays: readFullPlays().length,
     favoriteVibe: favoriteVibeObj
       ? {
           emoji: favoriteVibeObj.emoji,
@@ -4442,12 +4455,121 @@ export default function ForumPage({
      component renders every game on the page, and re-rendering all of it
      twice a second to move one arm would be the expensive way round. */
   const tonearmRef = useRef(null);
+  const setArmAngle = (angle) =>
+    tonearmRef.current?.style.setProperty("--arm-angle", `${angle}deg`);
   const moveTonearm = (progress) => {
-    tonearmRef.current?.style.setProperty(
-      "--arm-angle",
-      `${armAngle(progress)}deg`,
-    );
+    // The hand wins while it holds the arm; the next tick after it lets go
+    // carries on from wherever it put the needle down
+    if (!armDragRef.current) setArmAngle(armAngle(progress));
   };
+
+  /* 🎯 The record as the controls. AlbumPlayback hands over drop / lift /
+     stop through playbackRef; the grooves and the arm call them.
+
+     A click on the grooves drops the needle there — its distance from the
+     spindle is how far through the album it is (lib/tonearm.js). The label
+     still spins the record, the old easter egg, and so does any click while
+     the record is in its sleeve or the player is not ready. */
+  const playbackRef = useRef(null);
+  const dropNeedleAt = (e) => {
+    const control = playbackRef.current;
+    const el = vinylRef.current;
+    if (!onDeck || !control?.ready || !el || e.detail === 0) return false;
+    // The bounding box of a turning disc grows, but its centre stays put
+    const box = el.getBoundingClientRect();
+    const r =
+      Math.hypot(
+        e.clientX - (box.left + box.width / 2),
+        e.clientY - (box.top + box.height / 2),
+      ) /
+      (el.offsetWidth / 2);
+    if (r < LABEL_EDGE || r > 1) return false;
+    const progress = progressAtRadius(r);
+    setArmAngle(armAngle(progress));
+    control.drop(progress);
+    return true;
+  };
+
+  /* The arm in the hand. Picking it up lifts the needle (pauses); it follows
+     the pointer between its rest and the last song; letting go on the record
+     drops the needle there, and letting go off it — back on the rest — stops
+     the record, as lifting the arm off does. Picked up from the rest with the
+     record in its sleeve, it can be put straight down on the platter to
+     start the album from that point. `armHeld` keeps it where it was let go
+     for the moment before the player reports PLAYING, rather than swinging
+     home and back. */
+  const armDragRef = useRef(null);
+  const [armDragging, setArmDragging] = useState(false);
+  const [armHeld, setArmHeld] = useState(false);
+  useEffect(() => {
+    if (!armHeld) return undefined;
+    if (deck !== "off") {
+      setArmHeld(false);
+      return undefined;
+    }
+    // A drop the player never starts (blocked, failed) lets the arm go home
+    const t = setTimeout(() => setArmHeld(false), 4000);
+    return () => clearTimeout(t);
+  }, [armHeld, deck]);
+
+  const armGrab = (e) => {
+    const control = playbackRef.current;
+    const arm = tonearmRef.current;
+    const base = arm?.querySelector(".tonearm-base");
+    if (!control?.ready || !base) return;
+    e.preventDefault();
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+    const b = base.getBoundingClientRect();
+    const wasOnDeck = deck !== "off";
+    armDragRef.current = {
+      px: b.left + b.width / 2,
+      py: b.top + b.height / 2,
+      wasOnDeck,
+      // Where it is now, so a tap without a move puts it back down there
+      angle: wasOnDeck
+        ? parseFloat(getComputedStyle(arm).getPropertyValue("--arm-angle"))
+        : REST_ANGLE,
+    };
+    control.lift();
+    setArmHeld(false);
+    setArmDragging(true);
+  };
+  const armMove = (e) => {
+    const drag = armDragRef.current;
+    if (!drag) return;
+    drag.angle = clampDragAngle(
+      angleToward(e.clientX - drag.px, e.clientY - drag.py),
+    );
+    setArmAngle(drag.angle);
+  };
+  const armRelease = () => {
+    const drag = armDragRef.current;
+    armDragRef.current = null;
+    if (!drag) return;
+    setArmDragging(false);
+    const control = playbackRef.current;
+    if (onRecord(drag.angle)) {
+      if (!drag.wasOnDeck) setArmHeld(true);
+      control?.drop(progressAtAngle(drag.angle));
+    } else if (drag.wasOnDeck) {
+      control?.stop();
+    }
+  };
+
+  /* 💿 Heard all the way through: when an album ends having actually been
+     listened to (lib/needle.js), the run-out etching on side A appears and
+     the album joins this browser's private tally. An album already heard
+     through shows its etching from the start. */
+  const albumIdentity = `${album.artist}::${album.title}`;
+  const [fullPlay, setFullPlay] = useState(null);
+  useEffect(() => {
+    const list = readFullPlays();
+    if (list.includes(albumIdentity)) setFullPlay({ count: list.length });
+  }, [albumIdentity]);
+  const handlePlayedThrough = (heard) => {
+    if (heard) setFullPlay({ count: recordFullPlay(albumIdentity) });
+  };
+
   const rampRef = useRef(null);
   const putAwayRef = useRef(null);
 
@@ -4500,7 +4622,8 @@ export default function ForumPage({
       }
     };
 
-    if (deck === "playing") {
+    // In the run-out after the last song the record is still turning
+    if (deck === "playing" || deck === "runout") {
       setOnDeck(true);
       setTurning(true);
       ramp(1, 500);
@@ -4514,6 +4637,10 @@ export default function ForumPage({
         setTurning(false);
         if (deck === "off") putAway();
       });
+    } else if (deck === "paused") {
+      // Paused without ever turning: a needle remembered from earlier today
+      // (lib/needle.js) puts the record back on the platter, still
+      setOnDeck(true);
     } else if (deck === "off" && onDeck) {
       putAway();
     }
@@ -4607,11 +4734,12 @@ export default function ForumPage({
 
   // Deterministic per album, so a record always carries the same scratch and a
   // regular slowly learns them.
-  const runoutEtching =
-    RUNOUT_ETCHINGS[
-      (album.year + album.title.length + album.artist.length) %
-        RUNOUT_ETCHINGS.length
-    ];
+  const etchingSeed = album.year + album.title.length + album.artist.length;
+  const runoutEtching = RUNOUT_ETCHINGS[etchingSeed % RUNOUT_ETCHINGS.length];
+  // Side A's run-out, found by hearing the album through: a different
+  // scratch from side B's, since each side of a real record has its own
+  const sideAEtching =
+    RUNOUT_ETCHINGS[(etchingSeed + 3) % RUNOUT_ETCHINGS.length];
 
   const todayKey = getTodayKey();
 
@@ -4991,8 +5119,16 @@ export default function ForumPage({
                 >
                   <div
                     className="album-cover-wrap"
-                    style={album.youtubeId ? TONEARM_VARS : undefined}
+                    style={album.youtubeId ? DECK_VARS : undefined}
                   >
+                    {/* The deck the record plays on, beside the sleeve, on
+                        days the album can play (lib/tonearm.js). */}
+                    {album.youtubeId && (
+                      <span className="turntable" aria-hidden="true">
+                        <span className="turntable-plinth" />
+                        <span className="turntable-platter" />
+                      </span>
+                    )}
                     <div
                       className="album-cover"
                       style={{
@@ -5024,7 +5160,9 @@ export default function ForumPage({
                       role="button"
                       tabIndex={0}
                       aria-label="Spin the vinyl record"
-                      onClick={spinVinyl}
+                      onClick={(e) => {
+                        if (!dropNeedleAt(e)) spinVinyl();
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
@@ -5047,9 +5185,13 @@ export default function ForumPage({
                           : ""
                       }${
                         vinylBands
-                          ? `${albumTracks} songs, a gap between each — click to spin!`
-                          : "Click to spin!"
-                      }`}
+                          ? `${albumTracks} songs, a gap between each — `
+                          : ""
+                      }${
+                        onDeck
+                          ? "click the grooves to drop the needle there, the label to spin"
+                          : "click to spin!"
+                      }`.replace(/^./, (c) => c.toUpperCase())}
                     >
                       {/* The gaps between today's songs, one ring each, as a
                           real LP shows them (lib/vinyl-bands.js). Absent when
@@ -5077,22 +5219,35 @@ export default function ForumPage({
                         }}
                       />
                     </div>
-                    {/* The tonearm, on days the album can play: parked beside
-                        the sleeve, on the record from Play, creeping toward
-                        the label as the album goes on, lifted on Pause and
-                        home on Stop (lib/tonearm.js). */}
+                    {/* The tonearm, on days the album can play: parked on
+                        the deck, on the record from Play, creeping toward
+                        the label as the album goes on, lifted on Pause, in
+                        the run-out at the end and home on Stop
+                        (lib/tonearm.js). The grip is pointer-only on
+                        purpose — the seek bar is the keyboard's way to do
+                        the same thing. */}
                     {album.youtubeId && (
                       <span
                         ref={tonearmRef}
                         className={`tonearm${deck === "off" ? "" : " cued"}${
-                          deck === "paused" ? " lifted" : ""
-                        }`}
+                          deck === "paused" || armDragging ? " lifted" : ""
+                        }${deck === "runout" ? " runout" : ""}${
+                          armDragging ? " dragging" : ""
+                        }${armHeld ? " held" : ""}`}
                         aria-hidden="true"
                       >
                         <span className="tonearm-base" />
                         <span className="tonearm-rest" />
                         <span className="tonearm-arm">
                           <span className="tonearm-head" />
+                          <span
+                            className="tonearm-grip"
+                            title="Drag the arm onto the record"
+                            onPointerDown={armGrab}
+                            onPointerMove={armMove}
+                            onPointerUp={armRelease}
+                            onPointerCancel={armRelease}
+                          />
                         </span>
                       </span>
                     )}
@@ -5114,6 +5269,15 @@ export default function ForumPage({
                         &rdquo;
                       </div>
                     )}
+                    {fullPlay && !vinylFlipped && (
+                      <div className="runout-etching" role="status">
+                        ⌁ RUNOUT · AOTD-{album.year}-A · “{sideAEtching}”
+                        <span className="runout-heard">
+                          heard all the way through · {fullPlay.count} album
+                          {fullPlay.count === 1 ? "" : "s"} so far
+                        </span>
+                      </div>
+                    )}
                     <table className="info-table">
                       <tbody>
                         {[
@@ -5131,6 +5295,8 @@ export default function ForumPage({
                       album={album}
                       onDeckChange={setDeck}
                       onProgress={moveTonearm}
+                      onPlayedThrough={handlePlayedThrough}
+                      controlRef={playbackRef}
                     />
                   </div>
                 </div>
@@ -5226,33 +5392,44 @@ export default function ForumPage({
                   <NextAlbumCountdown />
 
                   {/* Personal stats */}
-                  {personalStats && personalStats.ratedCount > 0 && (
-                    <div className="wrap-stats">
-                      <div className="wrap-stats-title">Your Stats</div>
-                      <div className="wrap-stats-grid">
-                        <span>
-                          Rated <strong>{personalStats.ratedCount}</strong>{" "}
-                          album{personalStats.ratedCount !== 1 ? "s" : ""}
-                          {personalStats.avgRating &&
-                            ` (avg ${personalStats.avgRating}/10)`}
-                        </span>
-                        {personalStats.puzzlesAttempted > 0 && (
-                          <span>
-                            Puzzles solved:{" "}
-                            <strong>{personalStats.puzzlesSolved}</strong> of{" "}
-                            {personalStats.puzzlesAttempted} attempted
-                          </span>
-                        )}
-                        {personalStats.favoriteVibe && (
-                          <span>
-                            Favorite vibe: {personalStats.favoriteVibe.emoji}{" "}
-                            {personalStats.favoriteVibe.label} (chosen{" "}
-                            {personalStats.favoriteVibe.count}x)
-                          </span>
-                        )}
+                  {personalStats &&
+                    (personalStats.ratedCount > 0 ||
+                      personalStats.fullPlays > 0) && (
+                      <div className="wrap-stats">
+                        <div className="wrap-stats-title">Your Stats</div>
+                        <div className="wrap-stats-grid">
+                          {personalStats.ratedCount > 0 && (
+                            <span>
+                              Rated <strong>{personalStats.ratedCount}</strong>{" "}
+                              album{personalStats.ratedCount !== 1 ? "s" : ""}
+                              {personalStats.avgRating &&
+                                ` (avg ${personalStats.avgRating}/10)`}
+                            </span>
+                          )}
+                          {personalStats.fullPlays > 0 && (
+                            <span>
+                              Heard all the way through:{" "}
+                              <strong>{personalStats.fullPlays}</strong> album
+                              {personalStats.fullPlays !== 1 ? "s" : ""}
+                            </span>
+                          )}
+                          {personalStats.puzzlesAttempted > 0 && (
+                            <span>
+                              Puzzles solved:{" "}
+                              <strong>{personalStats.puzzlesSolved}</strong> of{" "}
+                              {personalStats.puzzlesAttempted} attempted
+                            </span>
+                          )}
+                          {personalStats.favoriteVibe && (
+                            <span>
+                              Favorite vibe: {personalStats.favoriteVibe.emoji}{" "}
+                              {personalStats.favoriteVibe.label} (chosen{" "}
+                              {personalStats.favoriteVibe.count}x)
+                            </span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
               </div>
             )}

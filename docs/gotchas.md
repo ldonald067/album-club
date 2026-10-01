@@ -190,7 +190,7 @@ Two traps, both hit during the 2026-07 dead-CSS removal:
 
 - **Konami code**: `↑↑↓↓←→←→BA` triggers confetti + vinyl spin animation
 - **Vinyl disc**: Click to toggle spin, CSS uses multiple `radial-gradient` layers
-- **Runout Groove**: click the vinyl again within 400ms and it flips — reverse spin plus a per-album matrix etching. The flip deliberately does **not** increment `aotd_vinyl_spins`; counting it would make the 33⅓ Club farmable by double-clicking
+- **Runout Groove**: click the vinyl again within 400ms and it flips — reverse spin plus a per-album matrix etching. The flip deliberately does **not** increment `aotd_vinyl_spins`; counting it would make the 33⅓ Club farmable by double-clicking. While the record is on the turntable only the label spins and flips it — a click on the grooves drops the needle there instead (`docs/components.md` → "The record on the deck")
 - **Still Spinning**: `visibilitychange` swaps the tab title while you're away, restoring it on return. Registered inside the existing keydown/activity effect so it shares that cleanup, and it clears any pending vinyl spin-restore first or the 3s timer overwrites the away title
 - **EST hover**: Hover over timestamp shows timezone tooltip
 - **Forum signatures**: Random retro forum signature at bottom, set in `useEffect`
