@@ -27,6 +27,7 @@ import {
 } from "@/lib/albums";
 import { loadJson } from "@/lib/safe-fetch";
 import { trackBandsGradient } from "@/lib/vinyl-bands";
+import { armAngle, TONEARM_VARS } from "@/lib/tonearm";
 import { readStoredVote } from "@/lib/stored-vote";
 import AlbumPlayback from "./AlbumPlayback";
 
@@ -4436,6 +4437,17 @@ export default function ForumPage({
   }, []);
   const vinylRef = useRef(null);
   const vinylBands = trackBandsGradient(albumTracks);
+  /* The tonearm follows playback (lib/tonearm.js). Written straight to a
+     custom property on every 500ms tick rather than held in state: this
+     component renders every game on the page, and re-rendering all of it
+     twice a second to move one arm would be the expensive way round. */
+  const tonearmRef = useRef(null);
+  const moveTonearm = (progress) => {
+    tonearmRef.current?.style.setProperty(
+      "--arm-angle",
+      `${armAngle(progress)}deg`,
+    );
+  };
   const rampRef = useRef(null);
   const putAwayRef = useRef(null);
 
@@ -4977,7 +4989,10 @@ export default function ForumPage({
                   className={`album-display${album.youtubeId ? " has-deck" : ""}`}
                   style={{ "--album-wash": album.color }}
                 >
-                  <div className="album-cover-wrap">
+                  <div
+                    className="album-cover-wrap"
+                    style={album.youtubeId ? TONEARM_VARS : undefined}
+                  >
                     <div
                       className="album-cover"
                       style={{
@@ -5062,6 +5077,25 @@ export default function ForumPage({
                         }}
                       />
                     </div>
+                    {/* The tonearm, on days the album can play: parked beside
+                        the sleeve, on the record from Play, creeping toward
+                        the label as the album goes on, lifted on Pause and
+                        home on Stop (lib/tonearm.js). */}
+                    {album.youtubeId && (
+                      <span
+                        ref={tonearmRef}
+                        className={`tonearm${deck === "off" ? "" : " cued"}${
+                          deck === "paused" ? " lifted" : ""
+                        }`}
+                        aria-hidden="true"
+                      >
+                        <span className="tonearm-base" />
+                        <span className="tonearm-rest" />
+                        <span className="tonearm-arm">
+                          <span className="tonearm-head" />
+                        </span>
+                      </span>
+                    )}
                   </div>
                   <div className="album-info">
                     <h2 className="album-title">{album.title}</h2>
@@ -5093,7 +5127,11 @@ export default function ForumPage({
                         ))}
                       </tbody>
                     </table>
-                    <AlbumPlayback album={album} onDeckChange={setDeck} />
+                    <AlbumPlayback
+                      album={album}
+                      onDeckChange={setDeck}
+                      onProgress={moveTonearm}
+                    />
                   </div>
                 </div>
               )}

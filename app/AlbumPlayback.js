@@ -40,8 +40,11 @@ function formatTime(seconds) {
 /* `onDeckChange` reports where the record is, so the hero's vinyl can show it:
    "playing" spins, "paused" is parked out of the sleeve and still, "off" is
    back in the sleeve. Paused and off are different on purpose — a record you
-   paused is still on the platter; one you stopped has been put away. */
-export default function AlbumPlayback({ album, onDeckChange }) {
+   paused is still on the platter; one you stopped has been put away.
+
+   `onProgress` reports how far through the album playback is, 0 to 1, on
+   every clock tick, seek, Stop and end — the hero's tonearm follows it. */
+export default function AlbumPlayback({ album, onDeckChange, onProgress }) {
   const playerRef = useRef(null);
   const tickRef = useRef(null);
 
@@ -171,6 +174,12 @@ export default function AlbumPlayback({ album, onDeckChange }) {
   }, [deck, failed]);
   // Unmounting — the Webamp view, a tab change — puts the record away.
   useEffect(() => () => deckRef.current?.("off"), []);
+
+  const progressRef = useRef(onProgress);
+  progressRef.current = onProgress;
+  useEffect(() => {
+    progressRef.current?.(duration > 0 ? elapsed / duration : 0);
+  }, [elapsed, duration]);
 
   // Only tick while something is actually playing.
   useEffect(() => {

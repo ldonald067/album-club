@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-09-30.
+session. Last updated: 2026-09-30 (evening).
 
 This file holds **current state, open items and standing decisions** only.
 How things work lives in the topic docs; what happened and when lives in git
@@ -34,8 +34,16 @@ install, test and build cleanly).
 - **Two project hooks fixed and proved live:** the broad-staging block (new)
   and the `data/` database guard, which had never blocked anything — it
   exited 1, and hooks block only on exit 2 or a JSON deny.
-- **Evidence on the Hayley Williams video** — an unofficial upload, songs in
-  alphabetical order, one missing. Recommend removing it (open item 2).
+- **The Hayley Williams bootleg is gone** — an unofficial upload, songs in
+  alphabetical order, one missing. Removed on the owner's call; the album now
+  shows no player and wears its real Cover Art Archive cover (its image had
+  been that video's thumbnail). Pinned through 2026-10-02.
+- **A tonearm is the progress bar** (owner asked for it). On playable days an
+  arm stands beside the sleeve, swings onto the record on Play, creeps toward
+  the label as the album plays, lifts on Pause and goes home on Stop. The
+  record now slides further out (70px, 55px on phones) and the details column
+  moves right to make room. Geometry and tests in `lib/tonearm.js`; details in
+  `docs/components.md` → "The record on the deck" (open item 7).
 
 Earlier (09-27 → 09-28): PR #5 pinned each day's picks — **every edit to
 `lib/albums.json` or `lib/lyrics.json` needs `npm run pin-schedule` and
@@ -46,12 +54,10 @@ were cut to current state.
 
 **Where to pick up, in this order:**
 
-1. **Two owner decisions** — remove the Hayley Williams video id (evidence
-   in open item 2), and whether the tonearm is worth the room it needs (open
-   item 7: ~15px available, ~40–60px needed).
-2. **One phone check** — tap through the Blind Taste Test on an iPhone and an
-   Android phone (open item 2).
-3. The catalog audit's remainder (open item 1), then everything else below.
+1. **One phone check** — tap through the Blind Taste Test on an iPhone and an
+   Android phone, and while there, press Play on an audio day and watch the
+   tonearm (open item 2).
+2. The catalog audit's remainder (open item 1), then everything else below.
 
 Two open actions need a human rather than code: **nobody has put the link
 anywhere** (open item 4), and **album audio needs a YouTube Data API key**
@@ -173,27 +179,21 @@ docs.
    of one `recognizable` flag; distinct artists in Artist Scramble; measure
    "the next 30 days are ready" rather than every field for every entry.
 
-2. **A phone check and a decision only a person can make.** Everything else
-   from the 2026-09-26 adversarial review is fixed and verified.
+2. **A phone check only a person can do.** Everything else from the
+   2026-09-26 adversarial review is fixed and verified.
    - **Tap through the Blind Taste Test on an iPhone and an Android phone.**
      "Playing" and the one-minute "heard" timer now start only when YouTube
      reports PLAYING, and the button stays tappable until then, so a blocked
      first play can be retried with a real tap. Verified on desktop with a
      simulated block; automation cannot produce a real phone tap.
      `docs/components.md` → "Blind Taste Test players are lazy".
-   - **Decide one video — checked 2026-09-30, recommend removing it.**
-     Hayley Williams — _Ego Death at a Bachelorette Party_, "EGO [FULL
-     ALBUM]" (`bVQ-J6J44Ts`), UNVERIFIED in the audit. Its description lists
-     16 songs, and all 16 are on the album — but "Love Me Different" is
-     missing, the order is **alphabetical** (not the album's, which opens
-     with "Ice in My OJ"), it runs 51 minutes against 67, and the channel
-     ("Smino") claims ℗ & © over her record: an unofficial content-farm
-     upload. As the hero's "full album" it plays the record shuffled and
-     incomplete, and it is in the Taste Test pool (every album with an id).
-     **Do not add it to `KEPT_AFTER_REVIEW`.** Removing the id is a catalog
-     edit: run `npm run pin-schedule` with it (the Taste pool shrinks, so
-     future pairs move from the day after tomorrow). Not done — the owner's
-     call. The album is not `recognizable`, so Heardle is unaffected.
+   - **The tonearm on a real phone.** Verified in a 375px emulation (centred,
+     no sideways scroll, swings in on Play), not on a device.
+   - **Done 2026-09-30: the Hayley Williams video is removed.** _Ego Death at
+     a Bachelorette Party_'s "full album" (`bVQ-J6J44Ts`) was an unofficial
+     upload — songs in alphabetical order, "Love Me Different" missing, 51 of
+     67 minutes, a channel claiming the rights to her record. If a fetch ever
+     offers that id again, it is the same bootleg.
 
 3. **Album audio needs a proper refetch — blocked on a YouTube Data API key.**
    Only a minority of stored videos are whole albums; most are one song, and 21
@@ -205,8 +205,7 @@ docs.
    it was written for. The free tier's 100 searches a day make that four to
    five days of runs. Audit the result with
    `npm run audit-youtube-ids -- --albums <candidate>` before it replaces the
-   catalog. It now demands evidence a long upload is the right album (one
-   live id to watch — open item 2).
+   catalog. It now demands evidence a long upload is the right album.
 
 4. **There is no audience yet, and that governs what is worth building.**
    As of 2026-08-22, `GET /api/stats` reported **one rating, one puzzle play and
@@ -241,20 +240,19 @@ docs.
    design: cleared storage, a second device, and two tabs clicking in the
    same instant.
 
-7. **The record — two ideas built, one open (2026-09-30).** The owner asked
-   for fun things the hero vinyl could do beyond spinning; the bar applied is
-   motion that says something true about the day's record.
+7. **The record — three ideas built (2026-09-30).** The owner asked for fun
+   things the hero vinyl could do beyond spinning; the bar applied is motion
+   that says something true about the day's record. Details and limits for
+   all three in `docs/components.md` → "The record on the deck".
    - **Built: grooves drawn from the tracklist.** One ring between each pair
-     of songs; details and limits in `docs/components.md` → "The record on the
-     deck". Rings on 328 of 423 albums; the rest honestly show none.
-   - **Open, needs a design call: a tonearm that is the progress bar.** On
-     audio days, an arm swings in from the edge toward the label as the album
-     plays and rests in the runout at the end. **Measured 2026-09-30: there is
-     ~15px beside the slid-out record at 1024px** (the 40px `has-deck`
-     margin minus the disc's overhang); a pivot and arm need ~40–60px. So it
-     means either reserving more room — taken from the title column the
-     2026-09-24 review fought for — or an arm drawn across the record itself.
-     Not started. Audio days only (~27%).
+     of songs. Rings on 328 of 423 albums; the rest honestly show none.
+   - **Built: a tonearm that is the progress bar.** Audio days only (~27%).
+     The owner chose to make room rather than draw the arm across the record:
+     the record slides out 70px (was 40), and the reserved margin runs to the
+     parked arm's reach, which moves the details column ~75px right at
+     desktop widths. Measured: at 1024px the details keep their full width,
+     and between ~600 and ~690px they now wrap under the turntable on audio
+     days, as on phones.
    - **Built: an anniversary pressing (2026-09-30).** Coloured vinyl in the
      album's accent colour in its round-number year. Not built: 45 rpm for
      EPs — only 3 entries.

@@ -105,18 +105,48 @@ disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
   inline), deepened toward black with `color-mix` so the song rings still read.
   Checked across the anniversary colours from the brightest (Drive) to the
   darkest, which stays effectively black — true to that album.
+- **A tonearm is the progress bar (2026-09-30).** On playable days an arm
+  stands parked beside the sleeve; Play swings it onto the first song, and it
+  creeps toward the label as the album plays — a real stylus moves inward at a
+  steady rate, so radius is linear in time played. Pause lifts it where it is
+  (a bigger shadow, `.lifted`); Stop and the end of the album send it home.
+  `lib/tonearm.js` owns all the geometry, in units of the record's radius:
+  the pivot, arm length, headshell, and the angle for any progress. The CSS
+  reads those as custom properties set inline on `.album-cover-wrap`, so
+  nothing is written down twice. `AlbumPlayback` reports `onProgress` (0–1) on
+  every tick, seek, Stop and end. `ForumPage` writes it straight to
+  `--arm-angle` on the arm rather than into state, because re-rendering every
+  game on the page twice a second to move one arm would be the expensive way
+  round. Tested in `test/tonearm.test.mjs`: it starts on the first song, ends
+  in the run-out, only moves inward, and parks clear of the record.
+- **The record comes further out for it: 70px, 55px on phones** (was 40 / 28).
+  At 40px the sleeve hid the spindle, so the last third of the album would
+  have been played on a part of the record still inside its sleeve. The slide
+  keeps the sleeve's edge at least 0.15 radii left of the spindle; the stylus
+  never goes past +0.03. `--disc`, `--disc-right` and `--vinyl-slide` on
+  `.album-cover-wrap` size the record and the arm together. A record clicked
+  while on the deck spins where it is (`--spin-shift`) rather than jumping
+  back toward the sleeve from under the arm.
 - **Room is reserved only on playable days.** Slid out, the disc covered 35px
-  of the title; `.album-display.has-deck` adds a right margin from first paint,
-  set server-side from `album.youtubeId`, so nothing but the record moves and
-  the ~68% of days without audio keep their tighter layout.
+  of the title. `.album-display.has-deck` adds a right margin from first
+  paint, set server-side from `album.youtubeId`, so nothing but the record and
+  the arm moves, and the ~73% of days without audio keep their tighter layout.
+  The margin runs to the furthest the parked arm reaches (`ARM_REACH`, the
+  headshell's finger lift — measured, it sat 20px past the bearing and nearly
+  touched Play when only the pivot was counted). On phones the same margin
+  centres the whole turntable rather than the sleeve. Between ~600px and
+  ~690px wide the details now wrap under the turntable on playable days, as
+  they do on phones.
 - **Four-part selectors on purpose:** the `(hover: none)` rule that stops the
   hover spin on touch screens would otherwise stop a playing record on every
   phone. The click easter egg keeps its `!important` and still wins.
 - **Reduced motion:** the site's global rule switches CSS animations off, so the
   disc just sits out of the sleeve while playing — a still "now playing" cue.
   The put-away is a script animation, which that rule cannot reach, so it checks
-  the preference itself.
-- Vintage squares every corner except the disc's and, now, the label's.
+  the preference itself. The tonearm moves by CSS transition, which the same
+  rule zeroes, so it jumps between positions instead of swinging.
+- Vintage squares every corner except the disc's, the label's, the song
+  rings' and the tonearm bearing's.
 
 ### Every YouTube player handles a dead video
 
