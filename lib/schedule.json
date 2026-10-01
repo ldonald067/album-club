@@ -1,7 +1,7 @@
 {
   "about": "Each date's picks, recorded once and never re-derived. Written by scripts/pin-schedule.mjs; read by lib/daily-picks.js. See docs/album-data.md.",
-  "catalogFingerprint": "eca242aba3539e2b",
-  "pinnedThrough": "2026-09-28",
+  "catalogFingerprint": "37a0cbc0a8c50432",
+  "pinnedThrough": "2026-10-02",
   "days": {
     "2026-07-14": { "album": "A Tribe Called Quest::Midnight Marauders" },
     "2026-07-15": { "album": "Primal Scream::Screamadelica" },
@@ -146,6 +146,64 @@
         "Buena Vista Social Club::Buena Vista Social Club",
         "Death Grips::The Money Store"
       ]
+    },
+    "2026-09-29": {
+      "album": "Arcade Fire::The Suburbs",
+      "puzzle": "Lana Del Rey::Did You Know That There's a Tunnel Under Ocean Blvd",
+      "cover": "Sigur Rós::Ágætis byrjun",
+      "heardle": "The Beach Boys::Pet Sounds",
+      "scramble": "Frank Ocean::Channel Orange",
+      "lyric": "Rosalía::Lux",
+      "versus": [
+        "Mitski::Be the Cowboy",
+        "Floating Points, Pharoah Sanders & LSO::Promises"
+      ],
+      "taste": ["SZA::Ctrl", "Doja Cat::Planet Her"]
+    },
+    "2026-09-30": {
+      "album": "OutKast::ATLiens",
+      "puzzle": "Lana Del Rey::Did You Know That There's a Tunnel Under Ocean Blvd",
+      "cover": "Sigur Rós::Ágætis byrjun",
+      "heardle": "The Beach Boys::Pet Sounds",
+      "scramble": "Arcade Fire::The Suburbs",
+      "lyric": "Rosalía::Lux",
+      "versus": [
+        "Joe Hisaishi::Spirited Away",
+        "Kendrick Lamar::Mr. Morale & The Big Steppers"
+      ],
+      "taste": [
+        "Kendrick Lamar::good kid, m.A.A.d city",
+        "Radiohead::OK Computer"
+      ]
+    },
+    "2026-10-01": {
+      "album": "Little Simz::Grey Area",
+      "puzzle": "Lana Del Rey::Did You Know That There's a Tunnel Under Ocean Blvd",
+      "cover": "Sigur Rós::Ágætis byrjun",
+      "heardle": "The Beach Boys::Pet Sounds",
+      "scramble": "Arcade Fire::The Suburbs",
+      "lyric": "Rosalía::Lux",
+      "versus": [
+        "Buena Vista Social Club::Buena Vista Social Club",
+        "Phoebe Bridgers::Stranger in the Alps"
+      ],
+      "taste": [
+        "Robyn::Sexistential",
+        "Buena Vista Social Club::Buena Vista Social Club"
+      ]
+    },
+    "2026-10-02": {
+      "album": "Porter Robinson::Nurture",
+      "puzzle": "Björk::Homogenic",
+      "cover": "Tool::Lateralus",
+      "heardle": "SZA::Ctrl",
+      "scramble": "The Clash::London Calling",
+      "lyric": "Björk::Homogenic",
+      "versus": [
+        "Fiona Apple::Fetch the Bolt Cutters",
+        "LE SSERAFIM::UNFORGIVEN"
+      ],
+      "taste": ["Tame Impala::Lonerism", "Marvin Gaye::What's Going On"]
     }
   }
 }
