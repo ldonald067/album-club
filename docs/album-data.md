@@ -30,6 +30,13 @@
   - **39** were the full album or full performance; **73** were one song from the right album; **13** were refused by the embedded player (error 150 — usually a label blocking embeds on a full-album upload); **8** were not the album's music at all (three songs from other albums, plus 6- and 18-second clips, two teasers and a Pitchfork explainer); **2** were music-video films.
   - **The 21 dead and wrong ids were removed** (the two films were kept). Wrong data is worse than missing data, and the dead ones were breaking two games — see `docs/components.md`.
   - **A long upload counts as the full album only if its title names the album or two of its tracks** (since 2026-09-28); length alone passed any 30–60 minute video. Reviewed exceptions in `KEPT_AFTER_REVIEW` are keyed on artist, album and id, so an approved film copied under another album is flagged there.
+  - **Its `FULL_ALBUM` verdicts decide the hero's turntable** (2026-10-07).
+    `npm run audit-youtube-ids -- --record` rewrites
+    `lib/full-album-videos.json` from them — only `FULL_ALBUM`, never a
+    `KEPT` film or an `UNVERIFIED` long upload — and refuses if a lookup
+    errored. **Re-record after any `youtubeId` or title change**, including a
+    refetch: entries are keyed on artist, album and id, so a changed id loses
+    its turntable, and `eval-site` fails until the list is re-recorded.
   - **Re-run it with `npm run audit-youtube-ids`** (read-only, ~4 minutes, exits 1 if anything is dead, a clip or from the wrong album). Videos keep dying after they are stored, so this is worth running now and then. `--albums <file>` audits a candidate catalog — use it on the output of a refetch **before** copying it over `lib/albums.json`. A DEAD verdict comes from the watch page's playability status, a proxy; confirm in a browser that the IFrame player really fires `onError` before removing an id.
   - **Why so few are whole albums:** `scripts/fetch-youtube-ids.mjs` searched `"{artist} {title} official audio"` and kept the **first result, unchecked**, and only for `recognizable` albums — the ids were collected for Heardle and the Taste Test, where a single song is fine. The hero's inline player reused the field later. A refetch that targets full albums, checks title and duration, and covers the whole catalog is the real fix and needs a YouTube Data API key.
   - Removing ids shrinks the Heardle and Taste Test pools, and pool size drives the daily rotation, so it reshuffles which album those games pick on future days — from the day after tomorrow, once `npm run pin-schedule` has recorded the rest (see the pinned schedule under Daily Rotation). `eval-site` checks the new Heardle pool against the 5-day cadence.

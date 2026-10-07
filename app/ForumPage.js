@@ -4404,6 +4404,7 @@ const SECRET_TAGLINES = [
 export default function ForumPage({
   album,
   albumTracks = null,
+  playsWholeAlbum = false,
   picks,
   yesterdayAlbum,
   tomorrowAlbum,
@@ -4450,6 +4451,12 @@ export default function ForumPage({
   }, []);
   const vinylRef = useRef(null);
   const vinylBands = trackBandsGradient(albumTracks);
+  /* The turntable — deck, tonearm, needle drops and the run-out — only when
+     today's video is the whole album (lib/full-album-videos.js). A one-song
+     video still plays, with the record slid a little out of its sleeve as it
+     always was, but an arm crossing every song ring in one track, or "heard
+     all the way through" for one song, would be saying something false. */
+  const hasDeck = playsWholeAlbum && Boolean(album.youtubeId);
   /* The tonearm follows playback (lib/tonearm.js). Written straight to a
      custom property on every 500ms tick rather than held in state: this
      component renders every game on the page, and re-rendering all of it
@@ -4474,7 +4481,9 @@ export default function ForumPage({
   const dropNeedleAt = (e) => {
     const control = playbackRef.current;
     const el = vinylRef.current;
-    if (!onDeck || !control?.ready || !el || e.detail === 0) return false;
+    if (!hasDeck || !onDeck || !control?.ready || !el || e.detail === 0) {
+      return false;
+    }
     // The bounding box of a turning disc grows, but its centre stays put
     const box = el.getBoundingClientRect();
     const r =
@@ -4564,10 +4573,12 @@ export default function ForumPage({
   const [fullPlay, setFullPlay] = useState(null);
   useEffect(() => {
     const list = readFullPlays();
-    if (list.includes(albumIdentity)) setFullPlay({ count: list.length });
-  }, [albumIdentity]);
+    if (hasDeck && list.includes(albumIdentity)) {
+      setFullPlay({ count: list.length });
+    }
+  }, [albumIdentity, hasDeck]);
   const handlePlayedThrough = (heard) => {
-    if (heard) setFullPlay({ count: recordFullPlay(albumIdentity) });
+    if (heard && hasDeck) setFullPlay({ count: recordFullPlay(albumIdentity) });
   };
 
   const rampRef = useRef(null);
@@ -4745,12 +4756,14 @@ export default function ForumPage({
 
   // Tomorrow's album for the teaser (genre only) — decided on the server
 
-  // Personal stats — recompute when allDone changes to capture latest data
+  // Personal stats — recompute when allDone changes to capture latest data,
+  // and when the album is heard through, so "Your Stats" agrees with the
+  // run-out etching's count rather than lagging it until a reload
   const personalStats = useMemo(() => {
     if (typeof window === "undefined") return null;
     return computePersonalStats();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allDone]);
+  }, [allDone, fullPlay]);
 
   // Reload at UTC midnight so a long-open tab rolls to the new day cleanly.
   // Fixes the whole stale-memo class: album, puzzle/pair, gameType and the
@@ -5114,16 +5127,18 @@ export default function ForumPage({
                 />
               ) : (
                 <div
-                  className={`album-display${album.youtubeId ? " has-deck" : ""}`}
+                  className={`album-display${
+                    hasDeck ? " has-deck" : album.youtubeId ? " has-player" : ""
+                  }`}
                   style={{ "--album-wash": album.color }}
                 >
                   <div
                     className="album-cover-wrap"
-                    style={album.youtubeId ? DECK_VARS : undefined}
+                    style={hasDeck ? DECK_VARS : undefined}
                   >
                     {/* The deck the record plays on, beside the sleeve, on
-                        days the album can play (lib/tonearm.js). */}
-                    {album.youtubeId && (
+                        days the whole album can play (lib/tonearm.js). */}
+                    {hasDeck && (
                       <span className="turntable" aria-hidden="true">
                         <span className="turntable-plinth" />
                         <span className="turntable-platter" />
@@ -5188,7 +5203,7 @@ export default function ForumPage({
                           ? `${albumTracks} songs, a gap between each — `
                           : ""
                       }${
-                        onDeck
+                        onDeck && hasDeck
                           ? "click the grooves to drop the needle there, the label to spin"
                           : "click to spin!"
                       }`.replace(/^./, (c) => c.toUpperCase())}
@@ -5219,14 +5234,14 @@ export default function ForumPage({
                         }}
                       />
                     </div>
-                    {/* The tonearm, on days the album can play: parked on
+                    {/* The tonearm, on days the whole album can play: parked on
                         the deck, on the record from Play, creeping toward
                         the label as the album goes on, lifted on Pause, in
                         the run-out at the end and home on Stop
                         (lib/tonearm.js). The grip is pointer-only on
                         purpose — the seek bar is the keyboard's way to do
                         the same thing. */}
-                    {album.youtubeId && (
+                    {hasDeck && (
                       <span
                         ref={tonearmRef}
                         className={`tonearm${deck === "off" ? "" : " cued"}${

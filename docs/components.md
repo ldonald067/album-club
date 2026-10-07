@@ -105,7 +105,18 @@ disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
   inline), deepened toward black with `color-mix` so the song rings still read.
   Checked across the anniversary colours from the brightest (Drive) to the
   darkest, which stays effectively black — true to that album.
-- **A turntable beside the sleeve (2026-10-01).** On playable days the hero
+- **Only when the video is the whole album (2026-10-07).** The deck, the
+  arm, needle drops and the run-out all claim the whole record, and most
+  stored videos are one song (`docs/album-data.md`). On those days the arm
+  crossed every song ring during one track and one song counted as "heard all
+  the way through". `section-page.js` now passes `playsWholeAlbum`, looked up
+  in `lib/full-album-videos.json` — the audit's `FULL_ALBUM` verdicts, written
+  by `npm run audit-youtube-ids -- --record` and keyed on artist, album and
+  id, so a changed id loses the deck rather than inheriting a verdict.
+  `eval-site` fails when the list goes stale. A one-song day keeps the plain
+  player, and the record comes 40px out of its sleeve (28px on phones) to
+  play, as it did before the turntable (`.has-player`).
+- **A turntable beside the sleeve (2026-10-01).** On whole-album days the hero
   shows a silver deck — plinth, a platter with a strobe-dotted rim and a felt
   slipmat in the club's navy and gold, and a tonearm. Play slides the record
   all the way out of the sleeve onto the platter (150px; 100px on phones, so
@@ -148,8 +159,9 @@ disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
   rides the run-out groove (`RUNOUT_RADIUS`, between the last song and the
   label) for 7s with the record still turning, then the arm goes home and the
   record is put away. If the album was actually heard — at least 90% of its
-  length played, counted as wall-clock time while YouTube says PLAYING, so a
-  seek to the end earns nothing — side A's run-out etching appears under the
+  length played, measured as how far the player's clock moved between ticks
+  (`heardBetween`), so a seek to the end earns nothing and a background tab
+  whose timers the browser slows still counts in full — side A's run-out etching appears under the
   artist ("heard all the way through · N albums so far") and the album joins
   `aotd_full_plays`, which "Your Stats" counts. Private to the browser, like
   every other personal stat.
@@ -162,11 +174,11 @@ disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
   pile up. **Measured trap:** the deck effect only slid the record out on
   "playing", so a record that loaded straight into "paused" left the arm
   hovering over an empty platter — "paused" now slides it out too.
-- **Room is reserved only on playable days.** Slid out, the disc covered 35px
+- **Room is reserved only on turntable days.** Slid out, the disc covered 35px
   of the title. `.album-display.has-deck` adds a right margin from first
-  paint, set server-side from `album.youtubeId`, so nothing but the record and
-  the arm moves, and the ~73% of days without audio keep the plain sleeve and
-  their tighter layout. The margin runs to the plinth's right edge, and the
+  paint, set server-side from `playsWholeAlbum`, so nothing but the record and
+  the arm moves; one-song days reserve just their 40px (`.has-player`), and
+  days without audio keep the plain sleeve and their tighter layout. The margin runs to the plinth's right edge, and the
   gap to the details is 40px. On phones the same margin centres the whole
   turntable rather than the sleeve. Below ~800px wide the details wrap under
   the turntable on playable days, as they do on phones.

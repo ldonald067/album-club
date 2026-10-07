@@ -14,8 +14,21 @@ it used to carry).
 returns the running commit SHA — it should match `git rev-parse --short
 origin/master` — and `uptimeSeconds` should climb. No PRs are open; `master`
 is the only branch, locally and on GitHub. Checked 2026-10-07: production had
-run the turntable build for six days without a restart, and today's album
-(_Daydream Nation_) has audio, so the deck is live on the home page.
+run the turntable build for six days without a restart.
+
+**2026-10-07: the turntable shows only for a whole-album video.** An
+adversarial review (Codex) found the deck, the arm and "heard all the way
+through" switched on for any `youtubeId` — and 72 of the 113 stored videos
+are one song, today's _Daydream Nation_ among them. It is now gated on the
+audit's `FULL_ALBUM` verdicts (36 videos), recorded by
+`npm run audit-youtube-ids -- --record` in `lib/full-album-videos.json`;
+`eval-site` fails when that list goes stale, so **re-record after any
+`youtubeId` or title change**. One-song days keep the plain player. Fixed
+with it: listening is measured from the player's clock, a seek to the start
+forgets the saved spot, the arm waits for the album's length, a failed player
+puts the record away, Your Stats updates on a full play, and the arm no
+longer transitions `filter`. Details in `docs/components.md` → "The record on
+the deck".
 
 **Keep each chat under ~300k tokens of context.** The owner is on the Pro
 plan and was hitting the 5-hour limit too soon: every message re-reads the
@@ -69,9 +82,9 @@ were cut to current state.
 **Where to pick up, in this order:**
 
 1. **One phone check** — tap through the Blind Taste Test on an iPhone and an
-   Android phone, and while there, on an audio day, press Play, tap the
-   grooves and drag the tonearm with a finger (open item 2). Audio days
-   coming up: 10-07, 10-09, and 10-13 through 10-16.
+   Android phone, and on a turntable day press Play, tap the grooves and
+   drag the tonearm with a finger (open item 2). Turntable days coming up:
+   10-27 and 10-30 — the only whole-album days this month.
 2. The catalog audit's remainder (open item 1), then everything else below.
 
 Two open actions need a human rather than code: **nobody has put the link
@@ -262,8 +275,13 @@ docs.
    `docs/components.md` → "The record on the deck".
    - **Built: grooves drawn from the tracklist.** One ring between each pair
      of songs. Rings on 328 of 423 albums; the rest honestly show none.
-   - **Built: a turntable and a tonearm that is the progress bar.** Audio
-     days only (~27%). The owner found the first version (record 70px out,
+   - **Built: a turntable and a tonearm that is the progress bar.** Only when
+     the video is the whole album — 36 of 423 albums (~9%) since 2026-10-07;
+     a one-song day gets the plain player. Open item 3's refetch is what
+     would add more. Not on the list though maybe whole: two Tiny Desk
+     concerts the audit reports `UNVERIFIED` (under 20 minutes, no
+     tracklist), which `--record` would drop if added by hand; the audit
+     needs a rule for a full session first. The owner found the first version (record 70px out,
      arm squeezed beside it) cramped and asked for more room: the record now
      comes all the way out onto a platter on a silver deck, 40px clear of the
      details. Below ~800px wide the details wrap under the deck on audio

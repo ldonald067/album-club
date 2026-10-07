@@ -2,11 +2,15 @@
  * Audit every stored youtubeId: does it play, is it the whole album, and if it
  * is one song — is that song even on this album?
  *
- * Usage: node scripts/audit-youtube-ids.mjs [--albums path.json] [--json out.json]
+ * Usage: node scripts/audit-youtube-ids.mjs [--albums path.json] [--json out.json] [--record]
  *
  *   --albums  audit a different catalog file — e.g. a candidate refetch, before
  *             it is copied over lib/albums.json. Defaults to lib/albums.json.
  *   --json    also write the full per-video results to a file.
+ *   --record  rewrite lib/full-album-videos.json from this run's FULL_ALBUM
+ *             verdicts — the list the hero's turntable is gated on (see
+ *             lib/full-album-videos.js). Refused if any lookup errored, since
+ *             an errored id would silently lose its turntable.
  *
  * No API key. Three sources per video: YouTube oEmbed (title, and whether the
  * video exists), the public watch page (length, and its playability status),
@@ -15,7 +19,8 @@
  * User-Agent that identifies the caller; both are honoured. A full run over
  * ~115 ids takes about four minutes.
  *
- * READ-ONLY. It never edits the catalog. Removing an id is a decision a person
+ * READ-ONLY on the catalog. It never edits it; --record writes only the
+ * full-album list beside it. Removing an id is a decision a person
  * makes after reading the report — see the verdicts below and the history in
  * docs/album-data.md.
  *
@@ -66,6 +71,8 @@ const albumsPath = path.resolve(
   argValue("--albums") || path.join(rootDir, "lib", "albums.json"),
 );
 const jsonOut = argValue("--json");
+const record = args.includes("--record");
+const fullAlbumsPath = path.join(rootDir, "lib", "full-album-videos.json");
 const albums = JSON.parse(fs.readFileSync(albumsPath, "utf8"));
 const facts = JSON.parse(
   fs.readFileSync(path.join(rootDir, "lib", "album-facts.json"), "utf8"),
@@ -344,6 +351,39 @@ for (const v of [
 if (jsonOut) {
   fs.writeFileSync(jsonOut, JSON.stringify(results, null, 2) + "\n");
   console.log(`\nFull results: ${jsonOut}`);
+}
+
+/* Only FULL_ALBUM goes on the list: a KEPT film or an UNVERIFIED long upload
+   may be the album's music without being the album played through, and the
+   turntable's arm, its song rings and "heard all the way through" all claim
+   exactly that. Keyed like KEPT_AFTER_REVIEW, so a refetched or reassigned id
+   drops off the list rather than inheriting another video's verdict. */
+if (record) {
+  if (counts.ERROR) {
+    console.log(
+      `\n--record refused: ${counts.ERROR} id(s) errored, and recording now would drop them. Re-run.`,
+    );
+  } else {
+    const today = new Date().toISOString().slice(0, 10);
+    const list = Object.fromEntries(
+      results
+        .filter((r) => r.verdict === "FULL_ALBUM")
+        .map((r) => [
+          `${r.artist}::${r.album}::${r.id}`,
+          {
+            videoTitle: r.videoTitle,
+            videoMinutes: r.videoMinutes,
+            albumMinutes: r.albumMinutes,
+            checked: today,
+          },
+        ])
+        .sort(([a], [b]) => a.localeCompare(b)),
+    );
+    fs.writeFileSync(fullAlbumsPath, JSON.stringify(list, null, 2) + "\n");
+    console.log(
+      `\nRecorded ${Object.keys(list).length} full-album videos in ${path.relative(rootDir, fullAlbumsPath)}.`,
+    );
+  }
 }
 
 if (counts.ERROR) {

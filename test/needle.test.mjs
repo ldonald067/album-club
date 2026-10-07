@@ -4,6 +4,7 @@ import {
   readNeedle,
   writeNeedle,
   clearNeedle,
+  heardBetween,
   heardThrough,
   readFullPlays,
   recordFullPlay,
@@ -81,4 +82,17 @@ test("the same album heard twice counts once", () => {
   ]);
   localStorage.setItem(FULL_PLAYS_KEY, '{"not":"a list"}');
   assert.deepEqual(readFullPlays(), []);
+});
+
+test("listening is measured from the player's clock, and a seek is not heard", () => {
+  assert.equal(heardBetween(10, 10.5, 0.5), 0.5, "a normal tick");
+  assert.equal(
+    heardBetween(10, 11, 1),
+    1,
+    "a tab slowed to one tick a second still counts the whole second",
+  );
+  assert.equal(heardBetween(10, 70, 60), 60, "a minute between ticks");
+  assert.equal(heardBetween(10, 600, 0.5), 0, "a seek forward");
+  assert.equal(heardBetween(600, 10, 0.5), 0, "a seek back");
+  assert.equal(heardBetween(10, NaN, 0.5), 0, "no reading");
 });

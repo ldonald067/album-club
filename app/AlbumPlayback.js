@@ -12,6 +12,7 @@ import {
   readNeedle,
   writeNeedle,
   clearNeedle,
+  heardBetween,
   heardThrough,
 } from "@/lib/needle";
 
@@ -39,6 +40,8 @@ const RUNOUT_MS = 7000;
 const TICK_MS = 500;
 // The needle is remembered every few ticks rather than on every one
 const SAVE_EVERY_TICKS = 4;
+// A needle lifted in the first two seconds is not worth putting back
+const NEEDLE_MIN_S = 2;
 
 /* getListenUrl returns the stored video URL whenever an id exists, which is
    exactly wrong on the failure path: a deleted, private or region-blocked video
@@ -90,6 +93,8 @@ export default function AlbumPlayback({
   const durationRef = useRef(0);
   // A remembered spot that the first Play should start from
   const resumeRef = useRef(0);
+  // The player's clock and the wall clock when listening was last counted
+  const heardMarkRef = useRef(null);
 
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -106,11 +111,24 @@ export default function AlbumPlayback({
   const finishRef = useRef(onPlayedThrough);
   finishRef.current = onPlayedThrough;
 
+  /** Count what was heard since the last count (lib/needle.js), and start
+      the next one from here if the record is still playing. */
+  const countHeard = useCallback((stillPlaying) => {
+    const t = playerRef.current?.getCurrentTime?.();
+    const mark = heardMarkRef.current;
+    const now = performance.now();
+    if (mark && Number.isFinite(t)) {
+      heardRef.current += heardBetween(mark.t, t, (now - mark.at) / 1000);
+    }
+    heardMarkRef.current =
+      stillPlaying && Number.isFinite(t) ? { t, at: now } : null;
+  }, []);
+
   /** Remember where the needle is, if it is somewhere worth returning to. */
   const rememberNeedle = useCallback(() => {
     const player = playerRef.current;
     const t = player?.getCurrentTime?.() || 0;
-    if (t > 2 && durationRef.current > 0) {
+    if (t > NEEDLE_MIN_S && durationRef.current > 0) {
       writeNeedle(
         getTodayKey(),
         album.youtubeId,
@@ -137,6 +155,7 @@ export default function AlbumPlayback({
     setElapsed(0);
     setDuration(0);
     heardRef.current = 0;
+    heardMarkRef.current = null;
     durationRef.current = 0;
     resumeRef.current = 0;
 
@@ -145,7 +164,7 @@ export default function AlbumPlayback({
        (see toggle), because cueing the player there instead would need
        seekTo, and seekTo on a cued video starts it playing by itself. */
     const saved = readNeedle(getTodayKey(), album.youtubeId);
-    if (saved && saved.t > 2 && saved.d > saved.t + 3) {
+    if (saved && saved.t > NEEDLE_MIN_S && saved.d > saved.t + 3) {
       resumeRef.current = saved.t;
       heardRef.current = saved.heard;
       durationRef.current = saved.d;
@@ -170,6 +189,12 @@ export default function AlbumPlayback({
       }
       playerRef.current = null;
       setFailed(true);
+      /* And the record goes back in its sleeve: a needle remembered from
+         earlier today had put it on the platter, paused, where it would sit
+         with no way left to play it. */
+      setPlaying(false);
+      setStarted(false);
+      setRunout(false);
     };
 
     function initPlayer() {
@@ -203,6 +228,8 @@ export default function AlbumPlayback({
             if (cancelled) return;
             const state = event.data;
             const PS = window.YT.PlayerState;
+            // Up to the moment it stopped, or from the moment it started
+            countHeard(state === PS.PLAYING);
             setPlaying(state === PS.PLAYING);
             if (state === PS.PLAYING) {
               setStarted(true);
@@ -266,7 +293,7 @@ export default function AlbumPlayback({
       }
       playerRef.current = null;
     };
-  }, [hasAudio, album.youtubeId, rememberNeedle]);
+  }, [hasAudio, album.youtubeId, rememberNeedle, countHeard]);
 
   // Leaving the page keeps the spot too: closing the tab, or a phone putting
   // the page away, which fires visibilitychange more reliably than pagehide.
@@ -310,9 +337,9 @@ export default function AlbumPlayback({
     progressRef.current?.(duration > 0 ? elapsed / duration : 0);
   }, [elapsed, duration]);
 
-  /* Only tick while something is actually playing. Each tick is also half a
-     second heard — wall-clock time while the player says PLAYING, so a seek
-     forward adds nothing — and every few ticks the needle is remembered. */
+  /* Only tick while something is actually playing. Each tick also counts
+     what was heard since the last — how far the player's clock moved, so a
+     seek adds nothing — and every few ticks the needle is remembered. */
   useEffect(() => {
     clearInterval(tickRef.current);
     if (!playing) return undefined;
@@ -320,7 +347,7 @@ export default function AlbumPlayback({
     tickRef.current = setInterval(() => {
       const player = playerRef.current;
       if (!player?.getCurrentTime) return;
-      heardRef.current += TICK_MS / 1000;
+      countHeard(true);
       setElapsed(player.getCurrentTime() || 0);
       if (!duration && player.getDuration) {
         const d = player.getDuration() || 0;
@@ -330,7 +357,7 @@ export default function AlbumPlayback({
       if (++ticks % SAVE_EVERY_TICKS === 0) rememberNeedle();
     }, TICK_MS);
     return () => clearInterval(tickRef.current);
-  }, [playing, duration, rememberNeedle]);
+  }, [playing, duration, rememberNeedle, countHeard]);
 
   const toggle = useCallback(() => {
     const player = playerRef.current;
@@ -360,6 +387,7 @@ export default function AlbumPlayback({
     setStarted(false);
     clearNeedle();
     heardRef.current = 0;
+    heardMarkRef.current = null;
     resumeRef.current = 0;
   }, []);
 
@@ -369,12 +397,15 @@ export default function AlbumPlayback({
   useImperativeHandle(
     controlRef,
     () => ({
-      ready: ready && !failed && Boolean(playerRef.current),
+      // And only once the album's length is known: a drop is a fraction of it
+      ready: ready && !failed && Boolean(playerRef.current) && duration > 0,
       drop(fraction) {
         const player = playerRef.current;
         const d = durationRef.current;
         if (!player || !d) return;
         const t = Math.min(d - 1, Math.max(0, fraction * d));
+        // Nothing this early is saved, so forget the old spot instead
+        if (t <= NEEDLE_MIN_S) clearNeedle();
         clearTimeout(runoutTimerRef.current);
         setRunout(false);
         resumeRef.current = 0;
@@ -387,7 +418,7 @@ export default function AlbumPlayback({
       },
       stop,
     }),
-    [ready, failed, playing, stop],
+    [ready, failed, playing, duration, stop],
   );
 
   /* Same fallback as an album with no id at all: whether the catalog never had
@@ -457,6 +488,9 @@ export default function AlbumPlayback({
           const value = Number(e.target.value);
           setElapsed(value);
           resumeRef.current = 0;
+          // Back to the start forgets the old spot: nothing this early is
+          // saved, so a reload would otherwise put the needle back there
+          if (value <= NEEDLE_MIN_S) clearNeedle();
           playerRef.current?.seekTo?.(value, true);
         }}
       />

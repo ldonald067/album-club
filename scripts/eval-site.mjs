@@ -1066,6 +1066,45 @@ failures += printGuardrail(
     : "Only HTML 4 entities, which decode; everything else is a real character.",
 );
 
+/* The turntable claims the whole album: an arm that crosses every song ring,
+   needle drops by song position, "heard all the way through". Most stored
+   videos are one song, so it is gated on the audit's FULL_ALBUM list
+   (lib/full-album-videos.js), keyed on artist, album and id. An entry that no
+   longer matches the catalog means an id or a title changed since the audit
+   ran: harmless on the page — that album just loses its deck — but the list
+   is stale, and a new whole-album video would go unnoticed. */
+const fullAlbumVideos = readJson(
+  path.join(rootDir, "lib", "full-album-videos.json"),
+);
+const catalogVideoKeys = new Set(
+  albums
+    .filter((album) => album.youtubeId)
+    .map((album) => `${album.artist}::${album.title}::${album.youtubeId}`),
+);
+const staleFullAlbums = Object.keys(fullAlbumVideos).filter(
+  (key) => !catalogVideoKeys.has(key),
+);
+const deckProblems = [
+  ...staleFullAlbums.map(
+    (key) =>
+      `lib/full-album-videos.json lists ${key}, which the catalog no longer has`,
+  ),
+  ...(sectionPageSource.includes("playsWholeAlbum={playsWholeAlbum(")
+    ? []
+    : ["app/section-page.js no longer passes playsWholeAlbum"]),
+  ...(/hasDeck \? " has-deck"/.test(forumSource)
+    ? []
+    : ["ForumPage's has-deck is no longer gated on hasDeck"]),
+];
+deckProblems.forEach((p) => console.log(`  ! ${p}`));
+failures += printGuardrail(
+  deckProblems.length === 0,
+  "The turntable shows only for a video the audit found whole",
+  deckProblems.length
+    ? "Re-run `npm run audit-youtube-ids -- --record` after any youtubeId or title change."
+    : `${Object.keys(fullAlbumVideos).length} of ${catalogVideoKeys.size} stored videos are whole albums — the turntable's days.`,
+);
+
 printSection("Manual checklist");
 [
   "Check the forum at 375px wide and make sure the activity cards still breathe.",
