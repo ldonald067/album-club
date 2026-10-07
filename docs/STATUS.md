@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-10-01.
+session. Last updated: 2026-10-07.
 
 This file holds **current state, open items and standing decisions** only.
 How things work lives in the topic docs; what happened and when lives in git
@@ -13,7 +13,17 @@ it used to carry).
 **Nothing is in flight.** `master` is clean and deployed. `GET /api/health`
 returns the running commit SHA — it should match `git rev-parse --short
 origin/master` — and `uptimeSeconds` should climb. No PRs are open; `master`
-is the only branch, locally and on GitHub.
+is the only branch, locally and on GitHub. Checked 2026-10-07: production had
+run the turntable build for six days without a restart, and today's album
+(_Daydream Nation_) has audio, so the deck is live on the home page.
+
+**Keep each chat under ~300k tokens of context.** The owner is on the Pro
+plan and was hitting the 5-hour limit too soon: every message re-reads the
+whole context, and one session at ~400k had used 43% of a fresh 5-hour window.
+A new chat here starts at ~60k. Check the size with the ccd `get_usage` tool;
+at ~300k, write the handoff here, commit, push, and start a new chat. Keep
+context lean on the way: this file first, files read by range, page text over
+screenshots, and a `pattern` or `limit` on `read_console_messages`.
 
 **Several Claude sessions share this folder's working tree.** That is now
 guarded: broad staging (`git add -A`, `.`, `-u`, `git commit -a`) is blocked
@@ -60,7 +70,8 @@ were cut to current state.
 
 1. **One phone check** — tap through the Blind Taste Test on an iPhone and an
    Android phone, and while there, on an audio day, press Play, tap the
-   grooves and drag the tonearm with a finger (open item 2).
+   grooves and drag the tonearm with a finger (open item 2). Audio days
+   coming up: 10-07, 10-09, and 10-13 through 10-16.
 2. The catalog audit's remainder (open item 1), then everything else below.
 
 Two open actions need a human rather than code: **nobody has put the link
