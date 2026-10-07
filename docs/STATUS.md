@@ -21,7 +21,8 @@ adversarial review (Codex) found the deck, the arm and "heard all the way
 through" switched on for any `youtubeId` — and 72 of the 113 stored videos
 are one song, today's _Daydream Nation_ among them. It is now gated on the
 audit's `FULL_ALBUM` verdicts (36 videos) and, added the same day, its
-`FULL_SESSION` rule for a Tiny Desk set played whole (2 more), recorded by
+`FULL_SESSION` rule for a Tiny Desk, Boiler Room or KEXP set played whole
+(the 2 Tiny Desk sets more; the 2 Boiler Room sets already passed), recorded by
 `npm run audit-youtube-ids -- --record` in `lib/full-album-videos.json`;
 `eval-site` fails when that list goes stale, so **re-record after any
 `youtubeId` or title change**. One-song days keep the plain player. Fixed
@@ -196,9 +197,10 @@ docs.
      single (fine under the mixes ruling). _Madvillainy_ stays 2004, the
      official release; MusicBrainz dates the 2002 leak. A year fix does not
      break recorded days; a rename or removal does.
-   - **Real but unconfirmed (35):** 9 named sessions (Boiler Room, Essential
+   - **Real but unconfirmed (33):** 7 named sessions (Boiler Room, Essential
      Mix, Cercle, KEXP — confirm each performance exists; both Tiny Desk sets
-     are confirmed by NPR Music's own uploads, 2026-10-07), 24 real
+     and Boiler Room Tokyo and Montreal are confirmed by the series' own
+     uploads, 2026-10-07), 24 real
      artists whose release is under a native-script title (mostly the anime
      soundtracks), 2 Various Artists compilations under shortened titles
      (_Tropicália_, _EGOLI_). Confirm when convenient.
@@ -280,11 +282,11 @@ docs.
    - **Built: a turntable and a tonearm that is the progress bar.** Only when
      the video is the whole album — 38 of 423 albums (~9%) since 2026-10-07;
      a one-song day gets the plain player. Open item 3's refetch is what
-     would add more. The two Tiny Desk sets qualify too, through the
-     audit's `FULL_SESSION` rule (NPR Music's own upload, titled as the
-     artist's Tiny Desk Concert, 10+ minutes). The owner found the first
-     version (record 70px out,
-     arm squeezed beside it) cramped and asked for more room: the record now
+     would add more. Sessions qualify through the audit's `FULL_SESSION`
+     rule — Tiny Desk, Boiler Room and KEXP sets as the series posted them;
+     KEXP's full Khruangbin performance (`0PsOJ_fRckg`, 35.7 min) passes it
+     if someone wants that entry to have audio. The owner found the first
+     version (record 70px out, arm squeezed beside it) cramped and asked for more room: the record now
      comes all the way out onto a platter on a silver deck, 40px clear of the
      details. Below ~800px wide the details wrap under the deck on audio
      days, as on phones.

@@ -1102,7 +1102,7 @@ failures += printGuardrail(
   "The turntable shows only for a video the audit found whole",
   deckProblems.length
     ? "Re-run `npm run audit-youtube-ids -- --record` after any youtubeId or title change."
-    : `${Object.keys(fullAlbumVideos).length} of ${catalogVideoKeys.size} stored videos are a whole album or Tiny Desk set — the turntable's days.`,
+    : `${Object.keys(fullAlbumVideos).length} of ${catalogVideoKeys.size} stored videos are a whole album or session — the turntable's days.`,
 );
 
 printSection("Manual checklist");

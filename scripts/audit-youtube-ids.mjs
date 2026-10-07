@@ -44,13 +44,13 @@
  *                    20+ minutes when no runtime is known — AND its title
  *                    names the album, or two of its tracks. Length alone
  *                    passed any long upload (review finding, 2026-09-26).
- *   FULL_SESSION     a Tiny Desk entry ("NPR Tiny Desk: Mac Miller") whose
- *                    video is NPR Music's own upload, titled as the artist's
- *                    Tiny Desk Concert, and 10+ minutes — a set, not a song.
- *                    The entry IS the session, so there is no album runtime
- *                    to compare, and a set runs under FULL_ALBUM's 20-minute
- *                    fallback: both of the catalog's were UNVERIFIED before
- *                    this rule (2026-10-07).
+ *   FULL_SESSION     a Tiny Desk, Boiler Room or KEXP entry whose video is
+ *                    that series' own upload, titled as the whole set, and
+ *                    long enough to be one — see SESSIONS. The entry IS the
+ *                    session, so there is no album runtime to compare, a set
+ *                    can run under FULL_ALBUM's 20-minute fallback, and its
+ *                    title rarely repeats the catalog's: both Tiny Desk sets
+ *                    were UNVERIFIED before this rule (2026-10-07).
  *   SONG_THIS_ALBUM  shorter, and the title names a track on this album.
  *   CLIP             under a minute and names no track: a teaser or a stub.
  *                    (A real short song still matches its track and passes —
@@ -218,20 +218,53 @@ const isDead = (oe, page) =>
   (page.playability && page.playability !== "OK") ||
   page.seconds === null;
 
-/* A Tiny Desk session played whole. All four, because each alone is weak: a
-   fan re-upload can copy the title but not the channel, the length is what
-   tells a set from one song lifted out of it, and a long video under a Tiny
-   Desk entry could be anything. Matched on the normalised title, so "Tiny Desk (Home) Concert"
-   counts too. */
-const TINY_DESK_CHANNEL = "NPR Music";
-const TINY_DESK_MIN_MINUTES = 10;
-const isFullTinyDesk = (album, oe, page) =>
-  /\btiny desk\b/i.test(album.title) &&
-  oe.channel === TINY_DESK_CHANNEL &&
+/* A named session played whole, as the series itself posted it. For each:
+   the catalog entry names the series, the video is the series' own upload,
+   its title says it is the whole set, and it runs long enough to be one. All
+   four, because each alone is weak: a fan re-upload can copy the title but
+   not the channel, the length tells a set from one song lifted out of it,
+   and a long video under a session entry could be anything. `title` is the
+   upload's title normalised and padded with spaces, so `has` matches whole
+   words and "Tiny Desk (Home) Concert" counts too. */
+const has = (title, words) => title.includes(` ${norm(words)} `);
+const SESSIONS = [
+  {
+    // "NPR Tiny Desk: Mac Miller" — "Mac Miller: NPR Music Tiny Desk Concert"
+    entry: /\btiny desk\b/i,
+    channel: "NPR Music",
+    minMinutes: 10,
+    whole: (title, album) =>
+      / tiny desk (home )?concert /.test(title) && has(title, album.artist),
+  },
+  {
+    /* "Boiler Room: Montreal" — "Kaytranada | Boiler Room: Montreal". Named
+       by the entry, not the artist: a city's night is "Various Artists".
+       Sets run 40+ minutes; a shorter upload is a clip of one. */
+    entry: /\bboiler room\b/i,
+    channel: "Boiler Room",
+    minMinutes: 20,
+    whole: (title, album) => has(title, album.title),
+  },
+  {
+    /* "KEXP Live Sessions: Khruangbin" — "Khruangbin - Full Performance (Live
+       on KEXP)". Each song of a session is also posted on its own, as
+       "Khruangbin - White Gloves ii (Live on KEXP)". */
+    entry: /\bkexp\b/i,
+    channel: "KEXP",
+    minMinutes: 10,
+    whole: (title, album) =>
+      / full performance /.test(title) && has(title, album.artist),
+  },
+];
+const isFullSession = (album, oe, page) =>
   Boolean(oe.title) &&
-  / tiny desk (home )?concert /.test(` ${norm(oe.title)} `) &&
-  ` ${norm(oe.title)} `.includes(` ${norm(album.artist)} `) &&
-  page.seconds >= TINY_DESK_MIN_MINUTES * 60;
+  SESSIONS.some(
+    (session) =>
+      session.entry.test(album.title) &&
+      oe.channel === session.channel &&
+      page.seconds >= session.minMinutes * 60 &&
+      session.whole(` ${norm(oe.title)} `, album),
+  );
 
 const isLong = (page, albumMinutes) => {
   const minutes = page.seconds / 60;
@@ -304,7 +337,7 @@ for (const [i, album] of withId.entries()) {
       matched,
       albumMinutes,
       albumNamed,
-      fullSession: isFullTinyDesk(album, oe, page),
+      fullSession: isFullSession(album, oe, page),
     });
     verdict =
       keptNote &&

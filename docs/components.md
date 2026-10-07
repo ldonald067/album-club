@@ -111,7 +111,7 @@ disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
   crossed every song ring during one track and one song counted as "heard all
   the way through". `section-page.js` now passes `playsWholeAlbum`, looked up
   in `lib/full-album-videos.json` — the audit's `FULL_ALBUM` verdicts, and
-  `FULL_SESSION` for a Tiny Desk set played whole, written
+  `FULL_SESSION` for a Tiny Desk, Boiler Room or KEXP set played whole, written
   by `npm run audit-youtube-ids -- --record` and keyed on artist, album and
   id, so a changed id loses the deck rather than inheriting a verdict.
   `eval-site` fails when the list goes stale. A one-song day keeps the plain
