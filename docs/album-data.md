@@ -32,9 +32,15 @@
   - **A long upload counts as the full album only if its title names the album or two of its tracks** (since 2026-09-28); length alone passed any 30–60 minute video. Reviewed exceptions in `KEPT_AFTER_REVIEW` are keyed on artist, album and id, so an approved film copied under another album is flagged there.
   - **Its `FULL_ALBUM` verdicts decide the hero's turntable** (2026-10-07).
     `npm run audit-youtube-ids -- --record` rewrites
-    `lib/full-album-videos.json` from them — only `FULL_ALBUM`, never a
-    `KEPT` film or an `UNVERIFIED` long upload — and refuses if a lookup
-    errored. **Re-record after any `youtubeId` or title change**, including a
+    `lib/full-album-videos.json` from them — only `FULL_ALBUM` and
+    `FULL_SESSION`, never a `KEPT` film or an `UNVERIFIED` long upload — and
+    refuses if a lookup errored. `FULL_SESSION` (2026-10-07) is a Tiny Desk
+    entry whose video is NPR Music's own upload, titled as the artist's Tiny
+    Desk Concert, and 10+ minutes: the entry is the session, so there is no
+    album runtime to compare, and a set runs under `FULL_ALBUM`'s 20-minute
+    fallback. Checked against decoys from real ids — another channel's video,
+    the set filed under another artist, the set filed under a studio album —
+    which all stay `UNVERIFIED`. **Re-record after any `youtubeId` or title change**, including a
     refetch: entries are keyed on artist, album and id, so a changed id loses
     its turntable, and `eval-site` fails until the list is re-recorded.
   - **Re-run it with `npm run audit-youtube-ids`** (read-only, ~4 minutes, exits 1 if anything is dead, a clip or from the wrong album). Videos keep dying after they are stored, so this is worth running now and then. `--albums <file>` audits a candidate catalog — use it on the output of a refetch **before** copying it over `lib/albums.json`. A DEAD verdict comes from the watch page's playability status, a proxy; confirm in a browser that the IFrame player really fires `onError` before removing an id.

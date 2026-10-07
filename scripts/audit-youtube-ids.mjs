@@ -8,7 +8,8 @@
  *             it is copied over lib/albums.json. Defaults to lib/albums.json.
  *   --json    also write the full per-video results to a file.
  *   --record  rewrite lib/full-album-videos.json from this run's FULL_ALBUM
- *             verdicts — the list the hero's turntable is gated on (see
+ *             and FULL_SESSION verdicts — the list the hero's turntable is
+ *             gated on (see
  *             lib/full-album-videos.js). Refused if any lookup errored, since
  *             an errored id would silently lose its turntable.
  *
@@ -43,6 +44,13 @@
  *                    20+ minutes when no runtime is known — AND its title
  *                    names the album, or two of its tracks. Length alone
  *                    passed any long upload (review finding, 2026-09-26).
+ *   FULL_SESSION     a Tiny Desk entry ("NPR Tiny Desk: Mac Miller") whose
+ *                    video is NPR Music's own upload, titled as the artist's
+ *                    Tiny Desk Concert, and 10+ minutes — a set, not a song.
+ *                    The entry IS the session, so there is no album runtime
+ *                    to compare, and a set runs under FULL_ALBUM's 20-minute
+ *                    fallback: both of the catalog's were UNVERIFIED before
+ *                    this rule (2026-10-07).
  *   SONG_THIS_ALBUM  shorter, and the title names a track on this album.
  *   CLIP             under a minute and names no track: a teaser or a stub.
  *                    (A real short song still matches its track and passes —
@@ -210,13 +218,37 @@ const isDead = (oe, page) =>
   (page.playability && page.playability !== "OK") ||
   page.seconds === null;
 
+/* A Tiny Desk session played whole. All four, because each alone is weak: a
+   fan re-upload can copy the title but not the channel, the length is what
+   tells a set from one song lifted out of it, and a long video under a Tiny
+   Desk entry could be anything. Matched on the normalised title, so "Tiny Desk (Home) Concert"
+   counts too. */
+const TINY_DESK_CHANNEL = "NPR Music";
+const TINY_DESK_MIN_MINUTES = 10;
+const isFullTinyDesk = (album, oe, page) =>
+  /\btiny desk\b/i.test(album.title) &&
+  oe.channel === TINY_DESK_CHANNEL &&
+  Boolean(oe.title) &&
+  / tiny desk (home )?concert /.test(` ${norm(oe.title)} `) &&
+  ` ${norm(oe.title)} `.includes(` ${norm(album.artist)} `) &&
+  page.seconds >= TINY_DESK_MIN_MINUTES * 60;
+
 const isLong = (page, albumMinutes) => {
   const minutes = page.seconds / 60;
   return albumMinutes ? minutes >= albumMinutes * 0.5 : minutes >= 20;
 };
 
-function verdictFor({ oe, page, tracks, matched, albumMinutes, albumNamed }) {
+function verdictFor({
+  oe,
+  page,
+  tracks,
+  matched,
+  albumMinutes,
+  albumNamed,
+  fullSession,
+}) {
   if (isDead(oe, page)) return "DEAD";
+  if (fullSession) return "FULL_SESSION";
   if (isLong(page, albumMinutes)) {
     // Long enough, and something ties it to this album: its title, or two
     // of its tracks named in the upload's title
@@ -272,6 +304,7 @@ for (const [i, album] of withId.entries()) {
       matched,
       albumMinutes,
       albumNamed,
+      fullSession: isFullTinyDesk(album, oe, page),
     });
     verdict =
       keptNote &&
@@ -315,6 +348,7 @@ const ORDER = [
   "KEPT",
   "SONG_THIS_ALBUM",
   "FULL_ALBUM",
+  "FULL_SESSION",
 ];
 const counts = Object.fromEntries(ORDER.map((v) => [v, 0]));
 for (const r of results) counts[r.verdict]++;
@@ -353,10 +387,10 @@ if (jsonOut) {
   console.log(`\nFull results: ${jsonOut}`);
 }
 
-/* Only FULL_ALBUM goes on the list: a KEPT film or an UNVERIFIED long upload
-   may be the album's music without being the album played through, and the
-   turntable's arm, its song rings and "heard all the way through" all claim
-   exactly that. Keyed like KEPT_AFTER_REVIEW, so a refetched or reassigned id
+/* Only FULL_ALBUM and FULL_SESSION go on the list: a KEPT film or an
+   UNVERIFIED long upload may be the album's music without being the album
+   played through, and the turntable's arm, its song rings and "heard all the
+   way through" all claim exactly that. Keyed like KEPT_AFTER_REVIEW, so a refetched or reassigned id
    drops off the list rather than inheriting another video's verdict. */
 if (record) {
   if (counts.ERROR) {
@@ -367,10 +401,11 @@ if (record) {
     const today = new Date().toISOString().slice(0, 10);
     const list = Object.fromEntries(
       results
-        .filter((r) => r.verdict === "FULL_ALBUM")
+        .filter((r) => ["FULL_ALBUM", "FULL_SESSION"].includes(r.verdict))
         .map((r) => [
           `${r.artist}::${r.album}::${r.id}`,
           {
+            verdict: r.verdict,
             videoTitle: r.videoTitle,
             videoMinutes: r.videoMinutes,
             albumMinutes: r.albumMinutes,

@@ -1068,8 +1068,8 @@ failures += printGuardrail(
 
 /* The turntable claims the whole album: an arm that crosses every song ring,
    needle drops by song position, "heard all the way through". Most stored
-   videos are one song, so it is gated on the audit's FULL_ALBUM list
-   (lib/full-album-videos.js), keyed on artist, album and id. An entry that no
+   videos are one song, so it is gated on the audit's FULL_ALBUM and
+   FULL_SESSION list (lib/full-album-videos.js), keyed on artist, album and id. An entry that no
    longer matches the catalog means an id or a title changed since the audit
    ran: harmless on the page — that album just loses its deck — but the list
    is stale, and a new whole-album video would go unnoticed. */
@@ -1102,7 +1102,7 @@ failures += printGuardrail(
   "The turntable shows only for a video the audit found whole",
   deckProblems.length
     ? "Re-run `npm run audit-youtube-ids -- --record` after any youtubeId or title change."
-    : `${Object.keys(fullAlbumVideos).length} of ${catalogVideoKeys.size} stored videos are whole albums — the turntable's days.`,
+    : `${Object.keys(fullAlbumVideos).length} of ${catalogVideoKeys.size} stored videos are a whole album or Tiny Desk set — the turntable's days.`,
 );
 
 printSection("Manual checklist");
