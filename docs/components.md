@@ -114,10 +114,35 @@ disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
   `FULL_SESSION` for a Tiny Desk, Boiler Room or KEXP set played whole, written
   by `npm run audit-youtube-ids -- --record` and keyed on artist, album and
   id, so a changed id loses the deck rather than inheriting a verdict.
-  `eval-site` fails when the list goes stale. A one-song day keeps the plain
-  player, and the record comes 40px out of its sleeve (28px on phones) to
-  play, as it did before the turntable (`.has-player`).
-- **A turntable beside the sleeve (2026-10-01).** On whole-album days the hero
+  `eval-site` fails when the list goes stale. A one-song video the audit
+  could not place on the record (below) keeps the plain player, and the
+  record comes 40px out of its sleeve (28px on phones) to play, as it did
+  before the turntable (`.has-player`).
+- **Song days get the turntable too (2026-10-08).** The owner found a deck on
+  only the whole-album days "no fun" and chose: one-song days get it, with
+  the needle on that song's own groove. `section-page.js` passes `albumSong`
+  — `{ track, of, title }` from `lib/song-videos.json`, which the same audit
+  `--record` writes only for a song it can place for certain
+  (`docs/album-data.md`), and only while `of` is the count the rings are
+  drawn from. `AlbumPlayback` keeps working in fractions of its video;
+  `ForumPage` maps them onto the band: track k of n is album progress
+  (k−1)/n to k/n, so p of the way through the song is (k−1+p)/n
+  (`songToAlbum` / `albumToSong` in `lib/tonearm.js`, tested against the lit
+  band's radii). On a song day:
+  - **The song's band is lit** (`.vinyl-song`, `--vinyl-song`, a layer of
+    the disc from `songBandGradient` in `lib/vinyl-bands.js`) and named —
+    "track 1 of 12, Teen Age Riot" — in the record's hint and above the
+    transport, whose Play and seek bar are labelled with the song, not the
+    album.
+  - **A click off the band spins the record**, as the label does: there is
+    nothing there to play. A dragged arm moves freely and is let down inside
+    the band, at its nearer edge if released beyond it.
+  - **The end of the song is not the end of the record:** no run-out and no
+    "heard all the way through" — the arm rests at the band's inner edge for
+    the run-out's seven seconds while the record turns, then goes home.
+    `eval-site` fails if the run-out or the award stop being whole-album
+    only.
+- **A turntable beside the sleeve (2026-10-01).** On turntable days the hero
   shows a silver deck — plinth, a platter with a strobe-dotted rim and a felt
   slipmat in the club's navy and gold, and a tonearm. Play slides the record
   all the way out of the sleeve onto the platter (150px; 100px on phones, so
@@ -177,8 +202,9 @@ disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
   hovering over an empty platter — "paused" now slides it out too.
 - **Room is reserved only on turntable days.** Slid out, the disc covered 35px
   of the title. `.album-display.has-deck` adds a right margin from first
-  paint, set server-side from `playsWholeAlbum`, so nothing but the record and
-  the arm moves; one-song days reserve just their 40px (`.has-player`), and
+  paint, set server-side from `playsWholeAlbum` and `albumSong`, so nothing
+  but the record and the arm moves; unplaced one-song days reserve just their
+  40px (`.has-player`), and
   days without audio keep the plain sleeve and their tighter layout. The margin runs to the plinth's right edge, and the
   gap to the details is 40px. On phones the same margin centres the whole
   turntable rather than the sleeve. Below ~800px wide the details wrap under

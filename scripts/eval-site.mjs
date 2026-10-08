@@ -3,6 +3,7 @@ import path from "node:path";
 import { SOUNDTRACK_OVERRIDES } from "../lib/soundtrack-corner-data.js";
 import { SECTIONS } from "../app/sections.js";
 import { catalogFingerprint } from "../lib/catalog-fingerprint.js";
+import { MAX_TRACKS } from "../lib/vinyl-bands.js";
 import {
   buildSoundtrackCorner,
   getAngleLabel,
@@ -1072,7 +1073,13 @@ failures += printGuardrail(
    FULL_SESSION list (lib/full-album-videos.js), keyed on artist, album and id. An entry that no
    longer matches the catalog means an id or a title changed since the audit
    ran: harmless on the page — that album just loses its deck — but the list
-   is stale, and a new whole-album video would go unnoticed. */
+   is stale, and a new whole-album video would go unnoticed.
+
+   A one-song video gets the deck too when the audit placed it on the record
+   (lib/song-videos.js): then the needle claims one song's band instead, so
+   the entry must still fit the rings drawn today — the same track count as
+   lib/album-facts.json, inside the 2–20 the rings are drawn for — and the
+   run-out and "heard all the way through" must stay with whole albums. */
 const fullAlbumVideos = readJson(
   path.join(rootDir, "lib", "full-album-videos.json"),
 );
@@ -1084,25 +1091,60 @@ const catalogVideoKeys = new Set(
 const staleFullAlbums = Object.keys(fullAlbumVideos).filter(
   (key) => !catalogVideoKeys.has(key),
 );
+const songVideos = readJson(path.join(rootDir, "lib", "song-videos.json"));
+const songProblems = Object.entries(songVideos).flatMap(([key, entry]) => {
+  if (!catalogVideoKeys.has(key)) {
+    return [`lib/song-videos.json lists ${key}, which the catalog no longer has`];
+  }
+  if (Object.hasOwn(fullAlbumVideos, key)) {
+    return [`${key} is listed as both the whole album and one song`];
+  }
+  const tracks = albumFacts[key.split("::").slice(0, 2).join("::")]?.tracks;
+  const fits =
+    Number.isInteger(entry.of) &&
+    entry.of === tracks &&
+    entry.of >= 2 &&
+    entry.of <= MAX_TRACKS &&
+    Number.isInteger(entry.track) &&
+    entry.track >= 1 &&
+    entry.track <= entry.of &&
+    typeof entry.song === "string" &&
+    entry.song.length > 0;
+  return fits
+    ? []
+    : [
+        `lib/song-videos.json puts ${key} at track ${entry.track} of ${entry.of}, which the rings (${tracks ?? "none"}) cannot show`,
+      ];
+});
 const deckProblems = [
   ...staleFullAlbums.map(
     (key) =>
       `lib/full-album-videos.json lists ${key}, which the catalog no longer has`,
   ),
+  ...songProblems,
   ...(sectionPageSource.includes("playsWholeAlbum={playsWholeAlbum(")
     ? []
     : ["app/section-page.js no longer passes playsWholeAlbum"]),
+  ...(sectionPageSource.includes("albumSong={songOnRecord(")
+    ? []
+    : ["app/section-page.js no longer passes albumSong"]),
   ...(/hasDeck \? " has-deck"/.test(forumSource)
     ? []
     : ["ForumPage's has-deck is no longer gated on hasDeck"]),
+  ...(/deck === "runout" && wholeAlbum/.test(forumSource) &&
+  /heard && wholeAlbum/.test(forumSource)
+    ? []
+    : [
+        "ForumPage's run-out and full-play award are no longer kept to whole albums",
+      ]),
 ];
 deckProblems.forEach((p) => console.log(`  ! ${p}`));
 failures += printGuardrail(
   deckProblems.length === 0,
-  "The turntable shows only for a video the audit found whole",
+  "The turntable shows only for a video the audit found whole, or one song it placed",
   deckProblems.length
-    ? "Re-run `npm run audit-youtube-ids -- --record` after any youtubeId or title change."
-    : `${Object.keys(fullAlbumVideos).length} of ${catalogVideoKeys.size} stored videos are a whole album or session — the turntable's days.`,
+    ? "Re-run `npm run audit-youtube-ids -- --record` after any youtubeId, title or track-count change."
+    : `${Object.keys(fullAlbumVideos).length} of ${catalogVideoKeys.size} stored videos are a whole album or session, and ${Object.keys(songVideos).length} are one song placed on the record — the turntable's days.`,
 );
 
 printSection("Manual checklist");

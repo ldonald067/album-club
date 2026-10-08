@@ -34,6 +34,29 @@ the deck". On 2026-10-08 _Live at Pompeii_ came off the list: its video is only
 "Echoes", which passed because no runtime is known and the title names the
 album. The audit's `PART_AFTER_REVIEW` keeps it off on every re-record.
 
+**2026-10-08: song days get the turntable too** — the owner's call, after
+finding a deck on only the whole-album days "no fun". On a day whose video
+is one song, the deck plays just that song's band of the record: lit in the
+slipmat's gold, named ("track 2 of 12, The Bends") in the record's hint and
+above the transport, which no longer says "Play <album>" over one song. A
+click off the band spins the record; a dragged arm is let down inside the
+band; the song's end has no run-out and no "heard all the way through".
+**83 turntable days in the next year instead of 35** (48 song days) — not
+the ~110 estimated, because 14 of the 72 one-song videos cannot be placed
+for certain. `npm run audit-youtube-ids -- --record` now also writes
+`lib/song-videos.json` and prints every placement to read before committing
+it; **re-record after any `youtubeId`, title or track-count change**, or
+`eval-site` fails. The finding that shaped the rules: most one-song videos
+are the **title track** ("Prince - Purple Rain (Official Video)"), so a title
+naming only the album is placed when the video runs as long as that track —
+measured, nearly all are within 5%, and the three that are not (Thriller's
+13.7-minute film, a "360" video at twice the song, a 1.4-minute "ST. CHROMA"
+snippet) stay plain. Rules and the unplaced list in `docs/album-data.md`;
+the behaviour in `docs/components.md` → "The record on the deck". Verified
+in the browser on _The Bends_ (play, both clicks, drag, the end, reload),
+on a whole-album day (run-out intact), an unplaced day (plain player) and
+an anniversary pressing at 375px.
+
 **Keep each chat under ~300k tokens of context.** The owner is on the Pro
 plan and was hitting the 5-hour limit too soon: every message re-reads the
 whole context, and one session at ~400k had used 43% of a fresh 5-hour window.
@@ -85,44 +108,12 @@ were cut to current state.
 
 **Where to pick up, in this order:**
 
-1. **Build the song-day turntable — the owner's decision, 2026-10-08.** The
-   owner found a turntable on only 38 days "no fun" and chose, of three
-   options: **one-song days get the turntable too, with the needle on that
-   song's own groove.** Whole albums and sessions keep the full sweep and
-   the "heard all the way through" award; days without a video stay plain
-   (a deck with nothing to play was offered and not chosen). About 110 days
-   a year instead of 37. What was worked out before the handoff:
-   - **Which song, and where.** The audit's `SONG_THIS_ALBUM` verdict
-     already names the matched track (`matchedTracks`). Its position is
-     **not** in `tracklist()`'s output: that merges up to 25 editions into a
-     de-duplicated set, so its order is not the running order. Take the
-     position from one release whose track count equals `album-facts`'
-     `tracks` (the consensus the rings are drawn from). Record a song only
-     when exactly one track matched, that release exists, and the rings are
-     drawn (2–20 songs, `MAX_TRACKS` in `lib/vinyl-bands.js`); otherwise the
-     plain player — wrong data is worse than missing.
-   - **Where it lives.** A second list written by the same `--record` (say
-     `lib/song-videos.json`: track, of, song title), keyed on artist, album
-     and id like `lib/full-album-videos.json`; `section-page.js` passes it;
-     `eval-site` checks it the same way.
-   - **Geometry.** Track k of n is album progress (k−1)/n to k/n, so song
-     progress p is (k−1+p)/n — a helper in `lib/tonearm.js`, tested. The
-     mapping belongs in `ForumPage`; `AlbumPlayback` keeps working in video
-     fractions. A click outside the band spins the record (no drop); a drag
-     released on the record clamps into the band. At the song's end: no
-     run-out and no award — the arm rests at the band's inner edge while the
-     record turns out, then goes home.
-   - **Say which song.** Light the playing band (a `--vinyl-*` token, never a
-     hex) and name it — "track 1 of 12, Teen Age Riot" — in the record's
-     hint and by the player, which today says "Play Daydream Nation" over a
-     single song.
-   - **Verify** on a song day in the browser (10-09, 10-13 → 10-16 are song
-     days) and with a scratch list entry for a whole-album day.
-2. **One phone check** — tap through the Blind Taste Test on an iPhone and an
+1. **One phone check** — tap through the Blind Taste Test on an iPhone and an
    Android phone, and on a turntable day press Play, tap the grooves and
-   drag the tonearm with a finger (open item 2). Whole-album days coming up:
-   10-27 and 10-30; once item 1 is built, song days count too.
-3. The catalog audit's remainder (open item 1), then everything else below.
+   drag the tonearm with a finger (open item 2). Turntable days coming up:
+   song days 10-09, 10-13 → 10-15, 10-19, 10-29, 11-01; whole albums 10-27
+   and 10-30. On a song day only the gold band takes a tap.
+2. The catalog audit's remainder (open item 1), then everything else below.
 
 Two open actions need a human rather than code: **nobody has put the link
 anywhere** (open item 4), and **album audio needs a YouTube Data API key**
@@ -314,10 +305,11 @@ docs.
    `docs/components.md` → "The record on the deck".
    - **Built: grooves drawn from the tracklist.** One ring between each pair
      of songs. Rings on 328 of 423 albums; the rest honestly show none.
-   - **Built: a turntable and a tonearm that is the progress bar.** Only when
-     the video is the whole album — 37 of 423 albums (~9%) since 2026-10-08;
-     a one-song day gets the plain player. Open item 3's refetch is what
-     would add more. Sessions qualify through the audit's `FULL_SESSION`
+   - **Built: a turntable and a tonearm that is the progress bar.** When the
+     video is the whole album — 37 of 423 albums — or, since 2026-10-08, one
+     song the audit could place on the record (58 more): the needle then
+     plays only that song's band. The 14 one-song videos it cannot place get
+     the plain player. Open item 3's refetch is what would add more. Sessions qualify through the audit's `FULL_SESSION`
      rule — Tiny Desk, Boiler Room and KEXP sets as the series posted them;
      KEXP's full Khruangbin performance (`0PsOJ_fRckg`, 35.7 min) passes it
      if someone wants that entry to have audio. The owner found the first

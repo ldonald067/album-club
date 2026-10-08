@@ -51,6 +51,27 @@
     city and a Tiny Desk set filed under another artist do not. **Re-record after any `youtubeId` or title change**, including a
     refetch: entries are keyed on artist, album and id, so a changed id loses
     its turntable, and `eval-site` fails until the list is re-recorded.
+  - **Its `SONG_THIS_ALBUM` verdicts give song days a turntable too**
+    (2026-10-08). The same `--record` writes `lib/song-videos.json` — which
+    track of how many, and its title — for every one-song video `placeSong`
+    in the script can place, and prints each placement under "SONGS ON THE
+    RECORD"; **read that list before committing it**, as you would a lyrics
+    refill. A song is placed only when, after setting aside what the
+    artist's or album's name explains, the title names exactly one track;
+    the rings are drawn (2–20 songs, album-facts' count); every MusicBrainz
+    edition with exactly that many tracks has it at the same single place;
+    and the video runs 0.75–1.35× that track's length. The length check is
+    what makes a title-track upload safe to place — most one-song videos are
+    the title track ("Prince - Purple Rain (Official Video)"), and naming the
+    album is all their title does. Measured on all 72 (2026-10-08): nearly
+    every video is within 5% of its track; the three outside are Thriller's
+    13.7-minute film, a "360" video at twice the song and a 1.4-minute
+    "ST. CHROMA" snippet. What is not placed, and why, is listed too:
+    editions that disagree (DAMN.'s reversed collector's edition), a bonus
+    track no standard edition has, a title shared by two tracks (_The
+    Suburbs_), more than 20 songs. **Re-record after any track-count change
+    in `lib/album-facts.json` too**: an entry recorded against another count
+    is ignored by the page and fails `eval-site`.
   - **Re-run it with `npm run audit-youtube-ids`** (read-only, ~4 minutes, exits 1 if anything is dead, a clip or from the wrong album). Videos keep dying after they are stored, so this is worth running now and then. `--albums <file>` audits a candidate catalog — use it on the output of a refetch **before** copying it over `lib/albums.json`. A DEAD verdict comes from the watch page's playability status, a proxy; confirm in a browser that the IFrame player really fires `onError` before removing an id.
   - **Why so few are whole albums:** `scripts/fetch-youtube-ids.mjs` searched `"{artist} {title} official audio"` and kept the **first result, unchecked**, and only for `recognizable` albums — the ids were collected for Heardle and the Taste Test, where a single song is fine. The hero's inline player reused the field later. A refetch that targets full albums, checks title and duration, and covers the whole catalog is the real fix and needs a YouTube Data API key.
   - Removing ids shrinks the Heardle and Taste Test pools, and pool size drives the daily rotation, so it reshuffles which album those games pick on future days — from the day after tomorrow, once `npm run pin-schedule` has recorded the rest (see the pinned schedule under Daily Rotation). `eval-site` checks the new Heardle pool against the 5-day cadence.

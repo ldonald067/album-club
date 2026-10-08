@@ -71,15 +71,22 @@ function formatTime(seconds) {
    whether it was actually listened to rather than skipped to (lib/needle.js).
 
    `controlRef` lets the record itself drive playback (lib/tonearm.js): `drop`
-   puts the needle down at a fraction of the album and plays, `lift` pauses
+   puts the needle down at a fraction of the video and plays, `lift` pauses
    while the arm is held, `stop` sends it home. `ready` says whether any of
    that can work yet.
+
+   `song` ({ track, of, title }) says the video is one song of the album
+   (lib/song-videos.js). Progress and drops stay fractions of the video —
+   ForumPage maps them onto that song's band of the record — and the song
+   only changes what the player is called: it plays "Teen Age Riot", not
+   "Daydream Nation".
 
    Where the needle was lifted is remembered for the rest of the day
    (lib/needle.js): a reload finds the record on the platter, the arm where it
    was, and Play picks up from there. Stop and the end of the album forget it. */
 export default function AlbumPlayback({
   album,
+  song = null,
   onDeckChange,
   onProgress,
   onPlayedThrough,
@@ -437,15 +444,24 @@ export default function AlbumPlayback({
     );
   }
 
+  // What Play plays: the album, or on a song day the one song the video is
+  const playsTitle = song ? song.title : album.title;
+
   return (
     <div className="album-playback">
+      {song && (
+        <div className="album-playback-song">
+          ♪ track {song.track} of {song.of},{" "}
+          <span className="album-playback-song-title">{song.title}</span>
+        </div>
+      )}
       <div className="album-playback-row">
         <button
           type="button"
           className="listen-btn album-playback-play"
           onClick={toggle}
           disabled={!ready}
-          aria-label={playing ? `Pause ${album.title}` : `Play ${album.title}`}
+          aria-label={playing ? `Pause ${playsTitle}` : `Play ${playsTitle}`}
         >
           {playing ? "❚❚ Pause" : "▶ Play"}
         </button>
@@ -473,7 +489,7 @@ export default function AlbumPlayback({
       </div>
 
       <label className="sr-only" htmlFor="album-playback-seek">
-        Seek within {album.title}
+        Seek within {playsTitle}
       </label>
       <input
         id="album-playback-seek"

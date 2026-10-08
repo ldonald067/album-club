@@ -13,6 +13,10 @@
      surfaces — tokens only so the shades live in one place. */
   --vinyl-groove: rgba(255, 255, 255, 0.035); /* fine grooves, every day */
   --vinyl-band: rgba(255, 255, 255, 0.09); /* smooth land between songs */
+  /* The one song a video plays (lib/song-videos.js): the slipmat's gold, so
+     it reads as picked out rather than as one more ring. White at 7% did
+     not read at all on a band a few pixels wide (measured, 2026-10-08). */
+  --vinyl-song: rgba(201, 162, 39, 0.45);
   /* The tonearm's brushed metal — also the same in every skin, being a part
      of the turntable rather than of the page. */
   --tonearm-light: #f4f4f4;
@@ -477,8 +481,8 @@ body {
   --disc: 180px;
   --disc-right: -10px;
   /* How far the record comes out of its sleeve while it plays: a little, on a
-     day whose video is one song; all the way onto the platter on a turntable
-     day (.has-deck, below). */
+     day whose video is one song the audit could not place; all the way onto
+     the platter on a turntable day (.has-deck, below). */
   --vinyl-slide: 40px;
 }
 
@@ -627,9 +631,11 @@ body {
 }
 
 /* The gaps between songs (lib/vinyl-bands.js builds the gradient from the
-   album's track count). A layer of the disc, so it turns with it — and, like
-   a real record's, looks the same at every angle. */
-.vinyl-bands {
+   album's track count), and on a song day that song's band, lit. Layers of
+   the disc, so they turn with it — and, like a real record's, look the same
+   at every angle. */
+.vinyl-bands,
+.vinyl-song {
   position: absolute;
   inset: 0;
   border-radius: 50%;
@@ -700,7 +706,8 @@ body {
    (--deck-right, from lib/tonearm.js, set inline on the wrap). Measured
    without any: the slid-out disc covered 35px of the title and the Year/Genre
    labels. Reserved from the first paint and only on days whose video is the
-   whole album — set server-side (lib/full-album-videos.js) — so nothing but the
+   whole album or one song placed on it — set server-side
+   (lib/full-album-videos.js, lib/song-videos.js) — so nothing but the
    record and the arm ever moves, and days without audio keep the tighter
    layout they have always had. On phones the same margin centres the whole
    turntable rather than just the sleeve. The wider gap keeps the details
@@ -722,9 +729,10 @@ body {
   );
 }
 
-/* A day whose video is one song (lib/full-album-videos.js): no deck, and the
-   record comes 40px out of its sleeve to play, as it did before the
-   turntable. Room for exactly that, from the first paint. */
+/* A day whose video is one song the audit could not place on the record
+   (lib/song-videos.js): no deck, and the record comes 40px out of its sleeve
+   to play, as it did before the turntable. Room for exactly that, from the
+   first paint. */
 .album-display.has-player .album-cover-wrap {
   margin-right: var(--vinyl-slide);
 }
@@ -2371,6 +2379,19 @@ body {
    450px of chrome around it. One row plus a seek line. */
 .album-playback {
   margin-top: 10px;
+}
+
+/* On a song day, which song the video is (lib/song-videos.js) — the player
+   would otherwise say "Play Daydream Nation" over one track of it. */
+.album-playback-song {
+  margin-bottom: 6px;
+  font-size: 11px;
+  color: var(--text-quiet);
+}
+
+.album-playback-song-title {
+  font-weight: bold;
+  color: var(--text-answer);
 }
 
 .album-playback-row {

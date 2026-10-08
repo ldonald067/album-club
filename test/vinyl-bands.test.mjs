@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import {
   trackBands,
   trackBandsGradient,
+  songBandRadii,
+  songBandGradient,
   MUSIC_INNER,
   MUSIC_OUTER,
   MAX_TRACKS,
@@ -79,4 +81,44 @@ test("gradient stops run inside-out, as CSS requires", () => {
       );
     }
   }
+});
+
+test("a song's band runs ring to ring, out to the music's edges at either end", () => {
+  const bands = trackBands(12);
+  assert.deepEqual(songBandRadii(12, 1), [bands[0][1], MUSIC_OUTER]);
+  assert.deepEqual(songBandRadii(12, 5), [bands[4][1], bands[3][0]]);
+  assert.deepEqual(songBandRadii(12, 12), [MUSIC_INNER, bands[10][0]]);
+  for (let tracks = 2; tracks <= MAX_TRACKS; tracks++) {
+    let last = Infinity;
+    for (let track = 1; track <= tracks; track++) {
+      const [inner, outer] = songBandRadii(tracks, track);
+      assert.ok(inner < outer, `${track}/${tracks}`);
+      assert.ok(outer <= last, `${track}/${tracks} sits inside the one before`);
+      last = inner;
+    }
+  }
+});
+
+test("no band to light without rings or without that song", () => {
+  for (const [tracks, track] of [
+    [null, 1],
+    [1, 1],
+    [MAX_TRACKS + 1, 2],
+    [12, 0],
+    [12, 13],
+    [12, 2.5],
+    [12, "3"],
+  ]) {
+    assert.equal(songBandRadii(tracks, track), null, `${track}/${tracks}`);
+    assert.equal(songBandGradient(tracks, track), null, `${track}/${tracks}`);
+  }
+});
+
+test("the lit band is one ascending layer in the song token", () => {
+  const css = songBandGradient(12, 3);
+  assert.match(css, /^radial-gradient\(circle closest-side, transparent /);
+  assert.equal(css.match(/var\(--vinyl-song\)/g).length, 2);
+  const stops = [...css.matchAll(/([\d.]+)%/g)].map((m) => Number(m[1]));
+  assert.equal(stops.length, 4);
+  for (let i = 1; i < stops.length; i++) assert.ok(stops[i] > stops[i - 1]);
 });

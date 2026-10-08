@@ -3,6 +3,7 @@ import { getDateString } from "@/lib/albums";
 import { getFeaturedAlbum, getPageData } from "@/lib/daily-picks";
 import { getAlbumFacts } from "@/lib/album-facts";
 import { playsWholeAlbum } from "@/lib/full-album-videos";
+import { songOnRecord } from "@/lib/song-videos";
 
 /* One body and one metadata builder shared by all six tab routes, so a tab is
    two exported lines in app/<key>/page.js and nothing else.
@@ -69,16 +70,19 @@ export function sectionMetadata(key) {
 /* The track count rides along as a prop, looked up here, so the 85KB facts
    file never reaches the browser — lib/album-facts.js is server-only in
    practice (docs/performance.md). So does whether today's video is the whole
-   album, which decides the turntable (lib/full-album-videos.js). */
+   album, or which one song of it, which decides the turntable
+   (lib/full-album-videos.js, lib/song-videos.js). */
 export function SectionPage({ section }) {
   const { picks, yesterday, tomorrow, archive } = getPageData({
     archive: section === "archive",
   });
+  const albumTracks = getAlbumFacts(picks.album)?.tracks ?? null;
   return (
     <ForumPage
       album={picks.album}
-      albumTracks={getAlbumFacts(picks.album)?.tracks ?? null}
+      albumTracks={albumTracks}
       playsWholeAlbum={playsWholeAlbum(picks.album)}
+      albumSong={songOnRecord(picks.album, albumTracks)}
       picks={picks}
       yesterdayAlbum={yesterday}
       tomorrowAlbum={tomorrow}

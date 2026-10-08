@@ -20,8 +20,17 @@ import {
   RUNOUT_ANGLE,
   LABEL_EDGE,
   DECK_VARS,
+  songBand,
+  songToAlbum,
+  albumToSong,
+  inSongBand,
 } from "../lib/tonearm.js";
-import { MUSIC_INNER, MUSIC_OUTER } from "../lib/vinyl-bands.js";
+import {
+  MUSIC_INNER,
+  MUSIC_OUTER,
+  MAX_TRACKS,
+  songBandRadii,
+} from "../lib/vinyl-bands.js";
 
 const radiusAt = (angle) => Math.hypot(stylusAt(angle).x, stylusAt(angle).y);
 const near = (a, b, eps = 0.002) => Math.abs(a - b) < eps;
@@ -125,4 +134,54 @@ test("the CSS draws the deck from these numbers", () => {
   assert.equal(DECK_VARS["--pivot-x"], PIVOT.x);
   assert.equal(DECK_VARS["--deck-right"], DECK.right);
   assert.equal(DECK_VARS["--platter"], PLATTER);
+});
+
+test("a song day's needle plays only that song's band: (k−1+p)/n", () => {
+  const song = { track: 3, of: 12 };
+  assert.deepEqual(songBand(song), { from: 2 / 12, to: 3 / 12 });
+  assert.equal(songToAlbum(song, 0), 2 / 12);
+  assert.equal(songToAlbum(song, 1), 3 / 12);
+  assert.ok(near(songToAlbum(song, 0.5), 2.5 / 12, 1e-12));
+  // Out-of-range or missing song progress clamps into the band
+  assert.equal(songToAlbum(song, -1), 2 / 12);
+  assert.equal(songToAlbum(song, 7), 3 / 12);
+  assert.equal(songToAlbum(song, NaN), 2 / 12);
+  // The first and last songs reach the music's edges
+  assert.equal(songToAlbum({ track: 1, of: 9 }, 0), 0);
+  assert.equal(songToAlbum({ track: 9, of: 9 }, 1), 1);
+});
+
+test("album progress turns back into song progress, and a drop off the band clamps", () => {
+  const song = { track: 5, of: 8 };
+  for (let p = 0; p <= 1.0001; p += 0.1) {
+    assert.ok(near(albumToSong(song, songToAlbum(song, p)), Math.min(p, 1), 1e-9));
+  }
+  assert.equal(albumToSong(song, 0), 0, "let go outside it: its outer edge");
+  assert.equal(albumToSong(song, 1), 1, "let go inside it: its inner edge");
+  assert.equal(albumToSong(song, NaN), 0);
+});
+
+test("only a click on the song's own band drops the needle", () => {
+  const song = { track: 2, of: 4 };
+  assert.equal(inSongBand(song, 0.3), true);
+  assert.equal(inSongBand(song, 0.25), true, "its outer ring");
+  assert.equal(inSongBand(song, 0.5), true, "its inner ring");
+  assert.equal(inSongBand(song, 0.1), false, "the song before");
+  assert.equal(inSongBand(song, 0.6), false, "the song after");
+  assert.equal(inSongBand(song, NaN), false);
+});
+
+test("the arm crosses exactly the band the record lights for the song", () => {
+  for (let of = 2; of <= MAX_TRACKS; of++) {
+    for (let track = 1; track <= of; track++) {
+      const song = { track, of };
+      const outer = radiusAt(armAngle(songToAlbum(song, 0))) * 100;
+      const inner = radiusAt(armAngle(songToAlbum(song, 1))) * 100;
+      const [litInner, litOuter] = songBandRadii(of, track);
+      // The lit band sits inside the arm's sweep, short of it by at most
+      // half a ring
+      assert.ok(litOuter <= outer + 0.01 && litInner >= inner - 0.01, `${track}/${of}`);
+      assert.ok(outer - litOuter < 0.8 && litInner - inner < 0.8, `${track}/${of}`);
+    }
+  }
 });

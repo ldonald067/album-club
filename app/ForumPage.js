@@ -26,14 +26,17 @@ import {
   scrambleArtist,
 } from "@/lib/albums";
 import { loadJson } from "@/lib/safe-fetch";
-import { trackBandsGradient } from "@/lib/vinyl-bands";
+import { songBandGradient, trackBandsGradient } from "@/lib/vinyl-bands";
 import {
   armAngle,
   angleToward,
+  albumToSong,
   clampDragAngle,
+  inSongBand,
   onRecord,
   progressAtAngle,
   progressAtRadius,
+  songToAlbum,
   DECK_VARS,
   LABEL_EDGE,
   REST_ANGLE,
@@ -4405,6 +4408,7 @@ export default function ForumPage({
   album,
   albumTracks = null,
   playsWholeAlbum = false,
+  albumSong = null,
   picks,
   yesterdayAlbum,
   tomorrowAlbum,
@@ -4451,12 +4455,25 @@ export default function ForumPage({
   }, []);
   const vinylRef = useRef(null);
   const vinylBands = trackBandsGradient(albumTracks);
-  /* The turntable — deck, tonearm, needle drops and the run-out — only when
-     today's video is the whole album (lib/full-album-videos.js). A one-song
-     video still plays, with the record slid a little out of its sleeve as it
-     always was, but an arm crossing every song ring in one track, or "heard
-     all the way through" for one song, would be saying something false. */
-  const hasDeck = playsWholeAlbum && Boolean(album.youtubeId);
+  /* The turntable — deck, tonearm, needle drops and the run-out — when
+     today's video is the whole album (lib/full-album-videos.js), and also
+     when it is one song the audit placed on the record (lib/song-videos.js,
+     the owner's call, 2026-10-08): then the needle plays only that song's
+     band, lit and named. A one-song video it could not place keeps the plain
+     player, with the record slid a little out of its sleeve, because an arm
+     crossing every song ring in one track would be saying something false. */
+  const wholeAlbum = playsWholeAlbum && Boolean(album.youtubeId);
+  const song = !wholeAlbum && album.youtubeId ? albumSong : null;
+  const hasDeck = wholeAlbum || Boolean(song);
+  const songBand = song ? songBandGradient(song.of, song.track) : null;
+  const songName = song
+    ? `track ${song.track} of ${song.of}, ${song.title}`
+    : null;
+  /* The player counts in fractions of its video; the record in fractions of
+     the album. The same on a whole-album day; on a song day the video is one
+     band of the album (lib/tonearm.js). */
+  const toAlbum = (p) => (song ? songToAlbum(song, p) : p);
+  const toVideo = (q) => (song ? albumToSong(song, q) : q);
   /* The tonearm follows playback (lib/tonearm.js). Written straight to a
      custom property on every 500ms tick rather than held in state: this
      component renders every game on the page, and re-rendering all of it
@@ -4467,7 +4484,7 @@ export default function ForumPage({
   const moveTonearm = (progress) => {
     // The hand wins while it holds the arm; the next tick after it lets go
     // carries on from wherever it put the needle down
-    if (!armDragRef.current) setArmAngle(armAngle(progress));
+    if (!armDragRef.current) setArmAngle(armAngle(toAlbum(progress)));
   };
 
   /* 🎯 The record as the controls. AlbumPlayback hands over drop / lift /
@@ -4476,7 +4493,8 @@ export default function ForumPage({
      A click on the grooves drops the needle there — its distance from the
      spindle is how far through the album it is (lib/tonearm.js). The label
      still spins the record, the old easter egg, and so does any click while
-     the record is in its sleeve or the player is not ready. */
+     the record is in its sleeve or the player is not ready — and, on a song
+     day, a click off that song's band, where there is nothing to play. */
   const playbackRef = useRef(null);
   const dropNeedleAt = (e) => {
     const control = playbackRef.current;
@@ -4494,8 +4512,9 @@ export default function ForumPage({
       (el.offsetWidth / 2);
     if (r < LABEL_EDGE || r > 1) return false;
     const progress = progressAtRadius(r);
+    if (song && !inSongBand(song, progress)) return false;
     setArmAngle(armAngle(progress));
-    control.drop(progress);
+    control.drop(toVideo(progress));
     return true;
   };
 
@@ -4506,7 +4525,8 @@ export default function ForumPage({
      record in its sleeve, it can be put straight down on the platter to
      start the album from that point. `armHeld` keeps it where it was let go
      for the moment before the player reports PLAYING, rather than swinging
-     home and back. */
+     home and back. On a song day it moves freely too, and is let down inside
+     the song's band, at its nearer edge if let go beyond it. */
   const armDragRef = useRef(null);
   const [armDragging, setArmDragging] = useState(false);
   const [armHeld, setArmHeld] = useState(false);
@@ -4558,8 +4578,10 @@ export default function ForumPage({
     setArmDragging(false);
     const control = playbackRef.current;
     if (onRecord(drag.angle)) {
+      const fraction = toVideo(progressAtAngle(drag.angle));
+      if (song) setArmAngle(armAngle(toAlbum(fraction)));
       if (!drag.wasOnDeck) setArmHeld(true);
-      control?.drop(progressAtAngle(drag.angle));
+      control?.drop(fraction);
     } else if (drag.wasOnDeck) {
       control?.stop();
     }
@@ -4568,17 +4590,20 @@ export default function ForumPage({
   /* 💿 Heard all the way through: when an album ends having actually been
      listened to (lib/needle.js), the run-out etching on side A appears and
      the album joins this browser's private tally. An album already heard
-     through shows its etching from the start. */
+     through shows its etching from the start. Whole albums only: one song
+     heard out is not the album heard through. */
   const albumIdentity = `${album.artist}::${album.title}`;
   const [fullPlay, setFullPlay] = useState(null);
   useEffect(() => {
     const list = readFullPlays();
-    if (hasDeck && list.includes(albumIdentity)) {
+    if (wholeAlbum && list.includes(albumIdentity)) {
       setFullPlay({ count: list.length });
     }
-  }, [albumIdentity, hasDeck]);
+  }, [albumIdentity, wholeAlbum]);
   const handlePlayedThrough = (heard) => {
-    if (heard && hasDeck) setFullPlay({ count: recordFullPlay(albumIdentity) });
+    if (heard && wholeAlbum) {
+      setFullPlay({ count: recordFullPlay(albumIdentity) });
+    }
   };
 
   const rampRef = useRef(null);
@@ -5137,7 +5162,8 @@ export default function ForumPage({
                     style={hasDeck ? DECK_VARS : undefined}
                   >
                     {/* The deck the record plays on, beside the sleeve, on
-                        days the whole album can play (lib/tonearm.js). */}
+                        days the whole album or one placed song can play
+                        (lib/tonearm.js). */}
                     {hasDeck && (
                       <span className="turntable" aria-hidden="true">
                         <span className="turntable-plinth" />
@@ -5202,9 +5228,11 @@ export default function ForumPage({
                         vinylBands
                           ? `${albumTracks} songs, a gap between each — `
                           : ""
-                      }${
+                      }${songName ? `${songName}, lit — ` : ""}${
                         onDeck && hasDeck
-                          ? "click the grooves to drop the needle there, the label to spin"
+                          ? song
+                            ? "click its groove to drop the needle there, the label to spin"
+                            : "click the grooves to drop the needle there, the label to spin"
                           : "click to spin!"
                       }`.replace(/^./, (c) => c.toUpperCase())}
                     >
@@ -5216,6 +5244,15 @@ export default function ForumPage({
                           className="vinyl-bands"
                           aria-hidden="true"
                           style={{ backgroundImage: vinylBands }}
+                        />
+                      )}
+                      {/* On a song day, that song's band, lit: the only
+                          groove the needle plays (lib/song-videos.js). */}
+                      {songBand && (
+                        <span
+                          className="vinyl-song"
+                          aria-hidden="true"
+                          style={{ backgroundImage: songBand }}
                         />
                       )}
                       {/* The label. Grooves are concentric, so a bare disc
@@ -5234,19 +5271,21 @@ export default function ForumPage({
                         }}
                       />
                     </div>
-                    {/* The tonearm, on days the whole album can play: parked on
-                        the deck, on the record from Play, creeping toward
-                        the label as the album goes on, lifted on Pause, in
-                        the run-out at the end and home on Stop
-                        (lib/tonearm.js). The grip is pointer-only on
-                        purpose — the seek bar is the keyboard's way to do
+                    {/* The tonearm, on turntable days: parked on the deck, on
+                        the record from Play, creeping toward the label as
+                        the album goes on, lifted on Pause, in the run-out
+                        at the end and home on Stop (lib/tonearm.js). On a
+                        song day it crosses only that song's band and rests
+                        at its inner edge at the end — the run-out belongs
+                        to an album played through. The grip is pointer-only
+                        on purpose — the seek bar is the keyboard's way to do
                         the same thing. */}
                     {hasDeck && (
                       <span
                         ref={tonearmRef}
                         className={`tonearm${deck === "off" ? "" : " cued"}${
                           deck === "paused" || armDragging ? " lifted" : ""
-                        }${deck === "runout" ? " runout" : ""}${
+                        }${deck === "runout" && wholeAlbum ? " runout" : ""}${
                           armDragging ? " dragging" : ""
                         }${armHeld ? " held" : ""}`}
                         aria-hidden="true"
@@ -5308,6 +5347,7 @@ export default function ForumPage({
                     </table>
                     <AlbumPlayback
                       album={album}
+                      song={song}
                       onDeckChange={setDeck}
                       onProgress={moveTonearm}
                       onPlayedThrough={handlePlayedThrough}

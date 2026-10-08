@@ -10,8 +10,10 @@
  *   --record  rewrite lib/full-album-videos.json from this run's FULL_ALBUM
  *             and FULL_SESSION verdicts — the list the hero's turntable is
  *             gated on (see
- *             lib/full-album-videos.js). Refused if any lookup errored, since
- *             an errored id would silently lose its turntable.
+ *             lib/full-album-videos.js) — and lib/song-videos.json from the
+ *             SONG_THIS_ALBUM ones it could place on the record (see
+ *             placeSong, and lib/song-videos.js). Refused if any lookup
+ *             errored, since an errored id would silently lose its turntable.
  *
  * No API key. Three sources per video: YouTube oEmbed (title, and whether the
  * video exists), the public watch page (length, and its playability status),
@@ -21,7 +23,7 @@
  * ~115 ids takes about four minutes.
  *
  * READ-ONLY on the catalog. It never edits it; --record writes only the
- * full-album list beside it. Removing an id is a decision a person
+ * full-album and song lists beside it. Removing an id is a decision a person
  * makes after reading the report — see the verdicts below and the history in
  * docs/album-data.md.
  *
@@ -70,6 +72,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { MAX_TRACKS } from "../lib/vinyl-bands.js";
 
 const rootDir = process.cwd();
 const args = process.argv.slice(2);
@@ -84,6 +87,7 @@ const albumsPath = path.resolve(
 const jsonOut = argValue("--json");
 const record = args.includes("--record");
 const fullAlbumsPath = path.join(rootDir, "lib", "full-album-videos.json");
+const songsPath = path.join(rootDir, "lib", "song-videos.json");
 const albums = JSON.parse(fs.readFileSync(albumsPath, "utf8"));
 const facts = JSON.parse(
   fs.readFileSync(path.join(rootDir, "lib", "album-facts.json"), "utf8"),
@@ -204,6 +208,10 @@ async function watchPage(id) {
   };
 }
 
+/* Every title on any of the release group's editions (up to 25), merged and
+   de-duplicated — what a video's title is matched against — and each
+   edition's own running order as { title, ms }, which the merged set does
+   not keep: a song's position and length come from the editions (placeSong). */
 async function tracklist(releaseGroupId) {
   const res = await fetchRetry(
     `https://musicbrainz.org/ws/2/release?release-group=${releaseGroupId}&inc=recordings+media&limit=25&fmt=json`,
@@ -211,11 +219,20 @@ async function tracklist(releaseGroupId) {
   );
   if (!res.ok) throw new Error(`MusicBrainz ${res.status}`);
   const body = await res.json();
-  const titles = new Set();
-  for (const release of body.releases || [])
-    for (const medium of release.media || [])
-      for (const track of medium.tracks || []) titles.add(track.title);
-  return [...titles];
+  const byPosition = (a, b) => (a.position ?? 0) - (b.position ?? 0);
+  const releases = (body.releases || []).map((release) =>
+    [...(release.media || [])]
+      .sort(byPosition)
+      .flatMap((medium) =>
+        [...(medium.tracks || [])]
+          .sort(byPosition)
+          .map((t) => ({ title: t.title, ms: t.length ?? null })),
+      ),
+  );
+  return {
+    titles: [...new Set(releases.flat().map((t) => t.title))],
+    releases,
+  };
 }
 
 /* The video's title names the album, as whole words. Length alone proved
@@ -278,6 +295,87 @@ const isFullSession = (album, oe, page) =>
       session.whole(` ${norm(oe.title)} `, album),
   );
 
+/* Which song of the record a one-song video is, for the song-day turntable
+   (lib/song-videos.js): { track, of, song }, or { why } it cannot be placed.
+   The needle goes on that song's band, so every step must be certain:
+
+   - The title names exactly one track, once the names it explains away are
+     set aside: a track inside a longer one it names ("Sober" in "Sober II
+     (Melodrama)"), the artist's own name when another track is named too
+     (Slowdive's "Slowdive"), and the tracks the album's name accounts for
+     when it names the album ("squabble up (GNX)" names "gnx" too). Most
+     one-song videos are the title track — "Prince - Purple Rain (Official
+     Video)" — so naming only the album is the title track, if its length
+     agrees (below).
+   - The rings are drawn: the count album-facts settled on (`tracks`, the
+     consensus across editions) is 2–20 (lib/vinyl-bands.js).
+   - An edition with exactly that many tracks has the song at one place, and
+     every such edition agrees on where. The merged tracklist is no use for
+     this — its order is not any edition's running order. (DAMN.'s collector's
+     edition runs backwards; Born to Run has a cassette-sided edition.)
+   - The video runs as long as that track, within SONG_LENGTH. Measured on
+     all 72 one-song videos (2026-10-08): almost every one is within 5%. The
+     ones that are not are what the needle cannot follow — a 13.7-minute film
+     around Thriller's six, a video at twice its song's length, a 1.4-minute
+     snippet — and the check is what settles a video that names only the
+     album: it is the title track because it runs as long as the title track. */
+const SONG_LENGTH = { min: 0.75, max: 1.35 };
+function placeSong(album, videoTitle, videoMinutes, matched, releases, tracks) {
+  let keys = [...new Set(matched.map(trackKey))];
+  const within = (outer, inner) => ` ${outer} `.includes(` ${inner} `);
+  keys = keys.filter((k) => !keys.some((o) => o !== k && within(o, k)));
+  if (keys.length > 1) keys = keys.filter((k) => !within(norm(album.artist), k));
+  if (namesAlbum(videoTitle, album)) {
+    const others = keys.filter((k) => !within(norm(album.title), k));
+    if (others.length) keys = others;
+  }
+  if (keys.length !== 1) return { why: `names ${keys.length} tracks` };
+  if (!Number.isInteger(tracks)) return { why: "track count unknown" };
+  if (tracks < 2 || tracks > MAX_TRACKS) {
+    return { why: `${tracks} tracks: no rings drawn` };
+  }
+  const [key] = keys;
+  const placings = new Map(); // track number -> that track on each edition
+  for (const release of releases) {
+    if (release.length !== tracks) continue;
+    const at = release.flatMap((t, i) =>
+      trackKey(t.title) === key ? [i + 1] : [],
+    );
+    if (at.length !== 1) continue;
+    placings.set(at[0], [...(placings.get(at[0]) || []), release[at[0] - 1]]);
+  }
+  if (!placings.size) {
+    return { why: `no ${tracks}-track edition has it, once` };
+  }
+  if (placings.size > 1) {
+    return {
+      why: `${tracks}-track editions disagree: track ${[...placings.keys()].join(" or ")}`,
+    };
+  }
+  const [[track, onEditions]] = placings;
+  const lengths = onEditions
+    .map((t) => t.ms)
+    .filter((ms) => ms > 0)
+    .sort((a, b) => a - b);
+  if (!lengths.length) return { why: "no track length to check against" };
+  const trackMinutes = lengths[Math.floor(lengths.length / 2)] / 60000;
+  const ratio = videoMinutes / trackMinutes;
+  if (!(ratio >= SONG_LENGTH.min && ratio <= SONG_LENGTH.max)) {
+    return {
+      why: `the video runs ${videoMinutes.toFixed(1)}m, the track ${trackMinutes.toFixed(1)}m`,
+    };
+  }
+  // The edition titles agree once folded; show the one most of them use
+  const counts = new Map();
+  for (const { title } of onEditions) {
+    counts.set(title, (counts.get(title) || 0) + 1);
+  }
+  const [song] = [...counts].sort(
+    ([a, n], [b, m]) => m - n || a.length - b.length,
+  )[0];
+  return { track, of: tracks, song };
+}
+
 const isLong = (page, albumMinutes) => {
   const minutes = page.seconds / 60;
   return albumMinutes ? minutes >= albumMinutes * 0.5 : minutes >= 20;
@@ -319,6 +417,7 @@ for (const [i, album] of withId.entries()) {
   let oe = { status: null };
   let page = { seconds: null, playability: null };
   let tracks = null;
+  let releases = [];
   let verdict;
   let error = null;
 
@@ -338,7 +437,7 @@ for (const [i, album] of withId.entries()) {
       !isDead(oe, page) &&
       !(isLong(page, albumMinutes) && albumNamed);
     if (needsTracks) {
-      tracks = await tracklist(fact.mbid);
+      ({ titles: tracks, releases } = await tracklist(fact.mbid));
       await sleep(MB_DELAY_MS);
     }
     const matched = oe.title && tracks ? namesTrack(oe.title, tracks) : [];
@@ -359,6 +458,17 @@ for (const [i, album] of withId.entries()) {
         : partNote && ["FULL_ALBUM", "FULL_SESSION"].includes(flaggedVerdict)
           ? "PART"
           : flaggedVerdict;
+    const placed =
+      verdict === "SONG_THIS_ALBUM"
+        ? placeSong(
+            album,
+            oe.title,
+            page.seconds / 60,
+            matched,
+            releases,
+            fact?.tracks,
+          )
+        : null;
     results.push({
       artist: album.artist,
       album: album.title,
@@ -372,6 +482,10 @@ for (const [i, album] of withId.entries()) {
         page.seconds === null ? null : +(page.seconds / 60).toFixed(1),
       albumMinutes,
       matchedTracks: matched.slice(0, 3),
+      ...(placed?.song
+        ? { song: { track: placed.track, of: placed.of, song: placed.song } }
+        : {}),
+      ...(placed?.why ? { unplacedBecause: placed.why } : {}),
       ...(verdict === "KEPT" ? { keptBecause: keptNote } : {}),
       ...(verdict === "PART" ? { partBecause: partNote } : {}),
     });
@@ -435,6 +549,28 @@ for (const v of [
   }
 }
 
+/* The one-song videos: where each sits on the record, or why it does not.
+   Placed songs are listed in full because the deck will claim them — read
+   them as you would `git diff lib/lyrics.json`. */
+const songRows = results.filter((r) => r.verdict === "SONG_THIS_ALBUM");
+const placedRows = songRows.filter((r) => r.song);
+if (songRows.length) {
+  console.log(
+    `\nSONGS ON THE RECORD  ${placedRows.length} of ${songRows.length} one-song videos placed`,
+  );
+  for (const r of placedRows) {
+    console.log(
+      `  ${r.artist} — ${r.album}  (${r.id})  track ${r.song.track} of ${r.song.of}, ${JSON.stringify(r.song.song)}  ← ${JSON.stringify(r.videoTitle)}`,
+    );
+  }
+  console.log("  not placed:");
+  for (const r of songRows.filter((row) => !row.song)) {
+    console.log(
+      `  ${r.artist} — ${r.album}  (${r.id})  ${r.unplacedBecause}  ← ${JSON.stringify(r.videoTitle)}`,
+    );
+  }
+}
+
 if (jsonOut) {
   fs.writeFileSync(jsonOut, JSON.stringify(results, null, 2) + "\n");
   console.log(`\nFull results: ${jsonOut}`);
@@ -470,6 +606,27 @@ if (record) {
     fs.writeFileSync(fullAlbumsPath, JSON.stringify(list, null, 2) + "\n");
     console.log(
       `\nRecorded ${Object.keys(list).length} full-album videos in ${path.relative(rootDir, fullAlbumsPath)}.`,
+    );
+    /* And the one-song videos placed on the record, keyed the same way, for
+       the song-day turntable (lib/song-videos.js). */
+    const songs = Object.fromEntries(
+      placedRows
+        .map((r) => [
+          `${r.artist}::${r.album}::${r.id}`,
+          {
+            track: r.song.track,
+            of: r.song.of,
+            song: r.song.song,
+            videoTitle: r.videoTitle,
+            videoMinutes: r.videoMinutes,
+            checked: today,
+          },
+        ])
+        .sort(([a], [b]) => a.localeCompare(b)),
+    );
+    fs.writeFileSync(songsPath, JSON.stringify(songs, null, 2) + "\n");
+    console.log(
+      `Recorded ${Object.keys(songs).length} songs on the record in ${path.relative(rootDir, songsPath)}.`,
     );
   }
 }
