@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-10-07.
+session. Last updated: 2026-10-08.
 
 This file holds **current state, open items and standing decisions** only.
 How things work lives in the topic docs; what happened and when lives in git
@@ -30,7 +30,9 @@ with it: listening is measured from the player's clock, a seek to the start
 forgets the saved spot, the arm waits for the album's length, a failed player
 puts the record away, Your Stats updates on a full play, and the arm no
 longer transitions `filter`. Details in `docs/components.md` → "The record on
-the deck".
+the deck". On 2026-10-08 _Live at Pompeii_ came off the list: its video is only
+"Echoes", which passed because no runtime is known and the title names the
+album. The audit's `PART_AFTER_REVIEW` keeps it off on every re-record.
 
 **Keep each chat under ~300k tokens of context.** The owner is on the Pro
 plan and was hitting the 5-hour limit too soon: every message re-reads the
@@ -83,11 +85,44 @@ were cut to current state.
 
 **Where to pick up, in this order:**
 
-1. **One phone check** — tap through the Blind Taste Test on an iPhone and an
+1. **Build the song-day turntable — the owner's decision, 2026-10-08.** The
+   owner found a turntable on only 38 days "no fun" and chose, of three
+   options: **one-song days get the turntable too, with the needle on that
+   song's own groove.** Whole albums and sessions keep the full sweep and
+   the "heard all the way through" award; days without a video stay plain
+   (a deck with nothing to play was offered and not chosen). About 110 days
+   a year instead of 37. What was worked out before the handoff:
+   - **Which song, and where.** The audit's `SONG_THIS_ALBUM` verdict
+     already names the matched track (`matchedTracks`). Its position is
+     **not** in `tracklist()`'s output: that merges up to 25 editions into a
+     de-duplicated set, so its order is not the running order. Take the
+     position from one release whose track count equals `album-facts`'
+     `tracks` (the consensus the rings are drawn from). Record a song only
+     when exactly one track matched, that release exists, and the rings are
+     drawn (2–20 songs, `MAX_TRACKS` in `lib/vinyl-bands.js`); otherwise the
+     plain player — wrong data is worse than missing.
+   - **Where it lives.** A second list written by the same `--record` (say
+     `lib/song-videos.json`: track, of, song title), keyed on artist, album
+     and id like `lib/full-album-videos.json`; `section-page.js` passes it;
+     `eval-site` checks it the same way.
+   - **Geometry.** Track k of n is album progress (k−1)/n to k/n, so song
+     progress p is (k−1+p)/n — a helper in `lib/tonearm.js`, tested. The
+     mapping belongs in `ForumPage`; `AlbumPlayback` keeps working in video
+     fractions. A click outside the band spins the record (no drop); a drag
+     released on the record clamps into the band. At the song's end: no
+     run-out and no award — the arm rests at the band's inner edge while the
+     record turns out, then goes home.
+   - **Say which song.** Light the playing band (a `--vinyl-*` token, never a
+     hex) and name it — "track 1 of 12, Teen Age Riot" — in the record's
+     hint and by the player, which today says "Play Daydream Nation" over a
+     single song.
+   - **Verify** on a song day in the browser (10-09, 10-13 → 10-16 are song
+     days) and with a scratch list entry for a whole-album day.
+2. **One phone check** — tap through the Blind Taste Test on an iPhone and an
    Android phone, and on a turntable day press Play, tap the grooves and
-   drag the tonearm with a finger (open item 2). Turntable days coming up:
-   10-27 and 10-30 — the only whole-album days this month.
-2. The catalog audit's remainder (open item 1), then everything else below.
+   drag the tonearm with a finger (open item 2). Whole-album days coming up:
+   10-27 and 10-30; once item 1 is built, song days count too.
+3. The catalog audit's remainder (open item 1), then everything else below.
 
 Two open actions need a human rather than code: **nobody has put the link
 anywhere** (open item 4), and **album audio needs a YouTube Data API key**
@@ -280,7 +315,7 @@ docs.
    - **Built: grooves drawn from the tracklist.** One ring between each pair
      of songs. Rings on 328 of 423 albums; the rest honestly show none.
    - **Built: a turntable and a tonearm that is the progress bar.** Only when
-     the video is the whole album — 38 of 423 albums (~9%) since 2026-10-07;
+     the video is the whole album — 37 of 423 albums (~9%) since 2026-10-08;
      a one-song day gets the plain player. Open item 3's refetch is what
      would add more. Sessions qualify through the audit's `FULL_SESSION`
      rule — Tiny Desk, Boiler Room and KEXP sets as the series posted them;

@@ -42,7 +42,10 @@
     entry, 20+; KEXP's "<artist> - Full Performance (Live on KEXP)", 10+). The
     entry is the session, so there is no album runtime to compare, a set can
     run under `FULL_ALBUM`'s 20-minute fallback, and its title rarely repeats
-    the catalog's. Checked against real videos and decoys from real ids: the
+    the catalog's. A long upload that names the album but is one piece of it
+    goes in `PART_AFTER_REVIEW` once a person has looked (verdict `PART`,
+    never recorded) — _Live at Pompeii_'s "Echoes", 2026-10-08. Checked
+    against real videos and decoys from real ids: the
     four stored sets and KEXP's full Khruangbin performance pass; one song
     from that session, a fan re-upload, a Boiler Room set filed under another
     city and a Tiny Desk set filed under another artist do not. **Re-record after any `youtubeId` or title change**, including a

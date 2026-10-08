@@ -61,6 +61,9 @@
  *                    names neither the album nor its tracks. Read by eye.
  *   ERROR            a lookup kept failing after retries. Not a verdict on
  *                    the video; re-run.
+ *   PART             would have passed as FULL_ALBUM or FULL_SESSION, but is
+ *                    in PART_AFTER_REVIEW: a person found it is one piece of
+ *                    the record, not all of it. Never recorded; listed.
  *   KEPT             would have been flagged, but is in KEPT_AFTER_REVIEW: a
  *                    person watched it and kept it. Listed, never counted.
  */
@@ -100,6 +103,15 @@ const KEPT_AFTER_REVIEW = {
 };
 const keptKey = (album) =>
   `${album.artist}::${album.title}::${album.youtubeId}`;
+
+/* The other way round: long, and its title names the album, so it passes —
+   but a person looked and it is one piece of the record. Kept off the
+   turntable list (--record), where it would sweep the arm across every song
+   while one plays. Keyed like KEPT_AFTER_REVIEW. */
+const PART_AFTER_REVIEW = {
+  "Pink Floyd::Live at Pompeii::JQ2pTamaqQ4":
+    "only 'Echoes', one of the film's pieces; passed because no runtime is known and the title names the album (reviewed 2026-10-08)",
+};
 
 const USER_AGENT =
   "AlbumOfTheDayClub/1.0 (https://littlealbumclub.net) audit-youtube-ids";
@@ -339,11 +351,14 @@ for (const [i, album] of withId.entries()) {
       albumNamed,
       fullSession: isFullSession(album, oe, page),
     });
+    const partNote = PART_AFTER_REVIEW[keptKey(album)];
     verdict =
       keptNote &&
       ["CLIP", "NOT_ON_ALBUM", "UNVERIFIED"].includes(flaggedVerdict)
         ? "KEPT"
-        : flaggedVerdict;
+        : partNote && ["FULL_ALBUM", "FULL_SESSION"].includes(flaggedVerdict)
+          ? "PART"
+          : flaggedVerdict;
     results.push({
       artist: album.artist,
       album: album.title,
@@ -358,6 +373,7 @@ for (const [i, album] of withId.entries()) {
       albumMinutes,
       matchedTracks: matched.slice(0, 3),
       ...(verdict === "KEPT" ? { keptBecause: keptNote } : {}),
+      ...(verdict === "PART" ? { partBecause: partNote } : {}),
     });
   } catch (err) {
     error = String(err.message || err);
@@ -379,6 +395,7 @@ const ORDER = [
   "NOT_ON_ALBUM",
   "UNVERIFIED",
   "KEPT",
+  "PART",
   "SONG_THIS_ALBUM",
   "FULL_ALBUM",
   "FULL_SESSION",
@@ -398,6 +415,7 @@ for (const v of [
   "NOT_ON_ALBUM",
   "UNVERIFIED",
   "KEPT",
+  "PART",
 ]) {
   const rows = results.filter((r) => r.verdict === v);
   if (!rows.length) continue;
@@ -410,7 +428,9 @@ for (const v of [
           ? `oEmbed ${r.oembedStatus}, watch page ${r.playability ?? "?"}`
           : v === "KEPT"
             ? r.keptBecause
-            : `${r.videoMinutes}m — ${JSON.stringify(r.videoTitle)}`;
+            : v === "PART"
+              ? r.partBecause
+              : `${r.videoMinutes}m — ${JSON.stringify(r.videoTitle)}`;
     console.log(`  ${r.artist} — ${r.album}  (${r.id})  ${why}`);
   }
 }
