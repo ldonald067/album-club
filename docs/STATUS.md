@@ -70,6 +70,17 @@ was offered on 10-08 and not chosen). The plain-player in-between
 (`.has-player`) is gone. `eval-site` fails if a single's record draws
 rings.
 
+**2026-10-09, later: the no-video days wear a pattern.** The owner wanted
+something fun on the 266 days a year with nothing to play, was shown three
+patterns and chose all three, taking turns by date, in changing colours: a
+**zoetrope** whose balls bounce in place when the record spins (the spin
+steps one frame at a time on those days), an op-art **spiral**, and a
+**picture disc** of the day's cover. The record rests half out of its sleeve
+on those days so the pattern shows. No deck — still nothing to play.
+`lib/record-art.js`; details in `docs/components.md` → "The record on the
+deck". First ones: a teal zoetrope 10-10, a violet spiral 10-11, a picture
+disc 10-12.
+
 **Keep each chat under ~300k tokens of context.** The owner is on the Pro
 plan and was hitting the 5-hour limit too soon: every message re-reads the
 whole context, and one session at ~400k had used 43% of a fresh 5-hour window.
@@ -344,6 +355,10 @@ docs.
    - **Built: an anniversary pressing (2026-09-30).** Coloured vinyl in the
      album's accent colour in its round-number year. Not built: 45 rpm for
      EPs — only 3 entries.
+   - **Built: a pattern on the no-video days (2026-10-09)** — zoetrope,
+     spiral or picture disc by date, in a changing ink. The owner's call,
+     and the one thing here that is fun rather than a fact about the day's
+     record.
    - **Skip:** anything audio-reactive (the YouTube iframe is opaque to Web
      Audio — the Club Player's spectrum was costume for this reason), and
      another flip (the Runout Groove is one).

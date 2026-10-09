@@ -211,6 +211,29 @@ disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
   pile up. **Measured trap:** the deck effect only slid the record out on
   "playing", so a record that loaded straight into "paused" left the arm
   hovering over an empty platter — "paused" now slides it out too.
+- **A pattern on days with nothing to play (2026-10-09).** The owner found
+  the plain record on the 266 no-video days a year dull, was shown three
+  patterns and chose all of them, taking turns, with the colours changing
+  too. `lib/record-art.js` picks one by date — consecutive days never repeat
+  a pattern, and with 3 patterns and 7 inks cycling independently a pattern
+  comes back in another colour:
+  - **Zoetrope** — 24 balls in a ring, each a frame of a bounce. Every spin
+    the record already had (greeting, hover, click, flip) runs in 24 steps
+    on these days (`.art-zoetrope`, `steps(24)`), so each step carries every
+    frame into the next one's place and the balls bounce where they are, as
+    a zoetrope picture disc does under a strobe. Measured: every angle a
+    clicked record passed through was a multiple of 15°.
+  - **Spiral** — an Archimedean spiral, turning smoothly.
+  - **Picture disc** — today's cover across the whole record, grooves over
+    it, label bare. It gives way to the zoetrope when the cover failed to
+    load, or on an anniversary, whose coloured vinyl it would hide.
+  The inks are `--vinyl-ink-1` … `7` in `:root`, chosen to read on black;
+  `test/record-art.test.mjs` fails if the module could pick an ink with no
+  token (it would print black on black) or the step count stops matching
+  the frames. The song rings still draw over the pattern. **The record
+  rests half out of its sleeve on these days** (`.has-art`, 70px, 50px on
+  phones): at the usual 10px overhang only 5 of the 24 balls showed. Never
+  on a turntable day. Reduced motion stills it, like every other spin.
 - **Room is reserved only on turntable days.** Slid out, the disc covered 35px
   of the title. `.album-display.has-deck` adds a right margin from first
   paint, set server-side from whether the album has a video, so nothing but

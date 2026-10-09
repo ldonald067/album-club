@@ -42,6 +42,7 @@ import {
   REST_ANGLE,
 } from "@/lib/tonearm";
 import { readFullPlays, recordFullPlay } from "@/lib/needle";
+import { recordArt, SPIRAL_PATH, ZOETROPE_FRAMES } from "@/lib/record-art";
 import { readStoredVote } from "@/lib/stored-vote";
 import AlbumPlayback from "./AlbumPlayback";
 
@@ -4730,6 +4731,23 @@ export default function ForumPage({
   const albumAge = new Date().getUTCFullYear() - album.year;
   const isAlbumBirthday = albumAge > 0 && albumAge % 5 === 0;
 
+  /* 🌀 What the record wears on a day with nothing to play (lib/record-art.js):
+     a zoetrope, a spiral or a picture disc, taking turns by date, the first
+     two in a changing ink. Never on a turntable day — that record is busy
+     being played. The picture disc needs a cover that loaded, and gives way
+     on an anniversary, whose coloured vinyl it would hide. */
+  const art = album.youtubeId ? null : recordArt(album.key);
+  const artPattern =
+    art?.pattern === "picture" &&
+    (!album.image || imgError || isAlbumBirthday)
+      ? "zoetrope"
+      : art?.pattern;
+  const artHint = {
+    zoetrope: "a zoetrope disc: spin it and it comes alive — ",
+    spiral: "an op-art disc — ",
+    picture: "a picture disc — ",
+  }[artPattern];
+
   const spinVinyl = () => {
     // ⌁ The Runout Groove — spin it again while it's still turning and you
     // flip the record, revealing the matrix etching scratched into the runout.
@@ -5159,7 +5177,9 @@ export default function ForumPage({
                 />
               ) : (
                 <div
-                  className={`album-display${hasDeck ? " has-deck" : ""}`}
+                  className={`album-display${
+                    hasDeck ? " has-deck" : artPattern ? " has-art" : ""
+                  }`}
                   style={{ "--album-wash": album.color }}
                 >
                   <div
@@ -5201,7 +5221,7 @@ export default function ForumPage({
                         vinylFlipped ? " flipped" : ""
                       }${onDeck ? " on-deck" : ""}${turning ? " turning" : ""}${
                         isAlbumBirthday ? " anniversary" : ""
-                      }`}
+                      }${artPattern ? ` art-${artPattern}` : ""}`}
                       role="button"
                       tabIndex={0}
                       aria-label="Spin the vinyl record"
@@ -5228,7 +5248,7 @@ export default function ForumPage({
                         isAlbumBirthday
                           ? `${albumAge}th-anniversary pressing · `
                           : ""
-                      }${
+                      }${artHint ?? ""}${
                         vinylBands
                           ? `${albumTracks} songs, a gap between each — `
                           : ""
@@ -5240,6 +5260,31 @@ export default function ForumPage({
                           : "click to spin!"
                       }`.replace(/^./, (c) => c.toUpperCase())}
                     >
+                      {/* On a day with nothing to play, the pattern pressed
+                          into the record (lib/record-art.js) — under the
+                          song rings, which still show the tracklist. */}
+                      {artPattern === "picture" ? (
+                        <span
+                          className="vinyl-art vinyl-art-picture"
+                          aria-hidden="true"
+                          style={{ backgroundImage: `url("${album.image}")` }}
+                        />
+                      ) : artPattern ? (
+                        <svg
+                          className="vinyl-art"
+                          viewBox="-100 -100 200 200"
+                          aria-hidden="true"
+                          style={{ "--vinyl-ink": `var(--vinyl-ink-${art.ink})` }}
+                        >
+                          {artPattern === "zoetrope" ? (
+                            ZOETROPE_FRAMES.map((f, i) => (
+                              <circle key={i} cx={f.cx} cy={f.cy} r={f.r} />
+                            ))
+                          ) : (
+                            <path d={SPIRAL_PATH} />
+                          )}
+                        </svg>
+                      ) : null}
                       {/* The gaps between today's songs, one ring each, as a
                           real LP shows them (lib/vinyl-bands.js). Absent when
                           the track count is unknown: no ring beats a wrong one. */}
@@ -5262,11 +5307,12 @@ export default function ForumPage({
                       {/* The label. Grooves are concentric, so a bare disc
                           looks identical at every angle and a spin is barely
                           visible; the label is what the eye reads as turning —
-                          and it puts today's record on the record. */}
+                          and it puts today's record on the record. A picture
+                          disc is all cover already, so its label is bare. */}
                       <span
                         className="vinyl-label"
                         aria-hidden="true"
-                        style={{
+                        style={artPattern === "picture" ? undefined : {
                           backgroundColor: album.color,
                           backgroundImage:
                             album.image && !imgError

@@ -17,6 +17,17 @@
      it reads as picked out rather than as one more ring. White at 7% did
      not read at all on a band a few pixels wide (measured, 2026-10-08). */
   --vinyl-song: rgba(201, 162, 39, 0.45);
+  /* The inks a record is pressed in on a day with nothing to play
+     (lib/record-art.js picks one by date): bright enough to read on black
+     vinyl, and distinct from each other. test/record-art.test.mjs checks
+     there is one for every ink the module can pick. */
+  --vinyl-ink-1: #e8c547; /* gold */
+  --vinyl-ink-2: #f07a5a; /* coral */
+  --vinyl-ink-3: #4fc1b0; /* teal */
+  --vinyl-ink-4: #a98bf0; /* violet */
+  --vinyl-ink-5: #f283b6; /* pink */
+  --vinyl-ink-6: #a8d65a; /* lime */
+  --vinyl-ink-7: #6db7f2; /* sky */
   /* The tonearm's brushed metal — also the same in every skin, being a part
      of the turntable rather than of the page. */
   --tonearm-light: #f4f4f4;
@@ -631,11 +642,64 @@ body {
    the disc, so they turn with it — and, like a real record's, look the same
    at every angle. */
 .vinyl-bands,
-.vinyl-song {
+.vinyl-song,
+.vinyl-art {
   position: absolute;
   inset: 0;
   border-radius: 50%;
   pointer-events: none;
+}
+
+/* ─── What the record wears on a day with nothing to play ───
+   (lib/record-art.js) A zoetrope or a spiral in the day's ink, or a picture
+   disc of the cover with the grooves catching the light over it. */
+.vinyl-art {
+  width: 100%;
+  height: 100%;
+}
+
+.vinyl-art circle {
+  fill: var(--vinyl-ink);
+}
+
+.vinyl-art path {
+  fill: none;
+  stroke: var(--vinyl-ink);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+}
+
+.vinyl-art-picture {
+  background-size: cover;
+  background-position: center;
+}
+
+.vinyl-art-picture::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: repeating-radial-gradient(
+    circle closest-side,
+    transparent 0 1.5px,
+    var(--vinyl-groove) 1.5px 2px
+  );
+}
+
+/* The zoetrope turns in steps, one frame's width each — 24, as
+   ZOETROPE_FRAMES has — so every step carries each frame exactly into the
+   next one's place and the balls bounce where they are, as a zoetrope disc
+   does under a strobe. Smoothly turned it would only be a ring of dots
+   going round. Every spin the record already has: the greeting, the hover,
+   the click and the flip. */
+.vinyl-disc.art-zoetrope.vinyl-intro,
+.album-cover-wrap:hover .vinyl-disc.art-zoetrope {
+  animation-timing-function: steps(24);
+}
+
+.vinyl-disc.art-zoetrope.spinning,
+.vinyl-disc.art-zoetrope.spinning.flipped {
+  animation-timing-function: steps(24) !important;
 }
 
 /* The record label. It sits on the disc's existing dark centre (the 18% radial
@@ -722,6 +786,20 @@ body {
     var(--vinyl-slide) - var(--disc-right) + var(--disc) *
       (var(--deck-right) - 1) / 2
   );
+}
+
+/* A day with nothing to play wears a pattern (lib/record-art.js), and a
+   pattern in the sleeve is a pattern nobody sees: measured, the record's
+   usual 10px overhang showed 5 of the zoetrope's 24 balls. So it rests about
+   half out of its sleeve, with room reserved from the first paint so it
+   never covers the title — the same way .has-deck makes room. */
+.album-display.has-art .album-cover-wrap {
+  --art-out: 70px;
+  margin-right: var(--art-out);
+}
+
+.album-display.has-art .vinyl-disc {
+  right: calc(var(--disc-right) - var(--art-out));
 }
 
 /* ─── The turntable (lib/tonearm.js) ───
@@ -3239,6 +3317,11 @@ body {
      of the stylus. */
   .album-display.has-deck .album-cover-wrap {
     --vinyl-slide: 100px;
+  }
+
+  /* Half out on the smaller phone record too */
+  .album-display.has-art .album-cover-wrap {
+    --art-out: 50px;
   }
 
   .content {
