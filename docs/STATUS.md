@@ -25,7 +25,8 @@ audit's `FULL_ALBUM` verdicts (36 videos) and, added the same day, its
 (the 2 Tiny Desk sets more; the 2 Boiler Room sets already passed), recorded by
 `npm run audit-youtube-ids -- --record` in `lib/full-album-videos.json`;
 `eval-site` fails when that list goes stale, so **re-record after any
-`youtubeId` or title change**. One-song days keep the plain player. Fixed
+`youtubeId` or title change**. (Since 2026-10-09 every other video day gets
+the deck too, without the sweep — below.) Fixed
 with it: listening is measured from the player's clock, a seek to the start
 forgets the saved spot, the arm waits for the album's length, a failed player
 puts the record away, Your Stats updates on a full play, and the arm no
@@ -51,11 +52,23 @@ are the **title track** ("Prince - Purple Rain (Official Video)"), so a title
 naming only the album is placed when the video runs as long as that track —
 measured, nearly all are within 5%, and the three that are not (Thriller's
 13.7-minute film, a "360" video at twice the song, a 1.4-minute "ST. CHROMA"
-snippet) stay plain. Rules and the unplaced list in `docs/album-data.md`;
+snippet) are not placed. Rules and the unplaced list in `docs/album-data.md`;
 the behaviour in `docs/components.md` → "The record on the deck". Verified
 in the browser on _The Bends_ (play, both clicks, drag, the end, reload),
-on a whole-album day (run-out intact), an unplaced day (plain player) and
-an anniversary pressing at 375px.
+on a whole-album day (run-out intact) and an anniversary pressing at 375px.
+
+**2026-10-09: every day with a video gets the turntable** — the owner's
+rule: if a song or the album plays, the arm plays it. A video that is
+neither the whole album nor a placed song (the 14 unplaced songs, the two
+`KEPT` films, _Pompeii_'s "Echoes", BTS's unverified clip) is played as a
+**single**: the record shows no song rings that day and the arm crosses the
+whole groove — the rings go, not the arm, because an arm crossing the
+album's rings during one track is the 2026-10-07 bug. **99 turntable days in
+the next year: 35 whole albums, 48 song days, 16 singles**; the other 266
+days have no video and keep the plain sleeve (a deck with nothing to play
+was offered on 10-08 and not chosen). The plain-player in-between
+(`.has-player`) is gone. `eval-site` fails if a single's record draws
+rings.
 
 **Keep each chat under ~300k tokens of context.** The owner is on the Pro
 plan and was hitting the 5-hour limit too soon: every message re-reads the
@@ -111,8 +124,9 @@ were cut to current state.
 1. **One phone check** — tap through the Blind Taste Test on an iPhone and an
    Android phone, and on a turntable day press Play, tap the grooves and
    drag the tonearm with a finger (open item 2). Turntable days coming up:
-   song days 10-09, 10-13 → 10-15, 10-19, 10-29, 11-01; whole albums 10-27
-   and 10-30. On a song day only the gold band takes a tap.
+   song days 10-09, 10-13 → 10-15, 10-19, 10-29, 11-01; a single 10-16;
+   whole albums 10-27 and 10-30. On a song day only the gold band takes a
+   tap.
 2. The catalog audit's remainder (open item 1), then everything else below.
 
 Two open actions need a human rather than code: **nobody has put the link
@@ -305,11 +319,12 @@ docs.
    `docs/components.md` → "The record on the deck".
    - **Built: grooves drawn from the tracklist.** One ring between each pair
      of songs. Rings on 328 of 423 albums; the rest honestly show none.
-   - **Built: a turntable and a tonearm that is the progress bar.** When the
-     video is the whole album — 37 of 423 albums — or, since 2026-10-08, one
-     song the audit could place on the record (58 more): the needle then
-     plays only that song's band. The 14 one-song videos it cannot place get
-     the plain player. Open item 3's refetch is what would add more. Sessions qualify through the audit's `FULL_SESSION`
+   - **Built: a turntable and a tonearm that is the progress bar.** On every
+     album with a video (113 of 423). The arm sweeps every song ring only
+     when the video is the whole album (37); on one song the audit could
+     place (58, since 2026-10-08) it plays just that song's band; anything
+     else (18, since 2026-10-09) plays as a single on a ringless record.
+     Open item 3's refetch is what would add more. Sessions qualify through the audit's `FULL_SESSION`
      rule — Tiny Desk, Boiler Room and KEXP sets as the series posted them;
      KEXP's full Khruangbin performance (`0PsOJ_fRckg`, 35.7 min) passes it
      if someone wants that entry to have audio. The owner found the first

@@ -480,10 +480,6 @@ body {
   /* The record's size and how far it overhangs the sleeve at rest */
   --disc: 180px;
   --disc-right: -10px;
-  /* How far the record comes out of its sleeve while it plays: a little, on a
-     day whose video is one song the audit could not place; all the way onto
-     the platter on a turntable day (.has-deck, below). */
-  --vinyl-slide: 40px;
 }
 
 .album-cover {
@@ -705,11 +701,10 @@ body {
 /* Room for the turntable beside the sleeve, out to the plinth's right edge
    (--deck-right, from lib/tonearm.js, set inline on the wrap). Measured
    without any: the slid-out disc covered 35px of the title and the Year/Genre
-   labels. Reserved from the first paint and only on days whose video is the
-   whole album or one song placed on it — set server-side
-   (lib/full-album-videos.js, lib/song-videos.js) — so nothing but the
-   record and the arm ever moves, and days without audio keep the tighter
-   layout they have always had. On phones the same margin centres the whole
+   labels. Reserved from the first paint and only on days with something to
+   play — set server-side from the album's video — so nothing but the record
+   and the arm ever moves, and days without audio keep the tighter layout
+   they have always had. On phones the same margin centres the whole
    turntable rather than just the sleeve. The wider gap keeps the details
    from crowding the deck. */
 .album-display.has-deck {
@@ -717,8 +712,8 @@ body {
 }
 
 .album-display.has-deck .album-cover-wrap {
-  /* All the way, onto the platter, so the whole record and its label show
-     while it plays. It must at least leave the sleeve's edge 0.15 radii left
+  /* How far the record comes out of its sleeve to play: all the way, onto
+     the platter, so the whole record and its label show while it plays. It must at least leave the sleeve's edge 0.15 radii left
      of the spindle, where the stylus works in to (test/tonearm.test.mjs); 70px
      did, and still hid half the record and felt cramped, so the owner asked
      for more. */
@@ -727,14 +722,6 @@ body {
     var(--vinyl-slide) - var(--disc-right) + var(--disc) *
       (var(--deck-right) - 1) / 2
   );
-}
-
-/* A day whose video is one song the audit could not place on the record
-   (lib/song-videos.js): no deck, and the record comes 40px out of its sleeve
-   to play, as it did before the turntable. Room for exactly that, from the
-   first paint. */
-.album-display.has-player .album-cover-wrap {
-  margin-right: var(--vinyl-slide);
 }
 
 /* ─── The turntable (lib/tonearm.js) ───
@@ -3241,12 +3228,10 @@ body {
   }
 
   /* The tonearm scales with the record: every part of it is sized from
-     --disc. The slide keeps the sleeve's edge 0.15 radii left of the spindle,
-     the least the stylus needs (see the desktop rule). */
+     --disc. */
   .album-cover-wrap {
     --disc: 130px;
     --disc-right: -20px;
-    --vinyl-slide: 28px;
   }
 
   /* Slightly short of all the way, so the deck fits a 375px phone: the
@@ -3254,11 +3239,6 @@ body {
      of the stylus. */
   .album-display.has-deck .album-cover-wrap {
     --vinyl-slide: 100px;
-  }
-
-  /* One song: the sleeve stays centred above the details, as it always was */
-  .album-display.has-player .album-cover-wrap {
-    margin-right: 0;
   }
 
   .content {

@@ -105,19 +105,30 @@ disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
   inline), deepened toward black with `color-mix` so the song rings still read.
   Checked across the anniversary colours from the brightest (Drive) to the
   darkest, which stays effectively black — true to that album.
-- **Only when the video is the whole album (2026-10-07).** The deck, the
-  arm, needle drops and the run-out all claim the whole record, and most
-  stored videos are one song (`docs/album-data.md`). On those days the arm
-  crossed every song ring during one track and one song counted as "heard all
-  the way through". `section-page.js` now passes `playsWholeAlbum`, looked up
+- **The whole sweep only when the video is the whole album (2026-10-07).**
+  An arm crossing every song ring, the run-out and "heard all the way
+  through" claim the whole record, and most stored videos are one song
+  (`docs/album-data.md`). Before this the arm crossed every song ring during
+  one track and one song counted as "heard all the way through".
+  `section-page.js` now passes `playsWholeAlbum`, looked up
   in `lib/full-album-videos.json` — the audit's `FULL_ALBUM` verdicts, and
   `FULL_SESSION` for a Tiny Desk, Boiler Room or KEXP set played whole, written
   by `npm run audit-youtube-ids -- --record` and keyed on artist, album and
-  id, so a changed id loses the deck rather than inheriting a verdict.
-  `eval-site` fails when the list goes stale. A one-song video the audit
-  could not place on the record (below) keeps the plain player, and the
-  record comes 40px out of its sleeve (28px on phones) to play, as it did
-  before the turntable (`.has-player`).
+  id, so a changed id loses the sweep rather than inheriting a verdict.
+  `eval-site` fails when the list goes stale.
+- **Every day with a video gets the deck (2026-10-09)** — the owner's rule:
+  if a song or the album plays, the arm plays it. A video that is neither
+  the whole album nor a song the audit placed (below) — an unplaced song, a
+  film, a clip — is played as a **single**: one unbroken groove, so the
+  record carries no song rings that day (`vinylBands` is null) and the arm
+  crosses the whole of it, with needle drops anywhere on the grooves. No
+  run-out and no award, as on a song day. The rings go rather than the arm
+  because nobody knows which band the video is, and an arm crossing the
+  album's rings during one track says the whole album is playing — the
+  2026-10-07 bug. `eval-site` fails if a single's record draws rings. Days
+  without a video keep the plain sleeve: the owner was offered a deck with
+  nothing to play and did not choose it. The old in-between — the record
+  40px out of its sleeve with no deck (`.has-player`) — is gone.
 - **Song days get the turntable too (2026-10-08).** The owner found a deck on
   only the whole-album days "no fun" and chose: one-song days get it, with
   the needle on that song's own groove. `section-page.js` passes `albumSong`
@@ -202,10 +213,9 @@ disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
   hovering over an empty platter — "paused" now slides it out too.
 - **Room is reserved only on turntable days.** Slid out, the disc covered 35px
   of the title. `.album-display.has-deck` adds a right margin from first
-  paint, set server-side from `playsWholeAlbum` and `albumSong`, so nothing
-  but the record and the arm moves; unplaced one-song days reserve just their
-  40px (`.has-player`), and
-  days without audio keep the plain sleeve and their tighter layout. The margin runs to the plinth's right edge, and the
+  paint, set server-side from whether the album has a video, so nothing but
+  the record and the arm moves, and days without audio keep the plain sleeve
+  and their tighter layout. The margin runs to the plinth's right edge, and the
   gap to the details is 40px. On phones the same margin centres the whole
   turntable rather than the sleeve. Below ~800px wide the details wrap under
   the turntable on playable days, as they do on phones.

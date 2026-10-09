@@ -71,7 +71,9 @@
     track no standard edition has, a title shared by two tracks (_The
     Suburbs_), more than 20 songs. **Re-record after any track-count change
     in `lib/album-facts.json` too**: an entry recorded against another count
-    is ignored by the page and fails `eval-site`.
+    is ignored by the page and fails `eval-site`. A video that is placed nowhere — an
+    unplaced song, a `KEPT` film, a `PART` clip — still gets the turntable,
+    played as a single across a record with no song rings (2026-10-09).
   - **Re-run it with `npm run audit-youtube-ids`** (read-only, ~4 minutes, exits 1 if anything is dead, a clip or from the wrong album). Videos keep dying after they are stored, so this is worth running now and then. `--albums <file>` audits a candidate catalog — use it on the output of a refetch **before** copying it over `lib/albums.json`. A DEAD verdict comes from the watch page's playability status, a proxy; confirm in a browser that the IFrame player really fires `onError` before removing an id.
   - **Why so few are whole albums:** `scripts/fetch-youtube-ids.mjs` searched `"{artist} {title} official audio"` and kept the **first result, unchecked**, and only for `recognizable` albums — the ids were collected for Heardle and the Taste Test, where a single song is fine. The hero's inline player reused the field later. A refetch that targets full albums, checks title and duration, and covers the whole catalog is the real fix and needs a YouTube Data API key.
   - Removing ids shrinks the Heardle and Taste Test pools, and pool size drives the daily rotation, so it reshuffles which album those games pick on future days — from the day after tomorrow, once `npm run pin-schedule` has recorded the rest (see the pinned schedule under Daily Rotation). `eval-site` checks the new Heardle pool against the 5-day cadence.

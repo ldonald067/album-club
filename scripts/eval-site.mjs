@@ -1067,19 +1067,21 @@ failures += printGuardrail(
     : "Only HTML 4 entities, which decode; everything else is a real character.",
 );
 
-/* The turntable claims the whole album: an arm that crosses every song ring,
-   needle drops by song position, "heard all the way through". Most stored
-   videos are one song, so it is gated on the audit's FULL_ALBUM and
-   FULL_SESSION list (lib/full-album-videos.js), keyed on artist, album and id. An entry that no
-   longer matches the catalog means an id or a title changed since the audit
-   ran: harmless on the page — that album just loses its deck — but the list
-   is stale, and a new whole-album video would go unnoticed.
+/* Every day with a video gets the turntable (the owner's rule, 2026-10-09),
+   and what its arm claims depends on what the video is. Sweeping every song
+   ring, the run-out and "heard all the way through" claim the whole album,
+   so they are kept to the audit's FULL_ALBUM and FULL_SESSION list
+   (lib/full-album-videos.js), keyed on artist, album and id. An entry that
+   no longer matches the catalog means an id or a title changed since the
+   audit ran: harmless on the page — that album is just played as a single —
+   but the list is stale, and a new whole-album video would go unnoticed.
 
-   A one-song video gets the deck too when the audit placed it on the record
-   (lib/song-videos.js): then the needle claims one song's band instead, so
-   the entry must still fit the rings drawn today — the same track count as
-   lib/album-facts.json, inside the 2–20 the rings are drawn for — and the
-   run-out and "heard all the way through" must stay with whole albums. */
+   A one-song video the audit placed on the record (lib/song-videos.js)
+   claims one song's band instead, so its entry must still fit the rings
+   drawn today — the same track count as lib/album-facts.json, inside the
+   2–20 the rings are drawn for. Any other video is played as a single, and
+   a single's record must carry no song rings: an arm crossing the album's
+   rings during one track says the whole album is playing. */
 const fullAlbumVideos = readJson(
   path.join(rootDir, "lib", "full-album-videos.json"),
 );
@@ -1094,7 +1096,9 @@ const staleFullAlbums = Object.keys(fullAlbumVideos).filter(
 const songVideos = readJson(path.join(rootDir, "lib", "song-videos.json"));
 const songProblems = Object.entries(songVideos).flatMap(([key, entry]) => {
   if (!catalogVideoKeys.has(key)) {
-    return [`lib/song-videos.json lists ${key}, which the catalog no longer has`];
+    return [
+      `lib/song-videos.json lists ${key}, which the catalog no longer has`,
+    ];
   }
   if (Object.hasOwn(fullAlbumVideos, key)) {
     return [`${key} is listed as both the whole album and one song`];
@@ -1137,14 +1141,19 @@ const deckProblems = [
     : [
         "ForumPage's run-out and full-play award are no longer kept to whole albums",
       ]),
+  ...(/vinylBands = single \? null : trackBandsGradient/.test(forumSource)
+    ? []
+    : [
+        "ForumPage draws song rings on a single, where the arm crosses them all",
+      ]),
 ];
 deckProblems.forEach((p) => console.log(`  ! ${p}`));
 failures += printGuardrail(
   deckProblems.length === 0,
-  "The turntable shows only for a video the audit found whole, or one song it placed",
+  "The turntable's arm claims only what the video is",
   deckProblems.length
     ? "Re-run `npm run audit-youtube-ids -- --record` after any youtubeId, title or track-count change."
-    : `${Object.keys(fullAlbumVideos).length} of ${catalogVideoKeys.size} stored videos are a whole album or session, and ${Object.keys(songVideos).length} are one song placed on the record — the turntable's days.`,
+    : `Of ${catalogVideoKeys.size} stored videos, ${Object.keys(fullAlbumVideos).length} are a whole album or session and ${Object.keys(songVideos).length} one song placed on the record; the other ${catalogVideoKeys.size - Object.keys(fullAlbumVideos).length - Object.keys(songVideos).length} play as singles.`,
 );
 
 printSection("Manual checklist");

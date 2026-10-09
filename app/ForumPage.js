@@ -4454,17 +4454,24 @@ export default function ForumPage({
     return () => clearTimeout(t);
   }, []);
   const vinylRef = useRef(null);
-  const vinylBands = trackBandsGradient(albumTracks);
-  /* The turntable — deck, tonearm, needle drops and the run-out — when
-     today's video is the whole album (lib/full-album-videos.js), and also
-     when it is one song the audit placed on the record (lib/song-videos.js,
-     the owner's call, 2026-10-08): then the needle plays only that song's
-     band, lit and named. A one-song video it could not place keeps the plain
-     player, with the record slid a little out of its sleeve, because an arm
-     crossing every song ring in one track would be saying something false. */
+  /* The turntable — deck, tonearm, needle drops — whenever today's record
+     has something to play: the owner's rule (2026-10-09) is that if a song
+     or the album plays, the arm plays it. What the record claims depends on
+     what the video is:
+     - the whole album (lib/full-album-videos.js): the arm sweeps every song
+       ring, and the run-out and "heard all the way through" wait at the end;
+     - one song the audit placed (lib/song-videos.js, 2026-10-08): the arm
+       plays only that song's band, lit and named;
+     - anything else — a song it could not place, a film, a clip — is played
+       as a single: one unbroken groove, so the record carries no song rings
+       and the arm crosses all of it. Nobody knows which band the video is,
+       and an arm crossing the album's rings during one track would say the
+       whole album was playing (the 2026-10-07 fix). */
   const wholeAlbum = playsWholeAlbum && Boolean(album.youtubeId);
   const song = !wholeAlbum && album.youtubeId ? albumSong : null;
-  const hasDeck = wholeAlbum || Boolean(song);
+  const single = Boolean(album.youtubeId) && !wholeAlbum && !song;
+  const hasDeck = Boolean(album.youtubeId);
+  const vinylBands = single ? null : trackBandsGradient(albumTracks);
   const songBand = song ? songBandGradient(song.of, song.track) : null;
   const songName = song
     ? `track ${song.track} of ${song.of}, ${song.title}`
@@ -5152,9 +5159,7 @@ export default function ForumPage({
                 />
               ) : (
                 <div
-                  className={`album-display${
-                    hasDeck ? " has-deck" : album.youtubeId ? " has-player" : ""
-                  }`}
+                  className={`album-display${hasDeck ? " has-deck" : ""}`}
                   style={{ "--album-wash": album.color }}
                 >
                   <div
@@ -5162,8 +5167,7 @@ export default function ForumPage({
                     style={hasDeck ? DECK_VARS : undefined}
                   >
                     {/* The deck the record plays on, beside the sleeve, on
-                        days the whole album or one placed song can play
-                        (lib/tonearm.js). */}
+                        every day something can play (lib/tonearm.js). */}
                     {hasDeck && (
                       <span className="turntable" aria-hidden="true">
                         <span className="turntable-plinth" />
@@ -5275,9 +5279,10 @@ export default function ForumPage({
                         the record from Play, creeping toward the label as
                         the album goes on, lifted on Pause, in the run-out
                         at the end and home on Stop (lib/tonearm.js). On a
-                        song day it crosses only that song's band and rests
-                        at its inner edge at the end — the run-out belongs
-                        to an album played through. The grip is pointer-only
+                        song day it crosses only that song's band, and on a
+                        single the whole groove; either way it rests where
+                        the music ends — the run-out belongs to an album
+                        played through. The grip is pointer-only
                         on purpose — the seek bar is the keyboard's way to do
                         the same thing. */}
                     {hasDeck && (
