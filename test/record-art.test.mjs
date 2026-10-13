@@ -11,7 +11,10 @@ import {
   SPIRAL_RANGE,
 } from "../lib/record-art.js";
 
-const css = fs.readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+const css = fs.readFileSync(
+  new URL("../app/globals.css", import.meta.url),
+  "utf8",
+);
 const LABEL = 34;
 const EDGE = 100;
 
@@ -20,7 +23,10 @@ const dayKey = (n) =>
 
 test("the patterns take turns: consecutive days never repeat one", () => {
   for (let n = 0; n < 400; n++) {
-    assert.notEqual(recordArt(dayKey(n)).pattern, recordArt(dayKey(n + 1)).pattern);
+    assert.notEqual(
+      recordArt(dayKey(n)).pattern,
+      recordArt(dayKey(n + 1)).pattern,
+    );
   }
   const seen = new Set([0, 1, 2].map((n) => recordArt(dayKey(n)).pattern));
   assert.deepEqual([...seen].sort(), [...ART_PATTERNS].sort());
@@ -34,7 +40,9 @@ test("the ink changes too, so a pattern comes back in another colour", () => {
     assert.notEqual(today.ink, again.ink, dayKey(n));
     assert.ok(today.ink >= 1 && today.ink <= INKS);
   }
-  const inks = new Set(Array.from({ length: INKS }, (_, n) => recordArt(dayKey(n)).ink));
+  const inks = new Set(
+    Array.from({ length: INKS }, (_, n) => recordArt(dayKey(n)).ink),
+  );
   assert.equal(inks.size, INKS, "every ink gets used");
 });
 
@@ -70,7 +78,10 @@ test("the spiral runs from outside the label to inside the edge", () => {
   assert.ok(points.length > 100);
   for (const [x, y] of points) {
     const d = Math.hypot(x, y);
-    assert.ok(d >= SPIRAL_RANGE.inner - 0.2 && d <= SPIRAL_RANGE.outer + 0.2, `${d}`);
+    assert.ok(
+      d >= SPIRAL_RANGE.inner - 0.2 && d <= SPIRAL_RANGE.outer + 0.2,
+      `${d}`,
+    );
   }
   assert.ok(SPIRAL_RANGE.inner > LABEL + 4 && SPIRAL_RANGE.outer < EDGE - 4);
 });

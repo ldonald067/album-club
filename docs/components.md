@@ -227,13 +227,13 @@ disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
   - **Picture disc** — today's cover across the whole record, grooves over
     it, label bare. It gives way to the zoetrope when the cover failed to
     load, or on an anniversary, whose coloured vinyl it would hide.
-  The inks are `--vinyl-ink-1` … `7` in `:root`, chosen to read on black;
-  `test/record-art.test.mjs` fails if the module could pick an ink with no
-  token (it would print black on black) or the step count stops matching
-  the frames. The song rings still draw over the pattern. **The record
-  rests half out of its sleeve on these days** (`.has-art`, 70px, 50px on
-  phones): at the usual 10px overhang only 5 of the 24 balls showed. Never
-  on a turntable day. Reduced motion stills it, like every other spin.
+    The inks are `--vinyl-ink-1` … `7` in `:root`, chosen to read on black;
+    `test/record-art.test.mjs` fails if the module could pick an ink with no
+    token (it would print black on black) or the step count stops matching
+    the frames. The song rings still draw over the pattern. **The record
+    rests half out of its sleeve on these days** (`.has-art`, 70px, 50px on
+    phones): at the usual 10px overhang only 5 of the 24 balls showed. Never
+    on a turntable day. Reduced motion stills it, like every other spin.
 - **Room is reserved only on turntable days.** Slid out, the disc covered 35px
   of the title. `.album-display.has-deck` adds a right margin from first
   paint, set server-side from whether the album has a video, so nothing but

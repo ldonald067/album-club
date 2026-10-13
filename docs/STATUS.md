@@ -157,9 +157,9 @@ were cut to current state.
      every spin (greeting, hover, click, flip), `.has-art`'s reserved room,
      the picture disc's fallbacks, colour tokens.
    - The new `eval-site` checks are source greps — say if one is too weak.
-   The skill builds each prompt as a file on stdin and keeps stderr; follow
-   it exactly (it failed silently once without). Fix what the review
-   accepts, then re-verify in the browser.
+     The skill builds each prompt as a file on stdin and keeps stderr; follow
+     it exactly (it failed silently once without). Fix what the review
+     accepts, then re-verify in the browser.
 2. **One phone check** — tap through the Blind Taste Test on an iPhone and an
    Android phone; on a turntable day press Play, tap the grooves and drag
    the tonearm with a finger; on a pattern day tap the record and watch it
