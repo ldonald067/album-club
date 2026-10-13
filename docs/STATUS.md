@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-10-08.
+session. Last updated: 2026-10-13.
 
 This file holds **current state, open items and standing decisions** only.
 How things work lives in the topic docs; what happened and when lives in git
@@ -14,12 +14,33 @@ it used to carry).
 returns the running commit SHA — it should match `git rev-parse --short
 origin/master` — and `uptimeSeconds` should climb. No PRs are open; `master`
 is the only branch, locally and on GitHub. Checked 2026-10-13: production had
-run `3da24b2` for 4.3 days without a restart. **Three formatting-only diffs
-sit uncommitted** — Prettier line-wraps in `scripts/audit-youtube-ids.mjs`,
-`test/song-videos.test.mjs` and `test/tonearm.test.mjs`, from another
-session or a formatter, there since 2026-10-09. Harmless; they were left out
-of every commit because they are not this session's. Commit them on their
-own or `git checkout` them — nothing else depends on them.
+run `3da24b2` for 4.3 days without a restart. Formatting-only diffs left
+uncommitted by a formatter (some since 2026-10-09) were committed on their
+own that day, `2bf4bf3` and `faaf04d`.
+
+**2026-10-13: half an adversarial review, and its fixes.** The three Codex
+reviewers of `75eb24d..3da24b2` all hit the ChatGPT account's Codex usage
+limit two minutes in, run in parallel, and wrote no verdict; their logs held
+probes, and four leads checked out, plus one found while checking. Fixed:
+`placeSong` passed over an edition of the rings' length that lacked the song
+or had it twice, and called the rest unanimous — such an edition now
+refuses the placement, a track counting as the song by its title **or by
+its MusicBrainz recording** ("FTBC" and a censored `Norman ******* Rockwell`
+are the same recordings); the title-track rule placed a title naming the
+album and more ("Creep (The Bends sessions)") on length alone — the title
+may now add only the artist, a year and dressing; both rules moved to
+`lib/place-song.js` with tests. The Vintage skin squared the picture disc
+(`.vinyl-art`, `.vinyl-song` joined its round exemptions). Two `eval-site`
+greps passed `single = false` — the kind of day is now `recordPlays` in
+`lib/tonearm.js`, tested, and `ForumPage` must take it from there. At the
+end of a song or a single the record turned on for seven silent seconds —
+now the needle lifts and the platter winds down. All 58 placements were
+first checked by hand against the real albums and were right (Robyn's
+_Sexistential_ unverifiable); re-recorded, 57 are placed, and _The
+Blueprint_ is a single (its 2001 US edition has another recording of the
+song). Verified in the browser: the end of _The Bends_, and a picture-disc
+layer under Vintage (round, computed `50%`). A whole-album day's ending is
+untouched by the change and was not re-run.
 
 **2026-10-07: the turntable shows only for a whole-album video.** An
 adversarial review (Codex) found the deck, the arm and "heard all the way
@@ -137,26 +158,28 @@ were cut to current state.
 
 **Where to pick up, in this order:**
 
-1. **Adversarial review of the record's last three commits** — the owner's
-   next step (2026-10-13). Run `/adversarial-review` on `75eb24d..3da24b2`
-   (`1022d29` song days, `0fbbd94` singles, `3da24b2` the patterns): ~1,100
-   lines across 20 files, so all three lenses on Codex. **Intent:** every
-   day's record does something, and nothing it does claims more than is
-   known — the arm sweeps the rings only for a whole album, plays one lit
-   band only for a song the audit placed for certain, plays a ringless
-   single otherwise, and the no-video days wear a pattern. Worth attacking:
-   - `placeSong` in `scripts/audit-youtube-ids.mjs` — the title-track rule
-     (most one-song videos are the title track), the 0.75–1.35× length
-     check, edition unanimity — and the 58 placements in
-     `lib/song-videos.json` (the run's own list is in `docs/album-data.md`).
+1. **Rerun the adversarial review in full** — the owner's next step
+   (2026-10-13; the first run ended at the Codex limit, above). Run
+   `/adversarial-review` on `75eb24d..HEAD` — the three record commits and
+   the fixes — all three lenses on Codex, **one reviewer at a time**: in
+   parallel they used ~550k Codex tokens in two minutes. Tell them what is
+   already fixed, so they attack the fixes rather than re-report them.
+   **Intent:** every day's record does something, and nothing it does
+   claims more than is known — the arm sweeps the rings only for a whole
+   album, plays one lit band only for a song the audit placed for certain,
+   plays a ringless single otherwise, and the no-video days wear a pattern.
+   Worth attacking:
+   - `placeSong` in `lib/place-song.js` — the title-track rule and its
+     dressing list, the 0.75–1.35× length check, edition unanimity with
+     recording ids — and the 57 placements in `lib/song-videos.json`.
    - `ForumPage`'s video↔album mapping (`toAlbum` / `toVideo`) through
      every path: Play, a groove click, a drag let go inside and outside the
      band, the end of the song, a reload with a remembered needle, Stop.
    - The singles: no rings, a full sweep, no run-out, no award.
    - `lib/record-art.js` and its CSS: the `steps(24)` overrides against
-     every spin (greeting, hover, click, flip), `.has-art`'s reserved room,
-     the picture disc's fallbacks, colour tokens.
-   - The new `eval-site` checks are source greps — say if one is too weak.
+     every spin, `.has-art`'s reserved room, the picture disc's fallbacks,
+     colour tokens.
+   - The `eval-site` checks are still source greps — say if one is too weak.
      The skill builds each prompt as a file on stdin and keeps stderr; follow
      it exactly (it failed silently once without). Fix what the review
      accepts, then re-verify in the browser.
@@ -361,8 +384,8 @@ docs.
    - **Built: a turntable and a tonearm that is the progress bar.** On every
      album with a video (113 of 423). The arm sweeps every song ring only
      when the video is the whole album (37); on one song the audit could
-     place (58, since 2026-10-08) it plays just that song's band; anything
-     else (18, since 2026-10-09) plays as a single on a ringless record.
+     place (57, since 2026-10-08) it plays just that song's band; anything
+     else (19, since 2026-10-09) plays as a single on a ringless record.
      Open item 3's refetch is what would add more. Sessions qualify through the audit's `FULL_SESSION`
      rule — Tiny Desk, Boiler Room and KEXP sets as the series posted them;
      KEXP's full Khruangbin performance (`0PsOJ_fRckg`, 35.7 min) passes it

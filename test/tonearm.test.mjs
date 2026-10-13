@@ -24,6 +24,7 @@ import {
   songToAlbum,
   albumToSong,
   inSongBand,
+  recordPlays,
 } from "../lib/tonearm.js";
 import {
   MUSIC_INNER,
@@ -134,6 +135,18 @@ test("the CSS draws the deck from these numbers", () => {
   assert.equal(DECK_VARS["--pivot-x"], PIVOT.x);
   assert.equal(DECK_VARS["--deck-right"], DECK.right);
   assert.equal(DECK_VARS["--platter"], PLATTER);
+});
+
+test("what the record plays: the whole album, a placed song, else a single", () => {
+  const song = { track: 2, of: 12, title: "The Bends" };
+  assert.equal(recordPlays("id", true, null), "album");
+  // A video both lists name is still the whole album (eval-site refuses it)
+  assert.equal(recordPlays("id", true, song), "album");
+  assert.equal(recordPlays("id", false, song), "song");
+  assert.equal(recordPlays("id", false, null), "single");
+  // No video: nothing to play, whatever the lists say
+  assert.equal(recordPlays(null, true, song), null);
+  assert.equal(recordPlays("", false, null), null);
 });
 
 test("a song day's needle plays only that song's band: (k−1+p)/n", () => {

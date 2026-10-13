@@ -4238,12 +4238,16 @@ body {
    backdrop into a black box. Its label is exempt for the same reason — a square
    label on a round record reads as a rendering fault, not as the nineties.
    So is the ring layer between songs: transparent at its corners today, but a
-   fill added there later would square off into a box. And the tonearm's
-   bearing and the turntable's platter, which are turned parts, not panels. */
+   fill added there later would square off into a box. So are the other
+   layers of the disc — a song day's lit band, and a no-video day's pattern,
+   whose picture disc is exactly that fill: missed off this list, it printed
+   the cover square across a round record (adversarial review, 2026-10-13).
+   And the tonearm's bearing and the turntable's platter, which are turned
+   parts, not panels. */
 :root[data-theme="vintage"]
-  *:not(.vinyl-disc):not(.vinyl-label):not(.vinyl-bands):not(.tonearm-base):not(
-    .turntable-platter
-  ):not(.tonearm-grip) {
+  *:not(.vinyl-disc):not(.vinyl-label):not(.vinyl-bands):not(.vinyl-song):not(
+    .vinyl-art
+  ):not(.tonearm-base):not(.turntable-platter):not(.tonearm-grip) {
   border-radius: 0;
 }
 

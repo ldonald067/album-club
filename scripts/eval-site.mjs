@@ -1146,6 +1146,20 @@ const deckProblems = [
     : [
         "ForumPage draws song rings on a single, where the arm crosses them all",
       ]),
+  /* The checks above read the lines that use the kind of day, and an
+     adversarial review (2026-10-13) found them blind to the lines that decide
+     it: `single = false`, or `wholeAlbum` true for any video, passed them all.
+     The kind is now decided once, by recordPlays (lib/tonearm.js, tested in
+     test/tonearm.test.mjs), and ForumPage must take all four from it. */
+  ...([
+    /const plays = recordPlays\(album\.youtubeId, playsWholeAlbum, albumSong\);/,
+    /const wholeAlbum = plays === "album";/,
+    /const song = plays === "song" \? albumSong : null;/,
+    /const single = plays === "single";/,
+    /const hasDeck = plays !== null;/,
+  ].every((line) => line.test(forumSource))
+    ? []
+    : ["ForumPage no longer takes its kind of day from recordPlays"]),
 ];
 deckProblems.forEach((p) => console.log(`  ! ${p}`));
 failures += printGuardrail(

@@ -36,6 +36,7 @@ import {
   onRecord,
   progressAtAngle,
   progressAtRadius,
+  recordPlays,
   songToAlbum,
   DECK_VARS,
   LABEL_EDGE,
@@ -4467,11 +4468,13 @@ export default function ForumPage({
        as a single: one unbroken groove, so the record carries no song rings
        and the arm crosses all of it. Nobody knows which band the video is,
        and an arm crossing the album's rings during one track would say the
-       whole album was playing (the 2026-10-07 fix). */
-  const wholeAlbum = playsWholeAlbum && Boolean(album.youtubeId);
-  const song = !wholeAlbum && album.youtubeId ? albumSong : null;
-  const single = Boolean(album.youtubeId) && !wholeAlbum && !song;
-  const hasDeck = Boolean(album.youtubeId);
+       whole album was playing (the 2026-10-07 fix).
+     Decided once, by recordPlays (lib/tonearm.js), and only read below. */
+  const plays = recordPlays(album.youtubeId, playsWholeAlbum, albumSong);
+  const wholeAlbum = plays === "album";
+  const song = plays === "song" ? albumSong : null;
+  const single = plays === "single";
+  const hasDeck = plays !== null;
   const vinylBands = single ? null : trackBandsGradient(albumTracks);
   const songBand = song ? songBandGradient(song.of, song.track) : null;
   const songName = song
@@ -4666,8 +4669,12 @@ export default function ForumPage({
       }
     };
 
-    // In the run-out after the last song the record is still turning
-    if (deck === "playing" || deck === "runout") {
+    /* In the run-out after the last song the record is still turning. Only
+       an album has one: at the end of a song or a single the platter winds
+       down under a lifted needle (below), rather than turning on in silence
+       with the needle parked on the next song's edge (adversarial review,
+       2026-10-13). */
+    if (deck === "playing" || (deck === "runout" && wholeAlbum)) {
       setOnDeck(true);
       setTurning(true);
       ramp(1, 500);
@@ -4738,8 +4745,7 @@ export default function ForumPage({
      on an anniversary, whose coloured vinyl it would hide. */
   const art = album.youtubeId ? null : recordArt(album.key);
   const artPattern =
-    art?.pattern === "picture" &&
-    (!album.image || imgError || isAlbumBirthday)
+    art?.pattern === "picture" && (!album.image || imgError || isAlbumBirthday)
       ? "zoetrope"
       : art?.pattern;
   const artHint = {
@@ -5274,7 +5280,9 @@ export default function ForumPage({
                           className="vinyl-art"
                           viewBox="-100 -100 200 200"
                           aria-hidden="true"
-                          style={{ "--vinyl-ink": `var(--vinyl-ink-${art.ink})` }}
+                          style={{
+                            "--vinyl-ink": `var(--vinyl-ink-${art.ink})`,
+                          }}
                         >
                           {artPattern === "zoetrope" ? (
                             ZOETROPE_FRAMES.map((f, i) => (
@@ -5312,13 +5320,17 @@ export default function ForumPage({
                       <span
                         className="vinyl-label"
                         aria-hidden="true"
-                        style={artPattern === "picture" ? undefined : {
-                          backgroundColor: album.color,
-                          backgroundImage:
-                            album.image && !imgError
-                              ? `url("${album.image}")`
-                              : undefined,
-                        }}
+                        style={
+                          artPattern === "picture"
+                            ? undefined
+                            : {
+                                backgroundColor: album.color,
+                                backgroundImage:
+                                  album.image && !imgError
+                                    ? `url("${album.image}")`
+                                    : undefined,
+                              }
+                        }
                       />
                     </div>
                     {/* The tonearm, on turntable days: parked on the deck, on
@@ -5326,16 +5338,20 @@ export default function ForumPage({
                         the album goes on, lifted on Pause, in the run-out
                         at the end and home on Stop (lib/tonearm.js). On a
                         song day it crosses only that song's band, and on a
-                        single the whole groove; either way it rests where
-                        the music ends — the run-out belongs to an album
-                        played through. The grip is pointer-only
-                        on purpose — the seek bar is the keyboard's way to do
-                        the same thing. */}
+                        single the whole groove; either way it lifts where
+                        the music ends, as the platter winds down — the
+                        run-out belongs to an album played through. The grip
+                        is pointer-only on purpose — the seek bar is the
+                        keyboard's way to do the same thing. */}
                     {hasDeck && (
                       <span
                         ref={tonearmRef}
                         className={`tonearm${deck === "off" ? "" : " cued"}${
-                          deck === "paused" || armDragging ? " lifted" : ""
+                          deck === "paused" ||
+                          armDragging ||
+                          (deck === "runout" && !wholeAlbum)
+                            ? " lifted"
+                            : ""
                         }${deck === "runout" && wholeAlbum ? " runout" : ""}${
                           armDragging ? " dragging" : ""
                         }${armHeld ? " held" : ""}`}

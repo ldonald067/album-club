@@ -149,10 +149,15 @@ disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
     nothing there to play. A dragged arm moves freely and is let down inside
     the band, at its nearer edge if released beyond it.
   - **The end of the song is not the end of the record:** no run-out and no
-    "heard all the way through" — the arm rests at the band's inner edge for
-    the run-out's seven seconds while the record turns, then goes home.
-    `eval-site` fails if the run-out or the award stop being whole-album
-    only.
+    "heard all the way through" — the needle lifts at the band's inner edge
+    and the platter winds down; seven seconds later the record goes back in
+    its sleeve and the arm home. A single ends the same way. (Until
+    2026-10-13 the record turned on through those seconds in silence, the
+    needle parked on the next song's edge.) `eval-site` fails if the run-out
+    or the award stop being whole-album only, or if `ForumPage` stops taking
+    the kind of day — album, song, single, none — from `recordPlays`
+    (`lib/tonearm.js`, tested): checking only the lines that _use_ the kind
+    missed `single = false` (adversarial review, 2026-10-13).
 - **A turntable beside the sleeve (2026-10-01).** On turntable days the hero
   shows a silver deck — plinth, a platter with a strobe-dotted rim and a felt
   slipmat in the club's navy and gold, and a tonearm. Play slides the record

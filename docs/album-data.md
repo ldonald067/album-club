@@ -59,17 +59,28 @@
     refill. A song is placed only when, after setting aside what the
     artist's or album's name explains, the title names exactly one track;
     the rings are drawn (2–20 songs, album-facts' count); every MusicBrainz
-    edition with exactly that many tracks has it at the same single place;
-    and the video runs 0.75–1.35× that track's length. The length check is
-    what makes a title-track upload safe to place — most one-song videos are
-    the title track ("Prince - Purple Rain (Official Video)"), and naming the
-    album is all their title does. Measured on all 72 (2026-10-08): nearly
+    edition with exactly that many tracks has it at the same single place —
+    by its title, or as the same recording under another spelling ("FTBC", a
+    censored `Norman ******* Rockwell`) — and one without it, or with it
+    twice, refuses the placement; and the video runs 0.75–1.35× that track's
+    length. The length check is what makes a title-track upload safe to
+    place — most one-song videos are the title track ("Prince - Purple Rain
+    (Official Video)"), and naming the album is all their title does. That
+    is checked too: a title naming the album and anything beyond its artist,
+    a year and dressing like "(Official Video)" is not placed — "Radiohead -
+    Creep (The Bends sessions)" passed on length alone. Both rules were
+    tightened after an adversarial review (2026-10-13); until then an
+    edition without the song was passed over and the rest called unanimous.
+    The rules are `lib/place-song.js`, tested by `test/place-song.test.mjs`,
+    which also checks the title of every recorded title-track placement.
+    Measured on all 72 (2026-10-08): nearly
     every video is within 5% of its track; the three outside are Thriller's
     13.7-minute film, a "360" video at twice the song and a 1.4-minute
     "ST. CHROMA" snippet. What is not placed, and why, is listed too:
     editions that disagree (DAMN.'s reversed collector's edition), a bonus
     track no standard edition has, a title shared by two tracks (_The
-    Suburbs_), more than 20 songs. **Re-record after any track-count change
+    Suburbs_), an edition spelling it on a different recording (_The
+    Blueprint_'s 2001 "Blue Print (Momma Loves Me)"), more than 20 songs. **Re-record after any track-count change
     in `lib/album-facts.json` too**: an entry recorded against another count
     is ignored by the page and fails `eval-site`. A video that is placed nowhere — an
     unplaced song, a `KEPT` film, a `PART` clip — still gets the turntable,
