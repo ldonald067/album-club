@@ -324,7 +324,8 @@ function placeSong(album, videoTitle, videoMinutes, matched, releases, tracks) {
   let keys = [...new Set(matched.map(trackKey))];
   const within = (outer, inner) => ` ${outer} `.includes(` ${inner} `);
   keys = keys.filter((k) => !keys.some((o) => o !== k && within(o, k)));
-  if (keys.length > 1) keys = keys.filter((k) => !within(norm(album.artist), k));
+  if (keys.length > 1)
+    keys = keys.filter((k) => !within(norm(album.artist), k));
   if (namesAlbum(videoTitle, album)) {
     const others = keys.filter((k) => !within(norm(album.title), k));
     if (others.length) keys = others;

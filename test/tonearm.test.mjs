@@ -154,7 +154,9 @@ test("a song day's needle plays only that song's band: (k−1+p)/n", () => {
 test("album progress turns back into song progress, and a drop off the band clamps", () => {
   const song = { track: 5, of: 8 };
   for (let p = 0; p <= 1.0001; p += 0.1) {
-    assert.ok(near(albumToSong(song, songToAlbum(song, p)), Math.min(p, 1), 1e-9));
+    assert.ok(
+      near(albumToSong(song, songToAlbum(song, p)), Math.min(p, 1), 1e-9),
+    );
   }
   assert.equal(albumToSong(song, 0), 0, "let go outside it: its outer edge");
   assert.equal(albumToSong(song, 1), 1, "let go inside it: its inner edge");
@@ -180,8 +182,14 @@ test("the arm crosses exactly the band the record lights for the song", () => {
       const [litInner, litOuter] = songBandRadii(of, track);
       // The lit band sits inside the arm's sweep, short of it by at most
       // half a ring
-      assert.ok(litOuter <= outer + 0.01 && litInner >= inner - 0.01, `${track}/${of}`);
-      assert.ok(outer - litOuter < 0.8 && litInner - inner < 0.8, `${track}/${of}`);
+      assert.ok(
+        litOuter <= outer + 0.01 && litInner >= inner - 0.01,
+        `${track}/${of}`,
+      );
+      assert.ok(
+        outer - litOuter < 0.8 && litInner - inner < 0.8,
+        `${track}/${of}`,
+      );
     }
   }
 });

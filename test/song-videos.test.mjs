@@ -19,8 +19,14 @@ test("a one-song video the audit placed names its song and where it sits", () =>
 });
 
 test("a changed id, or rings drawn from another count, lose it", () => {
-  assert.equal(songOnRecord({ ...listed, youtubeId: "someOtherId" }, tracks), null);
-  assert.equal(songOnRecord({ ...listed, title: "Another Album" }, tracks), null);
+  assert.equal(
+    songOnRecord({ ...listed, youtubeId: "someOtherId" }, tracks),
+    null,
+  );
+  assert.equal(
+    songOnRecord({ ...listed, title: "Another Album" }, tracks),
+    null,
+  );
   assert.equal(songOnRecord({ ...listed, youtubeId: undefined }, tracks), null);
   assert.equal(songOnRecord(listed, tracks + 1), null);
   assert.equal(songOnRecord(listed, null), null);
