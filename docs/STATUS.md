@@ -10,11 +10,16 @@ it used to carry).
 
 ## Handoff — read this first
 
-**Nothing is in flight.** `master` is clean and deployed. `GET /api/health`
+**Nothing is in flight.** `master` is deployed. `GET /api/health`
 returns the running commit SHA — it should match `git rev-parse --short
 origin/master` — and `uptimeSeconds` should climb. No PRs are open; `master`
-is the only branch, locally and on GitHub. Checked 2026-10-07: production had
-run the turntable build for six days without a restart.
+is the only branch, locally and on GitHub. Checked 2026-10-13: production had
+run `3da24b2` for 4.3 days without a restart. **Three formatting-only diffs
+sit uncommitted** — Prettier line-wraps in `scripts/audit-youtube-ids.mjs`,
+`test/song-videos.test.mjs` and `test/tonearm.test.mjs`, from another
+session or a formatter, there since 2026-10-09. Harmless; they were left out
+of every commit because they are not this session's. Commit them on their
+own or `git checkout` them — nothing else depends on them.
 
 **2026-10-07: the turntable shows only for a whole-album video.** An
 adversarial review (Codex) found the deck, the arm and "heard all the way
@@ -132,13 +137,36 @@ were cut to current state.
 
 **Where to pick up, in this order:**
 
-1. **One phone check** — tap through the Blind Taste Test on an iPhone and an
-   Android phone, and on a turntable day press Play, tap the grooves and
-   drag the tonearm with a finger (open item 2). Turntable days coming up:
-   song days 10-09, 10-13 → 10-15, 10-19, 10-29, 11-01; a single 10-16;
-   whole albums 10-27 and 10-30. On a song day only the gold band takes a
-   tap.
-2. The catalog audit's remainder (open item 1), then everything else below.
+1. **Adversarial review of the record's last three commits** — the owner's
+   next step (2026-10-13). Run `/adversarial-review` on `75eb24d..3da24b2`
+   (`1022d29` song days, `0fbbd94` singles, `3da24b2` the patterns): ~1,100
+   lines across 20 files, so all three lenses on Codex. **Intent:** every
+   day's record does something, and nothing it does claims more than is
+   known — the arm sweeps the rings only for a whole album, plays one lit
+   band only for a song the audit placed for certain, plays a ringless
+   single otherwise, and the no-video days wear a pattern. Worth attacking:
+   - `placeSong` in `scripts/audit-youtube-ids.mjs` — the title-track rule
+     (most one-song videos are the title track), the 0.75–1.35× length
+     check, edition unanimity — and the 58 placements in
+     `lib/song-videos.json` (the run's own list is in `docs/album-data.md`).
+   - `ForumPage`'s video↔album mapping (`toAlbum` / `toVideo`) through
+     every path: Play, a groove click, a drag let go inside and outside the
+     band, the end of the song, a reload with a remembered needle, Stop.
+   - The singles: no rings, a full sweep, no run-out, no award.
+   - `lib/record-art.js` and its CSS: the `steps(24)` overrides against
+     every spin (greeting, hover, click, flip), `.has-art`'s reserved room,
+     the picture disc's fallbacks, colour tokens.
+   - The new `eval-site` checks are source greps — say if one is too weak.
+   The skill builds each prompt as a file on stdin and keeps stderr; follow
+   it exactly (it failed silently once without). Fix what the review
+   accepts, then re-verify in the browser.
+2. **One phone check** — tap through the Blind Taste Test on an iPhone and an
+   Android phone; on a turntable day press Play, tap the grooves and drag
+   the tonearm with a finger; on a pattern day tap the record and watch it
+   spin (open item 2). Song days 10-13 → 10-15, 10-19, 10-29, 11-01 (only the
+   gold band takes a tap); a single 10-16; whole albums 10-27 and 10-30; a
+   spiral 10-17, a picture disc 10-18, a zoetrope 10-22.
+3. The catalog audit's remainder (open item 1), then everything else below.
 
 Two open actions need a human rather than code: **nobody has put the link
 anywhere** (open item 4), and **album audio needs a YouTube Data API key**
