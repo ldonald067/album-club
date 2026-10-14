@@ -4025,12 +4025,12 @@ const COZY_GAMES = [
     embedId: 4805776,
   },
   {
-    id: "welcome-to-kamegi",
-    title: "Welcome to Kamegi",
+    id: "welcome-to-kagemi",
+    title: "Welcome to Kagemi",
     byline: "rainbowpudding",
     blurb:
       "A town that can't agree what year it is. Talk to everyone, solve its puzzles, decide about the last train.",
-    embedId: 4247508,
+    embedId: 5062300,
   },
 ];
 
