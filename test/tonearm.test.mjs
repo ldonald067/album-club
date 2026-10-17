@@ -23,7 +23,11 @@ import {
   songBand,
   songToAlbum,
   albumToSong,
-  inSongBand,
+  songTarget,
+  songAtRadius,
+  onSongTarget,
+  radiusAtAngle,
+  AIM_PX,
   recordPlays,
 } from "../lib/tonearm.js";
 import {
@@ -176,14 +180,88 @@ test("album progress turns back into song progress, and a drop off the band clam
   assert.equal(albumToSong(song, NaN), 0);
 });
 
-test("only a click on the song's own band drops the needle", () => {
-  const song = { track: 2, of: 4 };
-  assert.equal(inSongBand(song, 0.3), true);
-  assert.equal(inSongBand(song, 0.25), true, "its outer ring");
-  assert.equal(inSongBand(song, 0.5), true, "its inner ring");
-  assert.equal(inSongBand(song, 0.1), false, "the song before");
-  assert.equal(inSongBand(song, 0.6), false, "the song after");
-  assert.equal(inSongBand(song, NaN), false);
+// The record's radius in CSS pixels: 180px on a desktop, 130px on a phone
+const DESKTOP_MOUSE = AIM_PX.mouse / 90;
+const PHONE_TOUCH = AIM_PX.touch / 65;
+const bandRadii = (song) => ({
+  outer: radiusAt(armAngle(songToAlbum(song, 0))),
+  inner: radiusAt(armAngle(songToAlbum(song, 1))),
+});
+
+test("a song's target holds its band, is as wide as a hand can aim and stays on the grooves", () => {
+  for (const aim of [0, DESKTOP_MOUSE, PHONE_TOUCH]) {
+    for (let of = 2; of <= MAX_TRACKS; of++) {
+      for (let track = 1; track <= of; track++) {
+        const song = { track, of };
+        const { outer, inner } = songTarget(song, aim);
+        const band = bandRadii(song);
+        const label = `${track}/${of} at ${aim.toFixed(3)}`;
+        assert.ok(outer >= band.outer - 0.001, label);
+        assert.ok(inner <= band.inner + 0.001, label);
+        assert.ok(outer <= 1 && inner >= LABEL_EDGE - 1e-9, label);
+        assert.ok(outer - inner >= Math.min(aim, 1 - LABEL_EDGE) - 1e-9, label);
+      }
+    }
+  }
+});
+
+test("a band already wide enough is its own target", () => {
+  // A mouse's 24px is more than any band on a 180px record — a two-song
+  // album's is 23.9px — so this is a bigger record's allowance
+  const song = { track: 2, of: 3 };
+  const { outer, inner } = songTarget(song, 0.1);
+  const band = bandRadii(song);
+  assert.ok(near(outer, band.outer) && near(inner, band.inner));
+});
+
+test("the whole song is spread across its target, start outside, end inside", () => {
+  const song = { track: 5, of: 12 };
+  const { outer, inner } = songTarget(song, DESKTOP_MOUSE);
+  assert.equal(songAtRadius(song, outer, DESKTOP_MOUSE), 0);
+  assert.equal(songAtRadius(song, inner, DESKTOP_MOUSE), 1);
+  assert.ok(near(songAtRadius(song, (outer + inner) / 2, DESKTOP_MOUSE), 0.5));
+  let last = -1;
+  for (let r = outer; r >= inner; r -= 0.005) {
+    const f = songAtRadius(song, r, DESKTOP_MOUSE);
+    assert.ok(f >= last, "inward is later in the song");
+    last = f;
+  }
+  // Let go beyond it, a dragged arm lands at the nearer end
+  assert.equal(songAtRadius(song, 0.99, DESKTOP_MOUSE), 0);
+  assert.equal(songAtRadius(song, LABEL_EDGE, DESKTOP_MOUSE), 1);
+  assert.equal(songAtRadius(song, NaN, DESKTOP_MOUSE), 0);
+});
+
+test("a click near a thin band plays the song; one well off it does not", () => {
+  const song = { track: 6, of: 12 };
+  const band = bandRadii(song);
+  const middle = (band.outer + band.inner) / 2;
+  // Ten pixels off a 4px band on a desktop record
+  assert.equal(onSongTarget(song, middle + 10 / 90, DESKTOP_MOUSE), true);
+  assert.equal(onSongTarget(song, middle - 10 / 90, DESKTOP_MOUSE), true);
+  // The first song's groove, far out
+  assert.equal(onSongTarget(song, 0.94, DESKTOP_MOUSE), false);
+  assert.equal(onSongTarget(song, NaN, DESKTOP_MOUSE), false);
+  // With no allowance, only the band itself
+  assert.equal(onSongTarget(song, middle + 10 / 90, 0), false);
+  // On a phone the grooves are narrower than a fingertip: all of them aim
+  // at the song
+  assert.equal(onSongTarget(song, 0.98, PHONE_TOUCH), true);
+  assert.equal(onSongTarget(song, LABEL_EDGE + 0.01, PHONE_TOUCH), true);
+});
+
+test("the needle a target sends lands in the song's band", () => {
+  for (const aim of [DESKTOP_MOUSE, PHONE_TOUCH]) {
+    const song = { track: 3, of: 12 };
+    const band = bandRadii(song);
+    for (let r = LABEL_EDGE; r <= 1; r += 0.01) {
+      const at = radiusAt(
+        armAngle(songToAlbum(song, songAtRadius(song, r, aim))),
+      );
+      assert.ok(at <= band.outer + 0.002 && at >= band.inner - 0.002);
+    }
+  }
+  assert.ok(near(radiusAtAngle(armAngle(0)), MUSIC_OUTER / 100));
 });
 
 test("the arm crosses exactly the band the record lights for the song", () => {

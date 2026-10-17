@@ -30,14 +30,16 @@ import { songBandGradient, trackBandsGradient } from "@/lib/vinyl-bands";
 import {
   armAngle,
   angleToward,
-  albumToSong,
   clampDragAngle,
-  inSongBand,
   onRecord,
+  onSongTarget,
   progressAtAngle,
   progressAtRadius,
+  radiusAtAngle,
   recordPlays,
+  songAtRadius,
   songToAlbum,
+  AIM_PX,
   DECK_VARS,
   LABEL_EDGE,
   REST_ANGLE,
@@ -4484,7 +4486,6 @@ export default function ForumPage({
      the album. The same on a whole-album day; on a song day the video is one
      band of the album (lib/tonearm.js). */
   const toAlbum = (p) => (song ? songToAlbum(song, p) : p);
-  const toVideo = (q) => (song ? albumToSong(song, q) : q);
   /* The tonearm follows playback (lib/tonearm.js). Written straight to a
      custom property on every 500ms tick rather than held in state: this
      component renders every game on the page, and re-rendering all of it
@@ -4505,8 +4506,22 @@ export default function ForumPage({
      spindle is how far through the album it is (lib/tonearm.js). The label
      still spins the record, the old easter egg, and so does any click while
      the record is in its sleeve or the player is not ready — and, on a song
-     day, a click off that song's band, where there is nothing to play. */
+     day, a click well off that song's band, where there is nothing to play.
+     Near it counts: the band is a few pixels wide, so the hand aims at a
+     target a fingertip or a mouse can hit, spread across the song
+     (songTarget, lib/tonearm.js). */
   const playbackRef = useRef(null);
+  // The width a hand can aim at, in radii of the record: a fingertip's on a
+  // touch screen, a mouse pointer's otherwise
+  const aimWidth = (e) => {
+    // From the native event: React's click carries no pointerType
+    const type = e.nativeEvent?.pointerType;
+    const touch = type
+      ? type !== "mouse"
+      : window.matchMedia?.("(pointer: coarse)").matches;
+    const radius = (vinylRef.current?.offsetWidth || 2) / 2;
+    return (touch ? AIM_PX.touch : AIM_PX.mouse) / radius;
+  };
   const dropNeedleAt = (e) => {
     const control = playbackRef.current;
     const el = vinylRef.current;
@@ -4522,10 +4537,17 @@ export default function ForumPage({
       ) /
       (el.offsetWidth / 2);
     if (r < LABEL_EDGE || r > 1) return false;
+    if (song) {
+      const aim = aimWidth(e);
+      if (!onSongTarget(song, r, aim)) return false;
+      const fraction = songAtRadius(song, r, aim);
+      setArmAngle(armAngle(songToAlbum(song, fraction)));
+      control.drop(fraction);
+      return true;
+    }
     const progress = progressAtRadius(r);
-    if (song && !inSongBand(song, progress)) return false;
     setArmAngle(armAngle(progress));
-    control.drop(toVideo(progress));
+    control.drop(progress);
     return true;
   };
 
@@ -4536,11 +4558,14 @@ export default function ForumPage({
      record in its sleeve, it can be put straight down on the platter to
      start the album from that point. `armHeld` keeps it where it was let go
      for the moment before the player reports PLAYING, rather than swinging
-     home and back. On a song day it moves freely too, and is let down inside
-     the song's band, at its nearer edge if let go beyond it. */
+     home and back. On a song day it moves freely too, and is let down in
+     the song's band at the point of the song a click there would play, at
+     the nearer end if let go beyond its target. */
   const armDragRef = useRef(null);
   const [armDragging, setArmDragging] = useState(false);
   const [armHeld, setArmHeld] = useState(false);
+  // How long a needle put down by hand waits for the player to start
+  const ARM_WAIT_MS = 4000;
   useEffect(() => {
     if (!armHeld) return undefined;
     if (deck !== "off") {
@@ -4548,9 +4573,24 @@ export default function ForumPage({
       return undefined;
     }
     // A drop the player never starts (blocked, failed) lets the arm go home
-    const t = setTimeout(() => setArmHeld(false), 4000);
+    const t = setTimeout(() => setArmHeld(false), ARM_WAIT_MS);
     return () => clearTimeout(t);
   }, [armHeld, deck]);
+  /* Lifting the arm stops the music, not the motor: picked up off a turning
+     record, the platter keeps turning in the hand and until the needle is
+     back down and playing — rather than winding down and up again around
+     every scrub. Let go off the record, cancelled, or a drop the player
+     never starts, and it winds down. */
+  const [armSpin, setArmSpin] = useState(false);
+  useEffect(() => {
+    if (!armSpin || armDragging) return undefined;
+    if (deck === "playing") {
+      setArmSpin(false);
+      return undefined;
+    }
+    const t = setTimeout(() => setArmSpin(false), ARM_WAIT_MS);
+    return () => clearTimeout(t);
+  }, [armSpin, armDragging, deck]);
 
   const armGrab = (e) => {
     const control = playbackRef.current;
@@ -4561,17 +4601,21 @@ export default function ForumPage({
     e.currentTarget.setPointerCapture?.(e.pointerId);
     const b = base.getBoundingClientRect();
     const wasOnDeck = deck !== "off";
+    // Where it is now, so a tap without a move puts it back down there
+    const angle = wasOnDeck
+      ? parseFloat(getComputedStyle(arm).getPropertyValue("--arm-angle"))
+      : REST_ANGLE;
     armDragRef.current = {
       px: b.left + b.width / 2,
       py: b.top + b.height / 2,
       wasOnDeck,
-      // Where it is now, so a tap without a move puts it back down there
-      angle: wasOnDeck
-        ? parseFloat(getComputedStyle(arm).getPropertyValue("--arm-angle"))
-        : REST_ANGLE,
+      angle,
+      // And where it was picked up, for a drag the browser cancels
+      start: angle,
     };
     control.lift();
     setArmHeld(false);
+    setArmSpin(deck === "playing" || (deck === "runout" && wholeAlbum));
     setArmDragging(true);
   };
   const armMove = (e) => {
@@ -4582,20 +4626,36 @@ export default function ForumPage({
     );
     setArmAngle(drag.angle);
   };
-  const armRelease = () => {
+  const armRelease = (e) => {
     const drag = armDragRef.current;
     armDragRef.current = null;
     if (!drag) return;
     setArmDragging(false);
     const control = playbackRef.current;
     if (onRecord(drag.angle)) {
-      const fraction = toVideo(progressAtAngle(drag.angle));
-      if (song) setArmAngle(armAngle(toAlbum(fraction)));
+      const fraction = song
+        ? songAtRadius(song, radiusAtAngle(drag.angle), aimWidth(e))
+        : progressAtAngle(drag.angle);
+      if (song) setArmAngle(armAngle(songToAlbum(song, fraction)));
       if (!drag.wasOnDeck) setArmHeld(true);
       control?.drop(fraction);
-    } else if (drag.wasOnDeck) {
-      control?.stop();
+    } else {
+      setArmSpin(false);
+      if (drag.wasOnDeck) control?.stop();
     }
+  };
+  /* A drag the browser takes back — a phone's system gesture, a call coming
+     in — is not a hand letting go. Treated as one, an arm caught off the
+     record pressed Stop and forgot the needle and the listening toward a
+     full play. It goes back where it was picked up instead, the record
+     paused there. */
+  const armCancel = () => {
+    const drag = armDragRef.current;
+    armDragRef.current = null;
+    if (!drag) return;
+    setArmDragging(false);
+    setArmSpin(false);
+    if (drag.wasOnDeck) setArmAngle(drag.start);
   };
 
   /* 💿 Heard all the way through: when an album ends having actually been
@@ -4674,7 +4734,7 @@ export default function ForumPage({
        down under a lifted needle (below), rather than turning on in silence
        with the needle parked on the next song's edge (adversarial review,
        2026-10-13). */
-    if (deck === "playing" || (deck === "runout" && wholeAlbum)) {
+    if (armSpin || deck === "playing" || (deck === "runout" && wholeAlbum)) {
       setOnDeck(true);
       setTurning(true);
       ramp(1, 500);
@@ -4698,7 +4758,7 @@ export default function ForumPage({
     return () => cancelAnimationFrame(rampRef.current);
     // `turning` and `onDeck` are read, never triggers: the ramp flips them
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deck]);
+  }, [deck, armSpin]);
   /* Which face the album hero wears. Read on mount rather than during render:
      the server has no localStorage, and guessing here is how you get a
      hydration mismatch. "album" is the default and the fallback. */
@@ -5367,7 +5427,8 @@ export default function ForumPage({
                             onPointerDown={armGrab}
                             onPointerMove={armMove}
                             onPointerUp={armRelease}
-                            onPointerCancel={armRelease}
+                            onPointerCancel={armCancel}
+                            onLostPointerCapture={armCancel}
                           />
                         </span>
                       </span>

@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-10-13.
+session. Last updated: 2026-10-16.
 
 This file holds **current state, open items and standing decisions** only.
 How things work lives in the topic docs; what happened and when lives in git
@@ -17,6 +17,16 @@ is the only branch, locally and on GitHub. Checked 2026-10-13: production had
 run `3da24b2` for 4.3 days without a restart. Formatting-only diffs left
 uncommitted by a formatter (some since 2026-10-09) were committed on their
 own that day, `2bf4bf3` and `faaf04d`.
+
+**2026-10-16: three tonearm fixes from a review in chat.** On a song day a
+click had to land on the gold band, under 5px wide on most song days, and
+a miss spun the record: the target is now at least 24px (mouse) or 44px
+(finger) across, the song spread over it. A drag the browser cancels puts
+the arm back, paused, instead of letting go (off the record, that pressed
+Stop and lost the listening). And the platter keeps turning while the arm
+is in the hand. Verified in the browser on _Folklore_ (track 4 of 17, a
+2.8px band) with the server's date moved to 10-19. Details in
+`docs/components.md` → "The record on the deck".
 
 **2026-10-13: half an adversarial review, and its fixes.** The three Codex
 reviewers of `75eb24d..3da24b2` all hit the ChatGPT account's Codex usage
@@ -186,8 +196,8 @@ were cut to current state.
 2. **One phone check** — tap through the Blind Taste Test on an iPhone and an
    Android phone; on a turntable day press Play, tap the grooves and drag
    the tonearm with a finger; on a pattern day tap the record and watch it
-   spin (open item 2). Song days 10-13 → 10-15, 10-19, 10-29, 11-01 (only the
-   gold band takes a tap); a single 10-16; whole albums 10-27 and 10-30; a
+   spin (open item 2). Song days 10-19, 10-29, 11-01 (a tap near the gold
+   band plays the song; on a phone, any tap on the grooves does); a single 10-16; whole albums 10-27 and 10-30; a
    spiral 10-17, a picture disc 10-18, a zoetrope 10-22.
 3. The catalog audit's remainder (open item 1), then everything else below.
 

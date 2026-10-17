@@ -145,9 +145,18 @@ disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
     "track 1 of 12, Teen Age Riot" — in the record's hint and above the
     transport, whose Play and seek bar are labelled with the song, not the
     album.
-  - **A click off the band spins the record**, as the label does: there is
-    nothing there to play. A dragged arm moves freely and is let down inside
-    the band, at its nearer edge if released beyond it.
+  - **A click aims at the song, not at the band (2026-10-16).** The band is
+    under 5px wide on most song days (3.5px for a twelve-song album on a
+    phone's record, measured with the code's own geometry), so a click
+    aimed at it mostly missed and spun the record. The target is now the
+    band widened to 24px for a mouse and 44px for a finger (`AIM_PX`,
+    pointer type from the native event), centred on it and kept on the
+    grooves, with the whole song spread across it — outer edge the start,
+    inner edge the end (`songTarget` in `lib/tonearm.js`, tested). On a
+    phone's 130px record that is all of the grooves. A click off the
+    target spins the record, as the label does. A dragged arm moves freely
+    and is let down the same way, at the target's nearer end if released
+    beyond it — past its inner edge, that is the song's last second.
   - **The end of the song is not the end of the record:** no run-out and no
     "heard all the way through" — the needle lifts at the band's inner edge
     and the platter winds down; seven seconds later the record goes back in
@@ -187,9 +196,15 @@ disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
     record plays from there.
   - **Drag the arm.** `.tonearm-grip`, a fingertip-sized target round the
     headshell, is the only part of the arm that takes the pointer
-    (`touch-action: none`, or a phone scrolls instead). Picking it up pauses;
-    it follows the pointer between its rest and the last song; letting go on
-    the record plays from there, letting go back on the rest stops. Picked up
+    (`touch-action: none`, or a phone scrolls instead). Picking it up pauses
+    the music but not the platter, which keeps turning in the hand and until
+    the needle is back down and playing (`armSpin`, 2026-10-16; 4s at most
+    if the player never starts); it follows the pointer between its rest and
+    the last song; letting go on the record plays from there, letting go
+    back on the rest stops. A drag the browser cancels — a phone's system
+    gesture, a call — is not a let-go: the arm goes back where it was picked
+    up, paused there. Until 2026-10-16 it counted as one, and an arm caught
+    off the record pressed Stop, forgetting the needle and the listening. Picked up
     from the rest with the record in its sleeve, it can go straight onto the
     platter to start from that point — `armHeld` keeps it there for the
     moment before YouTube reports PLAYING. Pointer-only by design: the seek
