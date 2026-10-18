@@ -54,8 +54,8 @@ Optional: focus area (e.g., "bundle", "rendering", "database", "animations")
 
 ### Routing
 
-- Six routes (`/`, `/soundtrack`, `/cozy`, `/archive`, `/stats`, `/faq`), all `force-dynamic`, all rendering the same `ForumPage`
-- The nav links carry `prefetch`, so a tab click should issue **no** request. Verify with resource timings on a production build, not in dev
+- One route per tab (`app/sections.js`: `/`, `/soundtrack`, `/cozy`, `/dead-air`, `/archive`, `/stats`, `/faq`), all `force-dynamic`, all rendering the same `ForumPage`
+- The nav links set `prefetch={false}` on purpose: a prefetch of a `force-dynamic` route with no loading boundary fetched ~235 bytes and the click made its own RSC request anyway (`docs/components.md` → Routing). A tab click is one RSC request. Count requests from the network log (CDP), never from resource timing, which does not record them
 - Each tab route also serves an `opengraph-image` — those are `force-dynamic` too and regenerate per request by design (the album turns over at UTC midnight)
 
 ### Server-Side Performance
@@ -105,5 +105,5 @@ For each finding:
 
 - Do NOT suggest React Server Components refactoring unless there's a clear win
 - Do NOT suggest adding monitoring/APM tools — this is a hobby project
-- Do NOT assume the app is a single page — it is six routes, and it already code-splits deliberately (Soundtrack Corner via `next/dynamic`, Webamp via `/vendor`). Suggest splitting only with a measured before/after
+- Do NOT assume the app is a single page — it is one route per tab, and it already code-splits deliberately (Soundtrack Corner via `next/dynamic`, Webamp via `/vendor`). Suggest splitting only with a measured before/after
 - Focus on quick wins that improve perceived performance for real users

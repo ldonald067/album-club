@@ -5185,7 +5185,7 @@ export default function ForumPage({
             back ~235 bytes against a 54KB document — these routes are
             force-dynamic with no loading boundary, so there is nothing for a
             prefetch to usefully fill. The click issued its own RSC request
-            regardless. Turning it off drops five requests per visit and costs
+            regardless. Turning it off drops one per other tab on every visit, costs
             the click nothing. (The earlier claim that clicks made no request
             came from resource timing, which does not record them; the browser's
             own network log does.) */}

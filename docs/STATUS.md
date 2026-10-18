@@ -13,119 +13,58 @@ it used to carry).
 **Nothing is in flight.** `master` is deployed. `GET /api/health`
 returns the running commit SHA — it should match `git rev-parse --short
 origin/master` — and `uptimeSeconds` should climb. No PRs are open; `master`
-is the only branch, locally and on GitHub. Checked 2026-10-13: production had
-run `3da24b2` for 4.3 days without a restart. Formatting-only diffs left
-uncommitted by a formatter (some since 2026-10-09) were committed on their
-own that day, `2bf4bf3` and `faaf04d`.
+is the only branch, locally and on GitHub. Checked 2026-10-18: production ran
+`ed966a9` (the Dead Air tab) for 3.4 hours; the handoff commit after it is
+docs and comments only.
 
-**2026-10-18: a Dead Air tab.** `/dead-air` frames the owner's music horror
-escape room, deployed from its own repo at `deadair.littlealbumclub.net`, as
-a dead radio set beside Cozy Vibes — the owner's call, made from the dead-air
-chat (`dead-air/docs/ALBUM-CLUB-TAB.md`). No game code lives here. Cozy's
-fullscreen code is now shared by both frames. Verified locally: the game runs
-in the frame, the refusal fallback, focus into the frame, 375px. **Not yet
-checked:** fullscreen with a real click (the browser pane's clicks cannot
-grant it) and Safari's shared save — both on the live site. Details in
-`docs/components.md` → "Dead Air".
+**The last chat (2026-10-14 → 10-18), newest first:**
 
-**2026-10-16: three tonearm fixes from a review in chat.** On a song day a
-click had to land on the gold band, under 5px wide on most song days, and
-a miss spun the record: the target is now at least 24px (mouse) or 44px
-(finger) across, the song spread over it. A drag the browser cancels puts
-the arm back, paused, instead of letting go (off the record, that pressed
-Stop and lost the listening). And the platter keeps turning while the arm
-is in the hand. Verified in the browser on _Folklore_ (track 4 of 17, a
-2.8px band) with the server's date moved to 10-19. Details in
-`docs/components.md` → "The record on the deck".
+- **A Dead Air tab (10-18).** `/dead-air` frames the owner's music horror
+  escape room, deployed from its own repo at `deadair.littlealbumclub.net`,
+  as a dead radio set beside Cozy Vibes — the owner's call, made from the
+  dead-air chat (`dead-air/docs/ALBUM-CLUB-TAB.md`). No game code lives here;
+  Cozy's fullscreen code is now shared by both frames. Checked on the live
+  site: the game starts in the frame with a real click, Shift+Tab from Full
+  screen moves focus into it, the route, sitemap entry and card answer.
+  **Not yet checked:** Full screen and Esc with a real click (the browser
+  pane's clicks cannot grant fullscreen), Safari's shared save, and a 360px
+  phone, whose frame is 314px — under the 323px the dead-air chat tested.
+  Details in `docs/components.md` → "Dead Air".
+- **Three tonearm fixes from a review in chat (10-16).** A click on a song
+  day aims at a target at least 24px (mouse) or 44px (finger) wide, the song
+  spread across it — the gold band alone is under 5px on most song days, and
+  a miss spun the record. A drag the browser cancels puts the arm back,
+  paused, rather than pressing Stop. The platter keeps turning while the arm
+  is in the hand. Verified on _Folklore_ (track 4 of 17, a 2.8px band) with
+  the dev server's clock moved to 10-19 (`docs/gotchas.md` says how).
+- **Cozy shelf (10-14):** _Welcome to Kagemi_ (itch embed 5062300) replaced
+  the old Kamegi build, which its author now lists as an old version.
+- **Docs swept for staleness (10-18):** tab counts in the README, `CLAUDE.md`
+  and two project skills, and the `perf-check` skill's advice that the nav
+  prefetches — it has not since 2026-09-24.
 
-**2026-10-13: half an adversarial review, and its fixes.** The three Codex
-reviewers of `75eb24d..3da24b2` all hit the ChatGPT account's Codex usage
-limit two minutes in, run in parallel, and wrote no verdict; their logs held
-probes, and four leads checked out, plus one found while checking. Fixed:
-`placeSong` passed over an edition of the rings' length that lacked the song
-or had it twice, and called the rest unanimous — such an edition now
-refuses the placement, a track counting as the song by its title **or by
-its MusicBrainz recording** ("FTBC" and a censored `Norman ******* Rockwell`
-are the same recordings); the title-track rule placed a title naming the
-album and more ("Creep (The Bends sessions)") on length alone — the title
-may now add only the artist, a year and dressing; both rules moved to
-`lib/place-song.js` with tests. The Vintage skin squared the picture disc
-(`.vinyl-art`, `.vinyl-song` joined its round exemptions). Two `eval-site`
-greps passed `single = false` — the kind of day is now `recordPlays` in
-`lib/tonearm.js`, tested, and `ForumPage` must take it from there. At the
-end of a song or a single the record turned on for seven silent seconds —
-now the needle lifts and the platter winds down. All 58 placements were
-first checked by hand against the real albums and were right (Robyn's
-_Sexistential_ unverifiable); re-recorded, 57 are placed, and _The
-Blueprint_ is a single (its 2001 US edition has another recording of the
-song). Verified in the browser: the end of _The Bends_, and a picture-disc
-layer under Vintage (round, computed `50%`). A whole-album day's ending is
-untouched by the change and was not re-run.
+**The record, as it stands** (built 2026-09-29 → 10-16; how it works in
+`docs/components.md` → "The record on the deck"). Every day's record does
+something, and nothing it does claims more than is known — the owner's rules:
 
-**2026-10-07: the turntable shows only for a whole-album video.** An
-adversarial review (Codex) found the deck, the arm and "heard all the way
-through" switched on for any `youtubeId` — and 72 of the 113 stored videos
-are one song, today's _Daydream Nation_ among them. It is now gated on the
-audit's `FULL_ALBUM` verdicts (36 videos) and, added the same day, its
-`FULL_SESSION` rule for a Tiny Desk, Boiler Room or KEXP set played whole
-(the 2 Tiny Desk sets more; the 2 Boiler Room sets already passed), recorded by
-`npm run audit-youtube-ids -- --record` in `lib/full-album-videos.json`;
-`eval-site` fails when that list goes stale, so **re-record after any
-`youtubeId` or title change**. (Since 2026-10-09 every other video day gets
-the deck too, without the sweep — below.) Fixed
-with it: listening is measured from the player's clock, a seek to the start
-forgets the saved spot, the arm waits for the album's length, a failed player
-puts the record away, Your Stats updates on a full play, and the arm no
-longer transitions `filter`. Details in `docs/components.md` → "The record on
-the deck". On 2026-10-08 _Live at Pompeii_ came off the list: its video is only
-"Echoes", which passed because no runtime is known and the title names the
-album. The audit's `PART_AFTER_REVIEW` keeps it off on every re-record.
-
-**2026-10-08: song days get the turntable too** — the owner's call, after
-finding a deck on only the whole-album days "no fun". On a day whose video
-is one song, the deck plays just that song's band of the record: lit in the
-slipmat's gold, named ("track 2 of 12, The Bends") in the record's hint and
-above the transport, which no longer says "Play <album>" over one song. A
-click off the band spins the record; a dragged arm is let down inside the
-band; the song's end has no run-out and no "heard all the way through".
-**83 turntable days in the next year instead of 35** (48 song days) — not
-the ~110 estimated, because 14 of the 72 one-song videos cannot be placed
-for certain. `npm run audit-youtube-ids -- --record` now also writes
-`lib/song-videos.json` and prints every placement to read before committing
-it; **re-record after any `youtubeId`, title or track-count change**, or
-`eval-site` fails. The finding that shaped the rules: most one-song videos
-are the **title track** ("Prince - Purple Rain (Official Video)"), so a title
-naming only the album is placed when the video runs as long as that track —
-measured, nearly all are within 5%, and the three that are not (Thriller's
-13.7-minute film, a "360" video at twice the song, a 1.4-minute "ST. CHROMA"
-snippet) are not placed. Rules and the unplaced list in `docs/album-data.md`;
-the behaviour in `docs/components.md` → "The record on the deck". Verified
-in the browser on _The Bends_ (play, both clicks, drag, the end, reload),
-on a whole-album day (run-out intact) and an anniversary pressing at 375px.
-
-**2026-10-09: every day with a video gets the turntable** — the owner's
-rule: if a song or the album plays, the arm plays it. A video that is
-neither the whole album nor a placed song (the 14 unplaced songs, the two
-`KEPT` films, _Pompeii_'s "Echoes", BTS's unverified clip) is played as a
-**single**: the record shows no song rings that day and the arm crosses the
-whole groove — the rings go, not the arm, because an arm crossing the
-album's rings during one track is the 2026-10-07 bug. **99 turntable days in
-the next year: 35 whole albums, 48 song days, 16 singles**; the other 266
-days have no video and keep the plain sleeve (a deck with nothing to play
-was offered on 10-08 and not chosen). The plain-player in-between
-(`.has-player`) is gone. `eval-site` fails if a single's record draws
-rings.
-
-**2026-10-09, later: the no-video days wear a pattern.** The owner wanted
-something fun on the 266 days a year with nothing to play, was shown three
-patterns and chose all three, taking turns by date, in changing colours: a
-**zoetrope** whose balls bounce in place when the record spins (the spin
-steps one frame at a time on those days), an op-art **spiral**, and a
-**picture disc** of the day's cover. The record rests half out of its sleeve
-on those days so the pattern shows. No deck — still nothing to play.
-`lib/record-art.js`; details in `docs/components.md` → "The record on the
-deck". First ones: a teal zoetrope 10-10, a violet spiral 10-11, a picture
-disc 10-12.
+- **Whole-album video** (the audit's `FULL_ALBUM` and `FULL_SESSION`
+  verdicts, `lib/full-album-videos.json`): the arm sweeps every song ring,
+  then the run-out and "heard all the way through".
+- **One song the audit placed for certain** (`lib/song-videos.json`,
+  `lib/place-song.js`): the arm plays only that song's band, lit gold and
+  named. Most one-song videos are the title track; the rules and the unplaced
+  list are in `docs/album-data.md`.
+- **Any other video**: a single — no song rings, the arm crosses the whole
+  groove. No run-out or award on a song or a single: the needle lifts and the
+  platter winds down.
+- **No video**: no deck; the record wears a pattern by date (zoetrope, spiral
+  or picture disc, `lib/record-art.js`), half out of its sleeve.
+- **Re-record after any `youtubeId`, title or track-count change:**
+  `npm run audit-youtube-ids -- --record` rewrites both lists and prints every
+  placement to read before committing; `eval-site` fails when they go stale.
+  _Live at Pompeii_ stays off the album list (`PART_AFTER_REVIEW`).
+- Counted 2026-10-09: 99 turntable days a year (35 albums, 48 songs, 16
+  singles) and 266 pattern days.
 
 **Keep each chat under ~300k tokens of context.** The owner is on the Pro
 plan and was hitting the 5-hour limit too soon: every message re-reads the
@@ -178,37 +117,54 @@ were cut to current state.
 
 **Where to pick up, in this order:**
 
-1. **Rerun the adversarial review in full** — the owner's next step
-   (2026-10-13; the first run ended at the Codex limit, above). Run
-   `/adversarial-review` on `75eb24d..HEAD` — the three record commits and
-   the fixes — all three lenses on Codex, **one reviewer at a time**: in
-   parallel they used ~550k Codex tokens in two minutes. Tell them what is
-   already fixed, so they attack the fixes rather than re-report them.
-   **Intent:** every day's record does something, and nothing it does
-   claims more than is known — the arm sweeps the rings only for a whole
-   album, plays one lit band only for a song the audit placed for certain,
-   plays a ringless single otherwise, and the no-video days wear a pattern.
-   Worth attacking:
-   - `placeSong` in `lib/place-song.js` — the title-track rule and its
-     dressing list, the 0.75–1.35× length check, edition unanimity with
-     recording ids — and the 57 placements in `lib/song-videos.json`.
-   - `ForumPage`'s video↔album mapping (`toAlbum` / `toVideo`) through
-     every path: Play, a groove click, a drag let go inside and outside the
-     band, the end of the song, a reload with a remembered needle, Stop.
+1. **Rerun the adversarial review of the record in full** — the owner's next
+   step from 2026-10-13, when the first run ended at the Codex usage limit.
+   Run `/adversarial-review` on the record's commits — `75eb24d..3da24b2`,
+   then `2dc3c1a` (the 10-13 fixes) and `1ae9c30` (the 10-16 tonearm fixes);
+   the Kagemi and Dead Air commits in between are unrelated. All three lenses
+   on Codex, **one reviewer at a time**: in parallel they used ~550k Codex
+   tokens in two minutes. Tell them what is already fixed, so they attack the
+   fixes rather than re-report them:
+   - 10-13: `placeSong` refuses an edition of the rings' length that lacks
+     the song or has it twice, a track counting by title **or** MusicBrainz
+     recording; the title-track rule lets the title add only the artist, a
+     year and dressing; the Vintage skin keeps the picture disc round; the
+     kind of day comes from `recordPlays`, tested; a song's or single's end
+     lifts the needle. 57 placements, re-checked by hand; _The Blueprint_ is
+     a single.
+   - 10-16: `songTarget` / `songAtRadius` / `onSongTarget` in
+     `lib/tonearm.js` (the widened target, tested); `armCancel` and
+     `armSpin` in `ForumPage`.
+
+   **Intent:** every day's record does something, and nothing it does claims
+   more than is known. Worth attacking:
+   - `placeSong` — the title-track rule and its dressing list, the
+     0.75–1.35× length check, edition unanimity — and the 57 placements.
+   - `ForumPage`'s video↔album mapping through every path: Play, a groove
+     click near and off the target, a drag let go inside and beyond it, a
+     cancelled drag, the end of the song, a reload with a remembered needle,
+     Stop.
+   - The platter kept turning in the hand: a drop the player never starts, a
+     grab during the run-out, a stale "playing" when the arm is let go.
    - The singles: no rings, a full sweep, no run-out, no award.
-   - `lib/record-art.js` and its CSS: the `steps(24)` overrides against
-     every spin, `.has-art`'s reserved room, the picture disc's fallbacks,
-     colour tokens.
+   - `lib/record-art.js` and its CSS: the `steps(24)` overrides, `.has-art`'s
+     reserved room, the picture disc's fallbacks, colour tokens.
    - The `eval-site` checks are still source greps — say if one is too weak.
      The skill builds each prompt as a file on stdin and keeps stderr; follow
      it exactly (it failed silently once without). Fix what the review
      accepts, then re-verify in the browser.
-2. **One phone check** — tap through the Blind Taste Test on an iPhone and an
-   Android phone; on a turntable day press Play, tap the grooves and drag
-   the tonearm with a finger; on a pattern day tap the record and watch it
-   spin (open item 2). Song days 10-19, 10-29, 11-01 (a tap near the gold
-   band plays the song; on a phone, any tap on the grooves does); a single 10-16; whole albums 10-27 and 10-30; a
-   spiral 10-17, a picture disc 10-18, a zoetrope 10-22.
+
+2. **One phone check** — only a person can do it (open item 2):
+   - **Blind Taste Test** on an iPhone and an Android phone.
+   - **A song day** (10-19, 10-29, 11-01): press Play; tap near the gold band
+     — on a phone any tap on the grooves should play the song, not spin the
+     record; drag the arm with a finger and watch the platter keep turning.
+     Whole albums 10-27 and 10-30; the next single is 11-19.
+   - **A pattern day** (a picture disc 10-21, a zoetrope 10-22, a spiral
+     10-23): tap the record and watch it spin.
+   - **Dead Air** (`/dead-air`): start the game in the frame; Full screen and
+     Esc on Android (iOS Safari should offer Play in New Tab instead); in
+     Safari, check a save made in the frame shows on a direct visit.
 3. The catalog audit's remainder (open item 1), then everything else below.
 
 Two open actions need a human rather than code: **nobody has put the link
@@ -344,6 +300,10 @@ docs.
    - **The turntable on a real phone.** Verified in a 375px emulation
      (centred, no sideways scroll, plays, needle drops) and with a mouse;
      a finger dragging the arm has not been tried on a device.
+   - **Dead Air on a phone and in Safari (2026-10-18).** Full screen with a
+     real tap (the pane cannot grant it), iOS Safari's Play in New Tab, a
+     save shared between the frame and a direct visit in Safari, and a 360px
+     phone, whose 314px frame is under the 323px the game was tested at.
    - **Done 2026-09-30: the Hayley Williams video is removed.** _Ego Death at
      a Bachelorette Party_'s "full album" (`bVQ-J6J44Ts`) was an unofficial
      upload — songs in alphabetical order, "Love Me Different" missing, 51 of
@@ -440,6 +400,10 @@ docs.
   trade-off to revisit when traffic arrives. The rule and its boundary (the
   Open Graph card stays) are in `CLAUDE.md`; `eval-site` enforces it. **An
   activity that ends without a share button is finished, not unfinished.**
+- **Dead Air is framed, not built here (2026-10-18).** The owner's own game,
+  in its own repo and deploy; album-club gives it a tab and a frame and
+  nothing else. It is not a seventh activity under the over-featured rule
+  below. Change the game in `dead-air`, never by copying code in.
 - **Mixes and playlists belong in the catalog (2026-09-27).** Not every entry
   has to be a released album — DJ sets, sessions, mood playlists and singles
   are fine, including mixes named after a real record. What is not fine is an

@@ -1,6 +1,6 @@
 # Components & Features
 
-ForumPage.js is a single client component (~5200 lines) containing most of the UI. Shared components are defined at the top of the file, game components in the middle, and the main render at the bottom.
+ForumPage.js is a single client component (~5800 lines) containing most of the UI. Shared components are defined at the top of the file, game components in the middle, and the main render at the bottom.
 
 ## Routing — one component, seven URLs
 
@@ -35,8 +35,8 @@ it, so adding a tab is one entry there plus a two-line `app/<key>/page.js`.
   `force-dynamic` with no loading boundary, so a prefetch has nothing useful to
   fill — and the click then issued its own RSC request anyway. The original
   measurement used `performance.getEntriesByType("resource")`, which does not
-  record those requests; CDP does. Turning prefetch off drops five requests per
-  visit and costs the click nothing. Set it explicitly: omitting the prop leaves
+  record those requests; CDP does. Turning prefetch off drops one request per
+  other tab on every visit and costs the click nothing. Set it explicitly: omitting the prop leaves
   `Link` on its prefetching default. A server render of any tab is ~1.5–5ms, so
   a click is roughly one round trip.
 - A `loading.js` would give a click visible feedback, and is **not** the right

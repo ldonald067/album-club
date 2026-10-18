@@ -79,3 +79,7 @@ Measure a **fresh production visit** (network panel, cache disabled), not the bu
   run over `node_modules/@hackernoon/pixel-icon-library/fonts/iconfont.woff2`
   and add the class to `iconfont-subset.css` (codepoints live in the vendor
   `iconfont.css`). The vendor package stays a dep only as the glyph source.
+  Check the run first: the same codepoints minus the new one must reproduce
+  the committed woff2 byte for byte (`cmp`) — it did on 2026-10-18. Pass the
+  codepoints as separate arguments; zsh does not word-split an unquoted
+  variable, and that run silently subset one glyph.

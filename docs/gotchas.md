@@ -115,7 +115,23 @@ next reader can tell whether their harness is covered.
   fullscreen _engagement_ as human-verifiable until some driver is shown to
   manage it. What automation can prove is the preconditions:
   `document.fullscreenEnabled` measured **inside** the frame, and
-  `iframe.featurePolicy.allowsFeature("fullscreen", origin)` from the parent
+  `iframe.featurePolicy.allowsFeature("fullscreen", origin)` from the parent.
+  The pane's own click (`computer` left_click) does no better: on 2026-10-18 it
+  neither entered fullscreen nor was refused — the request just never settled.
+  A refusal is provable by calling the button from script, which always rejects
+- **The pane's phone emulation draws a 15px classic scrollbar inside an
+  iframe.** A game that fits a 327px viewport on its own was clipped in a 327px
+  frame (Dead Air, 2026-10-18). A phone overlays its scrollbars, so measure the
+  embedded app alone at the frame's size before calling it too narrow
+- **To see another day locally, fake the server's clock.** There is no date
+  override: today's album is picked on the server from `Date`. A temporary
+  `.claude/launch.json` entry works: it runs `next dev` under `env` with
+  `NODE_OPTIONS=--require=<file>`, the file replacing `globalThis.Date` — but copy
+  `Date.UTC` and `Date.parse` onto the replacement explicitly (Next copies the
+  global's own statics; without them every page 500s), and set the target
+  UTC date absolutely, since a US evening is already tomorrow in UTC. Only
+  the server needs it: the hero comes down as props. Put `launch.json` back
+  before committing
 - **The pane's screenshot can lag a programmatic scroll**, still showing the old
   viewport after `scrollTo`/`scrollIntoView`. Geometry claims belong to
   `getBoundingClientRect()`, not to what a screenshot appears to show
@@ -124,7 +140,8 @@ next reader can tell whether their harness is covered.
   `embed.html` → `index.html`, they arrived offset by hundreds of pixels — a
   click aimed at the top control row hit the room buttons. Drive an embedded app
   at its own origin, where `contentDocument` is readable and one frame level
-  keeps coordinates honest
+  keeps coordinates honest. A single-level frame can work: on 2026-10-18 a
+  pane click on Dead Air's Start Game in the live frame landed and started it
 - **Resource timing does not see RSC fetches (2026-09-24).**
   `performance.getEntriesByType("resource")` recorded no request on a tab
   click, so it was reported — twice — that prefetch made tab switching free.

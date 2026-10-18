@@ -40,9 +40,9 @@ Open http://localhost:3000. The SQLite database creates itself on first request.
 
 ```
 app/
-  sections.js          # The six tabs, shared by nav, routes and sitemap
+  sections.js          # The tab list, shared by nav, routes and sitemap
   section-page.js      # Server wrapper — per-tab metadata, today's picks
-  page.js, */page.js   # One route per tab (/, /soundtrack, /cozy, ...)
+  page.js, */page.js   # One route per tab (/, /soundtrack, /cozy, /dead-air, ...)
   ForumPage.js         # Client component — all UI and games
   globals.css          # All styling
   api/                 # rate, vibe, guess, stats, playlist, matchup,

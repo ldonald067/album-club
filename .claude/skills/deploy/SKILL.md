@@ -26,8 +26,9 @@ The live site (https://littlealbumclub.net) runs on Railway and **auto-deploys o
    ```
 
 6. Then smoke-test https://littlealbumclub.net — the page loads, today's album
-   renders, rate/vibe respond. There are six routes now (`/`, `/soundtrack`,
-   `/cozy`, `/archive`, `/stats`, `/faq`); check the one you changed
+   renders, rate/vibe respond. Every tab is a route (`app/sections.js`: `/`,
+   `/soundtrack`, `/cozy`, `/dead-air`, `/archive`, `/stats`, `/faq`); check
+   the one you changed
 
 ## Notes
 
