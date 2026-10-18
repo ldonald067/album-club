@@ -2,13 +2,13 @@
 
 ForumPage.js is a single client component (~5200 lines) containing most of the UI. Shared components are defined at the top of the file, game components in the middle, and the main render at the bottom.
 
-## Routing — one component, six URLs
+## Routing — one component, seven URLs
 
 Every tab is a real route. `app/sections.js` is the single list of them (key,
 path, icon, label) and the nav, the route folders and `app/sitemap.js` all read
 it, so adding a tab is one entry there plus a two-line `app/<key>/page.js`.
 
-- `/` → home, `/soundtrack`, `/cozy`, `/archive`, `/stats`, `/faq`
+- `/` → home, `/soundtrack`, `/cozy`, `/dead-air`, `/archive`, `/stats`, `/faq`
 - Each `page.js` exports `dynamic = "force-dynamic"`, a `generateMetadata` that
   calls `sectionMetadata(key)`, and a body that renders
   `<SectionPage section={key} />` — both from `app/section-page.js`, where the
@@ -409,9 +409,38 @@ Things about the featured embed that should not be "tidied":
 - `src` points at `/embed.html`, a ~4.8 KB poster. The site root pulls ~9 MB on load.
 - `allow="autoplay; fullscreen"` is required for the ambience audio; without it it fails silently. It also permits fullscreen from inside the frame, which is what lets the game render its own button — but **the site's button below is the primary path**, not the game's. Either way, Esc or the back gesture lands the player back on this tab.
 - **No `sandbox` attribute.** Without `allow-same-origin` it would cut the game off from browser storage and silently break saved scenes.
-- The **site's own "Full screen" button** (`CozyFeaturedGame`) calls `requestFullscreen()` on the iframe element from the parent page. It exists because the game's own fullscreen button is only reachable in its wide desktop layout: measured at a 700×620 frame, that control sits **535px below the frame's fold**, inside the iframe's own scroll. Relying on it — as this panel briefly did — means most visitors have no fullscreen at all. Don't remove it in favour of the game's.
+- The **site's own "Full screen" button** (`useFullscreenFrame` and `FullscreenControls`, shared with Dead Air) calls `requestFullscreen()` on the iframe element from the parent page. It exists because the game's own fullscreen button is only reachable in its wide desktop layout: measured at a 700×620 frame, that control sits **535px below the frame's fold**, inside the iframe's own scroll. Relying on it — as this panel briefly did — means most visitors have no fullscreen at all. Don't remove it in favour of the game's.
 - **`fullscreenchange` sets the frame's size inline** (`100vw`/`100vh`). This is load-bearing, not belt-and-braces: `.cozy-frame iframe` pins an explicit height, and author styles outrank the UA's sizing for a fullscreen element, so without it the game letterboxes at 620px on a black screen. Inline styles also dodge a specificity race with the ≥1280px breakout rule.
 - The "Play in New Tab" link renders under **two** conditions: where `document.fullscreenEnabled` is false (in practice: iOS Safari), **and** after a `requestFullscreen()` call is actually refused (`fullscreenRefused`). It is absent otherwise, because a second open surface is a second live simulation diverging from the same autosave (`cozyfun/docs/EMBEDDING.md` → "One window at a time"). **Both conditions are load-bearing — do not simplify this to the capability check alone.** `fullscreenEnabled` reports permission, not the outcome of a request; dropping the refusal arm restores the silent dead-end an adversarial review already caught once.
+
+## Dead Air (`DeadAirSection`)
+
+Own nav tab since 2026-10-18, the owner's call: a music horror escape room
+with its own repo (`dead-air`) and deploy at `deadair.littlealbumclub.net`.
+**The site only frames it — no game code lives here.** Brief:
+`dead-air/docs/ALBUM-CLUB-TAB.md`.
+
+- The frame loads the game itself, not a poster page as Cozy's sandbox needs:
+  the whole game, Three.js included, is ~250 kB on the wire.
+- Same frame rules as Cozy's featured game, and the same code:
+  `allow="autoplay; fullscreen"`, no `sandbox`, `loading="lazy"`, and the
+  site's own Full screen button with the new-tab link only where fullscreen is
+  missing or refused (`useFullscreenFrame`, `useCanFullscreen`,
+  `FullscreenControls`).
+- **Dressed as a dead radio set** so a black frame on a cream page reads as
+  intended: the game's own charcoal, violet rule and ink, as `--deadair-*`
+  tokens in `:root` — the game's palette, so the same in every skin.
+- **The copy gives nothing away** — no answers or puzzle hints anywhere public.
+  The content note above the frame was checked against the game's audio and
+  story text by the dead-air chat (2026-10-17).
+- 700×620 on desktop. On phones the panel and bezel padding shrink so the frame
+  is the viewport less 46px — 329px on a 375px phone. With the desktop padding
+  it was 301px, and the game's top bar overflowed it (measured; the game alone
+  fits at 327px). In the browser pane's emulation the frame draws a 15px
+  classic scrollbar that clips that bar again; a phone overlays its scrollbars.
+- The game saves in its own origin's `localStorage` (`dead-air:full:v1`). The
+  subdomain is the same site, so in Chrome the frame and a direct visit share
+  one save. Safari is unchecked.
 
 ## Album vs Album (`VersusMatchup`)
 

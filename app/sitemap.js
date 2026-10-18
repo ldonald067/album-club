@@ -22,6 +22,7 @@ const CHANGE_FREQUENCY = {
   archive: "daily",
   stats: "weekly",
   cozy: "monthly",
+  "dead-air": "monthly",
   faq: "monthly",
 };
 

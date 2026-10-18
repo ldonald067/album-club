@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-10-16.
+session. Last updated: 2026-10-18.
 
 This file holds **current state, open items and standing decisions** only.
 How things work lives in the topic docs; what happened and when lives in git
@@ -17,6 +17,16 @@ is the only branch, locally and on GitHub. Checked 2026-10-13: production had
 run `3da24b2` for 4.3 days without a restart. Formatting-only diffs left
 uncommitted by a formatter (some since 2026-10-09) were committed on their
 own that day, `2bf4bf3` and `faaf04d`.
+
+**2026-10-18: a Dead Air tab.** `/dead-air` frames the owner's music horror
+escape room, deployed from its own repo at `deadair.littlealbumclub.net`, as
+a dead radio set beside Cozy Vibes — the owner's call, made from the dead-air
+chat (`dead-air/docs/ALBUM-CLUB-TAB.md`). No game code lives here. Cozy's
+fullscreen code is now shared by both frames. Verified locally: the game runs
+in the frame, the refusal fallback, focus into the frame, 375px. **Not yet
+checked:** fullscreen with a real click (the browser pane's clicks cannot
+grant it) and Safari's shared save — both on the live site. Details in
+`docs/components.md` → "Dead Air".
 
 **2026-10-16: three tonearm fixes from a review in chat.** On a song day a
 click had to land on the gold band, under 5px wide on most song days, and
@@ -231,7 +241,7 @@ anywhere** (open item 4), and **album audio needs a YouTube Data API key**
 Album Of The Day Club — a retro-2004-forum daily-album site. Live at
 https://littlealbumclub.net on Railway (auto-deploys on push to `master`).
 Next.js 16 + React 19 + SQLite (better-sqlite3, WAL). No auth, anonymous,
-localStorage for client state. Six tab routes render one client component,
+localStorage for client state. Seven tab routes render one client component,
 `app/ForumPage.js`; see `CLAUDE.md` for the map and `docs/` for the deep dives.
 
 ## Everyday commands

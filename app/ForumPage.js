@@ -4036,18 +4036,17 @@ const COZY_GAMES = [
   },
 ];
 
-// The game has its own fullscreen button, but only its wide desktop layout puts
-// it on screen. In a frame narrower than ~1180px the layout stacks and that
-// control lands ~535px below the frame's own fold, reachable only by scrolling
-// inside the iframe — measured at 700x620, not assumed. So the site offers
-// fullscreen from its own chrome, where it is visible at every width.
-function CozyFeaturedGame({ game, canFullscreen }) {
+/* Full screen from the site's own chrome, for a game in a frame — the Cozy
+   sandbox and Dead Air. Returns the ref for the iframe, the button's handler,
+   and whether the browser turned the request down.
+
+   `fullscreenEnabled` reports permission, not the outcome of a real request:
+   an in-app webview or a managed browser can advertise support and still
+   refuse the call. Swallowing that left the only full-size path dead and
+   silent, so the refusal is recorded and the new-tab fallback uncovered. */
+function useFullscreenFrame() {
   const frameRef = useRef(null);
-  // `fullscreenEnabled` reports permission, not the outcome of a real request:
-  // an in-app webview or a managed browser can advertise support and still
-  // refuse the call. Swallowing that left the only full-size path dead and
-  // silent, so the refusal is recorded and the new-tab fallback uncovered.
-  const [fullscreenRefused, setFullscreenRefused] = useState(false);
+  const [refused, setRefused] = useState(false);
 
   // Our stylesheet pins the frame's height, and author styles outrank the UA's
   // sizing for a fullscreen element — left alone the game would letterbox at
@@ -4072,10 +4071,69 @@ function CozyFeaturedGame({ game, canFullscreen }) {
     // Both arms are handled, so a refusal never surfaces as an unhandled
     // rejection and a later success takes the fallback back down.
     frame.requestFullscreen().then(
-      () => setFullscreenRefused(false),
-      () => setFullscreenRefused(true),
+      () => setRefused(false),
+      () => setRefused(true),
     );
   }
+
+  return { frameRef, refused, goFullscreen };
+}
+
+/* Fullscreen is the primary full-size path: a second open surface is a second
+   live game running beside the first. Only where the browser has no
+   fullscreen at all (iOS Safari) is a new tab the one option left, so the
+   link appears there and nowhere else. Read after mount — the server has no
+   `document`. */
+function useCanFullscreen() {
+  const [canFullscreen, setCanFullscreen] = useState(true);
+  useEffect(() => {
+    setCanFullscreen(Boolean(document.fullscreenEnabled));
+  }, []);
+  return canFullscreen;
+}
+
+function FullscreenControls({ canFullscreen, refused, onFullscreen, playUrl }) {
+  return (
+    <div className="cozy-controls">
+      {/* The button stays mounted after a refusal rather than being swapped
+          out: it is what the player just pressed, so unmounting it would
+          drop keyboard focus to the body at the exact moment we owe them an
+          explanation. */}
+      {canFullscreen && (
+        <>
+          <button type="button" className="listen-btn" onClick={onFullscreen}>
+            Full screen
+          </button>
+          {/* Both halves earn their place: there is no Esc on a phone, and
+              no back gesture on a desktop. */}
+          <span className="cozy-controls-note">
+            {refused
+              ? "This browser turned full screen down — the tab below is the roomier option."
+              : "Esc, or your back gesture, brings you back here."}
+          </span>
+        </>
+      )}
+      {(!canFullscreen || refused) && (
+        <a
+          href={playUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="listen-btn"
+        >
+          <i className="hn hn-play" aria-hidden="true" /> Play in New Tab
+        </a>
+      )}
+    </div>
+  );
+}
+
+// The game has its own fullscreen button, but only its wide desktop layout puts
+// it on screen. In a frame narrower than ~1180px the layout stacks and that
+// control lands ~535px below the frame's own fold, reachable only by scrolling
+// inside the iframe — measured at 700x620, not assumed. So the site offers
+// fullscreen from its own chrome, where it is visible at every width.
+function CozyFeaturedGame({ game, canFullscreen }) {
+  const { frameRef, refused, goFullscreen } = useFullscreenFrame();
 
   return (
     <div className="cozy-featured">
@@ -4101,36 +4159,12 @@ function CozyFeaturedGame({ game, canFullscreen }) {
           🕯️ It&apos;s night in there. Click to light the lamp.
         </div>
       </div>
-      <div className="cozy-controls">
-        {/* The button stays mounted after a refusal rather than being swapped
-            out: it is what the player just pressed, so unmounting it would
-            drop keyboard focus to the body at the exact moment we owe them an
-            explanation. */}
-        {canFullscreen && (
-          <>
-            <button type="button" className="listen-btn" onClick={goFullscreen}>
-              Full screen
-            </button>
-            {/* Both halves earn their place: there is no Esc on a phone, and
-                no back gesture on a desktop. */}
-            <span className="cozy-controls-note">
-              {fullscreenRefused
-                ? "This browser turned full screen down — the tab below is the roomier option."
-                : "Esc, or your back gesture, brings you back here."}
-            </span>
-          </>
-        )}
-        {(!canFullscreen || fullscreenRefused) && (
-          <a
-            href={game.playUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="listen-btn"
-          >
-            <i className="hn hn-play" aria-hidden="true" /> Play in New Tab
-          </a>
-        )}
-      </div>
+      <FullscreenControls
+        canFullscreen={canFullscreen}
+        refused={refused}
+        onFullscreen={goFullscreen}
+        playUrl={game.playUrl}
+      />
     </div>
   );
 }
@@ -4138,15 +4172,9 @@ function CozyFeaturedGame({ game, canFullscreen }) {
 function CozyVibesSection() {
   const featured = COZY_GAMES.filter((g) => g.featured);
   const cards = COZY_GAMES.filter((g) => !g.featured);
-  // Fullscreen is the primary full-size path: a second open surface is a second
-  // live simulation diverging from the same autosave. Only where the browser
-  // has no fullscreen at all (iOS Safari) is a new tab the one option left, so
-  // the link appears there and nowhere else. Read after mount — the server has
-  // no `document`.
-  const [canFullscreen, setCanFullscreen] = useState(true);
-  useEffect(() => {
-    setCanFullscreen(Boolean(document.fullscreenEnabled));
-  }, []);
+  // A second open surface would be a second live simulation diverging from
+  // the same autosave — see useCanFullscreen
+  const canFullscreen = useCanFullscreen();
 
   return (
     <div className="panel cozy-panel">
@@ -4211,6 +4239,62 @@ function CozyMini() {
       subtitle="Somewhere to sit between albums"
       href={sectionPath("cozy")}
     />
+  );
+}
+
+// ─── Dead Air ───
+// A music horror escape room with its own repo and deploy (dead-air). The site
+// only frames it; no game code lives here. The frame loads the game itself
+// rather than a poster page, as Cozy's sandbox needs: the whole game, Three.js
+// included, is ~250 kB on the wire. It saves in its own origin's storage, a
+// subdomain of this site, so the frame and a direct visit share one save.
+const DEAD_AIR_URL = "https://deadair.littlealbumclub.net/";
+
+/* A dark game on a cream page, dressed as a dead radio set — the game's own
+   charcoal and violet rule — so the black reads as intended rather than as a
+   broken embed. The copy promises only what is true of the whole game and
+   gives nothing away: no answers or puzzle hints anywhere public. Sound stays
+   off until the player turns it on inside the frame. */
+function DeadAirSection() {
+  const canFullscreen = useCanFullscreen();
+  const { frameRef, refused, goFullscreen } = useFullscreenFrame();
+
+  return (
+    <div className="panel">
+      <div className="panel-header">
+        <h2 className="panel-title">
+          <i className="hn hn-sound-mute" aria-hidden="true" /> DEAD AIR
+        </h2>
+      </div>
+      <div className="panel-body deadair-body">
+        <p className="activity-prompt" style={{ textAlign: "center" }}>
+          A music horror escape room. Restore the station systems and find a way
+          out. Clues are saved in your journal. Sound is optional.
+        </p>
+        <p className="deadair-note">
+          Content note: an abandoned station, low drones and unsettling crew
+          logs. No jump scares, gore or timers.
+        </p>
+        <div className="deadair-set">
+          <iframe
+            ref={frameRef}
+            src={DEAD_AIR_URL}
+            title="Dead Air — a music horror escape room"
+            allow="autoplay; fullscreen"
+            loading="lazy"
+          />
+          <div className="deadair-caption">
+            📻 The station’s gone quiet. Click inside to tune in.
+          </div>
+        </div>
+        <FullscreenControls
+          canFullscreen={canFullscreen}
+          refused={refused}
+          onFullscreen={goFullscreen}
+          playUrl={DEAD_AIR_URL}
+        />
+      </div>
+    </div>
   );
 }
 
@@ -5176,7 +5260,7 @@ export default function ForumPage({
 
       {/* A real landmark, not a div with an id. The skip link worked either way,
           but landmark navigation found only the nav — a screen reader had no
-          "main" to jump to on any of the six routes. */}
+          "main" to jump to on any of the routes. */}
       <main
         className="content"
         id="main-content"
@@ -5620,6 +5704,7 @@ export default function ForumPage({
         )}
 
         {activeSection === "cozy" && <CozyVibesSection />}
+        {activeSection === "dead-air" && <DeadAirSection />}
         {activeSection === "archive" && <ArchiveSection />}
         {activeSection === "soundtrack" && (
           <SoundtrackCornerPanel album={album} />

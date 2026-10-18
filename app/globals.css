@@ -45,6 +45,12 @@
   --deck-spindle: #c9c9c9;
   --deck-mat: #2b3a5c;
   --deck-mat-ring: #c9a227;
+  /* Dead Air's frame, dressed as a dead radio set in the game's own colours
+     (the dead-air repo's theme): its charcoal, its violet rule and its ink.
+     The game's palette rather than the page's, so the same in every skin. */
+  --deadair-set: #171b19;
+  --deadair-rule: #443356;
+  --deadair-ink: #dcd7ec;
   --bg-page: #e8e0d0;
   --bg-main: #fff;
   --bg-dark: #1a1a2e;
@@ -2880,6 +2886,68 @@ body {
 
   .cozy-card {
     max-width: 100%;
+  }
+}
+
+/* ─── Dead Air ───
+   A dark game on a cream page, framed as a dead radio set: the game's charcoal
+   for the bezel, its violet rule around the screen, its ink for the caption.
+   Sized like Cozy's frame — the room view fits at 700px wide, and the game was
+   checked in a 620px-tall frame down to 323px wide, dialogs scrolling inside
+   it with their controls reachable, so the height holds on phones too. */
+.deadair-body {
+  padding: 18px 15px 20px;
+}
+
+.deadair-note {
+  font-size: 10px;
+  font-style: italic;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.45;
+  margin: 0 auto 10px;
+  max-width: 460px;
+}
+
+.deadair-set {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--deadair-set);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
+.deadair-set iframe {
+  width: 100%;
+  height: 620px;
+  border: 1px solid var(--deadair-rule);
+  border-radius: 4px;
+  display: block;
+  background: var(--deadair-set);
+}
+
+.deadair-caption {
+  font-size: 10px;
+  font-style: italic;
+  color: var(--deadair-ink);
+  text-align: center;
+  padding-top: 8px;
+}
+
+/* Every pixel of width goes to the game on a phone. With the desktop padding
+   a 375px screen left a 301px frame, and the game's top bar overflowed it —
+   its third button cut off at the edge (measured). Trimmed, the frame is the
+   viewport less 46px: 329px on a 375px phone, past the 323px it was checked
+   at. A 360px phone still gets 314px. */
+@media (max-width: 640px) {
+  .deadair-body {
+    padding: 14px 6px 16px;
+  }
+
+  .deadair-set {
+    padding: 5px;
+    border-radius: 8px;
   }
 }
 

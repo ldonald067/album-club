@@ -1,6 +1,6 @@
-/* Self-hosted subset of @hackernoon/pixel-icon-library — only the 11 glyphs
+/* Self-hosted subset of @hackernoon/pixel-icon-library — only the 12 glyphs
  * this site actually uses. Generated with subset-font from the package woff2
- * (948 B vs the full 20 kB face). Regenerate if a new hn-* class is added:
+ * (996 B vs the full 20 kB face). Regenerate if a new hn-* class is added:
  * see docs/performance.md. Base rules mirror the vendor iconfont.css. */
 @font-face {
   font-family: "iconfont";
@@ -42,6 +42,9 @@
 }
 .hn-question:before {
   content: "\f1d2";
+}
+.hn-sound-mute:before {
+  content: "\f1e1";
 }
 .hn-sound-on:before {
   content: "\f1e2";

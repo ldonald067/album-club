@@ -20,6 +20,12 @@ export const SECTIONS = [
   },
   { key: "cozy", path: "/cozy", icon: "hn hn-play", label: "Cozy Vibes" },
   {
+    key: "dead-air",
+    path: "/dead-air",
+    icon: "hn hn-sound-mute",
+    label: "Dead Air",
+  },
+  {
     key: "archive",
     path: "/archive",
     icon: "hn hn-calender",

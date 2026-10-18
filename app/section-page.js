@@ -5,7 +5,7 @@ import { getAlbumFacts } from "@/lib/album-facts";
 import { playsWholeAlbum } from "@/lib/full-album-videos";
 import { songOnRecord } from "@/lib/song-videos";
 
-/* One body and one metadata builder shared by all six tab routes, so a tab is
+/* One body and one metadata builder shared by every tab route, so a tab is
    two exported lines in app/<key>/page.js and nothing else.
 
    Every route renders the same ForumPage — the banner, the tab strip and the
@@ -30,6 +30,11 @@ const COPY = {
     title: "Cozy Vibes — Album Of The Day Club",
     description:
       "Somewhere to sit between albums. Small, slow browser games with no score to chase and no timer breathing down your neck.",
+  }),
+  "dead-air": () => ({
+    title: "Dead Air — Album Of The Day Club",
+    description:
+      "A music horror escape room, playable right here. Restore the station systems and find a way out. Sound is optional.",
   }),
   archive: () => ({
     title: "Archive — Album Of The Day Club",
