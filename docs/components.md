@@ -155,18 +155,29 @@ disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
     inner edge the end (`songTarget` in `lib/tonearm.js`, tested). On a
     phone's 130px record that is all of the grooves. A click off the
     target spins the record, as the label does. A dragged arm moves freely
-    and is let down the same way, at the target's nearer end if released
-    beyond it — past its inner edge, that is the song's last second.
+    and is let down in the band (`songLetGo`, tested). Picked up from the
+    rest it goes where a click would. Picked up off the record it moves the
+    song by as far as the hand moved it across the target, clamped at the
+    song's ends — so a tap that does not move it puts it back where it was.
+    From 10-16 to 10-18 it was let down as a click, and since the arm shows
+    the song on its thin band, which sits in the middle of the wide target,
+    a tap on the arm at 10% of a song jumped it as far as 81% (adversarial
+    review, 2026-10-18).
   - **The end of the song is not the end of the record:** no run-out and no
     "heard all the way through" — the needle lifts at the band's inner edge
     and the platter winds down; seven seconds later the record goes back in
     its sleeve and the arm home. A single ends the same way. (Until
     2026-10-13 the record turned on through those seconds in silence, the
-    needle parked on the next song's edge.) `eval-site` fails if the run-out
-    or the award stop being whole-album only, or if `ForumPage` stops taking
-    the kind of day — album, song, single, none — from `recordPlays`
-    (`lib/tonearm.js`, tested): checking only the lines that _use_ the kind
-    missed `single = false` (adversarial review, 2026-10-13).
+    needle parked on the next song's edge.) The run-out is decided in
+    `lib/tonearm.js` and tested per kind of day: `recordTurns` (whether the
+    platter turns) and `armClasses` (the arm's state classes). `eval-site`
+    fails if `ForumPage` tests `"runout"` itself rather than calling them,
+    if the award stops being whole-album only, or if `ForumPage` stops
+    taking the kind of day — album, song, single, none — from `recordPlays`.
+    Each of those checks once read source lines and missed something: only
+    the lines that _use_ the kind missed `single = false` (adversarial
+    review, 2026-10-13), and a grep for the run-out gate passed with it
+    taken off the arm, because two other lines still held it (2026-10-18).
 - **A turntable beside the sleeve (2026-10-01).** On turntable days the hero
   shows a silver deck — plinth, a platter with a strobe-dotted rim and a felt
   slipmat in the club's navy and gold, and a tonearm. Play slides the record
@@ -207,8 +218,11 @@ disc: `on-deck` (out of the sleeve), `turning` (spinning), and the load-time
     off the record pressed Stop, forgetting the needle and the listening. Picked up
     from the rest with the record in its sleeve, it can go straight onto the
     platter to start from that point — `armHeld` keeps it there for the
-    moment before YouTube reports PLAYING. Pointer-only by design: the seek
-    bar is the keyboard's way to do the same.
+    moment before YouTube reports PLAYING. So does an arm let go on the
+    record whenever the deck has gone off in the meantime — picked up in
+    the run-out and held past its seven seconds, it used to swing toward
+    its rest and back. Pointer-only by design: the seek bar is the
+    keyboard's way to do the same.
   - Reaching for the grip is not hovering the sleeve: a `:has()` rule stops
     the sleeve sliding and the record spinning in it when a hand goes to the
     arm.

@@ -29,6 +29,9 @@ import {
   radiusAtAngle,
   AIM_PX,
   recordPlays,
+  recordTurns,
+  armClasses,
+  songLetGo,
 } from "../lib/tonearm.js";
 import {
   MUSIC_INNER,
@@ -283,4 +286,99 @@ test("the arm crosses exactly the band the record lights for the song", () => {
       );
     }
   }
+});
+
+/* The arm in the hand on a song day: lifted where the song had got to, as
+   ForumPage's armGrab reads it back off the arm's angle */
+const liftedAt = (song, p) => {
+  const angle = armAngle(songToAlbum(song, p));
+  return {
+    r0: radiusAtAngle(angle),
+    from: albumToSong(song, progressAtAngle(angle)),
+  };
+};
+
+test("a tap on a song day's arm puts the needle back where it was", () => {
+  // Read as a click, the arm's spot in the thin band was the middle of the
+  // wide target: thank u, next (11/12) at 10% jumped to 81% on a phone
+  for (const aim of [DESKTOP_MOUSE, PHONE_TOUCH]) {
+    for (const song of [
+      { track: 11, of: 12 },
+      { track: 1, of: 12 },
+      { track: 4, of: 17 },
+    ]) {
+      for (const p of [0, 0.1, 0.5, 0.9, 1]) {
+        const { r0, from } = liftedAt(song, p);
+        const back = songLetGo(song, r0, aim, from, r0);
+        // Within a second of a four-minute song: the angle is kept to 0.01°
+        assert.ok(
+          near(back, p, 0.004),
+          `${song.track}/${song.of} at ${p}: ${back}`,
+        );
+      }
+    }
+  }
+});
+
+test("a song day's arm moves the song by as far as the hand moves it", () => {
+  const song = { track: 5, of: 12 };
+  const { outer, inner } = songTarget(song, DESKTOP_MOUSE);
+  const width = outer - inner;
+  const { r0, from } = liftedAt(song, 0.3);
+  // A quarter of the target inward is a quarter of the song later
+  assert.ok(
+    near(songLetGo(song, r0 - width / 4, DESKTOP_MOUSE, from, r0), from + 0.25),
+  );
+  assert.ok(
+    near(songLetGo(song, r0 + width / 10, DESKTOP_MOUSE, from, r0), from - 0.1),
+  );
+  // Beyond either end of the song it clamps
+  assert.equal(songLetGo(song, r0 + width, DESKTOP_MOUSE, from, r0), 0);
+  assert.equal(songLetGo(song, r0 - width, DESKTOP_MOUSE, from, r0), 1);
+  assert.equal(songLetGo(song, NaN, DESKTOP_MOUSE, from, r0), from);
+});
+
+test("a song day's arm picked up from the rest goes where a click would", () => {
+  const song = { track: 5, of: 12 };
+  for (let r = LABEL_EDGE; r <= 1; r += 0.05) {
+    assert.equal(
+      songLetGo(song, r, PHONE_TOUCH, null, null),
+      songAtRadius(song, r, PHONE_TOUCH),
+    );
+  }
+});
+
+test("only a whole album rides the run-out; a song or a single lifts and winds down", () => {
+  for (const plays of ["song", "single"]) {
+    assert.equal(armClasses({ deck: "runout", plays }), "tonearm cued lifted");
+    assert.equal(recordTurns("runout", plays), false, plays);
+  }
+  assert.equal(
+    armClasses({ deck: "runout", plays: "album" }),
+    "tonearm cued runout",
+  );
+  assert.equal(recordTurns("runout", "album"), true);
+  for (const plays of ["album", "song", "single"]) {
+    assert.equal(recordTurns("playing", plays), true, plays);
+    assert.equal(recordTurns("paused", plays), false, plays);
+    assert.equal(recordTurns("off", plays), false, plays);
+    assert.equal(armClasses({ deck: "off", plays }), "tonearm");
+    assert.equal(armClasses({ deck: "playing", plays }), "tonearm cued");
+    assert.equal(armClasses({ deck: "paused", plays }), "tonearm cued lifted");
+  }
+});
+
+test("in the hand the arm is lifted and follows the pointer, whatever the deck", () => {
+  assert.equal(
+    armClasses({ deck: "runout", plays: "album", dragging: true }),
+    "tonearm cued lifted runout dragging",
+  );
+  assert.equal(
+    armClasses({ deck: "off", plays: "song", dragging: true }),
+    "tonearm lifted dragging",
+  );
+  assert.equal(
+    armClasses({ deck: "off", plays: "single", held: true }),
+    "tonearm held",
+  );
 });

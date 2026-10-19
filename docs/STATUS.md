@@ -13,12 +13,33 @@ it used to carry).
 **Nothing is in flight.** `master` is deployed. `GET /api/health`
 returns the running commit SHA — it should match `git rev-parse --short
 origin/master` — and `uptimeSeconds` should climb. No PRs are open; `master`
-is the only branch, locally and on GitHub. Checked 2026-10-18: production ran
-`ed966a9` (the Dead Air tab) for 3.4 hours; the handoff commit after it is
-docs and comments only.
+is the only branch, locally and on GitHub. The last code commit is the
+record review's fixes (2026-10-18, below).
 
 **The last chat (2026-10-14 → 10-18), newest first:**
 
+- **The record's adversarial review, run in full (10-18).** All three
+  lenses on Codex, one at a time — about 75k Codex tokens and two minutes
+  each, no usage limit hit — over `75eb24d..3da24b2`, `2dc3c1a` and
+  `1ae9c30`. Verdict PASS, nothing high; four findings accepted, verified
+  against the code and fixed:
+  - **A tap on a song day's arm jumped the song** — the arm shows the song
+    on its thin band, and letting go read that spot as a click on the wide
+    target: 10% became up to 81%. Picked up off the record, the arm now
+    moves the song by as far as the hand moves (`songLetGo`, tested).
+    Verified on _exile_ with real taps: 0:29 stayed put, 4:28 stayed put.
+  - **"Every edition agrees" read the first 25 editions** — 24 of 57
+    placements came from bigger release groups (Hounds of Love has 215).
+    The audit now pages through all of them; re-recorded, one placement
+    fell to a single, _Future Nostalgia_. Now 56 songs.
+  - **eval-site's run-out grep passed with the gate taken off the arm.**
+    The run-out is decided in `lib/tonearm.js` (`armClasses`,
+    `recordTurns`, tested per kind of day) and eval-site fails if
+    `ForumPage` tests `"runout"` itself. Song-day ending re-checked live:
+    the needle lifts, the platter winds down, the record goes home 7s on.
+  - **An arm held past the run-out swung home and back** when let go on
+    the record; it is now held until playback starts. Not browser-checked —
+    it needs a whole-album day and a seven-second hold.
 - **A Dead Air tab (10-18).** `/dead-air` frames the owner's music horror
   escape room, deployed from its own repo at `deadair.littlealbumclub.net`,
   as a dead radio set beside Cozy Vibes — the owner's call, made from the
@@ -64,7 +85,8 @@ something, and nothing it does claims more than is known — the owner's rules:
   placement to read before committing; `eval-site` fails when they go stale.
   _Live at Pompeii_ stays off the album list (`PART_AFTER_REVIEW`).
 - Counted 2026-10-09: 99 turntable days a year (35 albums, 48 songs, 16
-  singles) and 266 pattern days.
+  singles) and 266 pattern days. Of the stored videos, eval-site prints the
+  current split (2026-10-18: 37 whole albums, 56 songs, 20 singles).
 
 **Keep each chat under ~300k tokens of context.** The owner is on the Pro
 plan and was hitting the 5-hour limit too soon: every message re-reads the
@@ -117,55 +139,20 @@ were cut to current state.
 
 **Where to pick up, in this order:**
 
-1. **Rerun the adversarial review of the record in full** — the owner's next
-   step from 2026-10-13, when the first run ended at the Codex usage limit.
-   Run `/adversarial-review` on the record's commits — `75eb24d..3da24b2`,
-   then `2dc3c1a` (the 10-13 fixes) and `1ae9c30` (the 10-16 tonearm fixes);
-   the Kagemi and Dead Air commits in between are unrelated. All three lenses
-   on Codex, **one reviewer at a time**: in parallel they used ~550k Codex
-   tokens in two minutes. Tell them what is already fixed, so they attack the
-   fixes rather than re-report them:
-   - 10-13: `placeSong` refuses an edition of the rings' length that lacks
-     the song or has it twice, a track counting by title **or** MusicBrainz
-     recording; the title-track rule lets the title add only the artist, a
-     year and dressing; the Vintage skin keeps the picture disc round; the
-     kind of day comes from `recordPlays`, tested; a song's or single's end
-     lifts the needle. 57 placements, re-checked by hand; _The Blueprint_ is
-     a single.
-   - 10-16: `songTarget` / `songAtRadius` / `onSongTarget` in
-     `lib/tonearm.js` (the widened target, tested); `armCancel` and
-     `armSpin` in `ForumPage`.
-
-   **Intent:** every day's record does something, and nothing it does claims
-   more than is known. Worth attacking:
-   - `placeSong` — the title-track rule and its dressing list, the
-     0.75–1.35× length check, edition unanimity — and the 57 placements.
-   - `ForumPage`'s video↔album mapping through every path: Play, a groove
-     click near and off the target, a drag let go inside and beyond it, a
-     cancelled drag, the end of the song, a reload with a remembered needle,
-     Stop.
-   - The platter kept turning in the hand: a drop the player never starts, a
-     grab during the run-out, a stale "playing" when the arm is let go.
-   - The singles: no rings, a full sweep, no run-out, no award.
-   - `lib/record-art.js` and its CSS: the `steps(24)` overrides, `.has-art`'s
-     reserved room, the picture disc's fallbacks, colour tokens.
-   - The `eval-site` checks are still source greps — say if one is too weak.
-     The skill builds each prompt as a file on stdin and keeps stderr; follow
-     it exactly (it failed silently once without). Fix what the review
-     accepts, then re-verify in the browser.
-
-2. **One phone check** — only a person can do it (open item 2):
+1. **One phone check** — only a person can do it (open item 2):
    - **Blind Taste Test** on an iPhone and an Android phone.
    - **A song day** (10-19, 10-29, 11-01): press Play; tap near the gold band
      — on a phone any tap on the grooves should play the song, not spin the
-     record; drag the arm with a finger and watch the platter keep turning.
-     Whole albums 10-27 and 10-30; the next single is 11-19.
+     record; tap the arm without moving it and the song should carry on
+     where it was; drag the arm with a finger and watch the platter keep
+     turning. Whole albums 10-27 and 10-30; the next single is 11-14
+     (_Future Nostalgia_, a song day until 10-18).
    - **A pattern day** (a picture disc 10-21, a zoetrope 10-22, a spiral
      10-23): tap the record and watch it spin.
    - **Dead Air** (`/dead-air`): start the game in the frame; Full screen and
      Esc on Android (iOS Safari should offer Play in New Tab instead); in
      Safari, check a save made in the frame shows on a direct visit.
-3. The catalog audit's remainder (open item 1), then everything else below.
+2. The catalog audit's remainder (open item 1), then everything else below.
 
 Two open actions need a human rather than code: **nobody has put the link
 anywhere** (open item 4), and **album audio needs a YouTube Data API key**
@@ -364,8 +351,9 @@ docs.
    - **Built: a turntable and a tonearm that is the progress bar.** On every
      album with a video (113 of 423). The arm sweeps every song ring only
      when the video is the whole album (37); on one song the audit could
-     place (57, since 2026-10-08) it plays just that song's band; anything
-     else (19, since 2026-10-09) plays as a single on a ringless record.
+     place (56 — 57 until every edition was read, 2026-10-18) it plays just
+     that song's band; anything else (20) plays as a single on a ringless
+     record.
      Open item 3's refetch is what would add more. Sessions qualify through the audit's `FULL_SESSION`
      rule — Tiny Desk, Boiler Room and KEXP sets as the series posted them;
      KEXP's full Khruangbin performance (`0PsOJ_fRckg`, 35.7 min) passes it

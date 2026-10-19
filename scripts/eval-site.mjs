@@ -1135,11 +1135,25 @@ const deckProblems = [
   ...(/hasDeck \? " has-deck"/.test(forumSource)
     ? []
     : ["ForumPage's has-deck is no longer gated on hasDeck"]),
-  ...(/deck === "runout" && wholeAlbum/.test(forumSource) &&
-  /heard && wholeAlbum/.test(forumSource)
+  /* The run-out is decided in lib/tonearm.js — armClasses and recordTurns,
+     tested per kind of day — and ForumPage only calls them. This used to
+     grep for `deck === "runout" && wholeAlbum`, which three lines held: an
+     adversarial review (2026-10-18) took the gate off the arm's class, and
+     the check still passed on the other two. So ForumPage may not test the
+     run-out itself at all; a new use belongs in lib/tonearm.js. */
+  ...(/heard && wholeAlbum/.test(forumSource)
+    ? []
+    : ["ForumPage's full-play award is no longer kept to whole albums"]),
+  ...(/"runout"/.test(forumSource)
+    ? [
+        "ForumPage tests the run-out itself — decide it in lib/tonearm.js (armClasses, recordTurns), where a test holds it",
+      ]
+    : []),
+  ...(/className=\{armClasses\(\{\s*deck,\s*plays,/.test(forumSource) &&
+  (forumSource.match(/recordTurns\(deck, plays\)/g) || []).length >= 2
     ? []
     : [
-        "ForumPage's run-out and full-play award are no longer kept to whole albums",
+        "ForumPage no longer takes the arm's classes and the platter's turning from armClasses and recordTurns",
       ]),
   ...(/vinylBands = single \? null : trackBandsGradient/.test(forumSource)
     ? []

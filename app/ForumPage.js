@@ -28,7 +28,9 @@ import {
 import { loadJson } from "@/lib/safe-fetch";
 import { songBandGradient, trackBandsGradient } from "@/lib/vinyl-bands";
 import {
+  albumToSong,
   armAngle,
+  armClasses,
   angleToward,
   clampDragAngle,
   onRecord,
@@ -37,7 +39,9 @@ import {
   progressAtRadius,
   radiusAtAngle,
   recordPlays,
+  recordTurns,
   songAtRadius,
+  songLetGo,
   songToAlbum,
   AIM_PX,
   DECK_VARS,
@@ -4642,9 +4646,11 @@ export default function ForumPage({
      record in its sleeve, it can be put straight down on the platter to
      start the album from that point. `armHeld` keeps it where it was let go
      for the moment before the player reports PLAYING, rather than swinging
-     home and back. On a song day it moves freely too, and is let down in
-     the song's band at the point of the song a click there would play, at
-     the nearer end if let go beyond its target. */
+     home and back. On a song day it moves freely too and is let down in the
+     song's band: picked up off the record, moved through the song by as far
+     as the hand moved it across the song's target, so a tap puts it back
+     where it was; picked up from the rest, where a click would play
+     (songLetGo, lib/tonearm.js). */
   const armDragRef = useRef(null);
   const [armDragging, setArmDragging] = useState(false);
   const [armHeld, setArmHeld] = useState(false);
@@ -4696,10 +4702,13 @@ export default function ForumPage({
       angle,
       // And where it was picked up, for a drag the browser cancels
       start: angle,
+      // On a song day, the point of the song it was lifted from
+      from:
+        song && wasOnDeck ? albumToSong(song, progressAtAngle(angle)) : null,
     };
     control.lift();
     setArmHeld(false);
-    setArmSpin(deck === "playing" || (deck === "runout" && wholeAlbum));
+    setArmSpin(recordTurns(deck, plays));
     setArmDragging(true);
   };
   const armMove = (e) => {
@@ -4718,10 +4727,20 @@ export default function ForumPage({
     const control = playbackRef.current;
     if (onRecord(drag.angle)) {
       const fraction = song
-        ? songAtRadius(song, radiusAtAngle(drag.angle), aimWidth(e))
+        ? songLetGo(
+            song,
+            radiusAtAngle(drag.angle),
+            aimWidth(e),
+            drag.from,
+            radiusAtAngle(drag.start),
+          )
         : progressAtAngle(drag.angle);
       if (song) setArmAngle(armAngle(songToAlbum(song, fraction)));
-      if (!drag.wasOnDeck) setArmHeld(true);
+      /* Held until the record starts under it whenever the deck is off now,
+         not only when it was at the grab: an arm picked up in the run-out
+         and held past its end found the deck off when let go, and swung
+         toward its rest and back before the player started. */
+      if (!drag.wasOnDeck || deck === "off") setArmHeld(true);
       control?.drop(fraction);
     } else {
       setArmSpin(false);
@@ -4818,7 +4837,7 @@ export default function ForumPage({
        down under a lifted needle (below), rather than turning on in silence
        with the needle parked on the next song's edge (adversarial review,
        2026-10-13). */
-    if (armSpin || deck === "playing" || (deck === "runout" && wholeAlbum)) {
+    if (armSpin || recordTurns(deck, plays)) {
       setOnDeck(true);
       setTurning(true);
       ramp(1, 500);
@@ -5490,15 +5509,12 @@ export default function ForumPage({
                     {hasDeck && (
                       <span
                         ref={tonearmRef}
-                        className={`tonearm${deck === "off" ? "" : " cued"}${
-                          deck === "paused" ||
-                          armDragging ||
-                          (deck === "runout" && !wholeAlbum)
-                            ? " lifted"
-                            : ""
-                        }${deck === "runout" && wholeAlbum ? " runout" : ""}${
-                          armDragging ? " dragging" : ""
-                        }${armHeld ? " held" : ""}`}
+                        className={armClasses({
+                          deck,
+                          plays,
+                          dragging: armDragging,
+                          held: armHeld,
+                        })}
                         aria-hidden="true"
                       >
                         <span className="tonearm-base" />

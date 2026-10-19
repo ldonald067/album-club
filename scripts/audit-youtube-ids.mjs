@@ -167,21 +167,42 @@ async function watchPage(id) {
   };
 }
 
-/* Every title on any of the release group's editions (up to 25), merged and
+/* Every title on any of the release group's editions, merged and
    de-duplicated — what a video's title is matched against — and each
    edition's own running order as { title, ms, recording }, which the merged
    set does not keep: a song's position and length come from the editions
    (placeSong), and the recording id says a track is the same song under
-   another spelling ("FTBC", a censored title). */
+   another spelling ("FTBC", a censored title).
+
+   Every edition, page by page. Until 2026-10-18 this read the first 25 and
+   stopped, so "every edition agrees" meant "the first 25 agree" — on 24 of
+   the 57 placements then recorded, Hounds of Love's 215 editions among
+   them. A list that cannot be read to the end throws, and an ERROR refuses
+   --record, rather than placing a song on part of the evidence. Pages are
+   counted by what came back, not by the limit asked for: MusicBrainz may
+   return fewer releases per page when it includes their recordings. */
 async function tracklist(releaseGroupId) {
-  const res = await fetchRetry(
-    `https://musicbrainz.org/ws/2/release?release-group=${releaseGroupId}&inc=recordings+media&limit=25&fmt=json`,
-    { headers: { "User-Agent": USER_AGENT } },
-  );
-  if (!res.ok) throw new Error(`MusicBrainz ${res.status}`);
-  const body = await res.json();
+  const found = [];
+  let total = Infinity;
+  while (found.length < total) {
+    if (found.length) await sleep(MB_DELAY_MS);
+    const res = await fetchRetry(
+      `https://musicbrainz.org/ws/2/release?release-group=${releaseGroupId}&inc=recordings+media&limit=100&offset=${found.length}&fmt=json`,
+      { headers: { "User-Agent": USER_AGENT } },
+    );
+    if (!res.ok) throw new Error(`MusicBrainz ${res.status}`);
+    const body = await res.json();
+    const page = body.releases || [];
+    total = body["release-count"] ?? found.length + page.length;
+    if (!page.length && found.length < total) {
+      throw new Error(
+        `MusicBrainz listed ${total} editions and returned ${found.length}`,
+      );
+    }
+    found.push(...page);
+  }
   const byPosition = (a, b) => (a.position ?? 0) - (b.position ?? 0);
-  const releases = (body.releases || []).map((release) =>
+  const releases = found.map((release) =>
     [...(release.media || [])].sort(byPosition).flatMap((medium) =>
       [...(medium.tracks || [])].sort(byPosition).map((t) => ({
         title: t.title,

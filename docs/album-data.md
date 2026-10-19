@@ -59,7 +59,12 @@
     refill. A song is placed only when, after setting aside what the
     artist's or album's name explains, the title names exactly one track;
     the rings are drawn (2–20 songs, album-facts' count); every MusicBrainz
-    edition with exactly that many tracks has it at the same single place —
+    edition with exactly that many tracks — every one, read page by page,
+    or the run errors and `--record` refuses (until 2026-10-18 only the
+    first 25 were read, and 24 of the 57 placements came from release
+    groups with more; read in full, they lost one, _Future Nostalgia_'s
+    title track, which an 11-track edition past the first page lacks) — has
+    it at the same single place —
     by its title, or as the same recording under another spelling ("FTBC", a
     censored `Norman ******* Rockwell`) — and one without it, or with it
     twice, refuses the placement; and the video runs 0.75–1.35× that track's
