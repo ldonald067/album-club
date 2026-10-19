@@ -51,6 +51,41 @@
   --deadair-set: #171b19;
   --deadair-rule: #443356;
   --deadair-ink: #dcd7ec;
+  /* The margins' 2004 sidebar junk (app/MarginRails.js): a poster in the
+     loud yellow, red and navy those ads were, and four badge looks. */
+  --rail-poster-bg: #fff36b;
+  --rail-poster-edge: #cc0000;
+  --rail-poster-head: #cc0000;
+  --rail-poster-ink: #000080;
+  --rail-poster-cta-bg: #000080;
+  --rail-poster-cta-ink: #fff36b;
+  /* black vinyl in every skin, like the hero's record */
+  --rail-vinyl: #1a1a1a;
+  --rail-badge-a-bg: #1a1a2e;
+  --rail-badge-a-ink: #c9a227;
+  --rail-badge-b-bg: #c0c0c0;
+  --rail-badge-b-ink: #000;
+  --rail-badge-c-bg: #2a4570;
+  --rail-badge-c-ink: #fff;
+  --rail-badge-d-bg: #fff36b;
+  --rail-badge-d-ink: #cc0000;
+  /* The era's Windows grey: the badges' bevels, the fake error box and its
+     buttons. Already a nineties desktop, so the same in every skin. */
+  --rail-win-face: #c0c0c0;
+  --rail-win-light: #fff;
+  --rail-win-dark: #808080;
+  --rail-win-ink: #000;
+  --rail-win-title-bg: #000080;
+  --rail-win-title-ink: #fff;
+  --rail-win-icon: #c00000;
+  --rail-win-icon-ink: #fff;
+  /* Halloween week's poster: orange on black */
+  --rail-spooky-bg: #140f0a;
+  --rail-spooky-edge: #ff8c1a;
+  --rail-spooky-head: #ff8c1a;
+  --rail-spooky-ink: #f3e6c8;
+  --rail-spooky-cta-bg: #ff8c1a;
+  --rail-spooky-cta-ink: #140f0a;
   --bg-page: #e8e0d0;
   --bg-main: #fff;
   --bg-dark: #1a1a2e;
@@ -2951,6 +2986,472 @@ body {
   }
 }
 
+/* ─── Margin Rails: 2004 sidebar junk (app/MarginRails.js) ───
+   Only where the margins have room for it: 960px of page, a 160px poster
+   and a 120px badge column each 20px out from it, and a little air at the
+   window's edge. It hangs off a sticky anchor at the top of <main>, so it
+   starts below the full-width banner, nav and info bar, rides down the page
+   with you, and stops at the end of <main> instead of covering the footer:
+   the anchor is as tall as the taller rail (the badge column, with its
+   error box and disclaimer) and gives that height back with a negative
+   margin, so it takes no room in the page. */
+.margin-rails {
+  display: none;
+}
+
+@media (min-width: 1380px) and (min-height: 700px) {
+  .margin-rails {
+    display: block;
+    position: sticky;
+    top: 16px;
+    height: 640px;
+    margin-bottom: -640px;
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+.margin-rail {
+  position: absolute;
+  top: 0;
+  pointer-events: auto;
+}
+
+/* .content has 15px of padding; the anchor sits inside it */
+.margin-rail-left {
+  right: calc(100% + 35px);
+  width: 160px;
+}
+
+.margin-rail-right {
+  left: calc(100% + 35px);
+  width: 120px;
+}
+
+.rail-poster {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 600px;
+  padding: 18px 10px 10px;
+  background: var(--rail-poster-bg);
+  border: 3px double var(--rail-poster-edge);
+  color: var(--rail-poster-ink);
+  text-align: center;
+  text-decoration: none;
+}
+
+/* The first beat, as an animated GIF banner played it: the clickbait alone,
+   for 2.4s, then the punchline. Hidden unless the animation shows it, so
+   reduced motion (which stops every animation) goes straight to the
+   punchline, and nothing is left covering the poster. */
+.rail-poster-tease {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 10px;
+  background: var(--rail-poster-bg);
+  color: var(--rail-poster-head);
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: 26px;
+  line-height: 1.05;
+  text-transform: uppercase;
+  /* An album title's long word breaks rather than leaving the poster */
+  overflow-wrap: anywhere;
+  visibility: hidden;
+  animation: railTease 2.4s;
+}
+
+@keyframes railTease {
+  from,
+  to {
+    visibility: visible;
+  }
+}
+
+/* Uppercase in CSS, so the copy can carry album titles as written */
+.rail-poster-head {
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  font-family: Impact, "Arial Black", sans-serif;
+  /* 26px: the copy's widest fixed word, "HALLOWEEN.", fits the poster's
+     134px (measured 2026-10-19); only an album title's word can break */
+  font-size: 26px;
+  line-height: 1.05;
+  letter-spacing: 0.5px;
+  color: var(--rail-poster-head);
+}
+
+/* A record that turns three times once the punchline is up and again under
+   the pointer — moving for longer than 5s with no way to stop it would
+   fail WCAG 2.2.2, and the site-wide reduced-motion rule stills it */
+.rail-poster-disc {
+  display: block;
+  flex: none;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(
+      circle,
+      var(--vinyl-groove) 0 1px,
+      transparent 1px 3px
+    ),
+    var(--rail-vinyl);
+  position: relative;
+}
+
+.rail-poster-label {
+  position: absolute;
+  inset: 33%;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--gold) 0 25%,
+    var(--rail-poster-head) 0 50%,
+    var(--gold) 0 75%,
+    var(--rail-poster-head) 0
+  );
+  animation: railSpin 1.6s linear 2.4s 3;
+}
+
+.rail-poster:hover .rail-poster-label {
+  animation: railSpin 1.6s linear infinite;
+}
+
+@keyframes railSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rail-poster-body {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.rail-poster-stars {
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1.5;
+  letter-spacing: 0.5px;
+  color: var(--rail-poster-head);
+}
+
+/* Blinks five times once the punchline is up, and stops: WCAG 2.2.2 again.
+   step-end, not a one-step steps(): test/record-art.test.mjs fails on any
+   step count but the zoetrope's. */
+.rail-poster-cta {
+  padding: 8px 12px;
+  background: var(--rail-poster-cta-bg);
+  color: var(--rail-poster-cta-ink);
+  font-weight: bold;
+  font-size: 13px;
+  letter-spacing: 1px;
+  animation: railBlink 1s step-end 2.4s 5;
+}
+
+@keyframes railBlink {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+.rail-poster:hover .rail-poster-cta,
+.rail-poster:focus-visible .rail-poster-cta {
+  text-decoration: underline;
+}
+
+.rail-poster-fine {
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+/* Halloween week (lib/margin-rails.js): orange and black, and the label
+   carved into a jack-o'-lantern. A seasonal costume, the same in every
+   skin, like Dead Air's set. */
+.rail-poster-spooky {
+  background: var(--rail-spooky-bg);
+  border-color: var(--rail-spooky-edge);
+  color: var(--rail-spooky-ink);
+}
+
+.rail-poster-spooky .rail-poster-tease {
+  background: var(--rail-spooky-bg);
+  color: var(--rail-spooky-head);
+}
+
+.rail-poster-spooky .rail-poster-head,
+.rail-poster-spooky .rail-poster-stars {
+  color: var(--rail-spooky-head);
+}
+
+.rail-poster-spooky .rail-poster-label {
+  background: var(--rail-spooky-head);
+}
+
+.rail-poster-spooky .rail-poster-cta {
+  background: var(--rail-spooky-cta-bg);
+  color: var(--rail-spooky-cta-ink);
+}
+
+.rail-poster-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: var(--rail-spooky-bg);
+}
+
+/* The era's fake buttons (app/MarginRails.js, FakeButton): Windows grey
+   bevels that press in, and do nothing but say so */
+.rail-fake {
+  position: relative;
+  padding: 0;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1;
+  color: var(--rail-win-ink);
+  background: var(--rail-win-face);
+  border: 2px solid;
+  border-color: var(--rail-win-light) var(--rail-win-dark) var(--rail-win-dark)
+    var(--rail-win-light);
+  cursor: pointer;
+}
+
+.rail-fake:active {
+  border-color: var(--rail-win-dark) var(--rail-win-light) var(--rail-win-light)
+    var(--rail-win-dark);
+}
+
+/* While it is pressed, or focused — the keyboard, and the click that
+   focuses a button everywhere but Safari */
+.rail-fake:active::after,
+.rail-fake:focus::after {
+  content: "Nice try.";
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 3;
+  padding: 3px 6px;
+  white-space: nowrap;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  color: var(--rail-poster-head);
+  background: var(--rail-poster-bg);
+  border: 1px solid var(--rail-win-ink);
+}
+
+.rail-poster-x {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  z-index: 3;
+  width: 18px;
+  height: 16px;
+}
+
+.rail-badges {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+/* An 88×31 micro-banner as the 1990s drew them: a raised grey frame, an
+   icon square, a small line in pixel type and a bold word in a sunken
+   white box */
+.rail-badge {
+  width: 88px;
+  height: 31px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  background: var(--rail-win-face);
+  border: 2px solid;
+  border-color: var(--rail-win-light) var(--rail-win-dark) var(--rail-win-dark)
+    var(--rail-win-light);
+}
+
+.rail-badge-icon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--rail-win-dark);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.rail-badge-a .rail-badge-icon {
+  background: var(--rail-badge-a-bg);
+  color: var(--rail-badge-a-ink);
+}
+
+.rail-badge-b .rail-badge-icon {
+  background: var(--rail-badge-b-bg);
+  color: var(--rail-badge-b-ink);
+}
+
+.rail-badge-c .rail-badge-icon {
+  background: var(--rail-badge-c-bg);
+  color: var(--rail-badge-c-ink);
+}
+
+.rail-badge-d .rail-badge-icon {
+  background: var(--rail-badge-d-bg);
+  color: var(--rail-badge-d-ink);
+}
+
+.rail-badge-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.rail-badge-small {
+  font-family: var(--font-pixel), "Courier New", monospace;
+  font-size: 8px;
+  line-height: 1;
+  color: var(--rail-win-ink);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.rail-badge-big {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 11px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  color: var(--rail-win-ink);
+  background: var(--rail-win-light);
+  border: 1px solid;
+  border-color: var(--rail-win-dark) var(--rail-win-light) var(--rail-win-light)
+    var(--rail-win-dark);
+}
+
+.rail-ring {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  margin-top: 14px;
+  padding: 6px 4px;
+  background: var(--surface-field);
+  border: 1px solid var(--border-panel);
+  color: var(--text-primary);
+  font-size: 11px;
+}
+
+.rail-ring-title {
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.rail-ring a {
+  color: var(--text-link);
+}
+
+/* The fake error box: a Windows 98 dialog. OK goes where it says; Cancel
+   and the close box are FakeButtons. */
+.rail-error {
+  margin-top: 12px;
+  background: var(--rail-win-face);
+  border: 2px solid;
+  border-color: var(--rail-win-light) var(--rail-win-dark) var(--rail-win-dark)
+    var(--rail-win-light);
+  color: var(--rail-win-ink);
+  font-size: 11px;
+}
+
+.rail-error-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 2px 2px 4px;
+  background: var(--rail-win-title-bg);
+  color: var(--rail-win-title-ink);
+  font-weight: bold;
+}
+
+.rail-error-x {
+  width: 14px;
+  height: 13px;
+  font-size: 10px;
+}
+
+.rail-error-body {
+  display: flex;
+  gap: 6px;
+  padding: 8px 6px 6px;
+  line-height: 1.3;
+}
+
+.rail-error-icon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--rail-win-icon);
+  color: var(--rail-win-icon-ink);
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.rail-error-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 6px 8px;
+}
+
+.rail-error-ok,
+.rail-error-cancel {
+  min-width: 44px;
+  padding: 2px 6px;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 11px;
+  font-weight: normal;
+  text-align: center;
+  text-decoration: none;
+}
+
+.rail-error-ok {
+  color: var(--rail-win-ink);
+  background: var(--rail-win-face);
+  border: 2px solid;
+  border-color: var(--rail-win-light) var(--rail-win-dark) var(--rail-win-dark)
+    var(--rail-win-light);
+  outline: 1px solid var(--rail-win-ink);
+}
+
+.rail-disclaimer {
+  margin-top: 8px;
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--text-secondary);
+}
+
 /* ─── Cover Art Challenge ─── */
 .cover-challenge-img-wrap {
   width: 200px;
@@ -4271,6 +4772,22 @@ body {
    accessibility above aesthetics where the two collide. */
 
 :root[data-theme="vintage"] {
+  /* The margin junk in a 1990s desktop's colours: maroon and navy on
+     silver, the button teal behind white (never teal text) */
+  --rail-poster-bg: #c0c0c0;
+  --rail-poster-edge: #000080;
+  --rail-poster-head: #800000;
+  --rail-poster-ink: #000080;
+  --rail-poster-cta-bg: #008080;
+  --rail-poster-cta-ink: #fff;
+  --rail-badge-a-bg: #008080;
+  --rail-badge-a-ink: #fff;
+  --rail-badge-b-bg: #c0c0c0;
+  --rail-badge-b-ink: #000;
+  --rail-badge-c-bg: #000080;
+  --rail-badge-c-ink: #fff;
+  --rail-badge-d-bg: #fff;
+  --rail-badge-d-ink: #000080;
   --bg-page: #c0c0c0;
   --bg-main: #c0c0c0;
   --bg-dark: #008080;
@@ -4311,11 +4828,14 @@ body {
    whose picture disc is exactly that fill: missed off this list, it printed
    the cover square across a round record (adversarial review, 2026-10-13).
    And the tonearm's bearing and the turntable's platter, which are turned
-   parts, not panels. */
+   parts, not panels. And the record on the margin's poster and its label,
+   which came out a square the first time it was drawn (2026-10-18). */
 :root[data-theme="vintage"]
   *:not(.vinyl-disc):not(.vinyl-label):not(.vinyl-bands):not(.vinyl-song):not(
     .vinyl-art
-  ):not(.tonearm-base):not(.turntable-platter):not(.tonearm-grip) {
+  ):not(.tonearm-base):not(.turntable-platter):not(.tonearm-grip):not(
+    .rail-poster-disc
+  ):not(.rail-poster-label):not(.rail-error-icon) {
   border-radius: 0;
 }
 

@@ -456,6 +456,82 @@ with its own repo (`dead-air`) and deploy at `deadair.littlealbumclub.net`.
   subdomain is the same site, so in Chrome the frame and a direct visit share
   one save. Safari is unchecked.
 
+## Margin rails (`app/MarginRails.js`, 2026-10-18)
+
+The empty margins either side of the 960px page, on a window 1380px wide
+and 700px tall or more, carry 1990s and 2004 sidebar junk — the owner's
+pick from a list of ideas, styled after the Web Design Museum's "Web
+Banners in the 90s" and the era's deceptive ad formats, all as parody.
+
+- **Left: a 160×600 poster in two beats,** like an animated GIF banner: a
+  clickbait teaser alone for 2.4s ("Hot singles in your area"), then the
+  deflating punchline, a fact about the day and a blinking button. Each is
+  a notice for one of the club's own tabs, never the tab it hangs beside,
+  and one jokes about the disclaimer ("Netscape did not pay for this ad").
+  A fake close box sits in its corner.
+- **Right:** seven bevelled 88×31 micro-banners (icon square, pixel-type
+  line, bold word in a sunken box) — four from the day's facts, three of
+  the 1990s parodies (Netscape Then!, Optimised for IE6, GeoCities RIP
+  '09…) taking turns; the webring bar; a Windows 98 error box; and the
+  disclaimer.
+- **The copy writes itself (`lib/margin-rails.js`).** The owner asked not
+  to have to keep changing it. Every poster, badge and error box is a frame
+  filled from what `SectionPage` already knows about the day — today's
+  record and how the turntable plays it, its year, length and track count,
+  yesterday's album, tomorrow's genre and decade (no more than the tomorrow
+  teaser shows), the catalog's size, the date. A frame whose fact is
+  unknown that day steps aside for one that needs nothing. Nothing is
+  fetched from elsewhere: a feed is one more thing that can fail or say
+  something wrong.
+- **Halloween week, 24–31 October, by the date alone:** the poster goes
+  orange and black with a jack-o'-lantern carved into the record's label,
+  every poster has a Halloween frame, Dead Air has every other day, a badge
+  counts down the nights and the error box becomes Boo.exe. Every year.
+- **Parody, on the owner's call (2026-10-18).** The badges name real
+  products and the error box and close boxes copy the era's deceptive
+  formats. The disclaimer under them owns up to all of it. The fakes are
+  harmless: a fake button (`FakeButton`) goes nowhere, shows "Nice try."
+  while pressed or focused, and tells a screen reader it is a parody. The
+  badges are drawn in CSS, not copied from the museum's images.
+- **`test/margin-rails.test.mjs` renders two years of days** from the real
+  catalog through every tab and fails on a hole (`undefined`, `NaN`), copy
+  too long for the poster, a badge or the error box, a frame that never
+  fires, a poster for its own tab, tomorrow's title leaking, or a
+  Halloween week without its costume and Dead Air billing. Widths were
+  measured in the browser (2026-10-19): ten pixel-type and seven bold
+  characters a badge; the teaser and punchline at 26px, whose widest fixed
+  word ("HALLOWEEN.") fits; an album title's long word breaks
+  (`overflow-wrap: anywhere`) rather than leave the poster.
+- **A server component, no script.** `SectionPage` renders it and passes it
+  to `ForumPage` as `rails`, which puts it first in `<main>`.
+- **It hangs off a sticky anchor** at the top of `<main>`, as tall as the
+  badge column and giving that height back with a negative margin. So it
+  starts below the full-width banner, nav and info bar (fixed positioning
+  sat on top of them), rides down the page and stops at the end of
+  `<main>`.
+- **Off on Cozy Vibes and Dead Air,** whose game frames widen into the
+  margins.
+- **Motion within WCAG 2.2.2:** after the teaser the button blinks five
+  times and the record turns three times, then both stop; the record turns
+  again under the pointer. The site-wide reduced-motion rule stills all of
+  it and skips the teaser, which is hidden unless its animation shows it.
+  The blink uses `step-end`: `test/record-art.test.mjs` fails on any
+  `steps(n)` but the zoetrope's, comments included.
+- **Class names avoid "ad", "banner", "sponsor" and "skyscraper,"** which ad
+  blockers hide.
+- **Badges are inert.** A 2004 badge came with "copy this code to link to
+  us", and that is a share button (CLAUDE.md).
+- Colours are `--rail-*` tokens. The poster and badges have Vintage
+  overrides; the Windows grey and the Halloween costume are the same in
+  every skin. The poster's record and the error icon are on Vintage's
+  round-corner exemption list. Contrast measured from computed colours on
+  their solid backgrounds, both skins: 4.77:1 at the lowest (Vintage's
+  white on teal).
+- **To see Halloween locally,** fake the server's clock to 24–31 October
+  (`docs/gotchas.md`). Expect a hydration warning while you do: the
+  marquee picks its message by date in the browser, which still knows the
+  real date.
+
 ## Album vs Album (`VersusMatchup`)
 
 Daily head-to-head matchup. Shows two album covers side by side with title/artist/year/genre info and "Pick this one" buttons. After voting, shows community vote split as animated percentage bar (blue-A vs pink-B). Confetti on vote. Uses `renderCard(album, side, btn)` helper for DRY card rendering. Pairing seed, endpoint and state key live in `docs/games.md` — don't restate them here.

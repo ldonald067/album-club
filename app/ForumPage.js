@@ -4507,6 +4507,8 @@ export default function ForumPage({
   archiveAlbums,
   dateString,
   section = "home",
+  // The margins' 2004 sidebar junk, rendered on the server (app/MarginRails.js)
+  rails = null,
 }) {
   const activeSection = section;
 
@@ -5288,6 +5290,7 @@ export default function ForumPage({
           "--accent-light": `${accentColor}30`,
         }}
       >
+        {rails}
         {activeSection === "home" && (
           <>
             {/* Marquee */}

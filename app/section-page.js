@@ -1,9 +1,11 @@
 import ForumPage from "./ForumPage";
-import { getDateString } from "@/lib/albums";
+import MarginRails from "./MarginRails";
+import { ALBUMS, getDateString, getTodayKey } from "@/lib/albums";
 import { getFeaturedAlbum, getPageData } from "@/lib/daily-picks";
 import { getAlbumFacts } from "@/lib/album-facts";
 import { playsWholeAlbum } from "@/lib/full-album-videos";
 import { songOnRecord } from "@/lib/song-videos";
+import { recordPlays } from "@/lib/tonearm";
 
 /* One body and one metadata builder shared by every tab route, so a tab is
    two exported lines in app/<key>/page.js and nothing else.
@@ -81,9 +83,30 @@ export function SectionPage({ section }) {
   const { picks, yesterday, tomorrow, archive } = getPageData({
     archive: section === "archive",
   });
-  const albumTracks = getAlbumFacts(picks.album)?.tracks ?? null;
+  const facts = getAlbumFacts(picks.album);
+  const albumTracks = facts?.tracks ?? null;
+  /* What the margins write their copy from (lib/margin-rails.js): the same
+     lookups the turntable makes below, so the copy changes with the day by
+     itself. Looked up again rather than shared, because eval-site holds
+     the props below to their inline form. */
+  const song = songOnRecord(picks.album, albumTracks);
+  const day = {
+    dayKey: getTodayKey(),
+    album: picks.album,
+    facts,
+    plays: recordPlays(
+      picks.album.youtubeId,
+      playsWholeAlbum(picks.album),
+      song,
+    ),
+    song,
+    yesterday,
+    tomorrow,
+    catalogSize: ALBUMS.length,
+  };
   return (
     <ForumPage
+      rails={<MarginRails section={section} day={day} />}
       album={picks.album}
       albumTracks={albumTracks}
       playsWholeAlbum={playsWholeAlbum(picks.album)}

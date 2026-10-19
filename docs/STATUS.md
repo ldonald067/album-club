@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-10-18.
+session. Last updated: 2026-10-19.
 
 This file holds **current state, open items and standing decisions** only.
 How things work lives in the topic docs; what happened and when lives in git
@@ -14,10 +14,19 @@ it used to carry).
 returns the running commit SHA — it should match `git rev-parse --short
 origin/master` — and `uptimeSeconds` should climb. No PRs are open; `master`
 is the only branch, locally and on GitHub. The last code commit is the
-record review's fixes (2026-10-18, below).
+margin rails (2026-10-19, below).
 
-**The last chat (2026-10-14 → 10-18), newest first:**
+**The last chat (2026-10-14 → 10-19), newest first:**
 
+- **Margin rails: 1990s sidebar junk in the empty margins (10-19).** On
+  windows 1380px wide or more: a 160×600 poster that plays a two-beat joke
+  ("Congrats! You've won!" → "Nothing.") for one of the club's own tabs,
+  bevelled 88×31 badges (the day's facts and rotating 1990s parodies), a
+  webring bar, a fake Windows 98 error box and a disclaimer. The copy
+  writes itself from the day's data, so it never needs editing; Halloween
+  week (24–31 Oct) dresses it up and bills Dead Air, by the date alone.
+  Parody brands and the fake buttons are the owner's call; the fakes only
+  ever say "Nice try." `docs/components.md` → "Margin rails".
 - **The record's adversarial review, run in full (10-18).** All three
   lenses on Codex, one at a time — about 75k Codex tokens and two minutes
   each, no usage limit hit — over `75eb24d..3da24b2`, `2dc3c1a` and
