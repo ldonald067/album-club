@@ -44,23 +44,28 @@ share the link — those need a human with the accounts.
 The community aggregate (all ratings/vibes/votes) lives only on the Railway
 volume at `data/aotd.db`, which is gitignored. Back it up off-volume.
 
-**Mechanism (shipped):** `GET /api/backup` streams a consistent SQLite
-snapshot (better-sqlite3 online backup). It is **inert (404) until you set
-`BACKUP_TOKEN`** in the Railway service. Auth via `Authorization: Bearer
-<token>` **only**; wrong/absent token returns 404. Rate-limited. The
-`?token=` fallback was removed on 2026-09-25: nothing used it, and a token in a
-URL lands in request logs, proxy logs and browser history. The compare hashes
-both sides (`lib/token-match.js`, unit-tested) so it is constant-time for any
-length.
+**It is on.** `.github/workflows/backup.yml` runs daily (and on manual
+dispatch), pulls the snapshot, checks it starts with the SQLite header, and
+keeps it as a GitHub artifact for 90 days. Checked 2026-10-20: every recent
+run succeeded and uploaded a real database. The cron says 06:00 UTC; GitHub
+starts scheduled runs late, so they land a few hours after that.
 
-**To turn it on:**
+**Mechanism:** `GET /api/backup` streams a consistent SQLite snapshot
+(better-sqlite3 online backup). It is inert (404) without `BACKUP_TOKEN` in
+the Railway service. Auth via `Authorization: Bearer <token>` **only**;
+wrong/absent token returns 404. Rate-limited. The `?token=` fallback was
+removed on 2026-09-25: nothing used it, and a token in a URL lands in request
+logs, proxy logs and browser history. The compare hashes both sides
+(`lib/token-match.js`, unit-tested) so it is constant-time for any length.
 
-1. Railway service → Variables → add `BACKUP_TOKEN` = a long random string.
-2. GitHub repo → Settings → Secrets → Actions → add `BACKUP_TOKEN` (same value)
+**If the token is ever rotated or lost**, set it again in both places, or the
+workflow skips with a notice and still reports success:
+
+1. Railway service → Variables → `BACKUP_TOKEN` = a long random string.
+2. GitHub repo → Settings → Secrets → Actions → `BACKUP_TOKEN` (same value)
    and `BACKUP_URL` = `https://littlealbumclub.net/api/backup`.
-3. That's it. `.github/workflows/backup.yml` runs daily at 06:00 UTC (and on
-   manual dispatch), pulls the snapshot, and keeps it as a GitHub artifact for
-   90 days. It skips cleanly until both secrets exist.
+
+A green run is not proof on its own: check the run uploaded an artifact.
 
 Manual pull anytime:
 
@@ -87,6 +92,9 @@ storage bucket + credentials and a container change (run `litestream replicate
 - **Rescue clone**: nested clones are okay for emergency recovery, but they are not a good long-term setup because tooling may detect multiple lockfiles and infer the wrong workspace root.
 
 ## Recommended Git Flow
+
+Small changes go straight to `master` once `npm test && npm run build` pass
+(`CLAUDE.md` → Workflow). Risky changes take a branch and a PR:
 
 1. Start from an up-to-date `master`.
 2. Create a short-lived feature branch.

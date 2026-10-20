@@ -201,7 +201,7 @@ Two traps, both hit during the 2026-07 dead-CSS removal:
 
 - **Pixel icon SVGs are black** (`fill="#000000"`): Render as black pixel art silhouettes. Use `image-rendering: pixelated` CSS for crisp edges
 - **HackerNoon Pixel Icons**: Iconfont loaded in `layout.js`, used via `<i className="hn hn-iconname">`
-- **Streamline Pixel SVGs**: 52 files in `public/pixel-icons/` (CC BY 4.0), used as `<img>` tags for vibe buttons and carousel
+- **Streamline Pixel SVGs**: the files in `public/pixel-icons/` (CC BY 4.0), used as `<img>` tags for vibe buttons and carousel
 
 ## Easter Eggs
 

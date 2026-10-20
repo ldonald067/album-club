@@ -456,7 +456,7 @@ with its own repo (`dead-air`) and deploy at `deadair.littlealbumclub.net`.
   subdomain is the same site, so in Chrome the frame and a direct visit share
   one save. Safari is unchecked.
 
-## Margin rails (`app/MarginRails.js`, 2026-10-18)
+## Margin rails (`app/MarginRails.js`, 2026-10-19)
 
 The empty margins either side of the 960px page, on a window 1380px wide
 and 700px tall or more, carry 1990s and 2004 sidebar junk — the owner's
@@ -609,9 +609,10 @@ Shows tomorrow's album emoji + genre + decade (e.g., `🎷 Tomorrow's Album — 
 
 The album hero plays today's record in place, using the same YouTube IFrame API
 as Heardle and Blind Taste Test: play/pause, stop, a clock and a seek bar,
-replacing what used to be a "Listen on YouTube" link. 135 of 424 albums have a
-`youtubeId`; without one it falls back to that link, so the no-audio day is a
-link rather than a dead player.
+replacing what used to be a "Listen on YouTube" link. Only some albums have a
+`youtubeId` (`eval-site` prints how many stored videos there are); without one
+it falls back to that link, so the no-audio day is a link rather than a dead
+player.
 
 No volume control on purpose — the browser and the OS each have one, and a
 third would put a second row back into a hero that was trimmed for taking up
@@ -712,7 +713,7 @@ Most albums still use the deterministic generator in `lib/soundtrack-corner.js`,
 
 `buildFactLine` is exported and unit-tested against shapes the catalog does not necessarily hold yet: the facts file is fetched, partial and growing, so testing against whatever it currently contains would test the fetch instead of the logic. Facts are absent for roughly a quarter of the catalog by design — see `docs/album-data.md`.
 
-Two `eval-site` guardrails hold this. One renders all 424 corners and fails on a repeated recommendation reason, a doubled article, or a structurally thin corner. The other counts six-word runs across every generated intro and bridge and fails if one exceeds the largest decade bucket — **counted as word runs, not sentences, because all three of the original offenders sat inside a sentence that was unique per album.** A sentence-level version of this check passed a deliberately collapsed pool and had to be rewritten. Pitch-card skeletons are deliberately outside its scope; that repetition is grammar, not a claim.
+Two `eval-site` guardrails hold this. One renders every album's corner and fails on a repeated recommendation reason, a doubled article, or a structurally thin corner. The other counts six-word runs across every generated intro and bridge and fails if one exceeds the largest decade bucket — **counted as word runs, not sentences, because all three of the original offenders sat inside a sentence that was unique per album.** A sentence-level version of this check passed a deliberately collapsed pool and had to be rewritten. Pitch-card skeletons are deliberately outside its scope; that repetition is grammar, not a claim.
 
 The authoring pipeline for overrides and generator profiles lives in `docs/soundtrack-corner-research.md` (source policy, schedule-aware batch flow, floor-raising via genre profiles).
 

@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-10-19.
+session. Last updated: 2026-10-20.
 
 This file holds **current state, open items and standing decisions** only.
 How things work lives in the topic docs; what happened and when lives in git
@@ -13,69 +13,27 @@ it used to carry).
 **Nothing is in flight.** `master` is deployed. `GET /api/health`
 returns the running commit SHA — it should match `git rev-parse --short
 origin/master` — and `uptimeSeconds` should climb. No PRs are open; `master`
-is the only branch, locally and on GitHub. The last code commit is the
-margin rails (2026-10-19, below).
+is the only branch, locally and on GitHub.
 
-**The last chat (2026-10-14 → 10-19), newest first:**
+**Shipped most recently (10-14 → 10-19)** — each is described in its topic
+doc, and what is still unchecked is in the open items:
 
-- **Margin rails: 1990s sidebar junk in the empty margins (10-19).** On
-  windows 1380px wide or more: a 160×600 poster that plays a two-beat joke
-  ("Congrats! You've won!" → "Nothing.") for one of the club's own tabs,
-  bevelled 88×31 badges (the day's facts and rotating 1990s parodies), a
-  webring bar, a fake Windows 98 error box and a disclaimer. The copy
-  writes itself from the day's data, so it never needs editing; Halloween
-  week (24–31 Oct) dresses it up and bills Dead Air, by the date alone.
-  Parody brands and the fake buttons are the owner's call; the fakes only
-  ever say "Nice try." `docs/components.md` → "Margin rails".
-- **The record's adversarial review, run in full (10-18).** All three
-  lenses on Codex, one at a time — about 75k Codex tokens and two minutes
-  each, no usage limit hit — over `75eb24d..3da24b2`, `2dc3c1a` and
-  `1ae9c30`. Verdict PASS, nothing high; four findings accepted, verified
-  against the code and fixed:
-  - **A tap on a song day's arm jumped the song** — the arm shows the song
-    on its thin band, and letting go read that spot as a click on the wide
-    target: 10% became up to 81%. Picked up off the record, the arm now
-    moves the song by as far as the hand moves (`songLetGo`, tested).
-    Verified on _exile_ with real taps: 0:29 stayed put, 4:28 stayed put.
-  - **"Every edition agrees" read the first 25 editions** — 24 of 57
-    placements came from bigger release groups (Hounds of Love has 215).
-    The audit now pages through all of them; re-recorded, one placement
-    fell to a single, _Future Nostalgia_. Now 56 songs.
-  - **eval-site's run-out grep passed with the gate taken off the arm.**
-    The run-out is decided in `lib/tonearm.js` (`armClasses`,
-    `recordTurns`, tested per kind of day) and eval-site fails if
-    `ForumPage` tests `"runout"` itself. Song-day ending re-checked live:
-    the needle lifts, the platter winds down, the record goes home 7s on.
-  - **An arm held past the run-out swung home and back** when let go on
-    the record; it is now held until playback starts. Not browser-checked —
-    it needs a whole-album day and a seven-second hold.
-- **A Dead Air tab (10-18).** `/dead-air` frames the owner's music horror
-  escape room, deployed from its own repo at `deadair.littlealbumclub.net`,
-  as a dead radio set beside Cozy Vibes — the owner's call, made from the
-  dead-air chat (`dead-air/docs/ALBUM-CLUB-TAB.md`). No game code lives here;
-  Cozy's fullscreen code is now shared by both frames. Checked on the live
-  site: the game starts in the frame with a real click, Shift+Tab from Full
-  screen moves focus into it, the route, sitemap entry and card answer.
-  **Not yet checked:** Full screen and Esc with a real click (the browser
-  pane's clicks cannot grant fullscreen), Safari's shared save, and a 360px
-  phone, whose frame is 314px — under the 323px the dead-air chat tested.
-  Details in `docs/components.md` → "Dead Air".
-- **Three tonearm fixes from a review in chat (10-16).** A click on a song
-  day aims at a target at least 24px (mouse) or 44px (finger) wide, the song
-  spread across it — the gold band alone is under 5px on most song days, and
-  a miss spun the record. A drag the browser cancels puts the arm back,
-  paused, rather than pressing Stop. The platter keeps turning while the arm
-  is in the hand. Verified on _Folklore_ (track 4 of 17, a 2.8px band) with
-  the dev server's clock moved to 10-19 (`docs/gotchas.md` says how).
+- **Margin rails (10-19):** 1990s sidebar junk in the empty margins on
+  windows 1380px wide or more, written from the day's data so it never needs
+  editing. Halloween week (24–31 Oct) dresses it up and bills Dead Air, by
+  the date alone. `docs/components.md` → "Margin rails".
+- **A Dead Air tab (10-18):** `/dead-air` frames the owner's music horror
+  escape room from its own repo and deploy. `docs/components.md` → "Dead
+  Air".
+- **The record's adversarial review, run in full (10-18):** verdict PASS,
+  four findings fixed and verified. Song-day clicks and arm drags aim at the
+  song (10-16, 10-18). `docs/components.md` → "The record on the deck".
 - **Cozy shelf (10-14):** _Welcome to Kagemi_ (itch embed 5062300) replaced
-  the old Kamegi build, which its author now lists as an old version.
-- **Docs swept for staleness (10-18):** tab counts in the README, `CLAUDE.md`
-  and two project skills, and the `perf-check` skill's advice that the nav
-  prefetches — it has not since 2026-09-24.
+  the old Kamegi build.
 
-**The record, as it stands** (built 2026-09-29 → 10-16; how it works in
-`docs/components.md` → "The record on the deck"). Every day's record does
-something, and nothing it does claims more than is known — the owner's rules:
+**The record, as it stands** (how it works in `docs/components.md` → "The
+record on the deck"). Every day's record does something, and nothing it does
+claims more than is known — the owner's rules:
 
 - **Whole-album video** (the audit's `FULL_ALBUM` and `FULL_SESSION`
   verdicts, `lib/full-album-videos.json`): the arm sweeps every song ring,
@@ -88,14 +46,13 @@ something, and nothing it does claims more than is known — the owner's rules:
   groove. No run-out or award on a song or a single: the needle lifts and the
   platter winds down.
 - **No video**: no deck; the record wears a pattern by date (zoetrope, spiral
-  or picture disc, `lib/record-art.js`), half out of its sleeve.
+  or picture disc, `lib/record-art.js`), half out of its sleeve. Most days of
+  the year are these, which is what open item 3 would change.
 - **Re-record after any `youtubeId`, title or track-count change:**
   `npm run audit-youtube-ids -- --record` rewrites both lists and prints every
-  placement to read before committing; `eval-site` fails when they go stale.
-  _Live at Pompeii_ stays off the album list (`PART_AFTER_REVIEW`).
-- Counted 2026-10-09: 99 turntable days a year (35 albums, 48 songs, 16
-  singles) and 266 pattern days. Of the stored videos, eval-site prints the
-  current split (2026-10-18: 37 whole albums, 56 songs, 20 singles).
+  placement to read before committing; `eval-site` fails when they go stale
+  and prints the current split of stored videos. _Live at Pompeii_ stays off
+  the album list (`PART_AFTER_REVIEW`).
 
 **Keep each chat under ~300k tokens of context.** The owner is on the Pro
 plan and was hitting the 5-hour limit too soon: every message re-reads the
@@ -105,67 +62,41 @@ at ~300k, write the handoff here, commit, push, and start a new chat. Keep
 context lean on the way: this file first, files read by range, page text over
 screenshots, and a `pattern` or `limit` on `read_console_messages`.
 
-**Several Claude sessions share this folder's working tree.** That is now
-guarded: broad staging (`git add -A`, `.`, `-u`, `git commit -a`) is blocked
-by a hook, so stage files by name and read `git status` first. The rules are
-in `CLAUDE.md` → Workflow; for long parallel work, use a worktree (verified to
-install, test and build cleanly).
-
-**What changed 2026-09-29 → 10-01**, all live:
-
-- **The record shows today's tracklist** — one faint ring between each pair
-  of songs, from the real track count (rings on 328 of 423 albums; none rather
-  than a guess on the rest).
-- **Anniversary pressing** — in an album's round-number year the record is
-  coloured vinyl in its accent colour (83 albums in 2026; live today on
-  _ATLiens_, 30 this year).
-- **A second tab can't vote twice.** All six votes re-check the stored vote
-  at submit; proved with two real tabs (open item 6).
-- **Two project hooks fixed and proved live:** the broad-staging block (new)
-  and the `data/` database guard, which had never blocked anything — it
-  exited 1, and hooks block only on exit 2 or a JSON deny.
-- **The Hayley Williams bootleg is gone** — an unofficial upload, songs in
-  alphabetical order, one missing. Removed on the owner's call; the album now
-  shows no player and wears its real Cover Art Archive cover (its image had
-  been that video's thumbnail). Pinned through 2026-10-02.
-- **A turntable you can play by hand** (owner asked for each piece). On
-  playable days a silver deck stands beside the sleeve. Play slides the record
-  all the way out onto the platter and the tonearm tracks progress. **Click
-  the grooves** to drop the needle there; **drag the arm** to scrub, or off
-  the record to stop; **hear an album through** and the needle rides the
-  run-out while side A's etching appears and the album joins a private "heard
-  all the way through" count; **the needle is remembered** for the rest of
-  the day. Geometry in `lib/tonearm.js`, memory in `lib/needle.js`, both
-  tested; details in `docs/components.md` → "The record on the deck" (open
-  item 7).
-
-Earlier (09-27 → 09-28): PR #5 pinned each day's picks — **every edit to
-`lib/albums.json` or `lib/lyrics.json` needs `npm run pin-schedule` and
-`lib/schedule.json` committed with it** (`docs/album-data.md` → "The pinned
-schedule"); the catalog identity audit (`npm run audit-catalog`) ran and was
-ruled on — mixes stay; every adversarial-review finding was fixed; the docs
-were cut to current state.
+**Several Claude sessions share this folder's working tree.** Broad staging
+(`git add -A`, `.`, `-u`, `git commit -a`) is blocked by a hook, so stage
+files by name and read `git status` first. The rules are in `CLAUDE.md` →
+Workflow; for long parallel work, use a worktree (verified to install, test
+and build cleanly).
 
 **Where to pick up, in this order:**
 
-1. **One phone check** — only a person can do it (open item 2):
+1. **Halloween week goes live on its own on 10-24.** Load the live site that
+   day in a window at least 1380px wide and 700px tall: the poster should be
+   orange and black with a jack-o'-lantern label, Dead Air billed every other
+   day, a badge counting down the nights, and the error box as Boo.exe.
+   `test/margin-rails.test.mjs` renders every Halloween day; nobody has seen
+   it on production yet.
+2. **One phone check** — only a person can do it (open item 2):
    - **Blind Taste Test** on an iPhone and an Android phone.
-   - **A song day** (10-19, 10-29, 11-01): press Play; tap near the gold band
-     — on a phone any tap on the grooves should play the song, not spin the
+   - **A song day** (10-29, 11-01): press Play; tap near the gold band — on
+     a phone any tap on the grooves should play the song, not spin the
      record; tap the arm without moving it and the song should carry on
      where it was; drag the arm with a finger and watch the platter keep
      turning. Whole albums 10-27 and 10-30; the next single is 11-14
-     (_Future Nostalgia_, a song day until 10-18).
+     (_Future Nostalgia_).
    - **A pattern day** (a picture disc 10-21, a zoetrope 10-22, a spiral
      10-23): tap the record and watch it spin.
    - **Dead Air** (`/dead-air`): start the game in the frame; Full screen and
      Esc on Android (iOS Safari should offer Play in New Tab instead); in
      Safari, check a save made in the frame shows on a direct visit.
-2. The catalog audit's remainder (open item 1), then everything else below.
+3. **The full-album video refetch (open item 3).** Not blocked: the key is in
+   `.env` and works. The largest piece of code work open.
+4. **Re-measure the bundle** (open item 8), then the catalog audit's
+   remainder (open item 1), then everything else below.
 
-Two open actions need a human rather than code: **nobody has put the link
-anywhere** (open item 4), and **album audio needs a YouTube Data API key**
-(open item 3).
+**The one open action that needs a human rather than code: nobody has put
+the link anywhere** (open item 4). Re-measured 2026-10-20, the site's
+activity is exactly what it was on 2026-08-22.
 
 **Five things a new session will get wrong without warning:**
 
@@ -209,6 +140,10 @@ npm run audit-youtube-ids   # read-only video-id audit, ~4 min
 npm run soundtrack-corner-report  # corner coverage + air-date queue + generator floor
 ```
 
+**Every edit to `lib/albums.json` or `lib/lyrics.json` needs
+`npm run pin-schedule` and `lib/schedule.json` committed with it**
+(`docs/album-data.md` → "The pinned schedule").
+
 Deploy = push to `master`. Verify with `GET /api/health` (running commit SHA,
 `volumeMounted`, uptime). CI (`.github/workflows/build.yml`, Node 22) runs
 `npm test`, `npm run eval-site`, then `npm run build`.
@@ -217,9 +152,11 @@ Deploy = push to `master`. Verify with `GET /api/health` (running commit SHA,
 
 - **DB persistence:** a Railway volume is attached; `lib/db.js` writes to
   `RAILWAY_VOLUME_MOUNT_PATH`. Data survives deploys (verified).
-- **Backups:** `GET /api/backup` (Bearer token only) is pulled daily at 06:00
-  UTC by `.github/workflows/backup.yml` into a 90-day artifact. Details in
-  `docs/project.md` → Database Backups.
+- **Backups:** `GET /api/backup` (Bearer token only) is pulled daily by
+  `.github/workflows/backup.yml` into a 90-day artifact. Checked 2026-10-20:
+  every run succeeds and uploads a real SQLite file. The cron says 06:00 UTC;
+  GitHub starts it a few hours late. Details in `docs/project.md` → Database
+  Backups.
 - **Deploy "crashed" notifications: rare, not gone.** `instrumentation.js`
   exits 0 on SIGTERM, which is why these stopped being routine after 2026-07.
   One still arrived on 2026-08-13. **What the evidence supports:** the exit
@@ -259,25 +196,20 @@ Deploy = push to `master`. Verify with `GET /api/health` (running commit SHA,
 Only what is still open. Completed work lives in git history and the topic
 docs.
 
-1. **Catalog identity — audited and mostly ruled on (2026-09-27).**
-   `npm run audit-catalog` (method and its pitfalls in `docs/album-data.md`).
-   345 entries are verified against MusicBrainz. Ruled: **mixes and playlists
-   stay** (see Standing decisions), including the two that borrow a real
-   album's name ("Geogaddi Ambient Mix", "Vespertine Chill Mix" — recorded in
-   the script's `DECIDED` map); "Tiny Desk Concert Collection — Waiting for
-   the Sun to Rot", which had nothing real behind it, was removed before it
-   aired. Still open, none urgent:
-   - **Metadata:** _SIMBI_'s year corrected 2024 → 2021. _Weightless_ is a
-     single (fine under the mixes ruling). _Madvillainy_ stays 2004, the
-     official release; MusicBrainz dates the 2002 leak. A year fix does not
-     break recorded days; a rename or removal does.
+1. **Catalog identity — audited and ruled on (2026-09-27), a remainder to
+   confirm.** `npm run audit-catalog` (method and its pitfalls in
+   `docs/album-data.md`). The rulings are standing decisions below; the
+   metadata ones are: _Weightless_ is a single (fine under the mixes ruling)
+   and _Madvillainy_ stays 2004, the official release, though MusicBrainz
+   dates the 2002 leak. A year fix does not break recorded days; a rename or
+   removal does. Still open, none urgent:
    - **Real but unconfirmed (33):** 7 named sessions (Boiler Room, Essential
      Mix, Cercle, KEXP — confirm each performance exists; both Tiny Desk sets
      and Boiler Room Tokyo and Montreal are confirmed by the series' own
-     uploads, 2026-10-07), 24 real
-     artists whose release is under a native-script title (mostly the anime
-     soundtracks), 2 Various Artists compilations under shortened titles
-     (_Tropicália_, _EGOLI_). Confirm when convenient.
+     uploads, 2026-10-07), 24 real artists whose release is under a
+     native-script title (mostly the anime soundtracks), 2 Various Artists
+     compilations under shortened titles (_Tropicália_, _EGOLI_). Confirm
+     when convenient.
 
    Adding albums is unblocked. Add each for a reason; a new 2026 release
    should get a set air date or the yearly shuffle may not reach it while it
@@ -285,8 +217,8 @@ docs.
    of one `recognizable` flag; distinct artists in Artist Scramble; measure
    "the next 30 days are ready" rather than every field for every entry.
 
-2. **A phone check only a person can do.** Everything else from the
-   2026-09-26 adversarial review is fixed and verified.
+2. **A phone check only a person can do.** The dates to use are in "Where to
+   pick up" above.
    - **Tap through the Blind Taste Test on an iPhone and an Android phone.**
      "Playing" and the one-minute "heard" timer now start only when YouTube
      reports PLAYING, and the button stays tappable until then, so a blocked
@@ -300,34 +232,41 @@ docs.
      real tap (the pane cannot grant it), iOS Safari's Play in New Tab, a
      save shared between the frame and a direct visit in Safari, and a 360px
      phone, whose 314px frame is under the 323px the game was tested at.
-   - **Done 2026-09-30: the Hayley Williams video is removed.** _Ego Death at
-     a Bachelorette Party_'s "full album" (`bVQ-J6J44Ts`) was an unofficial
-     upload — songs in alphabetical order, "Love Me Different" missing, 51 of
-     67 minutes, a channel claiming the rights to her record. If a fetch ever
-     offers that id again, it is the same bootleg.
+   - **An arm held past the run-out** should stay held until playback
+     starts. Not browser-checked — it needs a whole-album day and a
+     seven-second hold.
 
-3. **Album audio needs a proper refetch — blocked on a YouTube Data API key.**
-   Only a minority of stored videos are whole albums; most are one song, and 21
-   dead or wrong ids were removed after the 2026-09-24 audit (details in
-   `docs/album-data.md`). The inline player therefore works on roughly a
-   quarter of days. The fix is a rewritten `fetch-youtube-ids.mjs` that
-   searches for full albums, checks title and duration before storing
-   anything, and covers the whole catalog — not just the `recognizable` albums
-   it was written for. The free tier's 100 searches a day make that four to
-   five days of runs. Audit the result with
-   `npm run audit-youtube-ids -- --albums <candidate>` before it replaces the
-   catalog. It now demands evidence a long upload is the right album.
+3. **Album audio needs a proper refetch — unblocked, and code work.**
+   Most stored videos are one song, not the whole album, and 21 dead or wrong
+   ids were removed after the 2026-09-24 audit (details in
+   `docs/album-data.md`). So most days have no video at all and wear a
+   pattern instead of the turntable. This item used to say it was blocked on
+   a YouTube Data API key. It is not: `.env` has held `YOUTUBE_API_KEY` since
+   2026-08-04, and a one-unit `videos.list` call with it worked on
+   2026-10-20. The fix is a rewritten `fetch-youtube-ids.mjs` that searches
+   for full albums, checks title and duration before storing anything, and
+   covers the whole catalog — not just the `recognizable` albums it was
+   written for. The free tier's 100 searches a day make that four to five
+   days of runs. Then:
+   - audit the result with
+     `npm run audit-youtube-ids -- --albums <candidate>` before it replaces
+     the catalog — it demands evidence a long upload is the right album;
+   - re-record with `npm run audit-youtube-ids -- --record` and read every
+     placement it prints;
+   - run `npm run pin-schedule` and commit `lib/schedule.json` with it: the
+     `youtubeId` flags are part of the catalog fingerprint, and the change
+     reshuffles future Heardle and Taste Test picks.
 
 4. **There is no audience yet, and that governs what is worth building.**
-   As of 2026-08-22, `GET /api/stats` reported **one rating, one puzzle play and
-   zero vibes**, and Railway's request volume matched (judge pageviews by
-   GoatCounter). Every community gate holds back below two participants,
-   correctly, so the cue vote's room split, the Archive's Room column and "what
-   the club is hearing" all render nothing. **The bar for the next community
-   feature is not "is it good" but "who is in the room".** Solo-working
-   features still pay off. **What would move it is not code:** submitting the
-   sitemap and putting the link in front of anyone needs a human with the
-   accounts.
+   `GET /api/stats` reported **one rating, one puzzle play and zero vibes** on
+   2026-08-22, and exactly the same on 2026-10-20, two months and ~30
+   feature commits later (judge pageviews by GoatCounter). Every community
+   gate holds back below two participants, correctly, so the cue vote's room
+   split, the Archive's Room column and "what the club is hearing" all render
+   nothing. **The bar for the next community feature is not "is it good" but
+   "who is in the room".** Solo-working features still pay off. **What would
+   move it is not code:** submitting the sitemap and putting the link in
+   front of anyone needs a human with the accounts.
 
 5. **Shared layout — measure before building (raised 2026-09-09).** Every tab
    route renders the whole `ForumPage`, so a tab change remounts the banner,
@@ -343,53 +282,35 @@ docs.
    can produce several rows (two tabs opened before voting, a retry, cleared
    storage, a second device) and open a "second voter" gate alone. A proper fix
    is a schema change and migration for a cosmetic misfire. **Revisit if
-   traffic grows.** The cheap partial fix is in (2026-09-30): all six votes —
-   rating, playlist, Album vs Album, Taste Test, Vibe Check, the cue vote —
+   traffic grows.** The cheap partial fix is in (2026-09-30): all six votes
    re-read their stored vote at submit (`lib/stored-vote.js`), so a second
-   tab shows the first tab's vote instead of casting another. Proved with two
-   real tabs: tab B sent nothing and showed tab A's pick. Still open by
+   tab shows the first tab's vote instead of casting another. Still open by
    design: cleared storage, a second device, and two tabs clicking in the
    same instant.
 
-7. **The record — built out (2026-09-29 → 10-01).** The owner asked for fun
-   things the hero vinyl could do beyond spinning; the bar applied is motion
-   that says something true about the day's record. Details and limits in
+7. **The record — what is left, if wanted.** Everything built is in
    `docs/components.md` → "The record on the deck".
-   - **Built: grooves drawn from the tracklist.** One ring between each pair
-     of songs. Rings on 328 of 423 albums; the rest honestly show none.
-   - **Built: a turntable and a tonearm that is the progress bar.** On every
-     album with a video (113 of 423). The arm sweeps every song ring only
-     when the video is the whole album (37); on one song the audit could
-     place (56 — 57 until every edition was read, 2026-10-18) it plays just
-     that song's band; anything else (20) plays as a single on a ringless
-     record.
-     Open item 3's refetch is what would add more. Sessions qualify through the audit's `FULL_SESSION`
-     rule — Tiny Desk, Boiler Room and KEXP sets as the series posted them;
-     KEXP's full Khruangbin performance (`0PsOJ_fRckg`, 35.7 min) passes it
-     if someone wants that entry to have audio. The owner found the first
-     version (record 70px out, arm squeezed beside it) cramped and asked for more room: the record now
-     comes all the way out onto a platter on a silver deck, 40px clear of the
-     details. Below ~800px wide the details wrap under the deck on audio
-     days, as on phones.
-   - **Built: playing it by hand** — click the grooves to drop the needle,
-     drag the arm, the run-out and side A's etching for an album heard
-     through (90% actually played), and the needle remembered for the day.
-   - **Next, if wanted: real song boundaries.** Only the track count is
-     known, so the rings are evenly spaced and the needle cannot say which
-     song it is on. MusicBrainz has each track's length; with it the rings
-     would sit where songs really change and a needle dropped on a ring would
-     start that song. Needs a check that the video plays the release's
-     running order (the Hayley bootleg did not).
-   - **Built: an anniversary pressing (2026-09-30).** Coloured vinyl in the
-     album's accent colour in its round-number year. Not built: 45 rpm for
-     EPs — only 3 entries.
-   - **Built: a pattern on the no-video days (2026-10-09)** — zoetrope,
-     spiral or picture disc by date, in a changing ink. The owner's call,
-     and the one thing here that is fun rather than a fact about the day's
-     record.
+   - **Real song boundaries.** Only the track count is known, so the rings
+     are evenly spaced and the needle cannot say which song it is on.
+     MusicBrainz has each track's length; with it the rings would sit where
+     songs really change and a needle dropped on a ring would start that
+     song. Needs a check that the video plays the release's running order
+     (the Hayley Williams bootleg did not).
+   - **KEXP's full Khruangbin performance** (`0PsOJ_fRckg`, 35.7 min) passes
+     the audit's `FULL_SESSION` rule, if someone wants that entry to have
+     audio.
    - **Skip:** anything audio-reactive (the YouTube iframe is opaque to Web
-     Audio — the Club Player's spectrum was costume for this reason), and
-     another flip (the Runout Groove is one).
+     Audio — the Club Player's spectrum was costume for this reason), another
+     flip (the Runout Groove is one), and 45 rpm for EPs (only 3 entries).
+   - The Hayley Williams "full album" (`bVQ-J6J44Ts`) was removed as an
+     unofficial upload (2026-09-30). If a fetch ever offers that id again, it
+     is the same bootleg.
+
+8. **The bundle has not been measured since 2026-09-03** (212KB then,
+   `docs/performance.md` → Bundle Budget). The turntable, tonearm, needle
+   memory, record patterns and the Dead Air frame have all added client code
+   since. Measure a fresh production visit from the network log; the
+   `perf-check` skill covers it.
 
 ## Standing decisions — do not "fix" these
 
@@ -403,9 +324,11 @@ docs.
   below. Change the game in `dead-air`, never by copying code in.
 - **Mixes and playlists belong in the catalog (2026-09-27).** Not every entry
   has to be a released album — DJ sets, sessions, mood playlists and singles
-  are fine, including mixes named after a real record. What is not fine is an
-  entry with nothing real behind it. `audit-catalog` reports these as
-  `MOOD_COMPILATION` without failing; do not "clean them up".
+  are fine, including mixes named after a real record ("Geogaddi Ambient
+  Mix", "Vespertine Chill Mix", recorded in `audit-catalog`'s `DECIDED` map).
+  What is not fine is an entry with nothing real behind it. `audit-catalog`
+  reports these as `MOOD_COMPILATION` without failing; do not "clean them
+  up".
 - **The site is over-featured, not under-featured (2026-07-28).** Genre Bingo
   was removed and a designed replacement was cut. The bar for a seventh
   activity is that it beats improving the six that exist. Parked ideas from the
@@ -419,13 +342,17 @@ docs.
   view. Reasoning in `docs/components.md`.
 - **Soundtrack Corner's cue vote sits above the pitch cards**, with a "just
   read the pitches" skip link. `eval-site` fails if the order is reversed.
-- **Two 2026 albums are deliberately uncovered in Soundtrack Corner** — _BTS —
-  Arirang_ and _Olivia Rodrigo — You Seem Pretty Sad for a Girl So In Love_.
-  Scene-work for an album the author has not heard is invention; they get an
-  honest generated corner. **Whoever knows those records should write them; do
-  not fill the gap from a press release.** If the corner feels weak, measure
-  the rendered output before writing more overrides. Append new generator
-  profiles; never edit an existing regex (`docs/soundtrack-corner-research.md`).
+- **Soundtrack Corner's curated pass over the recognizable pool is complete
+  (checked 2026-10-20).** The report's "Coming up in rotation" queue holds
+  only two albums, and they are uncovered on purpose: _BTS — Arirang_ and
+  _Olivia Rodrigo — You Seem Pretty Sad for a Girl So In Love_. Scene-work
+  for an album the author has not heard is invention; they get an honest
+  generated corner. **Whoever knows those records should write them; do not
+  fill the gap from a press release.** Curating the rest of the catalog is
+  the owner's call, not a backlog item. If the corner feels weak, measure the
+  rendered output before writing more overrides. Append new generator
+  profiles; never edit an existing regex
+  (`docs/soundtrack-corner-research.md`).
 - **Album facts use consensus across editions**, not earliest, median or
   minimum — each of those produced confident wrong numbers (_Kind of Blue_ at 3
   tracks). `docs/album-data.md`.

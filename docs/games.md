@@ -22,7 +22,7 @@ The two blanks are offset by `1 + (seed % (blankCount - 1))`, which cannot be ze
 
 YouTube audio clips via IFrame API, progressively longer (`[1, 2, 4, 8, 16, 30]`s). Player + timer cleaned up on unmount. Global `window.onYouTubeIframeAPIReady` set/cleared per mount cycle. Uses `AlbumAutocomplete`. Requires `youtubeId` on the album; not all have one.
 
-## Artist Scramble (variable attempts)
+## Artist Scramble (5 attempts)
 
 Scrambled artist name displayed. Guess the album title. Progressive hints: Genre, Decade, Title starts with, Year. Uses `AlbumAutocomplete`.
 

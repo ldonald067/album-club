@@ -176,10 +176,11 @@ eight were benign — the kind of guardrail people learn to scroll past. The
 strict rule still runs where it can act on the answer: inside the fetcher,
 before anything is written.
 
-**Coverage is 344/424 (81.1%), and the last stretch is not worth buying.** Of
-the 80 still missing, **70 have no MusicBrainz release group at all** — the DJ
-sets, radio mixes and curated playlists — and re-running the fetch cannot
-change that. The other ten are skips the guards earned: MusicBrainz files
+**Coverage sits just over 80% (`eval-site` prints the figure), and the last
+stretch is not worth buying.** Nearly everything still missing has **no
+MusicBrainz release group at all** — the DJ sets, radio mixes and curated
+playlists — and re-running the fetch cannot change that. The rest are skips
+the guards earned: MusicBrainz files
 _Madvillainy_ under the 2002 leak against the catalog's 2004, _Zombie_ only
 inside a "Na Poi / Zombie" reissue, _Spirited Away_ only inside a combined
 Miyazaki release. Loosening the year window to reach a rounder number would
