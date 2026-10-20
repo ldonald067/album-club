@@ -136,7 +136,7 @@ Small changes go straight to `master` once `npm test && npm run build` pass
 npm run fetch-albums         # Grow the album list from Last.fm (needs LASTFM_API_KEY)
 npm run fetch-covers         # Cover art: Last.fm (optional LASTFM_API_KEY), iTunes fallback
 npm run fetch-lyrics         # Genius API lyric lines (needs GENIUS_ACCESS_TOKEN)
-npm run fetch-youtube-ids    # YouTube Data API (needs YOUTUBE_API_KEY, 100/day free)
+npm run fetch-youtube-ids    # Full-album videos, checked; logs picks, never edits the catalog (YOUTUBE_API_KEY, 100/day)
 npm run fetch-album-facts    # MusicBrainz track count / runtime into lib/album-facts.json (resumable)
 npm run pin-schedule         # Record each day's picks through tomorrow into lib/schedule.json
 npm run audit-catalog        # Read-only: which entries can't be tied to a real release by that artist (~5 min)

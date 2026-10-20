@@ -48,7 +48,8 @@
  *                    passed any long upload (review finding, 2026-09-26).
  *   FULL_SESSION     a Tiny Desk, Boiler Room or KEXP entry whose video is
  *                    that series' own upload, titled as the whole set, and
- *                    long enough to be one — see SESSIONS. The entry IS the
+ *                    long enough to be one — see SESSIONS in
+ *                    lib/youtube-match.js. The entry IS the
  *                    session, so there is no album runtime to compare, a set
  *                    can run under FULL_ALBUM's 20-minute fallback, and its
  *                    title rarely repeats the catalog's: both Tiny Desk sets
@@ -72,7 +73,8 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { namesAlbum, namesTrack, norm, placeSong } from "../lib/place-song.js";
+import { namesAlbum, namesTrack, placeSong } from "../lib/place-song.js";
+import { isFullSession } from "../lib/youtube-match.js";
 
 const rootDir = process.cwd();
 const args = process.argv.slice(2);
@@ -222,53 +224,9 @@ const isDead = (oe, page) =>
   (page.playability && page.playability !== "OK") ||
   page.seconds === null;
 
-/* A named session played whole, as the series itself posted it. For each:
-   the catalog entry names the series, the video is the series' own upload,
-   its title says it is the whole set, and it runs long enough to be one. All
-   four, because each alone is weak: a fan re-upload can copy the title but
-   not the channel, the length tells a set from one song lifted out of it,
-   and a long video under a session entry could be anything. `title` is the
-   upload's title normalised and padded with spaces, so `has` matches whole
-   words and "Tiny Desk (Home) Concert" counts too. */
-const has = (title, words) => title.includes(` ${norm(words)} `);
-const SESSIONS = [
-  {
-    // "NPR Tiny Desk: Mac Miller" — "Mac Miller: NPR Music Tiny Desk Concert"
-    entry: /\btiny desk\b/i,
-    channel: "NPR Music",
-    minMinutes: 10,
-    whole: (title, album) =>
-      / tiny desk (home )?concert /.test(title) && has(title, album.artist),
-  },
-  {
-    /* "Boiler Room: Montreal" — "Kaytranada | Boiler Room: Montreal". Named
-       by the entry, not the artist: a city's night is "Various Artists".
-       Sets run 40+ minutes; a shorter upload is a clip of one. */
-    entry: /\bboiler room\b/i,
-    channel: "Boiler Room",
-    minMinutes: 20,
-    whole: (title, album) => has(title, album.title),
-  },
-  {
-    /* "KEXP Live Sessions: Khruangbin" — "Khruangbin - Full Performance (Live
-       on KEXP)". Each song of a session is also posted on its own, as
-       "Khruangbin - White Gloves ii (Live on KEXP)". */
-    entry: /\bkexp\b/i,
-    channel: "KEXP",
-    minMinutes: 10,
-    whole: (title, album) =>
-      / full performance /.test(title) && has(title, album.artist),
-  },
-];
-const isFullSession = (album, oe, page) =>
-  Boolean(oe.title) &&
-  SESSIONS.some(
-    (session) =>
-      session.entry.test(album.title) &&
-      oe.channel === session.channel &&
-      page.seconds >= session.minMinutes * 60 &&
-      session.whole(` ${norm(oe.title)} `, album),
-  );
+/* A named session played whole, as the series itself posted it — the rules
+   per series are SESSIONS in lib/youtube-match.js, shared with the fetcher
+   so the two can never disagree about what a whole set is. */
 
 const isLong = (page, albumMinutes) => {
   const minutes = page.seconds / 60;
@@ -342,7 +300,11 @@ for (const [i, album] of withId.entries()) {
       matched,
       albumMinutes,
       albumNamed,
-      fullSession: isFullSession(album, oe, page),
+      fullSession: isFullSession(album, {
+        title: oe.title,
+        channel: oe.channel,
+        seconds: page.seconds,
+      }),
     });
     const partNote = PART_AFTER_REVIEW[keptKey(album)];
     verdict =

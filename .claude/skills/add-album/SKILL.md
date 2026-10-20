@@ -85,4 +85,4 @@ Each album entry must match this exact shape:
 - `color`: 6-digit hex color, should be dark/muted to work with white text overlay
 - `recognizable`: boolean — true puts it in the Guess/Heardle puzzle pool
 - `image`: cover art URL (every existing entry has one; run `npm run fetch-covers` to populate)
-- `youtubeId` (optional): full-album YouTube ID, required for Heardle eligibility (`npm run fetch-youtube-ids`)
+- `youtubeId` (optional): full-album YouTube ID, required for Heardle eligibility (`npm run fetch-youtube-ids -- --only "Artist::Title"` searches and checks one; its pick is applied with `--candidate`, then audited)

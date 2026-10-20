@@ -65,7 +65,7 @@ These populate game data. The site works without them — games fall back to Cov
 ```bash
 npm run fetch-covers        # Album cover art (LASTFM_API_KEY optional; iTunes fallback)
 npm run fetch-lyrics        # Lyrics for Lyric game (GENIUS_ACCESS_TOKEN)
-npm run fetch-youtube-ids   # YouTube IDs for Heardle (YOUTUBE_API_KEY)
+npm run fetch-youtube-ids   # Full-album YouTube videos, checked (YOUTUBE_API_KEY)
 ```
 
 Keys go in `.env` (copy `.env.example`); see `docs/project.md` → Scripts.

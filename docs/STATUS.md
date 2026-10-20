@@ -10,7 +10,9 @@ it used to carry).
 
 ## Handoff — read this first
 
-**Nothing is in flight.** `master` is deployed. `GET /api/health`
+**One thing is in flight: the full-album video refetch** (open item 3),
+which searches a batch a day into a log and has not touched the catalog yet.
+`master` is deployed. `GET /api/health`
 returns the running commit SHA — it should match `git rev-parse --short
 origin/master` — and `uptimeSeconds` should climb. No PRs are open; `master`
 is the only branch, locally and on GitHub.
@@ -89,8 +91,9 @@ and build cleanly).
    - **Dead Air** (`/dead-air`): start the game in the frame; Full screen and
      Esc on Android (iOS Safari should offer Play in New Tab instead); in
      Safari, check a save made in the frame shows on a direct visit.
-3. **The full-album video refetch (open item 3).** Not blocked: the key is in
-   `.env` and works. The largest piece of code work open.
+3. **The full-album video refetch, a batch a day (open item 3).**
+   `npm run fetch-youtube-ids`, then commit `scripts/youtube-refetch.json`;
+   about four days, then the review, audit and re-record steps listed there.
 4. **Re-measure the bundle** (open item 8), then the catalog audit's
    remainder (open item 1), then everything else below.
 
@@ -236,26 +239,29 @@ docs.
      starts. Not browser-checked — it needs a whole-album day and a
      seven-second hold.
 
-3. **Album audio needs a proper refetch — unblocked, and code work.**
-   Most stored videos are one song, not the whole album, and 21 dead or wrong
-   ids were removed after the 2026-09-24 audit (details in
-   `docs/album-data.md`). So most days have no video at all and wear a
-   pattern instead of the turntable. This item used to say it was blocked on
-   a YouTube Data API key. It is not: `.env` has held `YOUTUBE_API_KEY` since
-   2026-08-04, and a one-unit `videos.list` call with it worked on
-   2026-10-20. The fix is a rewritten `fetch-youtube-ids.mjs` that searches
-   for full albums, checks title and duration before storing anything, and
-   covers the whole catalog — not just the `recognizable` albums it was
-   written for. The free tier's 100 searches a day make that four to five
-   days of runs. Then:
-   - audit the result with
-     `npm run audit-youtube-ids -- --albums <candidate>` before it replaces
-     the catalog — it demands evidence a long upload is the right album;
-   - re-record with `npm run audit-youtube-ids -- --record` and read every
-     placement it prints;
-   - run `npm run pin-schedule` and commit `lib/schedule.json` with it: the
-     `youtubeId` flags are part of the catalog fingerprint, and the change
-     reshuffles future Heardle and Taste Test picks.
+3. **Album audio: the full-album refetch is under way (started 2026-10-20).**
+   Most stored videos are one song, not the whole album (details in
+   `docs/album-data.md`), so most days have no video and wear a pattern
+   instead of the turntable. `scripts/fetch-youtube-ids.mjs` is rewritten:
+   it searches the whole catalog for full albums and keeps one only if its
+   title and length check out (`lib/youtube-match.js`, tested). It never
+   edits the catalog — every search, pick and rejection is logged in
+   `scripts/youtube-refetch.json`, how it works is in `docs/album-data.md`.
+   The key is in `.env` and works (this item once said it was blocked on
+   one). The free tier's 100 searches a day make it about four days of runs;
+   `npm run fetch-youtube-ids -- --plan` shows what is left. **Run
+   `npm run fetch-youtube-ids` once a day** and commit the log. When nothing
+   is left:
+   - read `--near-misses`, and approve any in `REVIEWED_PICKS` only after
+     watching it;
+   - write the candidate with `--candidate <file>` and audit it with
+     `npm run audit-youtube-ids -- --albums <file>`;
+   - copy it over `lib/albums.json`, re-record with
+     `npm run audit-youtube-ids -- --record` and read every placement it
+     prints;
+   - run `npm run pin-schedule` and commit `lib/schedule.json` with it: an
+     album gaining an id changes the catalog fingerprint and reshuffles
+     future Heardle and Taste Test picks.
 
 4. **There is no audience yet, and that governs what is worth building.**
    `GET /api/stats` reported **one rating, one puzzle play and zero vibes** on
