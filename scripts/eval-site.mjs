@@ -548,23 +548,35 @@ failures += printGuardrail(
    finishing touch. Checked as source text because there is no rendered symptom
    to measure: an absent button looks exactly like a button nobody clicked.
 
-   Scoped to ForumPage.js on purpose. The Open Graph card and the twitter: tags
-   in app/layout.js and app/page.js are not sharing under this rule — they
-   carry today's album and nothing about any visitor — so they are deliberately
-   outside what this checks. */
+   Scoped on purpose to the two client components that hold what a visitor
+   did: ForumPage.js, and SoundtrackCorner.js since its cue sheet and the
+   visitor's own written pitch (2026-10-21) — the most share-shaped thing on
+   the site. The Open Graph card and the twitter: tags in app/layout.js and
+   app/page.js are not sharing under this rule — they carry today's album and
+   nothing about any visitor — so they are deliberately outside what this
+   checks. */
 {
+  const activitySources = [
+    ["ForumPage.js", forumSource],
+    ["SoundtrackCorner.js", soundtrackCornerSource],
+  ];
   const sharingSignals = [
     ["ShareResultButton", "the removed share-result component is back"],
     ["navigator.clipboard", "a clipboard copy of user activity is back"],
+    ["navigator.share", "a Web Share call, a share button in another shape"],
     ["share-btn", "the share button style is back"],
-  ].filter(([needle]) => forumSource.includes(needle));
+  ].flatMap(([needle, problem]) =>
+    activitySources
+      .filter(([, source]) => source.includes(needle))
+      .map(([file]) => `${problem} (${file})`),
+  );
 
-  sharingSignals.forEach(([, problem]) => console.log(`  ! ${problem}`));
+  sharingSignals.forEach((problem) => console.log(`  ! ${problem}`));
   failures += printGuardrail(
     sharingSignals.length === 0,
     "Nothing on the site shares what a visitor did",
     sharingSignals.length
-      ? `${sharingSignals.length} sharing signal(s) in ForumPage.js — see the non-negotiable in CLAUDE.md`
+      ? `${sharingSignals.length} sharing signal(s) — see the non-negotiable in CLAUDE.md`
       : "No share buttons, clipboard copies or result grids. This is deliberate; see CLAUDE.md.",
   );
 }

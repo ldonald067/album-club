@@ -32,22 +32,6 @@ page shows builds back, if `/api/health` still says `aa4e1cd`, run
 `railway redeploy --service 88f37e23-d8bd-4c70-b670-8895d6cb1100
 --from-source --yes`, which builds the latest `master`.
 
-**Next build, asked for by the owner (2026-10-21): your own pitch on
-generated days.** Soundtrack Corner now has the club's call and the cue sheet
-(`docs/components.md` → "Built for one person"). On a generated day — no
-`clubCall` — the vote is followed by "The club hasn't written this one up…"
-(`ClubCallLine` in `app/SoundtrackCorner.js`). Turn that into the visitor's
-turn: a one-line "I'd cue it under _\_\_" box (a length cap, about 120
-characters), saved only in this browser under a **new** key such as
-`aotd_cue_pitch_<date>`(never rename an`aotd\_\*`key), shown back after
-saving with a way to edit it, and shown on the cue sheet (a list of your
-pitches under the shelves, newest first, with the album). Never sent to the
-server; React's escaping only, no HTML; no copy, export or share control
-(CLAUDE.md —`eval-site`checks). Read helpers and tests belong in`lib/cue-sheet.js`and`test/cue-sheet.test.mjs`. Verify in the browser: a
-generated day is today's default most days (`npm run
-soundtrack-corner-report`); a hand-written day needs the fake clock in
-`docs/gotchas.md`. Contrast in both skins, 375px.
-
 Otherwise `master` is deployed. `GET /api/health`
 returns the running commit SHA — it should match `git rev-parse --short
 origin/master` — and `uptimeSeconds` should climb. No PRs are open; `master`
@@ -56,6 +40,10 @@ is the only branch, locally and on GitHub.
 **Shipped most recently (10-14 → 10-21)** — each is described in its topic
 doc, and what is still unchecked is in the open items:
 
+- **Your own pitch on generated days (10-21):** on a corner with no club
+  call, the vote is followed by a one-line "I'd cue it under…" box, kept in
+  this browser only (`aotd_cue_pitch_<date>`), and the cue sheet lists your
+  pitches under the shelves. `docs/components.md` → "Built for one person".
 - **Soundtrack Corner for one person (10-21):** every hand-written corner
   makes its own call after you vote, with a running agree tally, and a cue
   sheet files every album you have called on three shelves of covers.

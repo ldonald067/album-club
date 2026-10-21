@@ -1,13 +1,18 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import { buildSoundtrackCorner } from "@/lib/soundtrack-corner";
 import {
   buildShelves,
   clubTally,
   CUE_PICKS,
+  PITCH_MAX,
+  readPitch,
   readStoredCues,
+  readStoredPitches,
   resolveCues,
+  resolvePitches,
+  savePitch,
 } from "@/lib/cue-sheet";
 import { getGameType, getTodayKey, VIBES } from "@/lib/albums";
 import { loadJson } from "@/lib/safe-fetch";
@@ -49,6 +54,14 @@ const SHELF_NAMES = {
 // A shelf shows its newest covers and opens to the rest: a year of cues
 // would otherwise be a wall
 const SHELF_PREVIEW = 12;
+const PITCH_PREVIEW = 5;
+
+// An example in the box, matched to the medium you just voted for
+const PITCH_PLACEHOLDERS = {
+  game: "the last level, with the lights off",
+  film: "the long drive out of town in the final reel",
+  tv: "the closing montage of a season finale",
+};
 
 /* Read the picks once and let the streak and the lean both derive from it.
    The keys are never written here — renaming an aotd_* key silently discards
@@ -132,11 +145,128 @@ function tallyLine(tally) {
   return `You and the club agree on ${tally.agree} of ${tally.total} calls so far.`;
 }
 
+/* Your turn on a day the club made no call: one line of where you would put
+   it, kept in this browser under its own key (lib/cue-sheet.js) and shown back
+   once saved. Never sent to the server, rendered only as React text, and no
+   copy or share control, ever (CLAUDE.md). */
+function PitchBox({ pitch, myPick, onSave }) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState("");
+  const [error, setError] = useState(null);
+  const inputRef = useRef(null);
+  const editRef = useRef(null);
+  // Saving and editing swap the control that was pressed for another, so
+  // focus is handed on rather than dropped to the body
+  const focusNext = useRef(null);
+  const noteId = useId();
+  const showForm = editing || !pitch;
+
+  useEffect(() => {
+    const target = { input: inputRef, edit: editRef }[focusNext.current];
+    focusNext.current = null;
+    target?.current?.focus();
+  });
+
+  const save = (event) => {
+    event.preventDefault();
+    const kept = onSave(draft);
+    if (kept === null) {
+      setError(
+        "This browser is not keeping site data, so it could not be saved.",
+      );
+      return;
+    }
+    setError(null);
+    setEditing(false);
+    setDraft("");
+    focusNext.current = kept ? "edit" : "input";
+  };
+
+  if (!showForm) {
+    return (
+      <div className="cue-pitch">
+        So today the call is yours:
+        <div className="cue-pitch-saved">
+          <strong>I&apos;d cue it under {pitch}</strong>{" "}
+          <button
+            ref={editRef}
+            type="button"
+            className="cue-pitch-btn"
+            onClick={() => {
+              setDraft(pitch);
+              setEditing(true);
+              focusNext.current = "input";
+            }}
+          >
+            Edit
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const empty = !draft.trim();
+  return (
+    <form className="cue-pitch" onSubmit={save}>
+      <label htmlFor={`${noteId}-input`} className="cue-pitch-label">
+        Your turn, then. I&apos;d cue it under…
+      </label>
+      <div className="cue-pitch-row">
+        <input
+          ref={inputRef}
+          id={`${noteId}-input`}
+          type="text"
+          className="form-input cue-pitch-input"
+          maxLength={PITCH_MAX}
+          value={draft}
+          placeholder={PITCH_PLACEHOLDERS[myPick] || PITCH_PLACEHOLDERS.film}
+          autoComplete="off"
+          aria-describedby={noteId}
+          onChange={(event) => setDraft(event.target.value)}
+        />
+        <button
+          type="submit"
+          className="cue-pitch-btn"
+          disabled={empty && !pitch}
+        >
+          {empty && pitch ? "Remove" : "Save"}
+        </button>
+        {pitch && (
+          <button
+            type="button"
+            className="cue-pitch-btn"
+            onClick={() => {
+              setEditing(false);
+              setError(null);
+              focusNext.current = "edit";
+            }}
+          >
+            Cancel
+          </button>
+        )}
+      </div>
+      {error && (
+        <p className="submit-error" role="alert">
+          {error}
+        </p>
+      )}
+      <div className="cue-pitch-note" id={noteId}>
+        One line, kept in this browser only.{" "}
+        {/* Not announced keystroke by keystroke inside the live region */}
+        <span aria-live="off">
+          {draft.length}/{PITCH_MAX}
+        </span>
+      </div>
+    </form>
+  );
+}
+
 /* The club's own call, the opponent a visitor has whether or not anyone else
    is on the site. Hand-written corners carry one (lib/soundtrack-corner-data.js);
-   a generated corner says it has none rather than inventing an opinion. The
-   tally waits for the past days to resolve, so it never counts short. */
-function ClubCallLine({ clubCall, myPick, tally }) {
+   a generated corner says it has none rather than inventing an opinion, and
+   hands the call to you instead. The tally waits for the past days to resolve,
+   so it never counts short. */
+function ClubCallLine({ clubCall, myPick, tally, pitch, onPitch }) {
   const record = tallyLine(tally);
   return (
     <div className="soundtrack-club-call">
@@ -150,7 +280,11 @@ function ClubCallLine({ clubCall, myPick, tally }) {
           {clubCall.why}
         </>
       ) : (
-        "The club hasn't written this one up, so there is no club call to argue with today. Yours stands alone."
+        <>
+          The club hasn&apos;t written this one up, so there is no club call to
+          argue with today.
+          <PitchBox pitch={pitch} myPick={myPick} onSave={onPitch} />
+        </>
       )}
       {record && <div className="soundtrack-club-tally">{record}</div>}
     </div>
@@ -160,7 +294,7 @@ function ClubCallLine({ clubCall, myPick, tally }) {
 /* What the vote leaves behind: today's disagreements, then one line of memory.
    Only one memory line ever shows — a streak and a lean are the same fact told
    twice, and the pair read like the site was padding. */
-function CueAftermath({ myPick, results, clubCall, tally }) {
+function CueAftermath({ myPick, results, clubCall, tally, pitch, onPitch }) {
   const room = getRoomCue(results);
   const { pick: streakPick, streak } = getCueStreak();
   const lean = getCueLean();
@@ -181,14 +315,29 @@ function CueAftermath({ myPick, results, clubCall, tally }) {
             : `The room went ${CUE_NAMES[room]}. You went ${CUE_NAMES[myPick]}. Hold your position.`}
         </div>
       )}
-      <ClubCallLine clubCall={clubCall} myPick={myPick} tally={tally} />
+      <ClubCallLine
+        clubCall={clubCall}
+        myPick={myPick}
+        tally={tally}
+        pitch={pitch}
+        onPitch={onPitch}
+      />
       {memory && <div className="soundtrack-vote-streak">{memory}</div>}
     </>
   );
 }
 
 /** One-tap "where does this cue belong" vote with a community reveal */
-function CueVote({ cards, onPick, onSkip, skipped, clubCall, tally }) {
+function CueVote({
+  cards,
+  onPick,
+  onSkip,
+  skipped,
+  clubCall,
+  tally,
+  pitch,
+  onPitch,
+}) {
   // Keyed by the live UTC date (not the render-frozen album prop) so the
   // storage key, SoundtrackMini, and the API's album_key always agree —
   // including in the window right after UTC midnight before a reload.
@@ -315,6 +464,8 @@ function CueVote({ cards, onPick, onSkip, skipped, clubCall, tally }) {
           results={results}
           clubCall={clubCall}
           tally={tally}
+          pitch={pitch}
+          onPitch={onPitch}
         />
       </div>
     );
@@ -458,24 +609,31 @@ function ClubRead() {
 }
 
 /* Every cue this browser has cast, each with the album it was cast for and the
-   club's call on it (lib/cue-sheet.js). Today's album is known here; past days
-   come from the server, fetched only when there are past cues to name. Null
-   until they have, so the tally and the shelves never show a partial count. */
-function useResolvedCues(album, myPick) {
-  const [cues, setCues] = useState([]);
+   club's call on it, and every pitch with the album it was written for
+   (lib/cue-sheet.js). Today's album is known here; past days come from the
+   server, fetched only when there are past cues or pitches to name. Null until
+   they have, so the tally and the shelves never show a partial count. */
+function useResolvedCues(album, myPick, pitch) {
+  const [stored, setStored] = useState({ cues: [], pitches: [] });
   const [pastAlbums, setPastAlbums] = useState(null);
 
-  // Re-read after a vote, so today's call files itself at once
+  // Re-read after a vote or a pitch, so today's files itself at once
   useEffect(() => {
     try {
-      setCues(readStoredCues(window.localStorage));
+      setStored({
+        cues: readStoredCues(window.localStorage),
+        pitches: readStoredPitches(window.localStorage),
+      });
     } catch {
-      setCues([]);
+      setStored({ cues: [], pitches: [] });
     }
-  }, [myPick]);
+  }, [myPick, pitch]);
 
   const todayKey = album.key || getTodayKey();
-  const oldestPast = cues.filter((cue) => cue.date < todayKey).at(-1)?.date;
+  const oldestPast = [...stored.cues, ...stored.pitches]
+    .map((entry) => entry.date)
+    .filter((date) => date < todayKey)
+    .sort()[0];
 
   useEffect(() => {
     if (!oldestPast) return;
@@ -490,8 +648,12 @@ function useResolvedCues(album, myPick) {
 
   return useMemo(() => {
     if (oldestPast && !pastAlbums) return null;
-    return resolveCues(cues, { ...pastAlbums, [todayKey]: album });
-  }, [cues, pastAlbums, oldestPast, todayKey, album]);
+    const albumsByDate = { ...pastAlbums, [todayKey]: album };
+    return {
+      cues: resolveCues(stored.cues, albumsByDate),
+      pitches: resolvePitches(stored.pitches, albumsByDate),
+    };
+  }, [stored, pastAlbums, oldestPast, todayKey, album]);
 }
 
 /* The cue sheet: every album you have called, filed on the shelf you put it on.
@@ -499,10 +661,13 @@ function useResolvedCues(album, myPick) {
    club is somewhere to have an opinion, not to perform one (CLAUDE.md). */
 function CueSheet({ resolved, cards }) {
   const [open, setOpen] = useState({});
-  if (!resolved || resolved.length === 0) return null;
+  if (!resolved) return null;
+  const { cues, pitches } = resolved;
+  if (cues.length === 0 && pitches.length === 0) return null;
 
-  const shelves = buildShelves(resolved);
-  const anyMatched = resolved.some((cue) => cue.club === cue.pick);
+  const shelves = buildShelves(cues);
+  const anyMatched = cues.some((cue) => cue.club === cue.pick);
+  const shownPitches = open.pitches ? pitches : pitches.slice(0, PITCH_PREVIEW);
 
   return (
     <div className="soundtrack-corner-section soundtrack-cue-sheet">
@@ -568,6 +733,55 @@ function CueSheet({ resolved, cards }) {
           </div>
         );
       })}
+      {/* The days the club made no call and you made one yourself */}
+      {pitches.length > 0 && (
+        <div className="cue-shelf">
+          <div className="cue-shelf-head">
+            <span aria-hidden="true">📝</span> Your pitches{" "}
+            <span className="cue-shelf-count">{pitches.length}</span>
+          </div>
+          <ul className="cue-pitch-list">
+            {shownPitches.map(({ date, text, album }) => (
+              <li key={date}>
+                {album.image ? (
+                  <img
+                    src={album.image}
+                    alt=""
+                    width={32}
+                    height={32}
+                    loading="lazy"
+                  />
+                ) : (
+                  <span className="cue-pitch-sleeve" aria-hidden="true" />
+                )}
+                <div className="cue-pitch-entry">
+                  <div className="cue-pitch-album">
+                    <strong>{album.title}</strong> by {album.artist}, {date}
+                  </div>
+                  <div className="cue-pitch-text">
+                    I&apos;d cue it under {text}
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+          {pitches.length > PITCH_PREVIEW && (
+            <button
+              type="button"
+              className="cue-shelf-more"
+              aria-expanded={Boolean(open.pitches)}
+              onClick={() =>
+                setOpen((current) => ({
+                  ...current,
+                  pitches: !current.pitches,
+                }))
+              }
+            >
+              {open.pitches ? "Show fewer" : `Show all ${pitches.length}`}
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -587,11 +801,33 @@ export default function SoundtrackCorner({ album, onPlayToday }) {
   const [skipped, setSkipped] = useState(false);
   const revealedCase = Boolean(myPick) || skipped;
   const leadRef = useRef(null);
-  const resolvedCues = useResolvedCues(album, myPick);
+  // Today's pitch, for a day the club made no call. Keyed by the live date,
+  // like the vote it sits under.
+  const [pitch, setPitch] = useState("");
+  const resolvedCues = useResolvedCues(album, myPick, pitch);
   const tally = useMemo(
-    () => (resolvedCues ? clubTally(resolvedCues) : null),
+    () => (resolvedCues ? clubTally(resolvedCues.cues) : null),
     [resolvedCues],
   );
+
+  useEffect(() => {
+    try {
+      setPitch(readPitch(window.localStorage, getTodayKey()));
+    } catch {
+      setPitch("");
+    }
+  }, []);
+
+  // What was kept, or null when this browser would not store it
+  const onPitch = (text) => {
+    try {
+      const kept = savePitch(window.localStorage, getTodayKey(), text);
+      setPitch(kept);
+      return kept;
+    } catch {
+      return null;
+    }
+  };
 
   /* Skipping unmounts the button that was just pressed, which drops keyboard
      focus to the body — the same fault the Cozy fullscreen button was fixed
@@ -634,6 +870,8 @@ export default function SoundtrackCorner({ album, onPlayToday }) {
         skipped={skipped}
         clubCall={corner.clubCall}
         tally={tally}
+        pitch={pitch}
+        onPitch={onPitch}
       />
       {revealedCase && (
         <>

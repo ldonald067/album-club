@@ -1544,6 +1544,114 @@ body {
   margin-top: 4px;
 }
 
+/* Your own pitch on a day the club made no call (PitchBox), and the list of
+   them under the cue sheet's shelves. A pitch is one unbroken line at worst,
+   so its text may wrap anywhere rather than push a 375px page sideways. */
+.cue-pitch {
+  margin-top: 6px;
+}
+
+.cue-pitch-label {
+  display: block;
+  color: var(--text-card-title);
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.cue-pitch-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cue-pitch-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--text-card-title);
+}
+
+.cue-pitch-btn {
+  flex: none;
+  padding: 4px 10px;
+  border: 1px solid var(--border-panel);
+  border-radius: 4px;
+  background: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.cue-pitch-btn:not(:disabled):hover {
+  opacity: 0.8;
+}
+
+.cue-pitch-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.cue-pitch-saved {
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+}
+
+.cue-pitch-note {
+  color: var(--text-card-meta);
+  font-size: 10px;
+  margin-top: 4px;
+}
+
+.cue-pitch-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cue-pitch-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 5px 0;
+  border-top: 1px solid var(--border-inner);
+}
+
+.cue-pitch-list li:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.cue-pitch-list img,
+.cue-pitch-sleeve {
+  display: block;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-inner);
+  background: var(--surface-sleeve);
+  object-fit: cover;
+}
+
+.cue-pitch-entry {
+  min-width: 0;
+}
+
+.cue-pitch-album {
+  color: var(--text-card-meta);
+  font-size: 10px;
+}
+
+.cue-pitch-album strong {
+  color: var(--text-card-title);
+}
+
+.cue-pitch-text {
+  color: var(--text-card-copy);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
 .soundtrack-card-club {
   margin-left: auto;
   padding: 1px 5px;
