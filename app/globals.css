@@ -2987,9 +2987,13 @@ body {
 }
 
 /* ─── Margin Rails: 2004 sidebar junk (app/MarginRails.js) ───
-   Only where the margins have room for it: 960px of page, a 160px poster
-   and a 120px badge column each 20px out from it, and a little air at the
-   window's edge. It hangs off a sticky anchor at the top of <main>, so it
+   Only where the margins have room for it: 960px of page, a poster and a
+   badge column each 20px out from it, and a little air at the window's
+   edge. Both grow into the margin a wider window leaves (--rail-room: the
+   margin less that 20px and 24px of air, enough for half a 15px
+   scrollbar), up to 240px, and never shrink below the 160px poster and
+   120px column the copy was measured at. It hangs off a sticky anchor at
+   the top of <main>, so it
    starts below the full-width banner, nav and info bar, rides down the page
    with you, and stops at the end of <main> instead of covering the footer:
    the anchor is as tall as the taller rail (the badge column, with its
@@ -2997,6 +3001,7 @@ body {
    margin, so it takes no room in the page. */
 .margin-rails {
   display: none;
+  --rail-room: calc((100vw - 960px) / 2 - 44px);
 }
 
 @media (min-width: 1380px) and (min-height: 700px) {
@@ -3020,12 +3025,13 @@ body {
 /* .content has 15px of padding; the anchor sits inside it */
 .margin-rail-left {
   right: calc(100% + 35px);
-  width: 160px;
+  width: clamp(160px, var(--rail-room), 240px);
 }
 
 .margin-rail-right {
   left: calc(100% + 35px);
-  width: 120px;
+  width: clamp(120px, var(--rail-room), 240px);
+  container-type: inline-size;
 }
 
 .rail-poster {
@@ -3093,8 +3099,9 @@ body {
 .rail-poster-disc {
   display: block;
   flex: none;
-  width: 96px;
-  height: 96px;
+  /* grows with a widened poster, whose copy then wraps shorter */
+  width: clamp(96px, 55%, 120px);
+  aspect-ratio: 1;
   border-radius: 50%;
   background:
     repeating-radial-gradient(
@@ -3265,6 +3272,16 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 6px;
+}
+
+/* Two to a row once the column has room for them, as the era tiled them.
+   They stay 88×31: that was the format, and the pixel type blurs scaled. */
+@container (min-width: 182px) {
+  .rail-badges {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }
 
 /* An 88×31 micro-banner as the 1990s drew them: a raised grey frame, an

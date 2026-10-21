@@ -509,6 +509,11 @@ Banners in the 90s" and the era's deceptive ad formats, all as parody.
   starts below the full-width banner, nav and info bar (fixed positioning
   sat on top of them), rides down the page and stops at the end of
   `<main>`.
+- **Both rails grow into the margin (2026-10-21),** from at least the 160px
+  poster and 120px column the copy was measured at to 240px, 16px clear of
+  the window's edge (measured 1380–1728px). Once the column passes 182px
+  the badges tile two to a row instead of stretching: 88×31 was the format,
+  and the pixel type blurs scaled. The poster's record grows with it.
 - **Off on Cozy Vibes and Dead Air,** whose game frames widen into the
   margins.
 - **Motion within WCAG 2.2.2:** after the teaser the button blinks five
