@@ -27,10 +27,14 @@ in every region from 07:24 UTC that day (status.railway.com), so nothing
 pushed since `aa4e1cd` has gone live (`git log aa4e1cd..origin/master`):
 the wider rails, the report's queue, the one-person Soundtrack Corner and
 docs. Pushes made during the pause started no deployment, and a
-redeploy answers "Deploys have been paused temporarily". Once the status
-page shows builds back, if `/api/health` still says `aa4e1cd`, run
-`railway redeploy --service 88f37e23-d8bd-4c70-b670-8895d6cb1100
---from-source --yes`, which builds the latest `master`.
+redeploy answers "Deploys have been paused temporarily". Still down at
+22:45 UTC, by then billed a platform outage with Railway rotating
+credentials, and the CLI's login here was revoked at about 20:27 UTC
+("Unauthorized"): **the owner must run `railway login` first** — an agent
+cannot sign in for them. Once the status page shows builds back, if
+`/api/health` still says `aa4e1cd`, run `railway redeploy --service
+88f37e23-d8bd-4c70-b670-8895d6cb1100 --from-source --yes`, which builds the
+latest `master`.
 
 Otherwise `master` is deployed. `GET /api/health`
 returns the running commit SHA — it should match `git rev-parse --short
