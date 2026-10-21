@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-10-20.
+session. Last updated: 2026-10-21.
 
 This file holds **current state, open items and standing decisions** only.
 How things work lives in the topic docs; what happened and when lives in git
@@ -12,14 +12,31 @@ it used to carry).
 
 **One thing is in flight: the full-album video refetch** (open item 3),
 which searches a batch a day into a log and has not touched the catalog yet.
+Day 1 (10-20): 95 albums searched, 48 checked picks kept, about 220 left —
+three more days. **The owner runs it by hand: they open a new chat and say
+"run today's batch."** Run `npm run fetch-youtube-ids`, read every new pick's
+title and channel by eye (day 1's rules let seven edits through — a reversed
+tracklist, a 432Hz retune, crossfades, a continuous mix, disguised titles),
+add a tested rule in `lib/youtube-match.js` for any new shape, then commit
+`scripts/youtube-refetch.json` by name and push. The quota resets at
+midnight Pacific; a run that hits it stops cleanly and says so. They chose
+this over GitHub Actions or a scheduled task; do not re-offer automation.
 `master` is deployed. `GET /api/health`
 returns the running commit SHA — it should match `git rev-parse --short
 origin/master` — and `uptimeSeconds` should climb. No PRs are open; `master`
 is the only branch, locally and on GitHub.
 
-**Shipped most recently (10-14 → 10-19)** — each is described in its topic
+**Shipped most recently (10-14 → 10-20)** — each is described in its topic
 doc, and what is still unchecked is in the open items:
 
+- **The full-album fetcher, rewritten (10-20):** searches the whole catalog,
+  checks every result's title, length and playability before keeping one,
+  logs everything, never edits the catalog. `docs/album-data.md` → the
+  refetch.
+- **A doc audit against the code (10-20):** this file cut to current state,
+  stale counts in the topic docs replaced by pointers to `eval-site`, and
+  open item 3 found not to be blocked — the YouTube key was in `.env` all
+  along.
 - **Margin rails (10-19):** 1990s sidebar junk in the empty margins on
   windows 1380px wide or more, written from the day's data so it never needs
   editing. Halloween week (24–31 Oct) dresses it up and bills Dead Air, by
@@ -78,7 +95,9 @@ and build cleanly).
    day, a badge counting down the nights, and the error box as Boo.exe.
    `test/margin-rails.test.mjs` renders every Halloween day; nobody has seen
    it on production yet.
-2. **One phone check** — only a person can do it (open item 2):
+2. **One phone check** — only a person can do it (open item 2). The day
+   kinds below hold until the refetch's picks are applied; after that,
+   recompute them.
    - **Blind Taste Test** on an iPhone and an Android phone.
    - **A song day** (10-29, 11-01): press Play; tap near the gold band — on
      a phone any tap on the grooves should play the song, not spin the
@@ -91,9 +110,9 @@ and build cleanly).
    - **Dead Air** (`/dead-air`): start the game in the frame; Full screen and
      Esc on Android (iOS Safari should offer Play in New Tab instead); in
      Safari, check a save made in the frame shows on a direct visit.
-3. **The full-album video refetch, a batch a day (open item 3).**
-   `npm run fetch-youtube-ids`, then commit `scripts/youtube-refetch.json`;
-   about four days, then the review, audit and re-record steps listed there.
+3. **Today's refetch batch, when the owner asks (open item 3)** — the
+   routine is in the first paragraph above. When `--plan` shows nothing
+   left, the review, audit and re-record steps are listed in the open item.
 4. **Re-measure the bundle** (open item 8), then the catalog audit's
    remainder (open item 1), then everything else below.
 
@@ -174,6 +193,13 @@ Deploy = push to `master`. Verify with `GET /api/health` (running commit SHA,
   - **Judge health by `GET /api/health` with a climbing `uptimeSeconds`**,
     never by log severity — Railway tags all stderr `error`. A single-replica
     deploy has a real few-second 502 gap mid-swap.
+  - **A push can fail to start a deploy.** `3dba7b9` (2026-10-20) got no
+    deployment at all — not waiting, not skipped — though CI passed; the
+    next push deployed normally in under five minutes and carried it. If
+    `/api/health` has not shown a new SHA after ~5 minutes, look at the
+    service's deployments (the `railway` MCP's `list-deployments`) before
+    assuming a slow build. Railway's GitHub check suite always reads
+    "queued", so it is no signal.
 
   **If a crash email ever follows a single isolated deploy, that refutes the
   timing hypothesis — it does not confirm any replacement.** One candidate fix
