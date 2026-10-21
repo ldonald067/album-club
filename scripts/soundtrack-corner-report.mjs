@@ -1,5 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
+import { getTodayKey } from "../lib/albums.js";
+import { getFeaturedAlbum } from "../lib/daily-picks.js";
 import { SOUNDTRACK_PROFILES } from "../lib/soundtrack-corner-data.js";
 
 const rootDir = process.cwd();
@@ -198,62 +200,42 @@ if (uncoveredPriorityAlbums.length > 0 || uncoveredEditorialAlbums.length > 0) {
 }
 
 /* ── Rotation schedule: which uncovered albums air soonest ──
-   Keep the PRNG/shuffle in sync with lib/albums.js (mulberry32 +
-   Fisher-Yates seeded by UTC year). Writing effort should land on
-   albums visitors will actually see in the next few weeks. */
+   Read from lib/daily-picks.js, the same lookup the pages use (the pinned
+   schedule, then the yearly shuffle), so this cannot drift from what a
+   visitor is shown. Every album is in the daily rotation, not only the
+   `recognizable` ones, which is a games flag: filtering on it once showed
+   two albums left while most days aired a generated corner. */
 
-function mulberry32(seed) {
-  return function () {
-    let t = (seed += 0x6d2b79f5);
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
+const shiftKey = (key, days) =>
+  new Date(Date.parse(`${key}T12:00:00Z`) + days * 86400000)
+    .toISOString()
+    .slice(0, 10);
+
+const todayKey = getTodayKey();
+const firstAirDate = new Map();
+const generatedDays = { 30: 0, 365: 0 };
+// Two-year horizon covers a full rotation cycle plus the year boundary
+for (let offset = 0; offset < 800; offset++) {
+  const date = shiftKey(todayKey, offset);
+  const key = getKey(getFeaturedAlbum(date));
+  if (overrideKeys.has(key)) continue;
+  if (offset < 30) generatedDays[30]++;
+  if (offset < 365) generatedDays[365]++;
+  if (!firstAirDate.has(key)) firstAirDate.set(key, { days: offset, date });
 }
 
-const permutationCache = new Map();
-function seededPermutation(length, seed) {
-  const cacheKey = `${length}:${seed}`;
-  if (permutationCache.has(cacheKey)) return permutationCache.get(cacheKey);
-  const rand = mulberry32(seed);
-  const indices = Array.from({ length }, (_, i) => i);
-  for (let i = indices.length - 1; i > 0; i--) {
-    const j = Math.floor(rand() * (i + 1));
-    [indices[i], indices[j]] = [indices[j], indices[i]];
-  }
-  permutationCache.set(cacheKey, indices);
-  return indices;
-}
-
-function daysUntilFeatured(albumIndex, catalogLength) {
-  const now = Date.now();
-  // Two-year horizon covers a full rotation cycle plus the year boundary
-  for (let offset = 0; offset < 800; offset++) {
-    const d = new Date(now + offset * 86400000);
-    const year = d.getUTCFullYear();
-    const start = Date.UTC(year, 0, 0);
-    const dayOfYear = Math.floor((d.getTime() - start) / 86400000);
-    const order = seededPermutation(catalogLength, year);
-    if (order[dayOfYear % catalogLength] === albumIndex) {
-      return { days: offset, date: d.toISOString().slice(0, 10) };
-    }
-  }
-  return null;
-}
-
-const uncoveredRecognizable = albums
-  .map((album, index) => ({ album, index }))
-  .filter(({ album }) => album.recognizable && !overrideKeys.has(getKey(album)))
-  .map(({ album, index }) => ({
-    album,
-    next: daysUntilFeatured(index, albums.length),
-  }))
-  .filter(({ next }) => next)
-  .sort((a, b) => a.next.days - b.next.days);
+const uncoveredByAirDate = [...firstAirDate].map(([key, next]) => ({
+  album: albumByKey.get(key),
+  next,
+}));
 
 console.log("");
-console.log("Coming up in rotation (uncovered recognizable):");
-for (const { album, next } of uncoveredRecognizable.slice(0, 15)) {
+console.log(
+  `Generated corners on air: ${generatedDays[30]} of the next 30 days, ${generatedDays[365]} of the next 365`,
+);
+console.log("");
+console.log("Coming up in rotation (uncovered):");
+for (const { album, next } of uncoveredByAirDate.slice(0, 15)) {
   const when =
     next.days === 0
       ? "today"

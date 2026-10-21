@@ -722,6 +722,6 @@ Two `eval-site` guardrails hold this. One renders every album's corner and fails
 
 The authoring pipeline for overrides and generator profiles lives in `docs/soundtrack-corner-research.md` (source policy, schedule-aware batch flow, floor-raising via genre profiles).
 
-Use `npm run soundtrack-corner-report` to see how many albums currently have curated overrides, how much of the recognizable/priority pool is covered, and which priority albums are still good next candidates.
+Use `npm run soundtrack-corner-report` to see how many albums currently have curated overrides, how much of the recognizable/priority pool is covered, how many coming days air a generated corner, and which uncovered albums air soonest.
 
 Use `npm run eval-site` for the broader quality pass: album-pool variety summary, game-source coverage, soundtrack coverage, and a handful of UI/API guardrails.

@@ -13,7 +13,7 @@ How curated overrides and generator knowledge get written. Not runtime data.
 ## Batch Pipeline (schedule-aware)
 
 1. Run `npm run soundtrack-corner-report`.
-2. Write from the **"Coming up in rotation"** section — it sorts uncovered recognizable albums by their next featured air date, so effort lands on albums visitors will actually see soon. Take the top ~12.
+2. Write from the **"Coming up in rotation"** section — it sorts every uncovered album by its next featured air date, read from the same lookup the pages use, so effort lands on albums visitors will actually see soon. Take the top ~12, skipping any you cannot research honestly (Working Rules). It once listed only `recognizable` albums, a games flag, and so showed two left while most days aired a generated corner.
 3. For each: capture what critics keep noticing, what fans keep feeling, what scene language fits, and three "listen next" moves that exist in `lib/albums.json` (exact titles — dangling recs are dropped at runtime and now fail `npm run eval-site`).
 4. Write the override in `lib/soundtrack-corner-data.js` in the established voice: specific musical anchors, wit without snark, no generic praise. Every `extraAngles` entry uses one of the five real angle keys.
 

@@ -359,6 +359,9 @@ docs.
 
 ## Standing decisions — do not "fix" these
 
+- **No new community features (owner, 2026-10-21).** Design for one person
+  using the site alone. The room-gated pieces already built stay as they
+  are; nothing new waits on a second visitor.
 - **No sharing, permanently (2026-08-25).** Not a backlog item and not a
   trade-off to revisit when traffic arrives. The rule and its boundary (the
   Open Graph card stays) are in `CLAUDE.md`; `eval-site` enforces it. **An
@@ -388,8 +391,11 @@ docs.
 - **Soundtrack Corner's cue vote sits above the pitch cards**, with a "just
   read the pitches" skip link. `eval-site` fails if the order is reversed.
 - **Soundtrack Corner's curated pass over the recognizable pool is complete
-  (checked 2026-10-20).** The report's "Coming up in rotation" queue holds
-  only two albums, and they are uncovered on purpose: _BTS — Arirang_ and
+  (checked 2026-10-20)** — but `recognizable` is a games flag and every
+  album airs, so most days still show a generated corner (the report's
+  "Generated corners on air" line; since 2026-10-21 its queue lists every
+  uncovered album by air date). Two recognizable albums are uncovered on
+  purpose: _BTS — Arirang_ and
   _Olivia Rodrigo — You Seem Pretty Sad for a Girl So In Love_. Scene-work
   for an album the author has not heard is invention; they get an honest
   generated corner. **Whoever knows those records should write them; do not
