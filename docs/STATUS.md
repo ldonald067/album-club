@@ -26,9 +26,12 @@ returns the running commit SHA — it should match `git rev-parse --short
 origin/master` — and `uptimeSeconds` should climb. No PRs are open; `master`
 is the only branch, locally and on GitHub.
 
-**Shipped most recently (10-14 → 10-20)** — each is described in its topic
+**Shipped most recently (10-14 → 10-21)** — each is described in its topic
 doc, and what is still unchecked is in the open items:
 
+- **Wider margin rails (10-21):** the poster and badge column grow into the
+  margin, up to 240px, instead of a fixed 160px and 120px; the badges tile
+  two to a row. `docs/components.md` → "Margin rails".
 - **The full-album fetcher, rewritten (10-20):** searches the whole catalog,
   checks every result's title, length and playability before keeping one,
   logs everything, never edits the catalog. `docs/album-data.md` → the
@@ -195,7 +198,9 @@ Deploy = push to `master`. Verify with `GET /api/health` (running commit SHA,
     deploy has a real few-second 502 gap mid-swap.
   - **A push can fail to start a deploy.** `3dba7b9` (2026-10-20) got no
     deployment at all — not waiting, not skipped — though CI passed; the
-    next push deployed normally in under five minutes and carried it. If
+    next push deployed normally in under five minutes and carried it.
+    On 2026-10-21 it happened twice running: neither `13f7e4d` nor
+    `da30d99` started one, so it is not a one-off. If
     `/api/health` has not shown a new SHA after ~5 minutes, look at the
     service's deployments (the `railway` MCP's `list-deployments`) before
     assuming a slow build. Railway's GitHub check suite always reads
