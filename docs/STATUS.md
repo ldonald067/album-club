@@ -21,7 +21,17 @@ add a tested rule in `lib/youtube-match.js` for any new shape, then commit
 `scripts/youtube-refetch.json` by name and push. The quota resets at
 midnight Pacific; a run that hits it stops cleanly and says so. They chose
 this over GitHub Actions or a scheduled task; do not re-offer automation.
-`master` is deployed. `GET /api/health`
+
+**`master` is not all deployed yet (2026-10-21).** Railway paused builds
+in every region from 07:24 UTC that day (status.railway.com), so nothing
+pushed since `aa4e1cd` has gone live — the wider margin rails and three
+docs commits. Pushes made during the pause started no deployment, and a
+redeploy answers "Deploys have been paused temporarily". Once the status
+page shows builds back, if `/api/health` still says `aa4e1cd`, run
+`railway redeploy --service 88f37e23-d8bd-4c70-b670-8895d6cb1100
+--from-source --yes`, which builds the latest `master`.
+
+Otherwise `master` is deployed. `GET /api/health`
 returns the running commit SHA — it should match `git rev-parse --short
 origin/master` — and `uptimeSeconds` should climb. No PRs are open; `master`
 is the only branch, locally and on GitHub.
@@ -198,9 +208,7 @@ Deploy = push to `master`. Verify with `GET /api/health` (running commit SHA,
     deploy has a real few-second 502 gap mid-swap.
   - **A push can fail to start a deploy.** `3dba7b9` (2026-10-20) got no
     deployment at all — not waiting, not skipped — though CI passed; the
-    next push deployed normally in under five minutes and carried it.
-    On 2026-10-21 it happened twice running: neither `13f7e4d` nor
-    `da30d99` started one, so it is not a one-off. If
+    next push deployed normally in under five minutes and carried it. If
     `/api/health` has not shown a new SHA after ~5 minutes, look at the
     service's deployments (the `railway` MCP's `list-deployments`) before
     assuming a slow build. Railway's GitHub check suite always reads
