@@ -1524,6 +1524,123 @@ body {
   margin-top: 8px;
 }
 
+/* The club's own call after a vote, and your record against it
+   (app/SoundtrackCorner.js, ClubCallLine) */
+.soundtrack-club-call {
+  color: var(--text-card-copy);
+  font-size: 11px;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+
+.soundtrack-club-call strong {
+  color: var(--text-card-title);
+}
+
+.soundtrack-club-tally {
+  color: var(--text-card-meta);
+  font-size: 10px;
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+.soundtrack-card-club {
+  margin-left: auto;
+  padding: 1px 5px;
+  border: 1px solid var(--gold);
+  font-size: 9px;
+  font-weight: bold;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+/* The cue sheet: covers on three shelves, a gold edge where you and the club
+   made the same call */
+.soundtrack-cue-sheet-intro {
+  color: var(--text-recs-intro);
+  font-size: 11px;
+  margin: 0 0 4px;
+}
+
+.cue-shelf {
+  margin-top: 10px;
+}
+
+.cue-shelf-head {
+  color: var(--text-section-title);
+  font-size: 11px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.cue-shelf-count {
+  display: inline-block;
+  min-width: 14px;
+  padding: 0 4px;
+  border: 1px solid var(--border-inner);
+  background: var(--surface-field);
+  color: var(--text-card-meta);
+  font-size: 10px;
+  text-align: center;
+}
+
+.cue-shelf-empty {
+  color: var(--text-card-meta);
+  font-size: 10px;
+  font-style: italic;
+  margin: 0;
+}
+
+.cue-shelf-covers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cue-shelf-covers li {
+  line-height: 0;
+  border: 2px solid var(--border-inner);
+  background: var(--surface-sleeve);
+}
+
+.cue-shelf-covers li.matched {
+  border-color: var(--gold);
+}
+
+.cue-shelf-covers img {
+  display: block;
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+}
+
+.cue-shelf-blank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  overflow: hidden;
+  color: var(--text-card-meta);
+  font-size: 7px;
+  line-height: 1.1;
+  text-align: center;
+}
+
+.cue-shelf-more {
+  margin-top: 5px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-link);
+  font-size: 10px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .soundtrack-card {
   background: var(--surface-card);
   border: 1px solid var(--border-light);

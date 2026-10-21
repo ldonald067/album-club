@@ -26,6 +26,7 @@ How curated overrides and generator knowledge get written. Not runtime data.
   extraAngles: [ {key, title, body}, {key, title, body} ],
   listenFor: [ …at least three ],
   recommendations: [ {title, reason} ×3 ],              // exact catalog titles
+  clubCall: { pick: "game" | "film" | "tv", why },      // ≤120 chars, required
 }
 ```
 

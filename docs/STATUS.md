@@ -39,6 +39,10 @@ is the only branch, locally and on GitHub.
 **Shipped most recently (10-14 → 10-21)** — each is described in its topic
 doc, and what is still unchecked is in the open items:
 
+- **Soundtrack Corner for one person (10-21):** every hand-written corner
+  makes its own call after you vote, with a running agree tally, and a cue
+  sheet files every album you have called on three shelves of covers.
+  `docs/components.md` → "Built for one person".
 - **Wider margin rails (10-21):** the poster and badge column grow into the
   margin, up to 240px, instead of a fixed 160px and 120px; the badges tile
   two to a row. `docs/components.md` → "Margin rails".

@@ -2,6 +2,13 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { buildSoundtrackCorner } from "@/lib/soundtrack-corner";
+import {
+  buildShelves,
+  clubTally,
+  CUE_PICKS,
+  readStoredCues,
+  resolveCues,
+} from "@/lib/cue-sheet";
 import { getGameType, getTodayKey, VIBES } from "@/lib/albums";
 import { loadJson } from "@/lib/safe-fetch";
 import { readStoredVote } from "@/lib/stored-vote";
@@ -33,6 +40,15 @@ const CUE_LEAN_LINES = {
 };
 
 const CUE_NAMES = { game: "game", film: "film", tv: "TV" };
+
+const SHELF_NAMES = {
+  game: "Game OST",
+  film: "Film score",
+  tv: "TV needle drops",
+};
+// A shelf shows its newest covers and opens to the rest: a year of cues
+// would otherwise be a wall
+const SHELF_PREVIEW = 12;
 
 /* Read the picks once and let the streak and the lean both derive from it.
    The keys are never written here — renaming an aotd_* key silently discards
@@ -105,10 +121,46 @@ function getRoomCue(results) {
   return results[ranked[0]] === results[ranked[1]] ? null : ranked[0];
 }
 
-/* What the vote leaves behind: today's disagreement, then one line of memory.
+/** Your record against the club, or null before there is one to report */
+function tallyLine(tally) {
+  if (!tally || tally.total === 0) return null;
+  if (tally.total === 1) {
+    return tally.agree
+      ? "First call on the record: you and the club agree."
+      : "First call on the record: you and the club split.";
+  }
+  return `You and the club agree on ${tally.agree} of ${tally.total} calls so far.`;
+}
+
+/* The club's own call, the opponent a visitor has whether or not anyone else
+   is on the site. Hand-written corners carry one (lib/soundtrack-corner-data.js);
+   a generated corner says it has none rather than inventing an opinion. The
+   tally waits for the past days to resolve, so it never counts short. */
+function ClubCallLine({ clubCall, myPick, tally }) {
+  const record = tallyLine(tally);
+  return (
+    <div className="soundtrack-club-call">
+      {clubCall ? (
+        <>
+          <strong>
+            {clubCall.pick === myPick
+              ? `The club went ${CUE_NAMES[clubCall.pick]} too.`
+              : `The club went ${CUE_NAMES[clubCall.pick]}. You went ${CUE_NAMES[myPick]}.`}
+          </strong>{" "}
+          {clubCall.why}
+        </>
+      ) : (
+        "The club hasn't written this one up, so there is no club call to argue with today. Yours stands alone."
+      )}
+      {record && <div className="soundtrack-club-tally">{record}</div>}
+    </div>
+  );
+}
+
+/* What the vote leaves behind: today's disagreements, then one line of memory.
    Only one memory line ever shows — a streak and a lean are the same fact told
    twice, and the pair read like the site was padding. */
-function CueAftermath({ myPick, results }) {
+function CueAftermath({ myPick, results, clubCall, tally }) {
   const room = getRoomCue(results);
   const { pick: streakPick, streak } = getCueStreak();
   const lean = getCueLean();
@@ -120,8 +172,6 @@ function CueAftermath({ myPick, results }) {
         ? CUE_LEAN_LINES[lean.pick](lean.count, lean.total)
         : null;
 
-  if (!room && !memory) return null;
-
   return (
     <>
       {room && (
@@ -131,13 +181,14 @@ function CueAftermath({ myPick, results }) {
             : `The room went ${CUE_NAMES[room]}. You went ${CUE_NAMES[myPick]}. Hold your position.`}
         </div>
       )}
+      <ClubCallLine clubCall={clubCall} myPick={myPick} tally={tally} />
       {memory && <div className="soundtrack-vote-streak">{memory}</div>}
     </>
   );
 }
 
 /** One-tap "where does this cue belong" vote with a community reveal */
-function CueVote({ cards, onPick, onSkip, skipped }) {
+function CueVote({ cards, onPick, onSkip, skipped, clubCall, tally }) {
   // Keyed by the live UTC date (not the render-frozen album prop) so the
   // storage key, SoundtrackMini, and the API's album_key always agree —
   // including in the window right after UTC midnight before a reload.
@@ -259,7 +310,12 @@ function CueVote({ cards, onPick, onSkip, skipped }) {
             );
           })}
         </div>
-        <CueAftermath myPick={myPick} results={results} />
+        <CueAftermath
+          myPick={myPick}
+          results={results}
+          clubCall={clubCall}
+          tally={tally}
+        />
       </div>
     );
   }
@@ -401,6 +457,121 @@ function ClubRead() {
   );
 }
 
+/* Every cue this browser has cast, each with the album it was cast for and the
+   club's call on it (lib/cue-sheet.js). Today's album is known here; past days
+   come from the server, fetched only when there are past cues to name. Null
+   until they have, so the tally and the shelves never show a partial count. */
+function useResolvedCues(album, myPick) {
+  const [cues, setCues] = useState([]);
+  const [pastAlbums, setPastAlbums] = useState(null);
+
+  // Re-read after a vote, so today's call files itself at once
+  useEffect(() => {
+    try {
+      setCues(readStoredCues(window.localStorage));
+    } catch {
+      setCues([]);
+    }
+  }, [myPick]);
+
+  const todayKey = album.key || getTodayKey();
+  const oldestPast = cues.filter((cue) => cue.date < todayKey).at(-1)?.date;
+
+  useEffect(() => {
+    if (!oldestPast) return;
+    loadJson(`/api/soundtrack/days?since=${oldestPast}`)
+      .then((data) =>
+        setPastAlbums(
+          Object.fromEntries(data.days.map((day) => [day.date, day])),
+        ),
+      )
+      .catch(() => setPastAlbums({}));
+  }, [oldestPast]);
+
+  return useMemo(() => {
+    if (oldestPast && !pastAlbums) return null;
+    return resolveCues(cues, { ...pastAlbums, [todayKey]: album });
+  }, [cues, pastAlbums, oldestPast, todayKey, album]);
+}
+
+/* The cue sheet: every album you have called, filed on the shelf you put it on.
+   It lives in this browser only. No copy, export or share control, ever — the
+   club is somewhere to have an opinion, not to perform one (CLAUDE.md). */
+function CueSheet({ resolved, cards }) {
+  const [open, setOpen] = useState({});
+  if (!resolved || resolved.length === 0) return null;
+
+  const shelves = buildShelves(resolved);
+  const anyMatched = resolved.some((cue) => cue.club === cue.pick);
+
+  return (
+    <div className="soundtrack-corner-section soundtrack-cue-sheet">
+      <div className="soundtrack-section-title">Your cue sheet</div>
+      <p className="soundtrack-cue-sheet-intro">
+        Every album you have called, filed where you put it. It lives in this
+        browser and nowhere else.
+        {anyMatched && " A gold edge means the club made the same call."}
+      </p>
+      {CUE_PICKS.map((pick) => {
+        const shelf = shelves[pick];
+        const shown = open[pick] ? shelf : shelf.slice(0, SHELF_PREVIEW);
+        const icon = cards.find((card) => card.key === pick)?.icon;
+        return (
+          <div key={pick} className="cue-shelf">
+            <div className="cue-shelf-head">
+              <span aria-hidden="true">{icon}</span> {SHELF_NAMES[pick]}{" "}
+              <span className="cue-shelf-count">{shelf.length}</span>
+            </div>
+            {shelf.length === 0 ? (
+              <p className="cue-shelf-empty">Nothing filed here yet.</p>
+            ) : (
+              <ul className="cue-shelf-covers">
+                {shown.map(({ date, album, club }) => {
+                  const matched = club === pick;
+                  const name = `${album.title} by ${album.artist}`;
+                  return (
+                    <li
+                      key={date}
+                      className={matched ? "matched" : undefined}
+                      title={`${name}, ${date}${club ? ` — the club went ${CUE_NAMES[club]}` : ""}`}
+                    >
+                      {album.image ? (
+                        <img
+                          src={album.image}
+                          alt={
+                            matched ? `${name}, same call as the club` : name
+                          }
+                          width={44}
+                          height={44}
+                          loading="lazy"
+                        />
+                      ) : (
+                        <span className="cue-shelf-blank">{name}</span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+            {shelf.length > SHELF_PREVIEW && (
+              <button
+                type="button"
+                className="cue-shelf-more"
+                aria-expanded={Boolean(open[pick])}
+                onClick={() =>
+                  setOpen((current) => ({ ...current, [pick]: !current[pick] }))
+                }
+              >
+                {open[pick] ? "Show fewer" : `Show all ${shelf.length}`}
+              </button>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function SoundtrackCorner({ album, onPlayToday }) {
   const corner = useMemo(() => buildSoundtrackCorner(album), [album]);
   const gameLabel = GAME_LABELS[getGameType()] || "today's game";
@@ -416,6 +587,11 @@ export default function SoundtrackCorner({ album, onPlayToday }) {
   const [skipped, setSkipped] = useState(false);
   const revealedCase = Boolean(myPick) || skipped;
   const leadRef = useRef(null);
+  const resolvedCues = useResolvedCues(album, myPick);
+  const tally = useMemo(
+    () => (resolvedCues ? clubTally(resolvedCues) : null),
+    [resolvedCues],
+  );
 
   /* Skipping unmounts the button that was just pressed, which drops keyboard
      focus to the body — the same fault the Cozy fullscreen button was fixed
@@ -456,6 +632,8 @@ export default function SoundtrackCorner({ album, onPlayToday }) {
         onPick={setMyPick}
         onSkip={() => setSkipped(true)}
         skipped={skipped}
+        clubCall={corner.clubCall}
+        tally={tally}
       />
       {revealedCase && (
         <>
@@ -472,6 +650,13 @@ export default function SoundtrackCorner({ album, onPlayToday }) {
                     {card.icon}
                   </span>
                   <span className="soundtrack-card-label">{card.label}</span>
+                  {/* Only once you have voted: before that it would answer
+                      the question for you */}
+                  {myPick && corner.clubCall?.pick === card.key && (
+                    <span className="soundtrack-card-club">
+                      The club&apos;s call
+                    </span>
+                  )}
                 </div>
                 <div className="soundtrack-card-title">{card.title}</div>
                 <p className="soundtrack-card-copy">{card.body}</p>
@@ -553,6 +738,7 @@ export default function SoundtrackCorner({ album, onPlayToday }) {
           ))}
         </div>
       </div>
+      <CueSheet resolved={resolvedCues} cards={corner.cards} />
       {onPlayToday && (
         <div className="soundtrack-play-cta">
           <button type="button" className="btn-submit" onClick={onPlayToday}>

@@ -250,6 +250,16 @@ printSection("Override structure");
         structureProblems.push(`missing ${medium} card body (${key})`);
       }
     }
+    // The club's call is the one-visitor corner's opponent: a hand-written
+    // corner without one would silently fall back to "no club call today"
+    const call = override.clubCall;
+    if (
+      !["game", "film", "tv"].includes(call?.pick) ||
+      !call.why ||
+      call.why.length > 120
+    ) {
+      structureProblems.push(`missing or bad clubCall (${key})`);
+    }
   }
   structureProblems.forEach((problem) => console.log(`  ! ${problem}`));
   failures += printGuardrail(
