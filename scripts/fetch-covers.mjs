@@ -48,17 +48,39 @@ async function getLastfmImage(artist, album) {
   }
 }
 
+const norm = (s) =>
+  s
+    .normalize("NFKD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, "");
+
 async function getItunesImage(artist, album) {
   try {
     const term = encodeURIComponent(`${artist} ${album}`);
     const res = await fetch(
-      `${ITUNES_BASE}?term=${term}&media=music&entity=album&limit=3`,
+      `${ITUNES_BASE}?term=${term}&media=music&entity=album&limit=25`,
     );
     if (!res.ok) return null;
     const data = await res.json();
     if (!data.results || data.results.length === 0) return null;
-    // Get artworkUrl100 and scale to 600x600
-    const artwork = data.results[0].artworkUrl100;
+    /* The first result used to be taken on trust, and it was often someone
+       else's record: Tropicália wore a cumbia mix, billy woods wore Yo-Yo Ma,
+       a Korean R&B playlist wore The Nightmare Before Christmas (2026-10-22).
+       Only a result by this artist under this title counts; edition suffixes
+       in brackets are ignored. No match means no cover, never a guess. */
+    const want = norm(artist);
+    const match = data.results.find((r) => {
+      if (/ - Single$/.test(r.collectionName)) return false;
+      const by = norm(r.artistName);
+      if (!by || !want || !(by.includes(want) || want.includes(by)))
+        return false;
+      const title = r.collectionName
+        .replace(/\s*[([].*$/, "")
+        .replace(/ - EP$/, "");
+      return norm(title) === norm(album);
+    });
+    const artwork = match?.artworkUrl100;
     if (!artwork) return null;
     return artwork.replace("100x100bb", "600x600bb");
   } catch {

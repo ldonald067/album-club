@@ -814,6 +814,61 @@ const NO_COVER = new Map([
     "Liniker::Mãe",
     "no Liniker release by this name; wore an ELSZ single she features on",
   ],
+  /* Mood entries are a mood, not a record, so they have no sleeve of their
+     own. Generic art that names nothing else (Rain Sounds, 90s R&B Slow Jams)
+     stays. These wore a named record by someone else. */
+  [
+    "Lofi Girl::Calm Lofi Beats to Study To",
+    "a stream with no release; wore another artist's Lofi Mix",
+  ],
+  [
+    "Lofi Girl::Homework Radio",
+    "a stream with no release; wore Radio Homework & Serpent's Eye's Girl LoFi",
+  ],
+  [
+    "STEEZYASFUCK::Coffee Shop Radio",
+    "a stream with no release; wore B.A.P's Coffee Shop",
+  ],
+  [
+    "Shiloh Dynasty::Shiloh Dynasty Collection",
+    "a collection with no release; wore Acidgvrl's What Happened to Shiloh Dynasty",
+  ],
+  [
+    "Late Night Vibes::Vespertine Chill Mix",
+    "a mix (owner-kept); wore ChrisStM's Late Night Vibes",
+  ],
+  [
+    "Late Night Ambient::Geogaddi Ambient Mix",
+    "a mix (owner-kept); wore Sense's Ruminous (Ambient Mix)",
+  ],
+  [
+    "Various Artists::Japanese City Pop Mix",
+    "a mood mix; wore the Spider-Man: Into the Spider-Verse soundtrack",
+  ],
+  [
+    "Various Artists::Korean R&B Playlist",
+    "a mood mix; wore The Nightmare Before Christmas soundtrack",
+  ],
+  [
+    "Various Artists::French House Mix",
+    "a mood mix; wore Mickey Mouse Clubhouse",
+  ],
+  [
+    "Various Artists::Cozy Winter Jazz Mix",
+    "a mood mix; wore Christmas Jazz: Instrumental Jazz for the Holidays",
+  ],
+  [
+    "Various Artists::Late Night Drive Playlist",
+    "a mood mix; wore the Saiyaara soundtrack",
+  ],
+  [
+    "Various Artists::Sunday Morning Coffee Jazz",
+    "a mood mix; wore Sunday Morning Coffee 2: A Tribute to Starbucks",
+  ],
+  [
+    "Various Artists::City Pop Midnight Drive Mix",
+    "a mood mix; wore Work Focus: Top Hits",
+  ],
 ]);
 const missingImages = albums.filter(
   (album) => !album.image && !NO_COVER.has(`${album.artist}::${album.title}`),

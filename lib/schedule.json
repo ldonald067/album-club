@@ -1,6 +1,6 @@
 {
   "about": "Each date's picks, recorded once and never re-derived. Written by scripts/pin-schedule.mjs; read by lib/daily-picks.js. See docs/album-data.md.",
-  "catalogFingerprint": "6b4c8f453d16c517",
+  "catalogFingerprint": "3e75c111163da0c8",
   "pinnedThrough": "2026-10-23",
   "days": {
     "2026-07-14": { "album": "A Tribe Called Quest::Midnight Marauders" },

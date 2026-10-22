@@ -193,6 +193,7 @@ npm test                    # node:test — rotation, sampler, guess validation
 npm run eval-site           # whole-site quality/guardrail pass
 npm run pin-schedule        # after ANY catalog/lyrics edit
 npm run audit-catalog       # read-only catalog identity audit, ~5 min
+npm run audit-covers        # every cover loads; whose record each URL names, ~1 min
 npm run audit-youtube-ids   # read-only video-id audit, ~4 min
 npm run soundtrack-corner-report  # corner coverage + air-date queue + generator floor
 ```
@@ -294,10 +295,20 @@ docs.
        broadcasts, and the four releases that could not be found.
      - _Cercle: Solomun at Théâtre Antique_ is now dated 2018, from Cercle's
        dated announcement.
-     - **The other ~385 covers have never been checked against their
-       release**, and the rate here says many are wrong. That check is the
-       next catalog job: read each cover's owner off its URL, and look at
-       the rest by eye.
+     - **Every cover was then checked (also 10-22).** 22 more belonged to
+       someone else's record, and four were dead links:
+       - 13 were replaced, among them _MAYHEM_ (it had _Chromatica_), _SIMBI_,
+         _GOLLIWOG_ (it had Yo-Yo Ma) and _Debí Tirar Más Fotos_ (it had a
+         piano covers album).
+       - 13 mood mixes lost art that named somebody else's record.
+       - `NO_COVER` now has 24 entries.
+       - `fetch-covers` no longer takes Apple's first search result on
+         trust.
+       - The new `npm run audit-covers` fails on a dead cover. Method and
+         rules are in `docs/album-data.md` → "Catalog identity".
+     - **Found and not fixed:** `lib/album-facts.json` matched _Wolf's Rain
+       O.S.T._ (2003) to **O.S.T. 2** (2004, 23 tracks), so its track count
+       and runtime describe the wrong record. Its cover is now OST 1's.
 
    Adding albums is unblocked. Add each for a reason; a new 2026 release
    should get a set air date or the yearly shuffle may not reach it while it
