@@ -762,7 +762,19 @@ for (const album of albums) {
   imageCounts.set(album.image, (imageCounts.get(album.image) || 0) + 1);
 }
 const sharedImages = [...imageCounts].filter(([, n]) => n > 1);
-const missingImages = albums.filter((album) => !album.image);
+/* Entries with no correct cover to give, by name and with the reason. The
+   hero then shows the emoji on the album's colour. Wrong art is worse than
+   none: Berlin wore The Angel's _Boiler Room_ (2000) film score. Add one
+   only when nothing real exists to show — never to skip a fetch. */
+const NO_COVER = new Map([
+  [
+    "Various Artists::Boiler Room: Berlin",
+    "no set confirmed for the 2019 night; a session's cover is its own video's thumbnail",
+  ],
+]);
+const missingImages = albums.filter(
+  (album) => !album.image && !NO_COVER.has(`${album.artist}::${album.title}`),
+);
 /* Production is https, so an http:// cover is mixed content: the browser either
    blocks it or silently upgrades it, and neither shows up in local dev because
    localhost is http itself. Eight coverartarchive.org URLs shipped this way. */
@@ -784,7 +796,9 @@ failures += printGuardrail(
         insecureImages.map((a) => `${a.artist} - ${a.title}`).join(", ") ||
         "none"
       }.`
-    : `All ${albums.length} albums carry a distinct, populated https image URL.`,
+    : `All ${albums.length} albums carry a distinct, populated https image URL, but ${
+        NO_COVER.size
+      } named in NO_COVER (${[...NO_COVER.keys()].join(", ")}).`,
 );
 
 /* A line whose blankable words are all the same word cannot be a puzzle: two

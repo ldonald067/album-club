@@ -265,8 +265,9 @@ docs.
    - **Real but unconfirmed (33):** 7 named sessions (Boiler Room, Essential
      Mix, Cercle, KEXP — confirm each performance exists; both Tiny Desk sets
      and Boiler Room Tokyo and Montreal are confirmed by the series' own
-     uploads, 2026-10-07; _Boiler Room: Berlin_ wears the wrong cover — its
-     `image` is MusicBrainz's _Boiler Room_ (2000), The Angel's film score),
+     uploads, 2026-10-07; _Boiler Room: Berlin_ has no confirmed set and,
+     since 2026-10-22, no cover — it wore The Angel's _Boiler Room_ film
+     score, and `eval-site`'s `NO_COVER` names it),
      24 real artists whose release is under a
      native-script title (mostly the anime soundtracks), 2 Various Artists
      compilations under shortened titles (_Tropicália_, _EGOLI_). Confirm

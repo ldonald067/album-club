@@ -1,7 +1,7 @@
 {
   "about": "Each date's picks, recorded once and never re-derived. Written by scripts/pin-schedule.mjs; read by lib/daily-picks.js. See docs/album-data.md.",
-  "catalogFingerprint": "37a0cbc0a8c50432",
-  "pinnedThrough": "2026-10-02",
+  "catalogFingerprint": "bf23912f189a2f63",
+  "pinnedThrough": "2026-10-23",
   "days": {
     "2026-07-14": { "album": "A Tribe Called Quest::Midnight Marauders" },
     "2026-07-15": { "album": "Primal Scream::Screamadelica" },
@@ -204,6 +204,264 @@
         "LE SSERAFIM::UNFORGIVEN"
       ],
       "taste": ["Tame Impala::Lonerism", "Marvin Gaye::What's Going On"]
+    },
+    "2026-10-03": {
+      "album": "Cannibal Ox::The Cold Vein",
+      "puzzle": "Björk::Homogenic",
+      "cover": "Tool::Lateralus",
+      "heardle": "SZA::Ctrl",
+      "scramble": "The Clash::London Calling",
+      "lyric": "Björk::Homogenic",
+      "versus": ["De La Soul::De La Soul Is Dead", "Arctic Monkeys::AM"],
+      "taste": ["The Antlers::Hospice", "Daft Punk::Homework"]
+    },
+    "2026-10-04": {
+      "album": "Beyoncé::Renaissance",
+      "puzzle": "Björk::Homogenic",
+      "cover": "Tool::Lateralus",
+      "heardle": "SZA::Ctrl",
+      "scramble": "The Clash::London Calling",
+      "lyric": "Björk::Homogenic",
+      "versus": [
+        "Porter Robinson::Worlds",
+        "Lana Del Rey::Norman Fucking Rockwell!"
+      ],
+      "taste": ["Björk::Vespertine", "Radiohead::OK Computer"]
+    },
+    "2026-10-05": {
+      "album": "Madvillain::Madvillainy",
+      "puzzle": "Björk::Homogenic",
+      "cover": "Tool::Lateralus",
+      "heardle": "SZA::Ctrl",
+      "scramble": "The Clash::London Calling",
+      "lyric": "Björk::Homogenic",
+      "versus": [
+        "Various Artists::Tropicália",
+        "Vince Staples::Summertime '06"
+      ],
+      "taste": ["Metallica::72 Seasons", "The Smiths::The Queen Is Dead"]
+    },
+    "2026-10-06": {
+      "album": "Between the Buried and Me::Colors",
+      "puzzle": "Björk::Homogenic",
+      "cover": "Tool::Lateralus",
+      "heardle": "SZA::Ctrl",
+      "scramble": "The Clash::London Calling",
+      "lyric": "Björk::Homogenic",
+      "versus": ["Grimes::Miss Anthropocene", "Ariana Grande::thank u, next"],
+      "taste": [
+        "Kendrick Lamar::Mr. Morale & The Big Steppers",
+        "Radiohead::OK Computer"
+      ]
+    },
+    "2026-10-07": {
+      "album": "Sonic Youth::Daydream Nation",
+      "puzzle": "Arctic Monkeys::AM",
+      "cover": "Bad Bunny::Debí Tirar Más Fotos",
+      "heardle": "Tool::Lateralus",
+      "scramble": "Ariana Grande::thank u, next",
+      "lyric": "Interpol::Turn on the Bright Lights",
+      "versus": ["Anderson .Paak::Malibu", "Tame Impala::Currents"],
+      "taste": [
+        "Kendrick Lamar::Mr. Morale & The Big Steppers",
+        "Metallica::72 Seasons"
+      ]
+    },
+    "2026-10-08": {
+      "album": "Tame Impala::Currents",
+      "puzzle": "Arctic Monkeys::AM",
+      "cover": "Bad Bunny::Debí Tirar Más Fotos",
+      "heardle": "Tool::Lateralus",
+      "scramble": "Ariana Grande::thank u, next",
+      "lyric": "Interpol::Turn on the Bright Lights",
+      "versus": ["Magdalena Bay::Mercurial World", "Pulp::Different Class"],
+      "taste": ["OutKast::Stankonia", "Daft Punk::Homework"]
+    },
+    "2026-10-09": {
+      "album": "Kendrick Lamar::good kid, m.A.A.d city",
+      "puzzle": "Arctic Monkeys::AM",
+      "cover": "Bad Bunny::Debí Tirar Más Fotos",
+      "heardle": "Tool::Lateralus",
+      "scramble": "Ariana Grande::thank u, next",
+      "lyric": "Interpol::Turn on the Bright Lights",
+      "versus": [
+        "Raekwon::Only Built 4 Cuban Linx...",
+        "The Weather Station::Ignorance"
+      ],
+      "taste": ["Daft Punk::Discovery", "Sufjan Stevens::Javelin"]
+    },
+    "2026-10-10": {
+      "album": "Miles Davis::Kind of Blue",
+      "puzzle": "Arctic Monkeys::AM",
+      "cover": "Bad Bunny::Debí Tirar Más Fotos",
+      "heardle": "Tool::Lateralus",
+      "scramble": "Ariana Grande::thank u, next",
+      "lyric": "Interpol::Turn on the Bright Lights",
+      "versus": [
+        "Quasimoto::The Unseen",
+        "Various Artists::Chill Beats to Code To"
+      ],
+      "taste": ["Ariana Grande::thank u, next", "Geese::Getting Killed"]
+    },
+    "2026-10-11": {
+      "album": "IDLES::TANGK",
+      "puzzle": "Arctic Monkeys::AM",
+      "cover": "Bad Bunny::Debí Tirar Más Fotos",
+      "heardle": "Tool::Lateralus",
+      "scramble": "Ariana Grande::thank u, next",
+      "lyric": "Interpol::Turn on the Bright Lights",
+      "versus": ["Arctic Monkeys::AM", "Tame Impala::InnerSpeaker"],
+      "taste": ["Weyes Blood::Titanic Rising", "Arcade Fire::The Suburbs"]
+    },
+    "2026-10-12": {
+      "album": "Big Thief::Capacity",
+      "puzzle": "Sigur Rós::Ágætis byrjun",
+      "cover": "Prince::Purple Rain",
+      "heardle": "Gorillaz::Demon Days",
+      "scramble": "Charli XCX::Brat",
+      "lyric": "Taylor Swift::Folklore",
+      "versus": ["Geese::Getting Killed", "100 gecs::1000 gecs"],
+      "taste": ["OutKast::Aquemini", "Björk::Vespertine"]
+    },
+    "2026-10-13": {
+      "album": "Radiohead::The Bends",
+      "puzzle": "Sigur Rós::Ágætis byrjun",
+      "cover": "Prince::Purple Rain",
+      "heardle": "Gorillaz::Demon Days",
+      "scramble": "Charli XCX::Brat",
+      "lyric": "Taylor Swift::Folklore",
+      "versus": ["The Pillows::FLCL: Addict", "black midi::Hellfire"],
+      "taste": [
+        "Tyler, the Creator::Flower Boy",
+        "The Weeknd::House of Balloons"
+      ]
+    },
+    "2026-10-14": {
+      "album": "Kendrick Lamar::GNX",
+      "puzzle": "Sigur Rós::Ágætis byrjun",
+      "cover": "Prince::Purple Rain",
+      "heardle": "Gorillaz::Demon Days",
+      "scramble": "Charli XCX::Brat",
+      "lyric": "Taylor Swift::Folklore",
+      "versus": ["Mac Miller::Circles", "Daft Punk::Homework"],
+      "taste": ["Tyler, the Creator::Chromakopia", "Jay-Z::Reasonable Doubt"]
+    },
+    "2026-10-15": {
+      "album": "Kendrick Lamar::To Pimp a Butterfly",
+      "puzzle": "Sigur Rós::Ágætis byrjun",
+      "cover": "Prince::Purple Rain",
+      "heardle": "Gorillaz::Demon Days",
+      "scramble": "Charli XCX::Brat",
+      "lyric": "Taylor Swift::Folklore",
+      "versus": ["Jason Isbell::Southeastern", "Phoebe Bridgers::Punisher"],
+      "taste": [
+        "Anderson .Paak & The Free Nationals::NPR Tiny Desk: Anderson .Paak & The Free Nationals",
+        "Arcade Fire::The Suburbs"
+      ]
+    },
+    "2026-10-16": {
+      "album": "BTS::MAP OF THE SOUL: 7",
+      "puzzle": "Sigur Rós::Ágætis byrjun",
+      "cover": "Prince::Purple Rain",
+      "heardle": "Gorillaz::Demon Days",
+      "scramble": "Charli XCX::Brat",
+      "lyric": "Taylor Swift::Folklore",
+      "versus": [
+        "Denzel Curry::TA13OO",
+        "Floating Points, Pharoah Sanders & LSO::Promises"
+      ],
+      "taste": ["Cocteau Twins::Heaven or Las Vegas", "Daft Punk::Homework"]
+    },
+    "2026-10-17": {
+      "album": "Danny Brown::Atrocity Exhibition",
+      "puzzle": "Dua Lipa::Future Nostalgia",
+      "cover": "Lorde::Melodrama",
+      "heardle": "Pink Floyd::Wish You Were Here",
+      "scramble": "Bad Bunny::Debí Tirar Más Fotos",
+      "lyric": "Weyes Blood::Titanic Rising",
+      "versus": [
+        "A Tribe Called Quest::Midnight Marauders",
+        "Men I Trust::Oncle Jazz"
+      ],
+      "taste": [
+        "Sonic Youth::Daydream Nation",
+        "Cocteau Twins::Heaven or Las Vegas"
+      ]
+    },
+    "2026-10-18": {
+      "album": "Company Flow::Funcrusher Plus",
+      "puzzle": "Dua Lipa::Future Nostalgia",
+      "cover": "Lorde::Melodrama",
+      "heardle": "Pink Floyd::Wish You Were Here",
+      "scramble": "Bad Bunny::Debí Tirar Más Fotos",
+      "lyric": "Weyes Blood::Titanic Rising",
+      "versus": [
+        "Trent Reznor & Atticus Ross::The Social Network",
+        "jinsang::everything perfect is already here"
+      ],
+      "taste": [
+        "Wilco::Yankee Hotel Foxtrot",
+        "Fiona Apple::Fetch the Bolt Cutters"
+      ]
+    },
+    "2026-10-19": {
+      "album": "Taylor Swift::Folklore",
+      "puzzle": "Dua Lipa::Future Nostalgia",
+      "cover": "Lorde::Melodrama",
+      "heardle": "Pink Floyd::Wish You Were Here",
+      "scramble": "Bad Bunny::Debí Tirar Más Fotos",
+      "lyric": "Weyes Blood::Titanic Rising",
+      "versus": [
+        "Pink Floyd::The Dark Side of the Moon",
+        "Focus Flow::Deep Focus Binaural Beats"
+      ],
+      "taste": ["Pink Floyd::Live at Pompeii", "NewJeans::Get Up"]
+    },
+    "2026-10-20": {
+      "album": "Chillhop Music::Chillhop Essentials Winter 2023",
+      "puzzle": "Dua Lipa::Future Nostalgia",
+      "cover": "Lorde::Melodrama",
+      "heardle": "Pink Floyd::Wish You Were Here",
+      "scramble": "Bad Bunny::Debí Tirar Más Fotos",
+      "lyric": "Weyes Blood::Titanic Rising",
+      "versus": ["Mos Def::Black on Both Sides", "Fela Kuti::Zombie"],
+      "taste": ["Lorde::Melodrama", "Taylor Swift::Folklore"]
+    },
+    "2026-10-21": {
+      "album": "Noname::Room 25",
+      "puzzle": "Dua Lipa::Future Nostalgia",
+      "cover": "Lorde::Melodrama",
+      "heardle": "Pink Floyd::Wish You Were Here",
+      "scramble": "Bad Bunny::Debí Tirar Más Fotos",
+      "lyric": "Weyes Blood::Titanic Rising",
+      "versus": [
+        "Deafheaven::Sunbather",
+        "Nujabes & Fat Jon::Samurai Champloo Music Record: Departure"
+      ],
+      "taste": ["Massive Attack::Mezzanine", "Joy Division::Unknown Pleasures"]
+    },
+    "2026-10-22": {
+      "album": "Carly Rae Jepsen::Emotion",
+      "puzzle": "Doja Cat::Planet Her",
+      "cover": "Clipse::Let God Sort Em Out",
+      "heardle": "Jay-Z::The Blueprint",
+      "scramble": "Talking Heads::Stop Making Sense",
+      "lyric": "Nirvana::Unplugged in New York",
+      "versus": ["Jeff Buckley::Grace", "boygenius::Boygenius"],
+      "taste": ["Björk::Vespertine", "Robyn::Sexistential"]
+    },
+    "2026-10-23": {
+      "album": "Fontaines D.C.::Dogrel",
+      "puzzle": "Doja Cat::Planet Her",
+      "cover": "Clipse::Let God Sort Em Out",
+      "heardle": "Jay-Z::The Blueprint",
+      "scramble": "Talking Heads::Stop Making Sense",
+      "lyric": "Nirvana::Unplugged in New York",
+      "versus": ["Michael Jackson::Thriller", "Yuki Kajiura::Noir"],
+      "taste": [
+        "Wu-Tang Clan::Enter the Wu-Tang (36 Chambers)",
+        "Radiohead::Kid A"
+      ]
     }
   }
 }
