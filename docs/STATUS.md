@@ -31,7 +31,10 @@ redeploy answers "Deploys have been paused temporarily". Still down at
 22:45 UTC, by then billed a platform outage with Railway rotating
 credentials, and the CLI's login here was revoked at about 20:27 UTC
 ("Unauthorized"): **the owner must run `railway login` first** — an agent
-cannot sign in for them. Once the status page shows builds back, if
+cannot sign in for them. At 11:47 UTC on 10-22 builds were back for Pro and
+Enterprise workspaces only, Hobby, Free and Trial to follow; a login tried
+that morning had not reached `~/.railway/config.json` (no token in it,
+`railway whoami` still "Unauthorized"). Once the status page shows builds back, if
 `/api/health` still says `aa4e1cd`, run `railway redeploy --service
 88f37e23-d8bd-4c70-b670-8895d6cb1100 --from-source --yes`, which builds the
 latest `master`.
