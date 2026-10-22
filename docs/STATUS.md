@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-10-21.
+session. Last updated: 2026-10-22.
 
 This file holds **current state, open items and standing decisions** only.
 How things work lives in the topic docs; what happened and when lives in git
@@ -12,8 +12,9 @@ it used to carry).
 
 **One thing is in flight: the full-album video refetch** (open item 3),
 which searches a batch a day into a log and has not touched the catalog yet.
-Day 1 (10-20): 95 albums searched, 48 checked picks kept, about 220 left —
-three more days. **The owner runs it by hand: they open a new chat and say
+Day 1 (10-20): 95 albums searched, 48 checked picks kept. 10-21 was not
+run. Day 2 (10-22): 94 searched, 49 picks, five of them edits and turned
+into rules — 138 left, two more days. **The owner runs it by hand: they open a new chat and say
 "run today's batch."** Run `npm run fetch-youtube-ids`, read every new pick's
 title and channel by eye (day 1's rules let seven edits through — a reversed
 tracklist, a 432Hz retune, crossfades, a continuous mix, disguised titles),
@@ -264,7 +265,9 @@ docs.
    - **Real but unconfirmed (33):** 7 named sessions (Boiler Room, Essential
      Mix, Cercle, KEXP — confirm each performance exists; both Tiny Desk sets
      and Boiler Room Tokyo and Montreal are confirmed by the series' own
-     uploads, 2026-10-07), 24 real artists whose release is under a
+     uploads, 2026-10-07; _Boiler Room: Berlin_ wears the wrong cover — its
+     `image` is MusicBrainz's _Boiler Room_ (2000), The Angel's film score),
+     24 real artists whose release is under a
      native-script title (mostly the anime soundtracks), 2 Various Artists
      compilations under shortened titles (_Tropicália_, _EGOLI_). Confirm
      when convenient.

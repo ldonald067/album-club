@@ -116,9 +116,11 @@ const today = new Date().toISOString().slice(0, 10);
 /* A pick made under older rules is judged again under today's, from what
    the log kept of it — it passed the playability checks when it was made —
    and one that fails now is dropped, so that album is searched again rather
-   than carried into a candidate. The rules tightened once already
-   (2026-10-20): a reversed tracklist, a retuned copy, an uploader's
-   crossfades and a disguised title had all been picked. */
+   than carried into a candidate. The rules have tightened after each
+   batch read by eye: a reversed tracklist, a retuned copy, an uploader's
+   crossfades and a disguised title (2026-10-20); a pitched-down copy,
+   whispers laid over a record, a reordered reissue, styled letters and a
+   set posted years before its night (2026-10-22). */
 const stale = albums.filter((album) => {
   const entry = log[idOf(album)];
   if (!entry?.pick) return false;
@@ -126,6 +128,7 @@ const stale = albums.filter((album) => {
   return !judgeVideo(album, facts[idOf(album)] ?? null, {
     title: pick.title,
     channel: pick.channel,
+    published: pick.published,
     // the stored ratio, not the rounded minutes, so an edge case cannot flip
     seconds: pick.ratio
       ? pick.ratio * entry.albumMinutes * 60
@@ -299,6 +302,7 @@ const toVideo = (item) => {
     id: item.id,
     title: item.snippet?.title ?? "",
     channel: item.snippet?.channelTitle ?? "",
+    published: item.snippet?.publishedAt?.slice(0, 10) ?? null,
     seconds: parseDuration(item.contentDetails?.duration),
     embeddable: item.status?.embeddable === true,
     isPublic: item.status?.privacyStatus === "public",
@@ -316,6 +320,7 @@ const brief = (video) => ({
   id: video.id,
   title: video.title,
   channel: video.channel,
+  published: video.published,
   minutes: video.seconds === null ? null : +(video.seconds / 60).toFixed(1),
 });
 
@@ -396,9 +401,10 @@ for (const album of picked) {
       `\n      ${JSON.stringify(p.title)} — ${p.channel}`,
   );
 }
+// A search that failed is not logged, so it leaves a gap in the queue
 const near = queue
-  .slice(0, searched)
-  .filter((album) => !log[idOf(album)]?.pick)
+  .slice(0, limit)
+  .filter((album) => log[idOf(album)] && !log[idOf(album)].pick)
   .flatMap((album) =>
     nearMisses(log[idOf(album)]).map(
       (r) => `  ${idOf(album)}::${r.id}  ${r.why}`,

@@ -199,6 +199,27 @@ test("a session is the series' own upload of the whole set", () => {
   assert.equal(j.ok, true);
 });
 
+test("a session posted before its year is another night; one posted later is a repost", () => {
+  const berlin = {
+    artist: "Various Artists",
+    title: "Boiler Room: Berlin",
+    year: 2019,
+  };
+  const set = (published) => ({
+    ...video("Maceo Plex Boiler Room Berlin DJ Set", 90.8),
+    channel: "Boiler Room",
+    published,
+  });
+  assert.match(
+    judgeVideo(berlin, null, set("2014-10-13")).why,
+    /posted in 2014, before the 2019 set/,
+  );
+  assert.equal(judgeVideo(berlin, null, set("2019-06-01")).ok, true);
+  assert.equal(judgeVideo(berlin, null, set("2026-01-20")).ok, true);
+  // a stored pick from before the log kept the date is judged without it
+  assert.equal(judgeVideo(berlin, null, set(undefined)).ok, true);
+});
+
 test("the pick prefers the artist's upload, then the closest length", () => {
   const fanClose = video("Radiohead - OK Computer (Full Album)", AM);
   const fanFar = video("Radiohead - OK Computer full album HQ", AM * 1.05);
@@ -232,13 +253,21 @@ test("an uploader's edit of the record is not the record", () => {
     "Radiohead - OK Computer (Continuous Mix) Full Album",
     "Radiohead - OK Computer || Full Album || 432.001Hz",
     "Radiohead - OK Computer Full Album 528 Hz",
+    "OK Computer-Radiohead: Full Album (Pitched Down)",
+    "Radiohead - OK Computer - full album with enhanced female whispers",
+    "Radiohead - OK Computer COLLECTORS EDITION. (Full Album)",
+    "Radiohead - OK Computer (Collector's Edition) Full Album",
   ])
     assert.equal(judge(video(title)).ok, false, title);
 });
 
-test("a title disguised with combining marks is turned down; a real accent is not", () => {
+test("a title disguised with combining marks or styled letters is turned down; a real accent is not", () => {
   assert.match(
     judge(video("R̲a̲diohe̲a̲d - OK Computer (Full Album)")).why,
+    /disguised/,
+  );
+  assert.match(
+    judge(video("𓆩 𝐅𝐮𝐥𝐥 𝐀𝐥𝐛𝐮𝐦 𓆪 𝐑𝐚𝐝𝐢𝐨𝐡𝐞𝐚𝐝 – 𝐎𝐊 𝐂𝐨𝐦𝐩𝐮𝐭𝐞𝐫 💿🎧")).why,
     /disguised/,
   );
   const homogenic = { artist: "Björk", title: "Homogenic" };
