@@ -764,12 +764,55 @@ for (const album of albums) {
 const sharedImages = [...imageCounts].filter(([, n]) => n > 1);
 /* Entries with no correct cover to give, by name and with the reason. The
    hero then shows the emoji on the album's colour. Wrong art is worse than
-   none: Berlin wore The Angel's _Boiler Room_ (2000) film score. Add one
-   only when nothing real exists to show — never to skip a fetch. */
+   none: Berlin wore The Angel's _Boiler Room_ (2000) film score, and every
+   other entry here wore someone else's record too (each reason says whose).
+   A session or broadcast has no sleeve; its cover is its own video's
+   thumbnail, once one is confirmed. Add one only when nothing real exists to
+   show — never to skip a fetch. */
 const NO_COVER = new Map([
   [
     "Various Artists::Boiler Room: Berlin",
     "no set confirmed for the 2019 night; a session's cover is its own video's thumbnail",
+  ],
+  [
+    "Four Tet::Essential Mix: Four Tet",
+    "no Four Tet Essential Mix in 2022 (2010, 2015, 2018, 2026 exist); wore a PinkPantheress remix single",
+  ],
+  [
+    "Solomun::Cercle: Solomun at Théâtre Antique",
+    "a 2018 livestream with no release; wore his Cercle Chambord set",
+  ],
+  [
+    "Various Artists::Anjunadeep Edition 400",
+    "a radio episode with no release art; wore Anjunadeep Lost Classics 01",
+  ],
+  [
+    "Peggy Gou::BBC Radio 1 Essential Mix: Peggy Gou",
+    "a 2018 broadcast with no release art; wore her 2024 album I Hear You",
+  ],
+  [
+    "Nina Kraviz::Cercle: Nina Kraviz at Château de Fontainebleau",
+    "no such set found; wore her Cercle Eiffel Tower set (2018)",
+  ],
+  [
+    "Khruangbin::KEXP Live Sessions: Khruangbin",
+    "no 2019 session found (KEXP has 2018 and 2025); wore The Universe Smiles Upon You ii",
+  ],
+  [
+    "Lofi Girl::Jazz Vibes",
+    "no Lofi Girl release by this name; wore lofi garden's Jazz Vibes (2024)",
+  ],
+  [
+    "jinsang::everything perfect is already here",
+    "the title is claire rousay's 2022 album, whose cover it wore; no jinsang release by this name",
+  ],
+  [
+    "Ravi Shankar::Midnight Ragas",
+    "no Ravi Shankar release by this name; wore Ragas (1973, with Ali Akbar Khan)",
+  ],
+  [
+    "Liniker::Mãe",
+    "no Liniker release by this name; wore an ELSZ single she features on",
   ],
 ]);
 const missingImages = albums.filter(
@@ -798,7 +841,7 @@ failures += printGuardrail(
       }.`
     : `All ${albums.length} albums carry a distinct, populated https image URL, but ${
         NO_COVER.size
-      } named in NO_COVER (${[...NO_COVER.keys()].join(", ")}).`,
+      } named in NO_COVER, each with its reason.`,
 );
 
 /* A line whose blankable words are all the same word cannot be a puzzle: two

@@ -96,7 +96,7 @@
     - **It never edits the catalog.** Each search, its pick and every rejection with its reason go in `scripts/youtube-refetch.json`, which carries a run across the days the quota takes (100 searches a day; `--plan` shows what is left). `--candidate <file>` writes the catalog with the picks applied, for `audit-youtube-ids --albums`; then the catalog is replaced, re-recorded and pinned as above.
     - **The title words earned their place on the first six albums:** a live recording of all of _Dogrel_ and a reaction video to _Room 25_ both ran inside the length band. **Reading the first day's 55 picks by eye found seven more that were edits** — _Donuts_ reversed, _Black Sands_ retuned, two sets of crossfades, ODESZA's own continuous mix, two disguised titles — and those are rules now. **The second day's 49 (2026-10-22) found five more** — _Geogaddi_ pitched down, whispers added to _Everywhere at the End of Time_, DAMN.'s reversed Collectors Edition, a _Get Up_ in styled letters, and a Boiler Room set five years older than its entry — and those are rules too. Every run judges the stored picks again under the current rules and drops any that fail, so that album is searched again. **Read the picks after every batch** (`--near-misses` and the run's own list); the rules catch known shapes, not novelty. They also turn down real uploads — Chillhop's own _Winter 2023_ for the "[cozy instrumentals]" genre tag in its title — because an official "(Instrumentals)" upload of a rap album would look the same. `--near-misses` lists what only the wording turned down; a person approves one in the script's `REVIEWED_PICKS`, keyed on artist, album and id, after watching it.
   - Removing ids shrinks the Heardle and Taste Test pools, and pool size drives the daily rotation, so it reshuffles which album those games pick on future days — from the day after tomorrow, once `npm run pin-schedule` has recorded the rest (see the pinned schedule under Daily Rotation). `eval-site` checks the new Heardle pool against the 5-day cadence.
-- **`image` must not be null, and must be https** — fetch via MusicBrainz/iTunes before committing. `eval-site` fails on a missing, duplicated, or `http://` cover: production is https, so an insecure URL is mixed content and local dev cannot reveal it. The one exception is an entry with no correct cover to give, named with its reason in `eval-site`'s `NO_COVER` — only _Boiler Room: Berlin_ (2026-10-22), which wore The Angel's _Boiler Room_ film score and has no confirmed set whose thumbnail it could take. With no `image` the hero shows the entry's emoji on its colour. Never add one to skip a fetch
+- **`image` must not be null, and must be https** — fetch via MusicBrainz/iTunes before committing. `eval-site` fails on a missing, duplicated, or `http://` cover: production is https, so an insecure URL is mixed content and local dev cannot reveal it. The one exception is an entry with no correct cover to give, named with its reason in `eval-site`'s `NO_COVER`. There are eleven since 2026-10-22, and every one of them was wearing another record's cover: sessions and broadcasts with no sleeve, plus four entries whose release could not be found at all. With no `image` the hero shows the entry's emoji on its colour. Never add one to skip a fetch. **A populated cover is not a correct one** — see "Catalog identity" → covers below
 - **No duplicates** — check artist+title before adding. Run `/add-album` skill for validation
 - After renaming an album, set `image` to `null` and re-run fetch-covers to get correct artwork. A rename also breaks the pinned schedule's record of every day that album aired — `eval-site` names them; update those ids in `lib/schedule.json` in the same commit
 
@@ -273,6 +273,30 @@ down to 2 and 1 once these were fixed; all are now guarded in the script:
   Albums now outrank singles, the nearest year wins, a loose match more than a
   year off is discarded, and a title that loses letters to normalization is
   never "exact".
+
+**Covers: 21 of the 37 entries confirmed by hand on 2026-10-22 wore someone
+else's record.** The cover fetch matched loosely, and none of the guardrails
+can tell. Examples:
+
+- _Akira_ wore the 2024 _AKIRA REMIX_.
+- 2814's _Birth of a New Day_ wore Tommee Profitt's _The Birth of a King_.
+- _FLCL: Addict_ wore Pretty in Pink's _Pillows_.
+- _Tropicália_ wore _Cumbia Mix Para Bailar_.
+
+Each cover's owner can usually be read straight off its URL:
+
+- An archive.org cover carries a MusicBrainz release id (`mbid-…`). Look it
+  up at `/ws/2/release/<id>`.
+- A newer Apple cover's filename is often the UPC. Look it up at
+  `itunes.apple.com/lookup?upc=…`.
+- Older Apple art (`mzi.…`), last.fm and YouTube thumbnails have to be checked
+  by eye, against the release's own art in Apple's catalog or the Cover Art
+  Archive.
+
+The audit's `DECIDED` map records every entry confirmed this way, with its
+source. **`VERIFIED` means the release is real, not that its cover belongs to
+it.** Nobody has checked the other ~385 covers, and STATUS open item 1 tracks
+that.
 
 ## Daily Rotation
 

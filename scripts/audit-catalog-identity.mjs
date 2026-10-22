@@ -91,6 +91,72 @@ const DECIDED = {
     "kept as a mix by owner decision; mixes are allowed in the catalog (reviewed 2026-09-27)",
   "Late Night Vibes::Vespertine Chill Mix":
     "kept as a mix by owner decision; mixes are allowed in the catalog (reviewed 2026-09-27)",
+
+  /* Sessions: the performance itself, confirmed by the series' own upload or a
+     dated source. Four Tet, Khruangbin, Nina Kraviz and Boiler Room: Berlin
+     are left out on purpose — none could be tied to one performance. */
+  "Kaytranada::Boiler Room: Montreal":
+    "confirmed by the series' own upload, -5EQIiabJvk (2026-10-07)",
+  "Various Artists::Boiler Room: Tokyo":
+    "confirmed by the series' own upload, T1tcUfUhR5U (2026-10-07)",
+  "Mac Miller::NPR Tiny Desk: Mac Miller":
+    "confirmed by NPR Music's own upload, QrR_gm6RqCo (2026-10-07)",
+  "Anderson .Paak & The Free Nationals::NPR Tiny Desk: Anderson .Paak & The Free Nationals":
+    "confirmed by NPR Music's own upload, ferZnZ0_rSM (2026-10-07)",
+  "Peggy Gou::BBC Radio 1 Essential Mix: Peggy Gou":
+    "confirmed: broadcast 2018-03-10, MusicBrainz release group 57234e7f (2026-10-22)",
+  "Various Artists::Anjunadeep Edition 400":
+    "confirmed: episode 400, mixed by Marsh, aired 2022-05-18 per TuneIn's listing of the show (2026-10-22)",
+  "Solomun::Cercle: Solomun at Théâtre Antique":
+    "confirmed: Cercle at the Théâtre Antique d'Orange, announced 16 May 2018 for the following week; year corrected from 2019 (2026-10-22)",
+
+  /* Compilations filed under a shortened title. */
+  "Various Artists::Tropicália":
+    "confirmed: Tropicália: ou Panis et Circencis, 1968, MusicBrainz f8630f31 (2026-10-22)",
+  "Various Artists::Africa Express Presents: EGOLI":
+    "confirmed: Africa Express, EGOLI, 2019-07-12, MusicBrainz a0bc13d2 (2026-10-22)",
+
+  /* Real artists whose release MusicBrainz or Apple file under its original
+     title. Jinsang, Lofi Girl, Ravi Shankar and Liniker are left out on
+     purpose — no release by that name exists under that artist. */
+  "Jim Butler::Deep Energy":
+    "confirmed as a series: his Deep Energy podcast and albums (Deep Energy 1, 2008); no single release of the name (2026-10-22)",
+  "Joe Hisaishi::Spirited Away":
+    "confirmed: 千と千尋の神隠し サウンドトラック, 2001-07-18 (2026-10-22)",
+  "Geinoh Yamashirogumi::Akira":
+    "confirmed: Symphonic Suite AKIRA, 1988-07-27, MusicBrainz 6f1b786c (2026-10-22)",
+  "Madlib::Madlib Medicine Show No. 5":
+    "confirmed: Medicine Show No. 5: History of the Loop Digga, 1990-2000, 2010-05-25 (2026-10-22)",
+  "Justice::Cross": "confirmed: ✝, 2007-06-06 (2026-10-22)",
+  "2814::Birth of a New Day":
+    "confirmed: 新しい日の誕生, 2015-01-21 (2026-10-22)",
+  "Ichiko Aoba::Windswept Adan":
+    "confirmed: アダンの風, 2020-12-02 (2026-10-22)",
+  "Lamp::Yume": "confirmed: ゆめ, 2014-02-05 (2026-10-22)",
+  "Toshio Masuda::Mushinone":
+    "confirmed: 「蟲師」オリジナル・サウンドトラック 蟲音; the cover is its 2015 complete edition (2026-10-22)",
+  "Kow Otani::Haibane Renmei: Hanenone":
+    "confirmed: 灰羽連盟: ハネノネ, 2002-12-21, US release 2003 (2026-10-22)",
+  "Susumu Hirasawa::Paranoia Agent":
+    "confirmed: 妄想代理人 オリジナルサウンドトラック, 2004-05-12 (2026-10-22)",
+  "Yoko Kanno::Kids on the Slope":
+    "confirmed: アニメ「坂道のアポロン」オリジナル・サウンドトラック, 2012-04-25 (2026-10-22)",
+  "Kensuke Ushio::Devilman Crybaby":
+    "confirmed: DEVILMAN crybaby Original Soundtrack, 2018-01-05 (2026-10-22)",
+  "Kensuke Ushio::Ping Pong the Animation":
+    "confirmed: Ping Pong (Original Soundtrack), 2014-08-27 (2026-10-22)",
+  "J.A. Seazer::Utena: The Eve of the Absolute Evolution Revolution":
+    "confirmed: 少女革命ウテナ 絶対進化革命前夜, 1997-07-24; 10 of its 36 tracks are J.A. Seazer's, the rest Shinkichi Mitsumune's score (2026-10-22)",
+  "Masahiro Ikumi::Perfect Blue":
+    "confirmed: パーフェクト・ブルー, 1998-02-18 (2026-10-22)",
+  "Susumu Hirasawa::Millennium Actress":
+    "confirmed: 千年女優, 2002-09-06 (2026-10-22)",
+  "The Pillows::FLCL: Addict":
+    "confirmed: フリクリ Original Sound Track 1: Addict, 2000-10-04; MusicBrainz credits Various Artists (2026-10-22)",
+  "Yoko Kanno::The Vision of Escaflowne: Over the Sky":
+    "confirmed: 天空のエスカフローネ オリジナルサウンドトラック, 1996-06-05, VICL-769, whose sleeve reads Over the Sky (2026-10-22)",
+  "Yuki Kajiura::Noir":
+    "confirmed: NOIR ORIGINAL SOUNDTRACK I, 2001-06-21 (2026-10-22)",
 };
 
 const USER_AGENT =

@@ -267,16 +267,37 @@ docs.
    and _Madvillainy_ stays 2004, the official release, though MusicBrainz
    dates the 2002 leak. A year fix does not break recorded days; a rename or
    removal does. Still open, none urgent:
-   - **Real but unconfirmed (33):** 7 named sessions (Boiler Room, Essential
-     Mix, Cercle, KEXP — confirm each performance exists; both Tiny Desk sets
-     and Boiler Room Tokyo and Montreal are confirmed by the series' own
-     uploads, 2026-10-07; _Boiler Room: Berlin_ has no confirmed set and,
-     since 2026-10-22, no cover — it wore The Angel's _Boiler Room_ film
-     score, and `eval-site`'s `NO_COVER` names it),
-     24 real artists whose release is under a
-     native-script title (mostly the anime soundtracks), 2 Various Artists
-     compilations under shortened titles (_Tropicália_, _EGOLI_). Confirm
-     when convenient.
+   - **The 33 "real but unconfirmed" were worked through on 2026-10-22.**
+     25 are confirmed, each with its source in the audit's `DECIDED` map,
+     alongside the four sessions confirmed on 10-07. Eight could not be
+     confirmed, and what happens to them is **the owner's call**. Each could
+     be renamed or removed, and since none of the eight has aired, neither
+     would break a recorded day:
+     - _Cercle: Nina Kraviz at Château de Fontainebleau_: no such set found.
+       Her Cercle set was at the Eiffel Tower on 2018-10-15, and that is the
+       cover it wore. It airs **10-26**, so a rename to that set is safe only
+       before then.
+     - _Essential Mix: Four Tet_ (2022): he has Essential Mixes from 2010,
+       2015 (with Jamie xx), 2018 and 2026, but none from 2022.
+     - _KEXP Live Sessions: Khruangbin_ (2019): KEXP has sessions from
+       April 2018 and 2025-11-19, but none from 2019.
+     - _Boiler Room: Berlin_: a city's night, with no performer to tie it to.
+     - _jinsang — everything perfect is already here_: that title is claire
+       rousay's 2022 album. Jinsang's 2018 album is _in flight_.
+     - _Ravi Shankar — Midnight Ragas_, _Liniker — Mãe_ and _Lofi Girl —
+       Jazz Vibes_: no release by that name under that artist, in MusicBrainz
+       or Apple's catalog.
+   - **Covers: 21 of the 37 wore someone else's record** (list and method in
+     `docs/album-data.md` → "Catalog identity").
+     - 11 now carry their own cover.
+     - 10 have none and are listed in `NO_COVER`: the six sessions and
+       broadcasts, and the four releases that could not be found.
+     - _Cercle: Solomun at Théâtre Antique_ is now dated 2018, from Cercle's
+       dated announcement.
+     - **The other ~385 covers have never been checked against their
+       release**, and the rate here says many are wrong. That check is the
+       next catalog job: read each cover's owner off its URL, and look at
+       the rest by eye.
 
    Adding albums is unblocked. Add each for a reason; a new 2026 release
    should get a set air date or the yearly shuffle may not reach it while it
@@ -367,8 +388,9 @@ docs.
      song. Needs a check that the video plays the release's running order
      (the Hayley Williams bootleg did not).
    - **KEXP's full Khruangbin performance** (`0PsOJ_fRckg`, 35.7 min) passes
-     the audit's `FULL_SESSION` rule, if someone wants that entry to have
-     audio.
+     the audit's `FULL_SESSION` rule. However, KEXP's description says it was
+     recorded on 2025-11-19, and the catalog entry is dated 2019. Attach it
+     only if the entry is meant to be that session (open item 1).
    - **Skip:** anything audio-reactive (the YouTube iframe is opaque to Web
      Audio — the Club Player's spectrum was costume for this reason), another
      flip (the Runout Groove is one), and 45 rpm for EPs (only 3 entries).
