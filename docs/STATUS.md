@@ -10,11 +10,54 @@ it used to carry).
 
 ## Handoff — read this first
 
+**First task in a new chat: confirm the deploy, then look at what it
+shipped.** The state at 23:16 UTC on 2026-10-22:
+
+- **Railway's outage is over.** Builds were paused from 07:24 UTC on 10-21.
+  The 22:49 UTC update on 10-22 says builds are back for Free and Trial,
+  alongside Hobby, Pro and Enterprise.
+- **The CLI is logged in again** (`railway whoami`), so no `railway login`
+  is needed.
+- **Production runs `23c95d3`**, which went live at 19:51 UTC. That is
+  everything through the whole-catalog cover check.
+- **`78f8473` (the Nina Kraviz rename)** was building as deployment
+  `b0fc4b1a`, which started at 23:13 UTC.
+- **One failed build:** `9db0ecd`'s build failed at 18:27 UTC, mid-outage.
+  Every later build succeeded, so that was the platform, not the code.
+
+1. **Confirm the deploy.** `GET /api/health` must return the commit from
+   `git rev-parse --short origin/master`, with `uptimeSeconds` climbing.
+   If it lags:
+   - `railway deployment list --service 88f37e23-d8bd-4c70-b670-8895d6cb1100 --json`
+     lists each build with its status and commit.
+   - The `railway` MCP's `get_logs` reads a build's logs. It needs
+     `service_id` as well as `deployment_id`.
+   - `railway redeploy --service 88f37e23-d8bd-4c70-b670-8895d6cb1100 --from-source --yes`
+     builds the latest `master`.
+2. **Look at it on production.** Nothing pushed after `aa4e1cd` went live
+   until 19:51 UTC on 10-22, and none of it has been seen there:
+   - **The wider margin rails:** in a window 1380px wide or more, the poster
+     and badge column grow up to 240px, and the badges tile two to a row.
+   - **The one-person Soundtrack Corner:**
+     - On a hand-written corner, voting brings up its own call and an agree
+       tally.
+     - The cue sheet files every album you've called on shelves of covers.
+     - On a generated corner, the "I'd cue it under…" box follows the vote.
+   - **The covers fixed today**, each on its own day:
+     - 10-24: _Korean R&B Playlist_ shows its emoji on its colour, now that
+       _The Nightmare Before Christmas_ cover is gone.
+     - 10-26: _Cercle: Nina Kraviz at Tour Eiffel_ has the Eiffel Tower set's
+       cover.
+     - 10-28: the Utena album has its own sleeve.
+     - 11-03: _KEXP Live Sessions: Khruangbin_ shows its emoji.
+     - `npm run audit-covers` should pass, with all 400 covers loading.
+   - Write what you saw here, then delete this task.
+
 **One thing is in flight: the full-album video refetch** (open item 3),
 which searches a batch a day into a log and has not touched the catalog yet.
 Day 1 (10-20): 95 albums searched, 48 checked picks kept. 10-21 was not
 run. Day 2 (10-22): 94 searched, 49 picks, five of them edits and turned
-into rules — 138 left, two more days. **The owner runs it by hand: they open a new chat and say
+into rules — 138 left, two more days (10-23 and 10-24). **The owner runs it by hand: they open a new chat and say
 "run today's batch."** Run `npm run fetch-youtube-ids`, read every new pick's
 title and channel by eye (day 1's rules let seven edits through — a reversed
 tracklist, a 432Hz retune, crossfades, a continuous mix, disguised titles),
@@ -23,31 +66,26 @@ add a tested rule in `lib/youtube-match.js` for any new shape, then commit
 midnight Pacific; a run that hits it stops cleanly and says so. They chose
 this over GitHub Actions or a scheduled task; do not re-offer automation.
 
-**`master` is not all deployed yet (2026-10-21).** Railway paused builds
-in every region from 07:24 UTC that day (status.railway.com), so nothing
-pushed since `aa4e1cd` has gone live (`git log aa4e1cd..origin/master`):
-the wider rails, the report's queue, the one-person Soundtrack Corner and
-docs. Pushes made during the pause started no deployment, and a
-redeploy answers "Deploys have been paused temporarily". Still down at
-22:45 UTC, by then billed a platform outage with Railway rotating
-credentials, and the CLI's login here was revoked at about 20:27 UTC
-("Unauthorized"): **the owner must run `railway login` first** — an agent
-cannot sign in for them. At 11:47 UTC on 10-22 builds were back for Pro and
-Enterprise workspaces only, Hobby, Free and Trial to follow; a login tried
-that morning had not reached `~/.railway/config.json` (no token in it,
-`railway whoami` still "Unauthorized"). Once the status page shows builds back, if
-`/api/health` still says `aa4e1cd`, run `railway redeploy --service
-88f37e23-d8bd-4c70-b670-8895d6cb1100 --from-source --yes`, which builds the
-latest `master`.
-
-Otherwise `master` is deployed. `GET /api/health`
-returns the running commit SHA — it should match `git rev-parse --short
-origin/master` — and `uptimeSeconds` should climb. No PRs are open; `master`
-is the only branch, locally and on GitHub.
+No PRs are open, and `master` is the only branch, locally and on GitHub.
 
 **Shipped most recently (10-14 → 10-22)** — each is described in its topic
 doc, and what is still unchecked is in the open items:
 
+- **Every catalog cover checked (10-22):**
+  - 47 covers were fixed: 43 that belonged to someone else's record (for
+    example, _Akira_ had a 2024 remix album and _French House Mix_ had
+    _Mickey Mouse Clubhouse_) and four dead links.
+  - Entries with no correct cover are listed in `eval-site`'s `NO_COVER`
+    (23).
+  - `fetch-covers` no longer takes Apple's first search result on trust.
+  - The new `npm run audit-covers` fails on a dead cover.
+  - Details are in `docs/album-data.md` → "Catalog identity".
+- **Catalog identity audit worked through (10-22):**
+  - 26 of the 33 open entries are confirmed, each with its source in the
+    audit's `DECIDED` map.
+  - The Nina Kraviz set was renamed to the one that exists (owner
+    decision).
+  - Seven still wait on the owner (open item 1).
 - **Bundle re-measured (10-22):** a fresh visit downloads 228KB, against
   213KB on 09-03 measured the same way. Nearly all of the growth is the app
   chunk (+8.8KB), which holds the record and the rails. The generator and
@@ -124,6 +162,7 @@ and build cleanly).
 
 **Where to pick up, in this order:**
 
+0. **The deploy check** in the first paragraph above.
 1. **Halloween week goes live on its own on 10-24.** Load the live site that
    day in a window at least 1380px wide and 700px tall: the poster should be
    orange and black with a jack-o'-lantern label, Dead Air billed every other
@@ -148,8 +187,12 @@ and build cleanly).
 3. **Today's refetch batch, when the owner asks (open item 3)** — the
    routine is in the first paragraph above. When `--plan` shows nothing
    left, the review, audit and re-record steps are listed in the open item.
-4. **The catalog audit's remainder** (open item 1), then everything else
-   below.
+4. **The catalog's remainder** (open item 1):
+   - Seven entries need the owner's ruling. Ask them; don't decide.
+   - The _Wolf's Rain_ album facts describe OST 2 instead of the entry's
+     OST 1.
+
+   Then everything else below.
 
 **The one open action that needs a human rather than code: nobody has put
 the link anywhere** (open item 4). Re-measured 2026-10-20, the site's
