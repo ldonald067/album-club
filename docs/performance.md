@@ -66,11 +66,31 @@ setAllDone((prev) => (prev === done ? prev : done));
 
 ## Bundle Budget
 
-Measure a **fresh production visit** (network panel, cache disabled), not the build's route table — chunk names are hashed and Turbopack prefetches dynamic chunks, so neither the build output nor a filename grep tells you what a visitor downloads. Last measured 2026-09-03: 212KB, biggest chunk 70KB.
+Measure a **fresh production visit**, not the build's route table — chunk names are hashed and Turbopack prefetches dynamic chunks, so neither the build output nor a filename grep tells you what a visitor downloads.
+
+**How, so the numbers compare.** `npm run build`, then `preview_start` the `prod` entry in `.claude/launch.json` (`next start` on port 3100). It gzips exactly as Railway does, so it measures `master` even while production lags behind it. Wait ~8s after load so the prefetched chunks are in, then sum `encodedBodySize` (bytes over the wire) from `performance.getEntriesByType('resource')` for same-origin `.js` and `.css`, plus the navigation entry for the HTML. Fonts and icons are left out. The HTML also lists a `noModule` polyfill chunk (~39KB) that modern browsers never fetch. Do not count it.
+
+**Last measured 2026-10-22** (`master` at `1bf1328`). The 2026-09-03 column is that day's commit (`04e1dbd`) rebuilt and measured the same way; its 212.8KB total is where the old "212KB" figure came from.
+
+|                | 2026-09-03 | 2026-10-22 |
+| -------------- | ---------: | ---------: |
+| JS (10 chunks) |    192.5KB |    200.5KB |
+| CSS            |     11.4KB |     15.3KB |
+| HTML           |      8.9KB |     12.4KB |
+| **Total**      |    212.8KB |    228.2KB |
+
+The HTML depends partly on the day. Four chunks make up nearly all the JS:
+
+- React DOM, 69.6KB: the biggest chunk, and byte-identical since 09-03 (same hash)
+- Next's router, 44.4KB (was 45.4KB)
+- the app code, 33.8KB (was 25.0KB): almost all of the growth. The turntable, tonearm, needle, record patterns, margin rails and Dead Air tab all landed here
+- `lib/albums.json`, 32.9KB (was 33.9KB)
+
+Window width does not change the download. At 1024px and at 1440px (rails showing), the same ten chunks load. The Soundtrack Corner generator and `lib/lyrics.json` each have their own chunk, and a home visit fetches neither (checked by grepping each chunk for a string unique to the data).
 
 - `better-sqlite3` stays server-only (never imported in client code)
 - `lib/schedule.json` stays server-only — `lib/daily-picks.js` reads it and passes picks down as props; `eval-site` fails if a client component imports it
-- `lib/albums.json` is intentionally client-bundled — needed for autocomplete. It is the largest single contributor to bundle size, so check it when the budget moves
+- `lib/albums.json` is intentionally client-bundled — needed for autocomplete. Its own chunk, about a sixth of the JS; the app code has passed it, so when the budget moves, check that chunk first
 - `canvas-confetti` is dynamically imported and cached in `_confetti` variable
 - **Code splitting is real work here, not ruled out.** Soundtrack Corner sits behind `next/dynamic` to keep its generator off the home path; Webamp loads from `/vendor` via a script tag because `next/dynamic` still shipped its chunk to everyone (`docs/components.md` → Webamp view). Anything heavy that only some visitors open deserves the same question
 - **Pixel icons are self-hosted as a subset** (`app/iconfont-subset.css` +

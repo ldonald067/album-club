@@ -45,9 +45,14 @@ returns the running commit SHA — it should match `git rev-parse --short
 origin/master` — and `uptimeSeconds` should climb. No PRs are open; `master`
 is the only branch, locally and on GitHub.
 
-**Shipped most recently (10-14 → 10-21)** — each is described in its topic
+**Shipped most recently (10-14 → 10-22)** — each is described in its topic
 doc, and what is still unchecked is in the open items:
 
+- **Bundle re-measured (10-22):** a fresh visit downloads 228KB, against
+  213KB on 09-03 measured the same way. Nearly all of the growth is the app
+  chunk (+8.8KB), which holds the record and the rails. The generator and
+  lyrics stay off the home path, and nothing needs cutting. Method and
+  breakdown are in `docs/performance.md` → Bundle Budget.
 - **Your own pitch on generated days (10-21):** on a corner with no club
   call, the vote is followed by a one-line "I'd cue it under…" box, kept in
   this browser only (`aotd_cue_pitch_<date>`), and the cue sheet lists your
@@ -143,8 +148,8 @@ and build cleanly).
 3. **Today's refetch batch, when the owner asks (open item 3)** — the
    routine is in the first paragraph above. When `--plan` shows nothing
    left, the review, audit and re-record steps are listed in the open item.
-4. **Re-measure the bundle** (open item 8), then the catalog audit's
-   remainder (open item 1), then everything else below.
+4. **The catalog audit's remainder** (open item 1), then everything else
+   below.
 
 **The one open action that needs a human rather than code: nobody has put
 the link anywhere** (open item 4). Re-measured 2026-10-20, the site's
@@ -370,12 +375,6 @@ docs.
    - The Hayley Williams "full album" (`bVQ-J6J44Ts`) was removed as an
      unofficial upload (2026-09-30). If a fetch ever offers that id again, it
      is the same bootleg.
-
-8. **The bundle has not been measured since 2026-09-03** (212KB then,
-   `docs/performance.md` → Bundle Budget). The turntable, tonearm, needle
-   memory, record patterns and the Dead Air frame have all added client code
-   since. Measure a fresh production visit from the network log; the
-   `perf-check` skill covers it.
 
 ## Standing decisions — do not "fix" these
 
