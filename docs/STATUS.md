@@ -271,13 +271,12 @@ docs.
    - **The 33 "real but unconfirmed" were worked through on 2026-10-22.**
      25 are confirmed, each with its source in the audit's `DECIDED` map,
      alongside the four sessions confirmed on 10-07. Eight could not be
-     confirmed, and what happens to them is **the owner's call**. Each could
-     be renamed or removed, and since none of the eight has aired, neither
-     would break a recorded day:
-     - _Cercle: Nina Kraviz at Château de Fontainebleau_: no such set found.
-       Her Cercle set was at the Eiffel Tower on 2018-10-15, and that is the
-       cover it wore. It airs **10-26**, so a rename to that set is safe only
-       before then.
+     confirmed. The owner ruled on one: _Cercle: Nina Kraviz at Château de
+     Fontainebleau_ is renamed _Cercle: Nina Kraviz at Tour Eiffel_ (2018),
+     her documented Cercle set, and it has that set's cover back. It is
+     confirmed now and airs 10-26. What happens to the other seven is **the
+     owner's call**. Each could be renamed or removed, and since none of them
+     has aired, neither would break a recorded day:
      - _Essential Mix: Four Tet_ (2022): he has Essential Mixes from 2010,
        2015 (with Jamie xx), 2018 and 2026, but none from 2022.
      - _KEXP Live Sessions: Khruangbin_ (2019): KEXP has sessions from
@@ -291,8 +290,9 @@ docs.
    - **Covers: 21 of the 37 wore someone else's record** (list and method in
      `docs/album-data.md` → "Catalog identity").
      - 11 now carry their own cover.
-     - 10 have none and are listed in `NO_COVER`: the six sessions and
-       broadcasts, and the four releases that could not be found.
+     - 10 lost their cover and went into `NO_COVER`: six sessions and
+       broadcasts, and the four releases that could not be found. Nina
+       Kraviz's came back with the rename, which leaves 9.
      - _Cercle: Solomun at Théâtre Antique_ is now dated 2018, from Cercle's
        dated announcement.
      - **Every cover was then checked (also 10-22).** 22 more belonged to
@@ -301,7 +301,7 @@ docs.
          _GOLLIWOG_ (it had Yo-Yo Ma) and _Debí Tirar Más Fotos_ (it had a
          piano covers album).
        - 13 mood mixes lost art that named somebody else's record.
-       - `NO_COVER` now has 24 entries.
+       - `NO_COVER` now has 23 entries.
        - `fetch-covers` no longer takes Apple's first search result on
          trust.
        - The new `npm run audit-covers` fails on a dead cover. Method and

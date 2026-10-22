@@ -791,10 +791,6 @@ const NO_COVER = new Map([
     "a 2018 broadcast with no release art; wore her 2024 album I Hear You",
   ],
   [
-    "Nina Kraviz::Cercle: Nina Kraviz at Château de Fontainebleau",
-    "no such set found; wore her Cercle Eiffel Tower set (2018)",
-  ],
-  [
     "Khruangbin::KEXP Live Sessions: Khruangbin",
     "no 2019 session found (KEXP has 2018 and 2025); wore The Universe Smiles Upon You ii",
   ],

@@ -93,8 +93,8 @@ const DECIDED = {
     "kept as a mix by owner decision; mixes are allowed in the catalog (reviewed 2026-09-27)",
 
   /* Sessions: the performance itself, confirmed by the series' own upload or a
-     dated source. Four Tet, Khruangbin, Nina Kraviz and Boiler Room: Berlin
-     are left out on purpose — none could be tied to one performance. */
+     dated source. Four Tet, Khruangbin and Boiler Room: Berlin are left out
+     on purpose — none could be tied to one performance. */
   "Kaytranada::Boiler Room: Montreal":
     "confirmed by the series' own upload, -5EQIiabJvk (2026-10-07)",
   "Various Artists::Boiler Room: Tokyo":
@@ -107,6 +107,8 @@ const DECIDED = {
     "confirmed: broadcast 2018-03-10, MusicBrainz release group 57234e7f (2026-10-22)",
   "Various Artists::Anjunadeep Edition 400":
     "confirmed: episode 400, mixed by Marsh, aired 2022-05-18 per TuneIn's listing of the show (2026-10-22)",
+  "Nina Kraviz::Cercle: Nina Kraviz at Tour Eiffel":
+    "confirmed: Cercle from the Eiffel Tower, 2018-10-15, MusicBrainz release 37ce1159 and the tower's own press release; renamed by owner decision from 'at Château de Fontainebleau', which no source supports (2026-10-22)",
   "Solomun::Cercle: Solomun at Théâtre Antique":
     "confirmed: Cercle at the Théâtre Antique d'Orange, announced 16 May 2018 for the following week; year corrected from 2019 (2026-10-22)",
 

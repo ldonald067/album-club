@@ -14,7 +14,9 @@
  *           Apple art a UPC — and that release shares no title word with the
  *           entry and is not the release group lib/album-facts.json matched.
  *           Listed for a person to look at, never counted: an original-script
- *           title (千年女優 for Millennium Actress) is right and will show here.
+ *           title (千年女優 for Millennium Actress) or initials (SIMBI for
+ *           Sometimes I Might Be Introvert) are right and will show here. Five
+ *           do, all checked on 2026-10-22. A lookup that fails is listed too.
  *
  * WHY THIS EXISTS (2026-10-22): a hand check found 43 covers belonging to
  * someone else's record, from Akira wearing a 2024 remix album to a Korean
@@ -69,7 +71,7 @@ async function owner(url) {
       `https://musicbrainz.org/ws/2/release/${mbid}?inc=artist-credits+release-groups&fmt=json`,
       { headers: { "User-Agent": USER_AGENT } },
     );
-    if (!res.ok) return null;
+    if (!res.ok) return { failed: true };
     const r = await res.json();
     const by = (r["artist-credit"] || []).map((c) => c.name).join(", ");
     return {
@@ -82,7 +84,8 @@ async function owner(url) {
   if (upc) {
     await sleep(1500);
     const res = await fetch(`https://itunes.apple.com/lookup?upc=${upc}`);
-    const c = res.ok ? (await res.json()).results?.[0] : null;
+    if (!res.ok) return { failed: true };
+    const c = (await res.json()).results?.[0];
     return c
       ? {
           title: c.collectionName,
@@ -106,10 +109,16 @@ for (let i = 0; i < withCover.length; i += 8) {
 process.stderr.write("\n");
 
 const askAbout = [];
+const unchecked = [];
 for (const a of withCover) {
   const o = await owner(a.image);
   if (!o) continue;
   const id = `${a.artist}::${a.title}`;
+  /* A failed lookup is not a pass: SIMBI went unlisted once this way. */
+  if (o.failed) {
+    unchecked.push(id);
+    continue;
+  }
   if (o.rg && o.rg === facts[id]?.mbid) continue;
   const mine = words(a.title);
   if ([...words(o.title)].some((w) => mine.has(w))) continue;
@@ -121,4 +130,8 @@ console.log(`## DEAD (${dead.length})\n`);
 for (const a of dead) console.log(`- ${a.artist}::${a.title}\n    ${a.image}`);
 console.log(`\n## OWNER — look at these (${askAbout.length})\n`);
 for (const line of askAbout) console.log(line);
+if (unchecked.length) {
+  console.log(`\n## OWNER — lookup failed, re-run (${unchecked.length})\n`);
+  for (const id of unchecked) console.log(`- ${id}`);
+}
 if (dead.length) process.exit(1);

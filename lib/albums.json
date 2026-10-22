@@ -1266,13 +1266,14 @@
     "recognizable": false
   },
   {
-    "title": "Cercle: Nina Kraviz at Château de Fontainebleau",
+    "title": "Cercle: Nina Kraviz at Tour Eiffel",
     "artist": "Nina Kraviz",
-    "year": 2019,
+    "year": 2018,
     "genre": "Techno/DJ Set",
-    "cover": "🏰",
+    "cover": "🎆",
     "color": "#221f3d",
-    "recognizable": false
+    "recognizable": false,
+    "image": "https://ia600501.us.archive.org/1/items/mbid-37ce1159-9f93-4b39-902a-ba07b2db7434/mbid-37ce1159-9f93-4b39-902a-ba07b2db7434-39971878725_thumb500.jpg"
   },
   {
     "title": "Weightless",
