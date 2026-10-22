@@ -10,7 +10,7 @@ it used to carry).
 
 ## Handoff — read this first
 
-**Production is current and was looked at on 2026-10-22, 23:34–23:55
+**Production is current and was looked at on 2026-10-22, 23:34–23:41
 UTC.** It ran `4fd5c1d`, matching `origin/master`, with `uptimeSeconds`
 climbing. Railway's outage is over and the CLI is logged in. What shipped
 from 10-19 to 10-22 was seen on the live site, except what airs later:
