@@ -10,48 +10,36 @@ it used to carry).
 
 ## Handoff — read this first
 
-**First task in a new chat: confirm the deploy, then look at what it
-shipped.** The state at 23:16 UTC on 2026-10-22:
+**Production is current and was looked at on 2026-10-22, 23:34–23:55
+UTC.** It ran `4fd5c1d`, matching `origin/master`, with `uptimeSeconds`
+climbing. Railway's outage is over and the CLI is logged in. What shipped
+from 10-19 to 10-22 was seen on the live site, except what airs later:
 
-- **Railway's outage is over.** Builds were paused from 07:24 UTC on 10-21.
-  The 22:49 UTC update on 10-22 says builds are back for Free and Trial,
-  alongside Hobby, Pro and Enterprise.
-- **The CLI is logged in again** (`railway whoami`), so no `railway login`
-  is needed.
-- **Production runs `23c95d3`**, which went live at 19:51 UTC. That is
-  everything through the whole-catalog cover check.
-- **`78f8473` (the Nina Kraviz rename)** was building as deployment
-  `b0fc4b1a`, which started at 23:13 UTC.
-- **One failed build:** `9db0ecd`'s build failed at 18:27 UTC, mid-outage.
-  Every later build succeeded, so that was the platform, not the code.
-
-1. **Confirm the deploy.** `GET /api/health` must return the commit from
-   `git rev-parse --short origin/master`, with `uptimeSeconds` climbing.
-   If it lags:
-   - `railway deployment list --service 88f37e23-d8bd-4c70-b670-8895d6cb1100 --json`
-     lists each build with its status and commit.
-   - The `railway` MCP's `get_logs` reads a build's logs. It needs
-     `service_id` as well as `deployment_id`.
-   - `railway redeploy --service 88f37e23-d8bd-4c70-b670-8895d6cb1100 --from-source --yes`
-     builds the latest `master`.
-2. **Look at it on production.** Nothing pushed after `aa4e1cd` went live
-   until 19:51 UTC on 10-22, and none of it has been seen there:
-   - **The wider margin rails:** in a window 1380px wide or more, the poster
-     and badge column grow up to 240px, and the badges tile two to a row.
-   - **The one-person Soundtrack Corner:**
-     - On a hand-written corner, voting brings up its own call and an agree
-       tally.
-     - The cue sheet files every album you've called on shelves of covers.
-     - On a generated corner, the "I'd cue it under…" box follows the vote.
-   - **The covers fixed today**, each on its own day:
-     - 10-24: _Korean R&B Playlist_ shows its emoji on its colour, now that
-       _The Nightmare Before Christmas_ cover is gone.
-     - 10-26: _Cercle: Nina Kraviz at Tour Eiffel_ has the Eiffel Tower set's
-       cover.
-     - 10-28: the Utena album has its own sleeve.
-     - 11-03: _KEXP Live Sessions: Khruangbin_ shows its emoji.
-     - `npm run audit-covers` should pass, with all 400 covers loading.
-   - Write what you saw here, then delete this task.
+- **Wider margin rails: right.** Measured at 1380px wide, both rails are
+  166px and the badges stack one to a row. At 1600 and 1920 both are 240px
+  and the badges tile two to a row at 88×31. Both stay 16px clear of the
+  edge, with no sideways scroll.
+- **The one-person Soundtrack Corner: right on a generated day.** This was
+  10-22's corner, _Emotion_:
+  - The vote brought up the no-call line and the "I'd cue it under…" box,
+    with a film placeholder and a 0/120 counter.
+  - A saved pitch read back with Edit, and focus moved to Edit.
+  - The cue sheet filed the album under Film score and listed the pitch.
+  - With past cues seeded in the browser, the shelves filled from
+    `/api/soundtrack/days`. _Folklore_ (10-19, the club's call) had the gold
+    edge, measured at `rgb(201,162,39)`. The tally read "agree on 1 of 2",
+    and a 07-01 cue was left off.
+  - The vote's POST was answered inside the page, so no test row reached
+    production, and the test cues were cleared afterwards. Do the same on
+    10-29.
+- **Covers: right.** `npm run audit-covers` passes: 400 covers, none dead,
+  and only the five known-right entries listed.
+  - The 10-26 Nina Kraviz and 10-28 Utena images were checked by eye: the
+    Cercle set under the Eiffel Tower, and Utena art.
+  - _Korean R&B Playlist_ (10-24) and _KEXP Live Sessions: Khruangbin_
+    (11-03) carry no image, so they fall back to their emoji on their colour.
+- **Still to see, on its day** (in "Where to pick up" below): the first
+  hand-written corner since the change, and the two emoji days.
 
 **One thing is in flight: the full-album video refetch** (open item 3),
 which searches a batch a day into a log and has not touched the catalog yet.
@@ -162,13 +150,19 @@ and build cleanly).
 
 **Where to pick up, in this order:**
 
-0. **The deploy check** in the first paragraph above.
-1. **Halloween week goes live on its own on 10-24.** Load the live site that
-   day in a window at least 1380px wide and 700px tall: the poster should be
-   orange and black with a jack-o'-lantern label, Dead Air billed every other
-   day, a badge counting down the nights, and the error box as Boo.exe.
-   `test/margin-rails.test.mjs` renders every Halloween day; nobody has seen
-   it on production yet.
+1. **Three dated looks at the live site:**
+   - **10-24: Halloween week goes live on its own.** Load the live site in a
+     window at least 1380px wide and 700px tall. The poster should be
+     orange and black with a jack-o'-lantern label, Dead Air should be
+     billed every other day, a badge should count down the nights, and the
+     error box should be Boo.exe. `test/margin-rails.test.mjs` renders every
+     Halloween day; nobody has seen it on production yet. The same day,
+     _Korean R&B Playlist_ should show its emoji on its colour.
+   - **10-29: the first hand-written corner since the one-person change**
+     (_Reasonable Doubt_; the club's call is TV). After the vote, check for
+     "The club went TV. You went …", the TV pitch card tagged "The club's
+     call", and the agree tally.
+   - **11-03:** _KEXP Live Sessions: Khruangbin_ shows its emoji.
 2. **One phone check** — only a person can do it (open item 2). The day
    kinds below hold until the refetch's picks are applied; after that,
    recompute them.
@@ -185,7 +179,7 @@ and build cleanly).
      Esc on Android (iOS Safari should offer Play in New Tab instead); in
      Safari, check a save made in the frame shows on a direct visit.
 3. **Today's refetch batch, when the owner asks (open item 3)** — the
-   routine is in the first paragraph above. When `--plan` shows nothing
+   routine is in "One thing is in flight" above. When `--plan` shows nothing
    left, the review, audit and re-record steps are listed in the open item.
 4. **The catalog's remainder** (open item 1):
    - Seven entries need the owner's ruling. Ask them; don't decide.
@@ -216,7 +210,9 @@ activity is exactly what it was on 2026-08-22.
    RSC fetches; a hidden pane clamps timers and can return blank screenshots; a
    scripted click is not a media gesture on mobile; desktop Chrome plays what
    a phone would block, so simulate the block — and YouTube's `seekTo` starts
-   a cued clip by itself. `docs/gotchas.md` → "Verifying with browser
+   a cued clip by itself. A lazy image added after load can read as
+   unloaded in the pane until a screenshot paints it (the cue sheet's
+   covers, 10-22). `docs/gotchas.md` → "Verifying with browser
    automation" and "Process".
 
 ## What this is
