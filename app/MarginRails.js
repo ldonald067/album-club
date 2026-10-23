@@ -53,7 +53,7 @@ export default function MarginRails({ section, day }) {
     <div className="margin-rails">
       {poster && (
         <aside
-          className="margin-rail margin-rail-left"
+          className={`margin-rail margin-rail-left${poster.look ? ` rail-look-${poster.look.id}` : ""}`}
           aria-label="Club notice"
         >
           <Link
@@ -72,6 +72,12 @@ export default function MarginRails({ section, day }) {
               <span className="rail-poster-label">
                 {poster.spooky && <PumpkinFace />}
               </span>
+              {/* The week's sticker, slapped on the record (LOOKS) */}
+              {poster.look?.sticker && (
+                <span className="rail-poster-sticker">
+                  {poster.look.sticker}
+                </span>
+              )}
             </span>
             <span className="rail-poster-body">{poster.body}</span>
             <span className="rail-poster-stars">

@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-10-22.
+session. Last updated: 2026-10-23.
 
 This file holds **current state, open items and standing decisions** only.
 How things work lives in the topic docs; what happened and when lives in git
@@ -56,9 +56,13 @@ this over GitHub Actions or a scheduled task; do not re-offer automation.
 
 No PRs are open, and `master` is the only branch, locally and on GitHub.
 
-**Shipped most recently (10-14 → 10-22)** — each is described in its topic
+**Shipped most recently (10-14 → 10-23)** — each is described in its topic
 doc, and what is still unchecked is in the open items:
 
+- **The poster changes costume every week (10-23):** eight 2004 ad
+  formats in turn, each Monday (UTC). This week's is jackpot; Halloween
+  covers 10-24 to 10-31, tabloid has 11-01 alone, and y2k starts 11-02. `docs/components.md` →
+  "Margin rails".
 - **Every catalog cover checked (10-22):**
   - 47 covers were fixed: 43 that belonged to someone else's record (for
     example, _Akira_ had a 2024 remix album and _French House Mix_ had

@@ -86,6 +86,48 @@
   --rail-spooky-ink: #f3e6c8;
   --rail-spooky-cta-bg: #ff8c1a;
   --rail-spooky-cta-ink: #140f0a;
+  /* The poster's weekly costumes (lib/margin-rails.js LOOKS), the same in
+     every skin. Text on its own fill, never on a gradient. */
+  --rail-winner-bg: #cc0000;
+  --rail-winner-hot: #ffff33;
+  --rail-winner-ink: #fff;
+  --rail-winner-dark: #990000;
+  --rail-winner-stripe: #000;
+  --rail-slime-bg: #ccff33;
+  --rail-slime-head: #6600cc;
+  --rail-slime-ink: #330066;
+  --rail-slime-pop: #ff0099;
+  --rail-slime-pop-ink: #000;
+  --rail-scan-bg: #fff;
+  --rail-scan-title: #0054e3;
+  --rail-scan-edge: #0a246a;
+  --rail-scan-head: #cc0000;
+  --rail-scan-ink: #000;
+  --rail-scan-go: #217a21;
+  --rail-scan-go-ink: #fff;
+  --rail-scan-warn: #ffcc00;
+  --rail-jackpot-bg: #0b0b0b;
+  --rail-jackpot-gold: #ffcc33;
+  --rail-jackpot-ink: #f2f2f2;
+  --rail-jackpot-red: #d40000;
+  --rail-jackpot-red-ink: #fff;
+  --rail-tabloid-bg: #f4f1e8;
+  --rail-tabloid-head: #111;
+  --rail-tabloid-ink: #222;
+  --rail-tabloid-link: #0000ee;
+  --rail-tabloid-link-ink: #fff;
+  --rail-tabloid-stamp: #e00000;
+  --rail-tabloid-stamp-ink: #fff;
+  --rail-y2k-bg: #14002b;
+  --rail-y2k-cyan: #00ffff;
+  --rail-y2k-ink: #e6e0ff;
+  --rail-y2k-pink: #ff33cc;
+  --rail-dating-bg: #ffe0f0;
+  --rail-dating-head: #b3005f;
+  --rail-dating-ink: #5c0033;
+  --rail-dating-pop: #ff3399;
+  --rail-dating-pop-ink: #3d0022;
+  --rail-dating-cta-ink: #fff;
   --bg-page: #e8e0d0;
   --bg-main: #fff;
   --bg-dark: #1a1a2e;
@@ -3343,9 +3385,9 @@ body {
   inset: 33%;
   border-radius: 50%;
   background: conic-gradient(
-    var(--gold) 0 25%,
+    var(--rail-poster-label, var(--gold)) 0 25%,
     var(--rail-poster-head) 0 50%,
-    var(--gold) 0 75%,
+    var(--rail-poster-label, var(--gold)) 0 75%,
     var(--rail-poster-head) 0
   );
   animation: railSpin 1.6s linear 2.4s 3;
@@ -3437,6 +3479,362 @@ body {
   width: 100%;
   height: 100%;
   fill: var(--rail-spooky-bg);
+}
+
+/* The weekly costumes (lib/margin-rails.js LOOKS). Each sets the poster's
+   own tokens on the aside, so the poster, its record and the close box's
+   "Nice try." all follow without chasing selectors, then changes the type,
+   the border and the sticker. Classic has no rules: it is the poster above.
+   Impact is condensed and nothing else is, so the costumes write the copy
+   in sentence case at the size whose widest fixed word ("Seriously.",
+   "turntable.") fits the 134px poster (measured 2026-10-23); y2k keeps
+   capitals at 20px. */
+:is(
+    .rail-look-winner,
+    .rail-look-slime,
+    .rail-look-scan,
+    .rail-look-jackpot,
+    .rail-look-tabloid,
+    .rail-look-y2k,
+    .rail-look-dating
+  )
+  :is(.rail-poster-head, .rail-poster-tease) {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: bold;
+}
+
+/* "CLAIM NOTHING" fits on one line in the widest of them (Georgia) */
+:is(
+    .rail-look-winner,
+    .rail-look-slime,
+    .rail-look-scan,
+    .rail-look-jackpot,
+    .rail-look-tabloid,
+    .rail-look-y2k,
+    .rail-look-dating
+  )
+  .rail-poster-cta {
+  padding: 8px;
+  font-size: 12px;
+  letter-spacing: 0;
+}
+
+/* The sticker on the record: over its left edge, askew, and it wobbles
+   four times once the punchline is up, then stops (WCAG 2.2.2). Held
+   inside the record's height, so a three-line headline above or a long
+   fact below never runs under it (measured at 1380px, 2026-10-23). */
+.rail-poster-sticker {
+  position: absolute;
+  top: 35%;
+  translate: 0 -50%;
+  left: -24px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  height: 52px;
+  padding: 0 6px;
+  border-radius: 50%;
+  background: var(--rail-sticker-bg);
+  color: var(--rail-sticker-ink);
+  font:
+    bold 11px/1 Verdana,
+    Geneva,
+    sans-serif;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  transform: rotate(-14deg);
+  animation: railWobble 0.6s ease-in-out 2.4s 4;
+}
+
+@keyframes railWobble {
+  50% {
+    transform: rotate(-4deg) scale(1.08);
+  }
+}
+
+/* WINNER: the millionth-visitor popup. Red and yellow, hazard tape round
+   the edge, and a starburst. */
+.rail-look-winner {
+  --rail-poster-bg: var(--rail-winner-bg);
+  --rail-poster-head: var(--rail-winner-hot);
+  --rail-poster-ink: var(--rail-winner-ink);
+  --rail-poster-cta-bg: var(--rail-winner-hot);
+  --rail-poster-cta-ink: var(--rail-winner-dark);
+  --rail-poster-label: var(--rail-winner-ink);
+  --rail-sticker-bg: var(--rail-winner-hot);
+  --rail-sticker-ink: var(--rail-winner-dark);
+}
+
+.rail-look-winner .rail-poster {
+  border: 6px solid;
+  border-image: repeating-linear-gradient(
+      45deg,
+      var(--rail-winner-hot) 0 8px,
+      var(--rail-winner-stripe) 8px 16px
+    )
+    6;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.rail-look-winner :is(.rail-poster-head, .rail-poster-tease) {
+  font-family: "Arial Black", Impact, sans-serif;
+  font-size: 23px;
+  text-shadow: 2px 2px 0 var(--rail-winner-stripe);
+}
+
+.rail-look-winner .rail-poster-sticker {
+  width: 72px;
+  height: 72px;
+  top: 28%;
+  left: -26px;
+  border-radius: 0;
+  font-size: 10px;
+  clip-path: polygon(
+    50% 0%,
+    61% 15%,
+    79% 9%,
+    79% 27%,
+    97% 33%,
+    87% 50%,
+    97% 67%,
+    79% 73%,
+    79% 91%,
+    61% 85%,
+    50% 100%,
+    39% 85%,
+    21% 91%,
+    21% 73%,
+    3% 67%,
+    13% 50%,
+    3% 33%,
+    21% 27%,
+    21% 9%,
+    39% 15%
+  );
+}
+
+/* SLIME: Punch the Monkey. Lime and purple in Comic Sans, a dashed edge. */
+.rail-look-slime {
+  --rail-poster-bg: var(--rail-slime-bg);
+  --rail-poster-edge: var(--rail-slime-head);
+  --rail-poster-head: var(--rail-slime-head);
+  --rail-poster-ink: var(--rail-slime-ink);
+  --rail-poster-cta-bg: var(--rail-slime-head);
+  --rail-poster-cta-ink: var(--rail-slime-bg);
+  --rail-poster-label: var(--rail-slime-pop);
+  --rail-sticker-bg: var(--rail-slime-pop);
+  --rail-sticker-ink: var(--rail-slime-pop-ink);
+}
+
+.rail-look-slime .rail-poster {
+  border: 4px dashed var(--rail-poster-edge);
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+}
+
+.rail-look-slime :is(.rail-poster-head, .rail-poster-tease) {
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  font-size: 25px;
+}
+
+/* SCAN: "Is your PC running slow?" An XP window, title bar and all, with
+   a scan that fills once, and a warning label for a sticker. */
+.rail-look-scan {
+  --rail-poster-bg: var(--rail-scan-bg);
+  --rail-poster-edge: var(--rail-scan-edge);
+  --rail-poster-head: var(--rail-scan-head);
+  --rail-poster-ink: var(--rail-scan-ink);
+  --rail-poster-cta-bg: var(--rail-scan-go);
+  --rail-poster-cta-ink: var(--rail-scan-go-ink);
+  --rail-poster-label: var(--rail-scan-title);
+  --rail-sticker-bg: var(--rail-scan-warn);
+  --rail-sticker-ink: var(--rail-scan-ink);
+}
+
+.rail-look-scan .rail-poster {
+  border: 3px solid var(--rail-scan-edge);
+  border-top: 22px solid var(--rail-scan-title);
+  padding-top: 12px;
+  font-family: Tahoma, Verdana, sans-serif;
+}
+
+.rail-look-scan :is(.rail-poster-head, .rail-poster-tease) {
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 24px;
+}
+
+.rail-look-scan .rail-poster-stars::before {
+  content: "";
+  display: block;
+  height: 12px;
+  margin-bottom: 6px;
+  border: 1px solid var(--rail-scan-edge);
+  background: repeating-linear-gradient(
+      90deg,
+      var(--rail-scan-go) 0 8px,
+      transparent 8px 10px
+    )
+    left / 100% 100% no-repeat;
+  animation: railScan 2s ease-out 2.4s backwards;
+}
+
+@keyframes railScan {
+  from {
+    background-size: 0 100%;
+  }
+}
+
+.rail-look-scan .rail-poster-sticker {
+  height: auto;
+  padding: 5px 6px;
+  border: 2px solid var(--rail-scan-ink);
+  border-radius: 0;
+  transform: rotate(-8deg);
+}
+
+/* JACKPOT: the online casino. Gold on black in a ring of bulbs, and a
+   chip. */
+.rail-look-jackpot {
+  --rail-poster-bg: var(--rail-jackpot-bg);
+  --rail-poster-edge: var(--rail-jackpot-gold);
+  --rail-poster-head: var(--rail-jackpot-gold);
+  --rail-poster-ink: var(--rail-jackpot-ink);
+  --rail-poster-cta-bg: var(--rail-jackpot-red);
+  --rail-poster-cta-ink: var(--rail-jackpot-red-ink);
+  --rail-poster-label: var(--rail-jackpot-red);
+  --rail-sticker-bg: var(--rail-jackpot-red);
+  --rail-sticker-ink: var(--rail-jackpot-red-ink);
+}
+
+.rail-look-jackpot .rail-poster {
+  border: 6px dotted var(--rail-poster-edge);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.rail-look-jackpot :is(.rail-poster-head, .rail-poster-tease) {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 23px;
+  font-style: italic;
+  text-shadow: 2px 2px 0 var(--rail-jackpot-red);
+}
+
+/* Black vinyl on a black poster: a ring of the edge's colour keeps the
+   record (y2k too) */
+:is(.rail-look-jackpot, .rail-look-y2k) .rail-poster-disc {
+  box-shadow: 0 0 0 2px var(--rail-poster-edge);
+}
+
+.rail-look-jackpot .rail-poster-sticker {
+  border: 4px dashed var(--rail-jackpot-gold);
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+/* TABLOID: one weird trick. Newsprint in a clip-out coupon's dashed edge,
+   a headline in Times, and a red stamp. */
+.rail-look-tabloid {
+  --rail-poster-bg: var(--rail-tabloid-bg);
+  --rail-poster-edge: var(--rail-tabloid-ink);
+  --rail-poster-head: var(--rail-tabloid-head);
+  --rail-poster-ink: var(--rail-tabloid-ink);
+  --rail-poster-cta-bg: var(--rail-tabloid-link);
+  --rail-poster-cta-ink: var(--rail-tabloid-link-ink);
+  --rail-poster-label: var(--rail-tabloid-stamp);
+  --rail-sticker-bg: var(--rail-tabloid-stamp);
+  --rail-sticker-ink: var(--rail-tabloid-stamp-ink);
+}
+
+.rail-look-tabloid .rail-poster {
+  border: 2px dashed var(--rail-poster-edge);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.rail-look-tabloid :is(.rail-poster-head, .rail-poster-tease) {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.rail-look-tabloid .rail-poster-cta {
+  text-decoration: underline;
+}
+
+.rail-look-tabloid .rail-poster-sticker {
+  height: auto;
+  padding: 4px 6px;
+  border-radius: 0;
+  box-shadow: inset 0 0 0 2px var(--rail-tabloid-stamp-ink);
+  transform: rotate(-10deg);
+}
+
+/* Y2K: the future, as of 1999. Cyan and hot pink on midnight, monospace in
+   capitals, a ridged edge, and a NEW! flash. */
+.rail-look-y2k {
+  --rail-poster-bg: var(--rail-y2k-bg);
+  --rail-poster-edge: var(--rail-y2k-cyan);
+  --rail-poster-head: var(--rail-y2k-cyan);
+  --rail-poster-ink: var(--rail-y2k-ink);
+  --rail-poster-cta-bg: var(--rail-y2k-pink);
+  --rail-poster-cta-ink: var(--rail-y2k-bg);
+  --rail-poster-label: var(--rail-y2k-pink);
+  --rail-sticker-bg: var(--rail-y2k-cyan);
+  --rail-sticker-ink: var(--rail-y2k-bg);
+}
+
+.rail-look-y2k .rail-poster {
+  border: 4px ridge var(--rail-poster-edge);
+  font-family: "Courier New", Courier, monospace;
+}
+
+.rail-look-y2k :is(.rail-poster-head, .rail-poster-tease) {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 20px;
+  text-transform: uppercase;
+  text-shadow: 0 0 6px var(--rail-y2k-pink);
+}
+
+.rail-look-y2k .rail-poster-body {
+  font-size: 13px;
+}
+
+.rail-look-y2k .rail-poster-sticker {
+  height: auto;
+  padding: 4px 7px;
+  border-radius: 0;
+  box-shadow: 3px 3px 0 var(--rail-y2k-pink);
+}
+
+/* DATING: "Singles want to meet you." Pink, italic, a double edge and a
+   heart. */
+.rail-look-dating {
+  --rail-poster-bg: var(--rail-dating-bg);
+  --rail-poster-edge: var(--rail-dating-pop);
+  --rail-poster-head: var(--rail-dating-head);
+  --rail-poster-ink: var(--rail-dating-ink);
+  --rail-poster-cta-bg: var(--rail-dating-head);
+  --rail-poster-cta-ink: var(--rail-dating-cta-ink);
+  --rail-poster-label: var(--rail-dating-pop);
+  --rail-sticker-bg: var(--rail-dating-pop);
+  --rail-sticker-ink: var(--rail-dating-pop-ink);
+}
+
+.rail-look-dating .rail-poster {
+  border: 6px double var(--rail-poster-edge);
+  font-family: "Trebuchet MS", Verdana, sans-serif;
+}
+
+.rail-look-dating :is(.rail-poster-head, .rail-poster-tease) {
+  font-family: "Trebuchet MS", Verdana, sans-serif;
+  font-size: 26px;
+  font-style: italic;
+}
+
+.rail-look-dating .rail-poster-sticker {
+  height: auto;
+  padding: 6px 10px;
+  border-radius: 999px;
 }
 
 /* The era's fake buttons (app/MarginRails.js, FakeButton): Windows grey
@@ -5071,13 +5469,14 @@ body {
    the cover square across a round record (adversarial review, 2026-10-13).
    And the tonearm's bearing and the turntable's platter, which are turned
    parts, not panels. And the record on the margin's poster and its label,
-   which came out a square the first time it was drawn (2026-10-18). */
+   which came out a square the first time it was drawn (2026-10-18). And
+   the sticker on it, a costume that is the same in every skin. */
 :root[data-theme="vintage"]
   *:not(.vinyl-disc):not(.vinyl-label):not(.vinyl-bands):not(.vinyl-song):not(
     .vinyl-art
   ):not(.tonearm-base):not(.turntable-platter):not(.tonearm-grip):not(
     .rail-poster-disc
-  ):not(.rail-poster-label):not(.rail-error-icon) {
+  ):not(.rail-poster-label):not(.rail-error-icon):not(.rail-poster-sticker) {
   border-radius: 0;
 }
 

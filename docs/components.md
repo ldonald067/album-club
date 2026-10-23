@@ -487,6 +487,32 @@ Banners in the 90s" and the era's deceptive ad formats, all as parody.
   orange and black with a jack-o'-lantern carved into the record's label,
   every poster has a Halloween frame, Dead Air has every other day, a badge
   counts down the nights and the error box becomes Boo.exe. Every year.
+- **A different costume every week (2026-10-23, the owner's ask).** The
+  poster turns over on Mondays (UTC) through eight 2004 ad formats
+  (`LOOKS`, `lookFor`): classic, winner (red and yellow, hazard tape, a
+  starburst), slime (lime and purple Comic Sans), scan (an XP window with
+  a scan bar), jackpot (gold on black, a ring of bulbs, a 777 chip),
+  tabloid (newsprint in a coupon's dashed edge), y2k (cyan monospace on
+  midnight) and dating (pink italic). Each but classic slaps a sticker on
+  the record. Weekly rather than monthly because the copy already changes
+  daily, and a month of one look wears out for a daily visitor. Halloween
+  week replaces whichever is due.
+  - **Each costume sets the poster's own tokens on the aside**
+    (`.rail-look-<id>`), so the record and the "Nice try." follow. Like
+    Halloween's, the costumes are the same in every skin; only classic
+    takes Vintage's silver.
+  - **Impact is condensed and nothing else is,** so the costumes write the
+    copy in sentence case (y2k keeps capitals, at 20px), at the size whose
+    widest fixed word fits the 134px poster.
+  - **Measured at 1380px (2026-10-23)** with a 32-character head, a
+    150-character fact and "CLAIM NOTHING":
+    - every fixed word fits, and every button stays on one line;
+    - the sticker stays inside the record's height, clear of both;
+    - text contrast is 5.04:1 at the lowest, from computed colours.
+  - `test/margin-rails.test.mjs` fails if:
+    - the look changes on any day but a Monday;
+    - a look never airs, or one airs in Halloween week;
+    - a look lacks its CSS or a place in the shared `:is()` lists.
 - **Parody, on the owner's call (2026-10-18).** The badges name real
   products and the error box and close boxes copy the era's deceptive
   formats. The disclaimer under them owns up to all of it. The fakes are

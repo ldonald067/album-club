@@ -1,13 +1,16 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import {
   POSTERS,
   PARODY_BADGES,
   DISCLAIMER,
+  LOOKS,
   posterFor,
   badgesFor,
   errorFor,
   halloween,
+  lookFor,
   ringNextTitle,
   showsRails,
 } from "../lib/margin-rails.js";
@@ -147,6 +150,50 @@ test("in Halloween week the poster dresses up and Dead Air has every other day",
     ),
     "no costume outside the week",
   );
+});
+
+test("the poster changes its look on Mondays only, and every look takes its turn", () => {
+  const seen = new Set();
+  for (const day of DAYS.filter((d) => halloween(d.dayKey) === null)) {
+    const look = lookFor(day.dayKey);
+    seen.add(look.id);
+    assert.equal(posterFor(day, "home").look, look, day.dayKey);
+    const at = Date.parse(`${day.dayKey}T12:00:00Z`);
+    const yesterday = new Date(at - 86400000).toISOString().slice(0, 10);
+    if (halloween(yesterday) !== null) continue;
+    const monday = new Date(at).getUTCDay() === 1;
+    assert.equal(lookFor(yesterday) !== look, monday, day.dayKey);
+  }
+  assert.deepEqual([...seen].sort(), LOOKS.map((l) => l.id).sort());
+  assert.equal(new Set(LOOKS.map((l) => l.id)).size, LOOKS.length);
+});
+
+test("Halloween week wears its own costume, not the week's look", () => {
+  for (const day of DAYS.filter((d) => halloween(d.dayKey) !== null)) {
+    assert.equal(lookFor(day.dayKey), null, day.dayKey);
+    assert.equal(posterFor(day, "home").look, null, day.dayKey);
+  }
+});
+
+test("every look but classic has a costume in globals.css and a sticker that fits", () => {
+  const css = fs.readFileSync(
+    new URL("../app/globals.css", import.meta.url),
+    "utf8",
+  );
+  for (const look of LOOKS) {
+    if (look.id === "classic") {
+      assert.equal(look.sticker, null);
+      continue;
+    }
+    assert.ok(css.includes(`.rail-look-${look.id} {`), look.id);
+    // and in both :is() lists, for sentence case and a one-line button
+    const listed = css.match(
+      new RegExp(`\\.rail-look-${look.id}(?=\\s*[,)])`, "g"),
+    );
+    assert.ok(listed?.length >= 2, `${look.id}: in the shared :is() lists`);
+    // Measured on the record at 1380px: "FREE SCAN" and "SHOCKING!" fit
+    assert.ok(look.sticker && look.sticker.length <= 9, look.id);
+  }
 });
 
 test("badges fit an 88×31 micro-banner, every day", () => {
