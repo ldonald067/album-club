@@ -4276,8 +4276,8 @@ function DeadAirSection() {
           out. Clues are saved in your journal. Sound is optional.
         </p>
         <p className="deadair-note">
-          Content note: an abandoned station, low drones and unsettling crew
-          logs. No jump scares, gore or timers.
+          Content note: an abandoned station, low drones, unsettling crew logs
+          and blood running down the walls. No jump scares or timers.
         </p>
         <div className="deadair-set">
           <iframe
