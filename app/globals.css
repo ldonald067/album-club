@@ -128,6 +128,40 @@
   --rail-dating-pop: #ff3399;
   --rail-dating-pop-ink: #3d0022;
   --rail-dating-cta-ink: #fff;
+  /* The badge column's 125×125 square (lib/margin-rails.js PROMOS), one
+     era format a day, the same in every skin. Text on its own fill. */
+  --rail-promo-edge: #000;
+  --rail-monkey-bg: #ffcc00;
+  --rail-monkey-head: #a30000;
+  --rail-monkey-ink: #000;
+  --rail-monkey-sky: #66ccff;
+  --rail-million-bg: #000080;
+  --rail-million-hot: #ffff33;
+  --rail-million-ink: #fff;
+  --rail-balloon-desk: #3a6ea5;
+  --rail-balloon-bg: #ffffe1;
+  --rail-balloon-ink: #000;
+  --rail-balloon-link: #0000ee;
+  --rail-balloon-tray: #245edb;
+  --rail-balloon-tray-ink: #fff;
+  --rail-search-bg: #e4e8f0;
+  --rail-search-ink: #003399;
+  --rail-search-field: #fff;
+  --rail-search-field-ink: #000;
+  --rail-search-go-ink: #fff;
+  --rail-dl-bg: #fff;
+  --rail-dl-ink: #000;
+  --rail-dl-go: #1e7e1e;
+  --rail-dl-go-ink: #fff;
+  --rail-click-bg: #000;
+  --rail-click-a: #ffff00;
+  --rail-click-b: #00ffff;
+  --rail-click-c: #ff66ff;
+  --rail-click-ink: #fff;
+  --rail-warn-bar: #a30000;
+  --rail-warn-bar-ink: #fff;
+  --rail-warn-bg: #ffee00;
+  --rail-warn-ink: #000;
   --bg-page: #e8e0d0;
   --bg-main: #fff;
   --bg-dark: #1a1a2e;
@@ -4090,6 +4124,397 @@ body {
   font-size: 11px;
   line-height: 1.35;
   color: var(--text-secondary);
+}
+
+.rail-disclaimer a {
+  color: var(--text-link);
+}
+
+/* The day's 125×125 square (lib/margin-rails.js PROMOS), the era's
+   "button" size, between the webring and the error box. It needs 137px
+   the badge column only has to spare once the badges tile two to a row,
+   or on a window 760px tall or more (the anchor grows to match, below);
+   on a shorter, narrower one it stays away rather than run the
+   disclaimer off the bottom of the screen (measured at 1380px,
+   2026-10-27). */
+.rail-promo {
+  display: none;
+  position: relative;
+  width: 125px;
+  height: 125px;
+  margin: 12px auto 0;
+  padding: 6px;
+  box-sizing: border-box;
+  overflow: hidden;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--rail-promo-edge);
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 10px;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+}
+
+@media (min-height: 760px) {
+  .rail-promo {
+    display: flex;
+  }
+}
+
+@container (min-width: 182px) {
+  .rail-promo {
+    display: flex;
+  }
+}
+
+@media (min-width: 1380px) and (min-height: 760px) {
+  .margin-rails {
+    height: 740px;
+    margin-bottom: -740px;
+  }
+}
+
+/* Ink on the spans, not the link: Vintage colours every link navy, and
+   a span only inherits that if it is let */
+.rail-promo > span {
+  color: var(--rail-promo-ink);
+}
+
+.rail-promo-kicker,
+.rail-promo-cta {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.rail-promo-head {
+  font-family: "Arial Black", Impact, sans-serif;
+  font-size: 14px;
+  line-height: 1.1;
+}
+
+.rail-promo-fine {
+  font-size: 9px;
+  line-height: 1.2;
+}
+
+.rail-promo-cta {
+  padding: 3px 8px;
+  letter-spacing: 0.5px;
+}
+
+.rail-promo:hover .rail-promo-cta,
+.rail-promo:focus-visible .rail-promo-cta {
+  text-decoration: underline;
+}
+
+.rail-promo-art {
+  display: none;
+}
+
+/* MONKEY: hit the moving target to win. A record slides across a strip of
+   sky under a crosshair three times, then stops (WCAG 2.2.2). */
+.rail-promo-monkey {
+  background: var(--rail-monkey-bg);
+  --rail-promo-ink: var(--rail-monkey-ink);
+}
+
+.rail-promo-monkey .rail-promo-art {
+  display: block;
+  position: relative;
+  flex: none;
+  width: 100%;
+  height: 30px;
+  order: 1;
+  background:
+    radial-gradient(
+      circle at center,
+      transparent 0 9px,
+      var(--rail-monkey-head) 9px 10px,
+      transparent 10px
+    ),
+    linear-gradient(var(--rail-monkey-head), var(--rail-monkey-head)) center /
+      1px 100% no-repeat,
+    linear-gradient(var(--rail-monkey-head), var(--rail-monkey-head)) center /
+      100% 1px no-repeat,
+    var(--rail-monkey-sky);
+  border: 1px solid var(--rail-monkey-ink);
+}
+
+.rail-promo-monkey .rail-promo-art::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(
+    circle,
+    var(--rail-monkey-bg) 0 3px,
+    var(--rail-vinyl) 3px 10px,
+    transparent 10px
+  );
+  animation: railBop 1.4s ease-in-out 3 alternate;
+}
+
+@keyframes railBop {
+  to {
+    translate: 85px 0;
+  }
+}
+
+.rail-promo-monkey .rail-promo-head {
+  color: var(--rail-monkey-head);
+  order: 2;
+}
+
+.rail-promo-monkey .rail-promo-cta {
+  order: 3;
+  background: var(--rail-monkey-ink);
+  color: var(--rail-monkey-bg);
+}
+
+.rail-promo-monkey .rail-promo-fine {
+  order: 4;
+}
+
+/* WINNER: the millionth-visitor prize. Navy, a yellow prize line, a
+   dashed coupon edge inside. */
+.rail-promo-winner {
+  background: var(--rail-million-bg);
+  --rail-promo-ink: var(--rail-million-ink);
+  outline: 2px dashed var(--rail-million-hot);
+  outline-offset: -5px;
+  padding: 9px;
+}
+
+.rail-promo-winner .rail-promo-kicker {
+  color: var(--rail-million-hot);
+}
+
+.rail-promo-winner .rail-promo-head {
+  font-size: 13px;
+}
+
+.rail-promo-winner .rail-promo-cta {
+  background: var(--rail-million-hot);
+  color: var(--rail-million-bg);
+  padding: 3px 5px;
+  letter-spacing: 0;
+}
+
+/* BALLOON: the system tray's "new update" balloon, over a desktop and a
+   taskbar clock */
+.rail-promo-balloon {
+  justify-content: flex-start;
+  gap: 4px;
+  padding: 6px 6px 0;
+  background: var(--rail-balloon-desk);
+  --rail-promo-ink: var(--rail-balloon-ink);
+}
+
+.rail-promo-balloon .rail-promo-art {
+  display: block;
+  position: absolute;
+  inset: 4px 4px 26px;
+  border: 1px solid var(--rail-balloon-ink);
+  border-radius: 6px;
+  background: var(--rail-balloon-bg);
+}
+
+.rail-promo-balloon .rail-promo-art::after {
+  content: "";
+  position: absolute;
+  bottom: -9px;
+  right: 18px;
+  width: 0;
+  height: 0;
+  border: 8px solid transparent;
+  border-top-color: var(--rail-balloon-ink);
+  border-bottom: 0;
+}
+
+.rail-promo-balloon :is(.rail-promo-kicker, .rail-promo-head, .rail-promo-cta) {
+  position: relative;
+  text-align: left;
+  align-self: stretch;
+  padding: 0 4px;
+}
+
+.rail-promo-balloon .rail-promo-kicker {
+  padding-top: 3px;
+}
+
+.rail-promo-balloon .rail-promo-head {
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  font-weight: normal;
+}
+
+.rail-promo-balloon .rail-promo-cta {
+  color: var(--rail-balloon-link);
+  font-weight: normal;
+  text-decoration: underline;
+  letter-spacing: 0;
+}
+
+.rail-promo-balloon .rail-promo-fine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 6px;
+  background: var(--rail-balloon-tray);
+  color: var(--rail-balloon-tray-ink);
+  font-size: 10px;
+}
+
+/* SEARCH: the fake search box, with the day's genre already typed in */
+.rail-promo-search {
+  background: var(--rail-search-bg);
+  --rail-promo-ink: var(--rail-search-ink);
+  justify-content: center;
+  gap: 6px;
+}
+
+.rail-promo-search .rail-promo-kicker {
+  font-family: "Arial Black", Impact, sans-serif;
+  font-size: 11px;
+}
+
+.rail-promo-search .rail-promo-field {
+  align-self: stretch;
+  padding: 3px 4px;
+  text-align: left;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  background: var(--rail-search-field);
+  color: var(--rail-search-field-ink);
+  border: 2px inset var(--rail-search-ink);
+}
+
+.rail-promo-search .rail-promo-cta {
+  align-self: flex-end;
+  margin-top: -4px;
+  padding: 3px 10px;
+  background: var(--rail-search-ink);
+  color: var(--rail-search-go-ink);
+}
+
+.rail-promo-search .rail-promo-fine {
+  font-size: 10px;
+}
+
+/* DOWNLOAD: the big green button with an arrow that points down at it */
+.rail-promo-download {
+  background: var(--rail-dl-bg);
+  --rail-promo-ink: var(--rail-dl-ink);
+}
+
+.rail-promo-download .rail-promo-head {
+  font-size: 12px;
+  color: var(--rail-dl-go);
+}
+
+.rail-promo-download .rail-promo-cta {
+  position: relative;
+  padding: 6px 10px 6px 24px;
+  background: var(--rail-dl-go);
+  color: var(--rail-dl-go-ink);
+  border: 2px outset var(--rail-dl-go);
+  font-size: 11px;
+}
+
+.rail-promo-download .rail-promo-cta::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  translate: 0 -40%;
+  border: 6px solid transparent;
+  border-top: 8px solid var(--rail-dl-go-ink);
+  border-bottom: 0;
+}
+
+/* CLICK: the flashing CLICK HERE!!! in three loud colours, five times,
+   then still (WCAG 2.2.2) */
+.rail-promo-click {
+  background: var(--rail-click-bg);
+  --rail-promo-ink: var(--rail-click-ink);
+  justify-content: center;
+  gap: 8px;
+}
+
+.rail-promo-click .rail-promo-kicker {
+  color: var(--rail-click-b);
+}
+
+.rail-promo-click .rail-promo-head {
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  font-size: 17px;
+  font-weight: bold;
+  color: var(--rail-click-a);
+  animation: railFlash 0.9s step-end 5;
+}
+
+@keyframes railFlash {
+  33% {
+    color: var(--rail-click-b);
+  }
+  66% {
+    color: var(--rail-click-c);
+  }
+}
+
+.rail-promo-click .rail-promo-fine {
+  font-size: 10px;
+}
+
+/* WARNING: the fake security alert. A red title bar, hazard tape, and
+   black on yellow. */
+.rail-promo-warning {
+  padding-top: 24px;
+  background: var(--rail-warn-bg);
+  --rail-promo-ink: var(--rail-warn-ink);
+  border: 4px solid;
+  border-image: repeating-linear-gradient(
+      45deg,
+      var(--rail-warn-ink) 0 6px,
+      var(--rail-warn-bg) 6px 12px
+    )
+    4;
+}
+
+.rail-promo-warning .rail-promo-kicker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 3px 0;
+  background: var(--rail-warn-bar);
+  color: var(--rail-warn-bar-ink);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.rail-promo-warning .rail-promo-kicker::before {
+  content: "⚠ ";
+}
+
+.rail-promo-warning .rail-promo-head {
+  font-size: 11px;
+}
+
+.rail-promo-warning .rail-promo-cta {
+  background: var(--rail-warn-bar);
+  color: var(--rail-warn-bar-ink);
 }
 
 /* ─── Cover Art Challenge ─── */

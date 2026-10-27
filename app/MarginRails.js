@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { sectionPath } from "./sections";
 import {
+  CREDITS,
   DISCLAIMER,
   badgesFor,
   errorFor,
   posterFor,
+  promoFor,
   ringNextTitle,
   showsRails,
 } from "@/lib/margin-rails";
@@ -49,6 +51,7 @@ export default function MarginRails({ section, day }) {
   if (!showsRails(section)) return null;
   const poster = posterFor(day, section);
   const error = errorFor(day, section);
+  const promo = promoFor(day, section);
   return (
     <div className="margin-rails">
       {poster && (
@@ -128,6 +131,27 @@ export default function MarginRails({ section, day }) {
             <span title={ringNextTitle(day)}>next ►</span>
           </span>
         </nav>
+        {/* The day's 125×125 square (PROMOS). Its art (the record to bop,
+            the arrow, the tray) is drawn by .rail-promo-<id> in CSS; the
+            search field is drawn too, never an input. */}
+        {promo && (
+          <Link
+            href={sectionPath(promo.to)}
+            prefetch={false}
+            className={`rail-promo rail-promo-${promo.id}`}
+          >
+            <span className="rail-promo-art" aria-hidden="true" />
+            {promo.kicker && (
+              <span className="rail-promo-kicker">{promo.kicker}</span>
+            )}
+            {promo.head && <span className="rail-promo-head">{promo.head}</span>}
+            {promo.field && (
+              <span className="rail-promo-field">{promo.field}</span>
+            )}
+            {promo.cta && <span className="rail-promo-cta">{promo.cta}</span>}
+            {promo.fine && <span className="rail-promo-fine">{promo.fine}</span>}
+          </Link>
+        )}
         <div className="rail-error" role="group" aria-label="Parody error box">
           <div className="rail-error-bar">
             <span>{error.title}</span>
@@ -150,7 +174,18 @@ export default function MarginRails({ section, day }) {
             <FakeButton className="rail-error-cancel">Cancel</FakeButton>
           </div>
         </div>
-        <p className="rail-disclaimer">{DISCLAIMER}</p>
+        {/* The credit runs on in the disclaimer's paragraph: a line of
+            its own pushed a 760px window's column off the screen */}
+        <p className="rail-disclaimer">
+          {DISCLAIMER} Formats after the{" "}
+          {CREDITS.map((c, i) => (
+            <span key={c.name}>
+              {i === 0 ? "" : i === CREDITS.length - 1 ? " and " : ", "}
+              <a href={c.href}>{c.name}</a>
+            </span>
+          ))}
+          .
+        </p>
       </aside>
     </div>
   );

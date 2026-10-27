@@ -513,6 +513,40 @@ Banners in the 90s" and the era's deceptive ad formats, all as parody.
     - the look changes on any day but a Monday;
     - a look never airs, or one airs in Halloween week;
     - a look lacks its CSS or a place in the shared `:is()` lists.
+- **A 125×125 square a day (2026-10-27, the owner's ask).** The era's
+  "button" format, between the webring and the error box, in one of seven
+  parodies drawn in CSS (`PROMOS`, `promoFor`, `.rail-promo-<id>`):
+  monkey (bop a sliding record → Cozy Vibes), winner (the millionth
+  listener → Stats), balloon (a system-tray balloon over a taskbar →
+  Home), search (a fake search box with the day's genre typed in →
+  Archive), download (the big green button, "0 KB" → FAQ), click
+  (flashing CLICK HERE!!! → Soundtrack Corner) and warning (a fake
+  security alert in hazard tape → Dead Air).
+  - **Our own wording, no logos, nothing copied.** The owner first asked
+    for the real 1990s banners from three exhibitions with credit. The
+    Web Design Museum says its screenshots belong to their owners, so a
+    credit does not grant permission; the owner chose parodies plus a
+    credit line instead. The disclaimer ends "Formats after the Web
+    Design Museum, Luna Media and Vintage Computing", each a plain
+    outbound link to its page (`CREDITS`): the site describing itself,
+    not a share button.
+  - **One a day by the UTC date,** stepping past the one for the tab it
+    hangs beside and the one for the poster's tab that day. Each square is
+    one link; its fake field and button are drawn spans, not controls.
+  - **Only where it fits.** The badge column at 1380px is 587px; the
+    square adds 137px. It shows on a window 760px tall or more (the
+    anchor grows to 740px there) or once the badges tile two to a row;
+    on a 1380–1427px window under 760px tall it stays away rather than
+    push the disclaimer off the screen.
+  - **The same in every skin,** like the costumes. Its ink is set on the
+    spans, not the link: Vintage colours every link navy, which turned
+    two squares' text navy on navy until it was measured.
+  - **Measured at 1380px (2026-10-27),** all seven, in both skins, with
+    animations stopped: nothing leaves the square or overlaps, all 112
+    genre values the search field can carry fit, and text contrast is
+    5.17:1 at the lowest (white on the green download button).
+  - Motion stops within 5s: the record slides three times (4.2s) and
+    CLICK HERE flashes five times (4.5s, `step-end`).
 - **Parody, on the owner's call (2026-10-18).** The badges name real
   products and the error box and close boxes copy the era's deceptive
   formats. The disclaimer under them owns up to all of it. The fakes are
@@ -521,7 +555,8 @@ Banners in the 90s" and the era's deceptive ad formats, all as parody.
   badges are drawn in CSS, not copied from the museum's images.
 - **`test/margin-rails.test.mjs` renders two years of days** from the real
   catalog through every tab and fails on a hole (`undefined`, `NaN`), copy
-  too long for the poster, a badge or the error box, a frame that never
+  too long for the poster, a badge, the square or the error box, a square
+  that never airs beside a tab or repeats the poster's tab, a frame that never
   fires, a poster for its own tab, tomorrow's title leaking, or a
   Halloween week without its costume and Dead Air billing. Widths were
   measured in the browser (2026-10-19): ten pixel-type and seven bold

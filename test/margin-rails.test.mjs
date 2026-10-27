@@ -6,7 +6,10 @@ import {
   PARODY_BADGES,
   DISCLAIMER,
   LOOKS,
+  PROMOS,
+  CREDITS,
   posterFor,
+  promoFor,
   badgesFor,
   errorFor,
   halloween,
@@ -233,8 +236,82 @@ test("the fake error box: no holes, and OK goes somewhere else", () => {
   }
 });
 
-test("the disclaimer owns up to all three fakes", () => {
-  for (const word of ["Parody", "badges", "poster", "error box", "won", "X"]) {
+test("every square advertises a real tab and has its costume in globals.css", () => {
+  const css = fs.readFileSync(
+    new URL("../app/globals.css", import.meta.url),
+    "utf8",
+  );
+  assert.equal(new Set(PROMOS.map((p) => p.id)).size, PROMOS.length);
+  for (const promo of PROMOS) {
+    assert.doesNotThrow(() => sectionPath(promo.to), promo.id);
+    assert.ok(css.includes(`.rail-promo-${promo.id} {`), promo.id);
+  }
+});
+
+test("two years of squares, every tab: no holes, and the copy fits 125×125", () => {
+  for (const day of DAYS) {
+    for (const tab of RAIL_TABS) {
+      const p = promoFor(day, tab);
+      const where = `${day.dayKey} beside ${tab}: ${JSON.stringify(p)}`;
+      assert.ok(p, where);
+      assert.notEqual(p.to, tab, `${where} — advertises its own tab`);
+      assert.notEqual(p.to, posterFor(day, tab).to, `${where} — the poster's`);
+      const text = [p.kicker, p.head, p.field, p.cta, p.fine].filter(Boolean);
+      assert.ok(text.length >= 3, where);
+      for (const t of text) assert.ok(!HOLE.test(t), where);
+      // Measured in the square at 1380px (2026-10-27): the kicker and
+      // button on one line, the head in three lines of 14px, the fine
+      // print in three of 9px, and every genre the field can carry
+      assert.ok(!p.kicker || p.kicker.length <= 16, `${where} — kicker`);
+      assert.ok(!p.head || p.head.length <= 34, `${where} — head`);
+      assert.ok(!p.cta || p.cta.length <= 14, `${where} — cta`);
+      assert.ok(!p.fine || p.fine.length <= 44, `${where} — fine`);
+      assert.ok(!p.field || p.field.length <= 16, `${where} — field`);
+    }
+  }
+});
+
+test("every square takes its turn beside every tab but its own", () => {
+  for (const tab of RAIL_TABS) {
+    const seen = new Set(DAYS.map((d) => promoFor(d, tab).id));
+    const due = PROMOS.filter((p) => p.to !== tab).map((p) => p.id);
+    assert.deepEqual([...seen].sort(), due.sort(), tab);
+  }
+});
+
+test("the square turns over daily, by the date alone", () => {
+  const ids = DAYS.slice(0, 14).map((d) => promoFor(d, "stats").id);
+  assert.ok(new Set(ids).size >= PROMOS.length - 2, ids.join(" "));
+  const day = DAYS[100];
+  assert.deepEqual(promoFor(day, "home"), promoFor({ ...day }, "home"));
+});
+
+test("the search square types the day's genre, or gives up on a long one", () => {
+  const search = PROMOS.find((p) => p.id === "search");
+  const at = (genre) => search.copy({ album: { genre } }).field;
+  assert.equal(at("Hip-Hop/Soul"), "Hip-Hop");
+  assert.equal(at("Progressive Rock"), "Progressive Rock");
+  assert.equal(at("Progressive Electronic"), "albums");
+});
+
+test("the credit links the three exhibitions the formats came from", () => {
+  assert.deepEqual(
+    CREDITS.map((c) => c.name),
+    ["Web Design Museum", "Luna Media", "Vintage Computing"],
+  );
+  for (const c of CREDITS) assert.match(c.href, /^https:\/\//);
+});
+
+test("the disclaimer owns up to all four fakes", () => {
+  for (const word of [
+    "Parody",
+    "badges",
+    "poster",
+    "square",
+    "error box",
+    "won",
+    "X",
+  ]) {
     assert.ok(DISCLAIMER.includes(word), word);
   }
 });
