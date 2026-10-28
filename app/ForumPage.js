@@ -5156,7 +5156,7 @@ export default function ForumPage({
 
   return (
     <DailyPicksContext.Provider value={dailyPicks}>
-      <a href="#main-content" className="sr-only">
+      <a href="#page-content" className="sr-only">
         Skip to main content
       </a>
       {/* Banner */}
@@ -5291,6 +5291,9 @@ export default function ForumPage({
         }}
       >
         {rails}
+        {/* Where "Skip to main content" lands: past the margin rails, which
+            come first in <main> and are ten tab stops of parody */}
+        <span id="page-content" />
         {activeSection === "home" && (
           <>
             {/* Marquee */}

@@ -248,42 +248,95 @@ test("every square advertises a real tab and has its costume in globals.css", ()
   }
 });
 
-test("two years of squares, every tab: no holes, and the copy fits 125×125", () => {
+/* Each square's copy at the lengths it was measured at in the browser,
+   at 1380px in both skins (2026-10-28): nothing left its square or
+   overlapped. The layouts differ — the warning's head is 11px, the
+   monkey's 14px Arial Black — so one limit for all of them would pass
+   copy that does not fit. Lengthen a line and this fails until it is
+   measured again. The search field carries the day's genre, and every
+   value it can take (112 of them) was measured: 16 characters fit. */
+const MEASURED = {
+  monkey: { kicker: 14, head: 11, cta: 4, fine: 21 },
+  winner: { kicker: 16, head: 20, cta: 14, fine: 12 },
+  balloon: { kicker: 15, head: 25, cta: 11, fine: 12 },
+  search: { kicker: 16, field: 16, cta: 2, fine: 26 },
+  download: { kicker: 13, head: 4, cta: 8, fine: 36 },
+  click: { kicker: 13, head: 13, fine: 44 },
+  warning: { kicker: 7, head: 34, cta: 6, fine: 35 },
+};
+
+test("two years of squares, every tab: no holes, and the copy is as measured", () => {
+  assert.deepEqual(
+    Object.keys(MEASURED).sort(),
+    PROMOS.map((p) => p.id).sort(),
+  );
   for (const day of DAYS) {
     for (const tab of RAIL_TABS) {
       const p = promoFor(day, tab);
       const where = `${day.dayKey} beside ${tab}: ${JSON.stringify(p)}`;
-      assert.ok(p, where);
       assert.notEqual(p.to, tab, `${where} — advertises its own tab`);
       assert.notEqual(p.to, posterFor(day, tab).to, `${where} — the poster's`);
-      const text = [p.kicker, p.head, p.field, p.cta, p.fine].filter(Boolean);
-      assert.ok(text.length >= 3, where);
-      for (const t of text) assert.ok(!HOLE.test(t), where);
-      // Measured in the square at 1380px (2026-10-27): the kicker and
-      // button on one line, the head in three lines of 14px, the fine
-      // print in three of 9px, and every genre the field can carry
-      assert.ok(!p.kicker || p.kicker.length <= 16, `${where} — kicker`);
-      assert.ok(!p.head || p.head.length <= 34, `${where} — head`);
-      assert.ok(!p.cta || p.cta.length <= 14, `${where} — cta`);
-      assert.ok(!p.fine || p.fine.length <= 44, `${where} — fine`);
-      assert.ok(!p.field || p.field.length <= 16, `${where} — field`);
+      const fields = ["kicker", "head", "field", "cta", "fine"];
+      for (const f of fields) {
+        const limit = MEASURED[p.id][f];
+        if (limit === undefined) {
+          assert.equal(p[f], undefined, `${where} — ${f} was never measured`);
+          continue;
+        }
+        assert.ok(p[f] && !HOLE.test(p[f]), `${where} — ${f}`);
+        assert.ok(p[f].length <= limit, `${where} — ${f} ${p[f].length}`);
+      }
     }
   }
 });
 
-test("every square takes its turn beside every tab but its own", () => {
+test("every square takes its turn beside every tab but its own, within half its share", () => {
   for (const tab of RAIL_TABS) {
-    const seen = new Set(DAYS.map((d) => promoFor(d, tab).id));
+    const count = {};
+    for (const d of DAYS) {
+      const id = promoFor(d, tab).id;
+      count[id] = (count[id] || 0) + 1;
+    }
     const due = PROMOS.filter((p) => p.to !== tab).map((p) => p.id);
-    assert.deepEqual([...seen].sort(), due.sort(), tab);
+    assert.deepEqual(Object.keys(count).sort(), due.sort(), tab);
+    // A square cannot air on its poster's day, and the poster's days are
+    // not even: two posters advertise the FAQ, and Dead Air has every
+    // other day in Halloween week. So beside Stats the FAQ square airs 70
+    // days in two years and the square that stands in for it 173. Each
+    // still gets more than half its share and less than half as much
+    // again (tried 2026-10-28: no other stand-in did better without
+    // repeating the day before).
+    const share = DAYS.length / due.length;
+    for (const [id, n] of Object.entries(count)) {
+      assert.ok(
+        n > share / 2 && n < share * 1.5,
+        `${tab}: ${id} ${n} days — ${JSON.stringify(count)}`,
+      );
+    }
   }
 });
 
-test("the square turns over daily, by the date alone", () => {
-  const ids = DAYS.slice(0, 14).map((d) => promoFor(d, "stats").id);
-  assert.ok(new Set(ids).size >= PROMOS.length - 2, ids.join(" "));
-  const day = DAYS[100];
-  assert.deepEqual(promoFor(day, "home"), promoFor({ ...day }, "home"));
+test("the square never repeats the day before", () => {
+  for (const tab of RAIL_TABS) {
+    for (let i = 1; i < DAYS.length; i++) {
+      assert.notEqual(
+        promoFor(DAYS[i], tab).id,
+        promoFor(DAYS[i - 1], tab).id,
+        `${DAYS[i].dayKey} beside ${tab}`,
+      );
+    }
+  }
+});
+
+test("the square takes the poster's tab from the caller as it would find it", () => {
+  for (const day of DAYS.slice(0, 60)) {
+    for (const tab of RAIL_TABS) {
+      assert.deepEqual(
+        promoFor(day, tab, posterFor(day, tab).to),
+        promoFor(day, tab),
+      );
+    }
+  }
 });
 
 test("the search square types the day's genre, or gives up on a long one", () => {

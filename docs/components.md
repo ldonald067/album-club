@@ -508,7 +508,12 @@ Banners in the 90s" and the era's deceptive ad formats, all as parody.
     150-character fact and "CLAIM NOTHING":
     - every fixed word fits, and every button stays on one line;
     - the sticker stays inside the record's height, clear of both;
-    - text contrast is 5.04:1 at the lowest, from computed colours.
+    - text contrast is 4.77:1 at the lowest in both skins, from computed
+      colours (re-measured 2026-10-28). The first measurement, 5.04:1,
+      was taken in the default skin only: in Vintage, every link's navy
+      reached the body and fine print, which set no colour of their own,
+      and four looks read 1.19–2.72:1 (Halloween's among them, live).
+      The poster's lines now take `--rail-poster-ink` themselves.
   - `test/margin-rails.test.mjs` fails if:
     - the look changes on any day but a Monday;
     - a look never airs, or one airs in Halloween week;
@@ -530,19 +535,36 @@ Banners in the 90s" and the era's deceptive ad formats, all as parody.
     Design Museum, Luna Media and Vintage Computing", each a plain
     outbound link to its page (`CREDITS`): the site describing itself,
     not a share button.
-  - **One a day by the UTC date,** stepping past the one for the tab it
-    hangs beside and the one for the poster's tab that day. Each square is
-    one link; its fake field and button are drawn spans, not controls.
-  - **Only where it fits.** The badge column at 1380px is 587px; the
-    square adds 137px. It shows on a window 760px tall or more (the
-    anchor grows to 740px there) or once the badges tile two to a row;
-    on a 1380–1427px window under 760px tall it stays away rather than
-    push the disclaimer off the screen.
+  - **One a day by the UTC date,** from all but the one for the tab it
+    hangs beside, a step further on each week. On the day it would match
+    the poster's tab, the square half the list away stands in. Each
+    square is one link; its fake field and button are drawn spans, not
+    controls.
+    - The first version stepped on to the next square instead, which
+      put tomorrow's up a day early: one day in five repeated the day
+      before (2026-10-28 audit). Half the list away never does.
+    - The weekly step keeps it out of lockstep with the poster: beside
+      Home both lists are six long, and the Cozy Vibes square met its
+      poster every time it came round.
+    - It is not perfectly even, because the poster isn't: two posters
+      advertise the FAQ. Beside Stats the FAQ square airs 70 days in two
+      years and its stand-in 173; every square gets more than half its
+      share.
+  - **Only where it fits.** Without it, the badge column at 1380px is
+    587–615px: the error box grows with the album's title. The square
+    adds 137px, so the tallest column is 752px, 768px with the gap above
+    it. It shows on a window 780px tall or more, or once the badges tile
+    two to a row (a 1412px window). On a 1380–1411px window under 780px
+    tall it stays away rather than push the disclaimer off the screen.
+    Where the badges stack and it shows, the anchor grows from 640px to
+    760px. The first version used 760px and 740px, measured on a day
+    with a short error message; 1380×760–779 cut the disclaimer off on
+    a long one (2026-10-28 audit).
   - **The same in every skin,** like the costumes. Its ink is set on the
     spans, not the link: Vintage colours every link navy, which turned
     two squares' text navy on navy until it was measured.
-  - **Measured at 1380px (2026-10-27),** all seven, in both skins, with
-    animations stopped: nothing leaves the square or overlaps, all 112
+  - **Measured at 1380px (2026-10-27, again 2026-10-28),** all seven, in
+    both skins, with animations stopped: nothing leaves the square or overlaps, all 112
     genre values the search field can carry fit, and text contrast is
     5.17:1 at the lowest (white on the green download button).
   - Motion stops within 5s: the record slides three times (4.2s) and
@@ -556,7 +578,9 @@ Banners in the 90s" and the era's deceptive ad formats, all as parody.
 - **`test/margin-rails.test.mjs` renders two years of days** from the real
   catalog through every tab and fails on a hole (`undefined`, `NaN`), copy
   too long for the poster, a badge, the square or the error box, a square
-  that never airs beside a tab or repeats the poster's tab, a frame that never
+  longer than it was measured at, one that never airs beside a tab, gets
+  less than half its share, repeats the day before or repeats the
+  poster's tab, a frame that never
   fires, a poster for its own tab, tomorrow's title leaking, or a
   Halloween week without its costume and Dead Air billing. Widths were
   measured in the browser (2026-10-19): ten pixel-type and seven bold
@@ -591,8 +615,14 @@ Banners in the 90s" and the era's deceptive ad formats, all as parody.
   overrides; the Windows grey and the Halloween costume are the same in
   every skin. The poster's record and the error icon are on Vintage's
   round-corner exemption list. Contrast measured from computed colours on
-  their solid backgrounds, both skins: 4.77:1 at the lowest (Vintage's
-  white on teal).
+  their solid backgrounds, both skins, every look and the square:
+  4.77:1 at the lowest (Vintage's white on teal, re-measured
+  2026-10-28).
+- **"Skip to main content" skips the rails too.** They come first in
+  `<main>`, ten tab stops of parody, so the skip link targets
+  `#page-content`, an empty span just after them, instead of `<main>`
+  itself (2026-10-28). `<main>` keeps `id="main-content"` as its
+  landmark.
 - **To see Halloween locally,** fake the server's clock to 24–31 October
   (`docs/gotchas.md`). Expect a hydration warning while you do: the
   marquee picks its message by date in the browser, which still knows the

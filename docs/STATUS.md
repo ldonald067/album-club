@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-10-27.
+session. Last updated: 2026-10-28.
 
 This file holds **current state, open items and standing decisions** only.
 How things work lives in the topic docs; what happened and when lives in git
@@ -65,11 +65,17 @@ doc, and what is still unchecked is in the open items:
   HERE, fake warning), each a notice for a club tab, plus a credit line
   in the disclaimer linking the three exhibitions they were studied
   from. The real banners were not copied: the museum's screenshots are
-  their owners'. Hidden on a 1380–1427px window under 760px tall, where
+  their owners'. Hidden on a 1380–1411px window under 780px tall, where
   it would not fit. `docs/components.md` → "Margin rails".
+- **Margin rails audit (10-28),** on the owner's ask, fixed and shipped:
+  the Vintage poster unreadable in four looks (Halloween included,
+  1.19:1), the square repeating the day before one day in five, the
+  column cut off at 1380×760–779, and a skip link that still landed on
+  ten rail tab stops. Tests that could not fail were replaced, and wrong
+  numbers in the docs corrected.
 - **The poster changes costume every week (10-23):** eight 2004 ad
-  formats in turn, each Monday (UTC). This week's is jackpot; Halloween
-  covers 10-24 to 10-31, tabloid has 11-01 alone, and y2k starts 11-02. `docs/components.md` →
+  formats in turn, each Monday (UTC). Halloween covers 10-24 to 10-31,
+  tabloid has 11-01 alone, and y2k starts 11-02. `docs/components.md` →
   "Margin rails".
 - **Every catalog cover checked (10-22):**
   - 47 covers were fixed: 43 that belonged to someone else's record (for

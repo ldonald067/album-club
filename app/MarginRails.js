@@ -51,7 +51,7 @@ export default function MarginRails({ section, day }) {
   if (!showsRails(section)) return null;
   const poster = posterFor(day, section);
   const error = errorFor(day, section);
-  const promo = promoFor(day, section);
+  const promo = promoFor(day, section, poster?.to);
   return (
     <div className="margin-rails">
       {poster && (
@@ -98,7 +98,7 @@ export default function MarginRails({ section, day }) {
       )}
       <aside
         className="margin-rail margin-rail-right"
-        aria-label="Parody badges"
+        aria-label="Parody sidebar"
       >
         <ul className="rail-badges">
           {badgesFor(day).map((b) => (
@@ -115,7 +115,7 @@ export default function MarginRails({ section, day }) {
         </ul>
         <nav className="rail-ring" aria-label="The Album Ring">
           <span className="rail-ring-title">THE ALBUM RING</span>
-          <span className="rail-ring-links">
+          <span>
             <Link
               href={sectionPath("archive")}
               prefetch={false}
@@ -144,12 +144,16 @@ export default function MarginRails({ section, day }) {
             {promo.kicker && (
               <span className="rail-promo-kicker">{promo.kicker}</span>
             )}
-            {promo.head && <span className="rail-promo-head">{promo.head}</span>}
+            {promo.head && (
+              <span className="rail-promo-head">{promo.head}</span>
+            )}
             {promo.field && (
               <span className="rail-promo-field">{promo.field}</span>
             )}
             {promo.cta && <span className="rail-promo-cta">{promo.cta}</span>}
-            {promo.fine && <span className="rail-promo-fine">{promo.fine}</span>}
+            {promo.fine && (
+              <span className="rail-promo-fine">{promo.fine}</span>
+            )}
           </Link>
         )}
         <div className="rail-error" role="group" aria-label="Parody error box">

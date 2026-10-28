@@ -3350,6 +3350,15 @@ body {
   text-decoration: none;
 }
 
+/* Ink on the poster's own lines, not only on the link: Vintage colours
+   every link navy, and the body and fine print, which set no colour of
+   their own, inherited it — navy on Halloween's black, 1.19:1, and on
+   three costumes (measured 2026-10-28). :where() keeps this under every
+   line that does set its own colour. */
+:where(.rail-poster) > span {
+  color: var(--rail-poster-ink);
+}
+
 /* The first beat, as an animated GIF banner played it: the clickbait alone,
    for 2.4s, then the punchline. Hidden unless the animation shows it, so
    reduced motion (which stops every animation) goes straight to the
@@ -3483,9 +3492,9 @@ body {
    carved into a jack-o'-lantern. A seasonal costume, the same in every
    skin, like Dead Air's set. */
 .rail-poster-spooky {
+  --rail-poster-ink: var(--rail-spooky-ink);
   background: var(--rail-spooky-bg);
   border-color: var(--rail-spooky-edge);
-  color: var(--rail-spooky-ink);
 }
 
 .rail-poster-spooky .rail-poster-tease {
@@ -4132,11 +4141,13 @@ body {
 
 /* The day's 125×125 square (lib/margin-rails.js PROMOS), the era's
    "button" size, between the webring and the error box. It needs 137px
-   the badge column only has to spare once the badges tile two to a row,
-   or on a window 760px tall or more (the anchor grows to match, below);
-   on a shorter, narrower one it stays away rather than run the
-   disclaimer off the bottom of the screen (measured at 1380px,
-   2026-10-27). */
+   the badge column only has to spare once the badges tile two to a row
+   (a 1412px window), or on a window 780px tall or more; on a shorter,
+   narrower one it stays away rather than run the disclaimer off the
+   bottom of the screen. The tallest column is 752px at 1380px, on a day
+   whose error box carries the longest message the tests allow (110
+   characters) — 768px with the 16px above it (measured 2026-10-28). The
+   anchor grows to cover it, only where the badges stack. */
 .rail-promo {
   display: none;
   position: relative;
@@ -4157,7 +4168,7 @@ body {
   text-decoration: none;
 }
 
-@media (min-height: 760px) {
+@media (min-height: 780px) {
   .rail-promo {
     display: flex;
   }
@@ -4169,10 +4180,10 @@ body {
   }
 }
 
-@media (min-width: 1380px) and (min-height: 760px) {
+@media (min-width: 1380px) and (max-width: 1411px) and (min-height: 780px) {
   .margin-rails {
-    height: 740px;
-    margin-bottom: -740px;
+    height: 760px;
+    margin-bottom: -760px;
   }
 }
 
