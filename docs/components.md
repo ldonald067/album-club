@@ -447,7 +447,10 @@ with its own repo (`dead-air`) and deploy at `deadair.littlealbumclub.net`.
 - **The copy gives nothing away** — no answers or puzzle hints anywhere public.
   The content note above the frame was checked against the game's audio and
   story text by the dead-air chat (2026-10-17).
-- 700×620 on desktop. On phones the panel and bezel padding shrink so the frame
+- 700×620 in the normal column. From 1280px up the panel breaks out to
+  Cozy's width by the same rule (`.deadair-panel` beside `.cozy-panel`), so
+  the frame is up to 1200 wide, still 620 tall (owner's ask, 2026-10-29).
+  On phones the panel and bezel padding shrink so the frame
   is the viewport less 46px — 329px on a 375px phone. With the desktop padding
   it was 301px, and the game's top bar overflowed it (measured; the game alone
   fits at 327px). In the browser pane's emulation the frame draws a 15px

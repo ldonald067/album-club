@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-10-28.
+session. Last updated: 2026-10-29.
 
 This file holds **current state, open items and standing decisions** only.
 How things work lives in the topic docs; what happened and when lives in git
@@ -10,10 +10,13 @@ it used to carry).
 
 ## Handoff — read this first
 
-**Production is current and was looked at on 2026-10-22, 23:34–23:41
-UTC.** It ran `4fd5c1d`, matching `origin/master`, with `uptimeSeconds`
-climbing. Railway's outage is over and the CLI is logged in. What shipped
-from 10-19 to 10-22 was seen on the live site, except what airs later:
+**Production is current: on 2026-10-29 `/api/health` reported `19db3e8`**,
+which is `origin/master`. **Halloween week is live:** on 10-29, at
+1440px wide, the poster was in its Halloween frame with the jack-o'-lantern,
+the error box read Boo.exe, and a badge read "HALLOWEEN IN 2". The Vintage
+Halloween poster measured 15.39:1 for body text and 8.18:1 for the headline.
+
+The 10-22 deploy check, from 23:34 to 23:41 UTC on `4fd5c1d`, found:
 
 - **Wider margin rails: right.** Measured at 1380px wide, both rails are
   166px and the badges stack one to a row. At 1600 and 1920 both are 240px
@@ -39,13 +42,15 @@ from 10-19 to 10-22 was seen on the live site, except what airs later:
   - _Korean R&B Playlist_ (10-24) and _KEXP Live Sessions: Khruangbin_
     (11-03) carry no image, so they fall back to their emoji on their colour.
 - **Still to see, on its day** (in "Where to pick up" below): the first
-  hand-written corner since the change, and the two emoji days.
+  hand-written corner since the change (today, 10-29) and the 11-03 emoji
+  day. Nobody saw 10-24's emoji, and that day has passed.
 
 **One thing is in flight: the full-album video refetch** (open item 3),
 which searches a batch a day into a log and has not touched the catalog yet.
 Day 1 (10-20): 95 albums searched, 48 checked picks kept. 10-21 was not
 run. Day 2 (10-22): 94 searched, 49 picks, five of them edits and turned
-into rules — 138 left, two more days (10-23 and 10-24). **The owner runs it by hand: they open a new chat and say
+into rules. **No batch has run since 10-22:** `--plan` still shows 138 to
+search, about two days' quota. **The owner runs it by hand: they open a new chat and say
 "run today's batch."** Run `npm run fetch-youtube-ids`, read every new pick's
 title and channel by eye (day 1's rules let seven edits through — a reversed
 tracklist, a 432Hz retune, crossfades, a continuous mix, disguised titles),
@@ -54,10 +59,20 @@ add a tested rule in `lib/youtube-match.js` for any new shape, then commit
 midnight Pacific; a run that hits it stops cleanly and says so. They chose
 this over GitHub Actions or a scheduled task; do not re-offer automation.
 
-No PRs are open, and `master` is the only branch, locally and on GitHub.
+No PRs are open. Apart from `master`, the only branch is
+`deadair-content-note` (PR #6, merged), on GitHub and checked out in another
+worktree. Leave it to that session to remove.
 
-**Shipped most recently (10-14 → 10-27)** — each is described in its topic
+**Shipped most recently (10-14 → 10-29)** — each is described in its topic
 doc, and what is still unchecked is in the open items:
+
+- **Dead Air matches Cozy's width (10-29):** from 1280px up, the panel
+  breaks out of the 960px column to 1260px, and the frame grows to 1200
+  wide by 620 tall. On the dev server both tabs measured the same at
+  1440px, and 1280px had no sideways scroll. `docs/components.md` → "Dead
+  Air".
+- **Dead Air’s content note (10-27, PR #6):** it names the blood and no
+  longer mentions gore.
 
 - **A parody 125×125 square in the badge column every day (10-27):**
   seven era formats drawn in CSS in our own words (punch-the-monkey,
@@ -168,19 +183,16 @@ and build cleanly).
 
 **Where to pick up, in this order:**
 
-1. **Three dated looks at the live site:**
-   - **10-24: Halloween week goes live on its own.** Load the live site in a
-     window at least 1380px wide and 700px tall. The poster should be
-     orange and black with a jack-o'-lantern label, Dead Air should be
-     billed every other day, a badge should count down the nights, and the
-     error box should be Boo.exe. `test/margin-rails.test.mjs` renders every
-     Halloween day; nobody has seen it on production yet. The same day,
-     _Korean R&B Playlist_ should show its emoji on its colour.
-   - **10-29: the first hand-written corner since the one-person change**
+1. **Two dated looks at the live site** (Halloween was seen live on 10-29,
+   above):
+   - **10-29 (today): the first hand-written corner since the one-person change**
      (_Reasonable Doubt_; the club's call is TV). After the vote, check for
      "The club went TV. You went …", the TV pitch card tagged "The club's
      call", and the agree tally.
    - **11-03:** _KEXP Live Sessions: Khruangbin_ shows its emoji.
+   - **11-01:** the poster leaves its Halloween frame for tabloid, the
+     first costume seen to change on production. Y2k follows on Monday
+     11-02.
 2. **One phone check** — only a person can do it (open item 2). The day
    kinds below hold until the refetch's picks are applied; after that,
    recompute them.
