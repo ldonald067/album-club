@@ -3150,14 +3150,18 @@ body {
    column still scrolls internally by design.) Width table in
    cozyfun/docs/EMBEDDING.md. */
 @media (min-width: 1280px) {
-  .cozy-panel {
+  /* Dead Air breaks out to the same width (the owner's ask, 2026-10-29),
+     so the two game tabs match */
+  .cozy-panel,
+  .deadair-panel {
     width: min(1260px, calc(100vw - 40px));
     position: relative;
     left: 50%;
     transform: translateX(-50%);
   }
 
-  .cozy-panel .cozy-window {
+  .cozy-panel .cozy-window,
+  .deadair-panel .deadair-set {
     max-width: 1220px;
   }
 

@@ -4264,7 +4264,7 @@ function DeadAirSection() {
   const { frameRef, refused, goFullscreen } = useFullscreenFrame();
 
   return (
-    <div className="panel">
+    <div className="panel deadair-panel">
       <div className="panel-header">
         <h2 className="panel-title">
           <i className="hn hn-sound-mute" aria-hidden="true" /> DEAD AIR
