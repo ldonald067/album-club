@@ -201,7 +201,7 @@ test("a session is the series' own upload of the whole set", () => {
 
 test("a session posted before its year is another night; one posted later is a repost", () => {
   const berlin = {
-    artist: "Various Artists",
+    artist: "Maceo Plex",
     title: "Boiler Room: Berlin",
     year: 2019,
   };
@@ -218,6 +218,60 @@ test("a session posted before its year is another night; one posted later is a r
   assert.equal(judgeVideo(berlin, null, set("2026-01-20")).ok, true);
   // a stored pick from before the log kept the date is judged without it
   assert.equal(judgeVideo(berlin, null, set(undefined)).ok, true);
+});
+
+test("a night with no performer waits for the owner's ruling", () => {
+  const berlin = {
+    artist: "Various Artists",
+    title: "Boiler Room: Berlin",
+    year: 2019,
+  };
+  const set = {
+    ...video("SPFDJ | Boiler Room Berlin: Intrepid Skin", 57),
+    channel: "Boiler Room",
+    published: "2022-10-19",
+  };
+  assert.match(judgeVideo(berlin, null, set).why, /no performer/);
+});
+
+test("the title turns down a changed tracklist or a record with parts removed", () => {
+  for (const title of [
+    "Radiohead - OK Computer Full Album Vocals Only Accapella",
+    "Radiohead - OK Computer (Full Album) - Dolby Atmos Backing Tracks",
+    "Beck's Record Club - Radiohead - OK Computer (Full Album) 1997",
+    "Radiohead - OK Computer (Test Pressing) (Full Album)",
+    "Radiohead - OK Computer: Definitive Edition (Full Album)",
+  ]) {
+    assert.equal(judge(video(title)).ok, false, title);
+  }
+});
+
+test("the description can admit what the title hides", () => {
+  const title = "Radiohead - OK Computer (Full Album)";
+  const told = (description) => judge(video(title, AM, { description }));
+  assert.match(
+    told("Here's a #covermarathon for the full album").why,
+    /description says "covermarathon"/,
+  );
+  assert.match(
+    told("This is a manually edited version of the album.").why,
+    /description says "manually edited"/,
+  );
+  assert.match(
+    told("Note: transition smoothing added between tracks.").why,
+    /description says "transition smoothing"/,
+  );
+  // art credits and studio credits are not admissions
+  assert.equal(told("Artwork [Front Cover Rendering] - John").ok, true);
+  assert.equal(told("Edited At - GLC Sound Studios").ok, true);
+  assert.equal(told("").ok, true);
+});
+
+test("a video read and turned down stays out under any title", () => {
+  const j = judge(
+    video("Radiohead - OK Computer (Full Album)", AM, { id: "OUb3nHFm19g" }),
+  );
+  assert.match(j.why, /cover marathon/);
 });
 
 test("the pick prefers the artist's upload, then the closest length", () => {

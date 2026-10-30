@@ -1,7 +1,7 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-10-29.
+session. Last updated: 2026-10-30.
 
 This file holds **current state, open items and standing decisions** only.
 How things work lives in the topic docs; what happened and when lives in git
@@ -49,12 +49,15 @@ The 10-22 deploy check, from 23:34 to 23:41 UTC on `4fd5c1d`, found:
 which searches a batch a day into a log and has not touched the catalog yet.
 Day 1 (10-20): 95 albums searched, 48 checked picks kept. 10-21 was not
 run. Day 2 (10-22): 94 searched, 49 picks, five of them edits and turned
-into rules. **No batch has run since 10-22:** `--plan` still shows 138 to
-search, about two days' quota. **The owner runs it by hand: they open a new chat and say
+into rules. Day 3 (10-30): 94 searched, 51 picks, ten of them wrong, and three
+older picks dropped once their descriptions were read for the first time.
+`--plan` shows 57 to search, about one day's quota. **The owner runs it by hand: they open a new chat and say
 "run today's batch."** Run `npm run fetch-youtube-ids`, read every new pick's
-title and channel by eye (day 1's rules let seven edits through — a reversed
-tracklist, a 432Hz retune, crossfades, a continuous mix, disguised titles),
-add a tested rule in `lib/youtube-match.js` for any new shape, then commit
+title, channel **and description** by eye (a run now prints the description's
+start under each pick; day 3 had a cover marathon, a manual edit and smoothed
+transitions behind clean titles), add a tested rule in
+`lib/youtube-match.js` for any new shape (`TURNED_DOWN` when no words give it
+away), then commit
 `scripts/youtube-refetch.json` by name and push. The quota resets at
 midnight Pacific; a run that hits it stops cleanly and says so. They chose
 this over GitHub Actions or a scheduled task; do not re-offer automation.
@@ -185,10 +188,10 @@ and build cleanly).
 
 1. **Two dated looks at the live site** (Halloween was seen live on 10-29,
    above):
-   - **10-29 (today): the first hand-written corner since the one-person change**
-     (_Reasonable Doubt_; the club's call is TV). After the vote, check for
-     "The club went TV. You went …", the TV pitch card tagged "The club's
-     call", and the agree tally.
+   - **The next hand-written corner:** the first since the one-person change.
+     10-29 (_Reasonable Doubt_) passed with nothing recorded of it. After the
+     vote, check for "The club went …. You went …", the pitch card tagged
+     "The club's call", and the agree tally.
    - **11-03:** _KEXP Live Sessions: Khruangbin_ shows its emoji.
    - **11-01:** the poster leaves its Halloween frame for tabloid, the
      first costume seen to change on production. Y2k follows on Monday
@@ -212,7 +215,10 @@ and build cleanly).
    routine is in "One thing is in flight" above. When `--plan` shows nothing
    left, the review, audit and re-record steps are listed in the open item.
 4. **The catalog's remainder** (open item 1):
-   - Seven entries need the owner's ruling. Ask them; don't decide.
+   - Seven entries need the owner's ruling. Ask them; don't decide. A rename
+     or removal has to come before the entry airs: Khruangbin 11-03, Ravi
+     Shankar 11-25, Lofi Girl 2027-05-12, jinsang 2027-06-14, Boiler Room:
+     Berlin 2027-07-23, Four Tet 2027-10-03, Liniker 2027-12-14.
    - The _Wolf's Rain_ album facts describe OST 2 instead of the entry's
      OST 1.
 

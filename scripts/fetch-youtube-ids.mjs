@@ -120,12 +120,16 @@ const today = new Date().toISOString().slice(0, 10);
    batch read by eye: a reversed tracklist, a retuned copy, an uploader's
    crossfades and a disguised title (2026-10-20); a pitched-down copy,
    whispers laid over a record, a reordered reissue, styled letters and a
-   set posted years before its night (2026-10-22). */
+   set posted years before its night (2026-10-22); a tracklist with a song
+   added, a record with its vocals or its band taken out, and what only a
+   description admits (2026-10-30). The log keeps no description, so one of
+   those is dropped through TURNED_DOWN. */
 const stale = albums.filter((album) => {
   const entry = log[idOf(album)];
   if (!entry?.pick) return false;
   const { pick } = entry;
   return !judgeVideo(album, facts[idOf(album)] ?? null, {
+    id: pick.id,
     title: pick.title,
     channel: pick.channel,
     published: pick.published,
@@ -303,6 +307,7 @@ const toVideo = (item) => {
     title: item.snippet?.title ?? "",
     channel: item.snippet?.channelTitle ?? "",
     published: item.snippet?.publishedAt?.slice(0, 10) ?? null,
+    description: item.snippet?.description ?? "",
     seconds: parseDuration(item.contentDetails?.duration),
     embeddable: item.status?.embeddable === true,
     isPublic: item.status?.privacyStatus === "public",
@@ -377,7 +382,7 @@ for (const album of queue.slice(0, limit)) {
         .slice(0, 8)
         .map((j) => ({ ...brief(j.video), why: j.why })),
     };
-    if (pick) picked.push(album);
+    if (pick) picked.push({ album, description: pick.video.description });
     searched++;
     saveLog();
   } catch (err) {
@@ -392,13 +397,14 @@ for (const album of queue.slice(0, limit)) {
 }
 
 console.log(`\n\nSearched ${searched}; ${picked.length} whole album(s) found.`);
-for (const album of picked) {
+for (const { album, description } of picked) {
   const entry = log[idOf(album)];
   const p = entry.pick;
   console.log(
     `  ${idOf(album)}  ${p.id}  ${p.minutes}m of ${entry.albumMinutes ?? "?"}m` +
       `${p.official ? ", artist's channel" : ""}${entry.previousId ? `, replaces ${entry.previousId}` : ""}` +
-      `\n      ${JSON.stringify(p.title)} — ${p.channel}`,
+      `\n      ${JSON.stringify(p.title)} — ${p.channel}` +
+      `\n      ${description.replace(/\s+/g, " ").slice(0, 400)}`,
   );
 }
 // A search that failed is not logged, so it leaves a gap in the queue
