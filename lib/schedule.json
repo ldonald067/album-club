@@ -1,7 +1,7 @@
 {
   "about": "Each date's picks, recorded once and never re-derived. Written by scripts/pin-schedule.mjs; read by lib/daily-picks.js. See docs/album-data.md.",
-  "catalogFingerprint": "f4536dd02377cf13",
-  "pinnedThrough": "2026-10-23",
+  "catalogFingerprint": "27bc7943b877e99f",
+  "pinnedThrough": "2026-10-31",
   "days": {
     "2026-07-14": { "album": "A Tribe Called Quest::Midnight Marauders" },
     "2026-07-15": { "album": "Primal Scream::Screamadelica" },
@@ -461,6 +461,98 @@
       "taste": [
         "Wu-Tang Clan::Enter the Wu-Tang (36 Chambers)",
         "Radiohead::Kid A"
+      ]
+    },
+    "2026-10-24": {
+      "album": "Various Artists::Korean R&B Playlist",
+      "puzzle": "Doja Cat::Planet Her",
+      "cover": "Clipse::Let God Sort Em Out",
+      "heardle": "Jay-Z::The Blueprint",
+      "scramble": "Talking Heads::Stop Making Sense",
+      "lyric": "Nirvana::Unplugged in New York",
+      "versus": ["Fontaines D.C.::Dogrel", "Rina Sawayama::Sawayama"],
+      "taste": ["Pink Floyd::Live at Pompeii", "The Antlers::Hospice"]
+    },
+    "2026-10-25": {
+      "album": "Nujabes & Fat Jon::Samurai Champloo Music Record: Departure",
+      "puzzle": "Doja Cat::Planet Her",
+      "cover": "Clipse::Let God Sort Em Out",
+      "heardle": "Jay-Z::The Blueprint",
+      "scramble": "Talking Heads::Stop Making Sense",
+      "lyric": "Nirvana::Unplugged in New York",
+      "versus": ["The Strokes::Is This It", "Earl Sweatshirt::Some Rap Songs"],
+      "taste": ["Deftones::private music", "Taylor Swift::Folklore"]
+    },
+    "2026-10-26": {
+      "album": "Nina Kraviz::Cercle: Nina Kraviz at Tour Eiffel",
+      "puzzle": "Doja Cat::Planet Her",
+      "cover": "Clipse::Let God Sort Em Out",
+      "heardle": "Jay-Z::The Blueprint",
+      "scramble": "Talking Heads::Stop Making Sense",
+      "lyric": "Nirvana::Unplugged in New York",
+      "versus": ["Petit Biscuit::Presence", "Radiohead::Kid A"],
+      "taste": ["Mac Miller::Circles", "Prince::Purple Rain"]
+    },
+    "2026-10-27": {
+      "album": "Deftones::private music",
+      "puzzle": "Bon Iver::For Emma, Forever Ago",
+      "cover": "Kendrick Lamar::GNX",
+      "heardle": "NewJeans::Get Up",
+      "scramble": "The Antlers::Hospice",
+      "lyric": "Michael Jackson::Thriller",
+      "versus": ["Slowdive::Souvlaki", "Kensuke Ushio::Devilman Crybaby"],
+      "taste": ["Death Grips::The Money Store", "Japanese Breakfast::Jubilee"]
+    },
+    "2026-10-28": {
+      "album": "J.A. Seazer::Utena: The Eve of the Absolute Evolution Revolution",
+      "puzzle": "Bon Iver::For Emma, Forever Ago",
+      "cover": "Kendrick Lamar::GNX",
+      "heardle": "NewJeans::Get Up",
+      "scramble": "The Antlers::Hospice",
+      "lyric": "Michael Jackson::Thriller",
+      "versus": [
+        "Fiona Apple::Fetch the Bolt Cutters",
+        "Oneohtrix Point Never::Returnal"
+      ],
+      "taste": ["Miles Davis::Bitches Brew", "Arcade Fire::The Suburbs"]
+    },
+    "2026-10-29": {
+      "album": "Jay-Z::Reasonable Doubt",
+      "puzzle": "Bon Iver::For Emma, Forever Ago",
+      "cover": "Kendrick Lamar::GNX",
+      "heardle": "NewJeans::Get Up",
+      "scramble": "The Antlers::Hospice",
+      "lyric": "Michael Jackson::Thriller",
+      "versus": [
+        "Wu-Tang Clan::Enter the Wu-Tang (36 Chambers)",
+        "The Notorious B.I.G.::Ready to Die"
+      ],
+      "taste": [
+        "Kanye West::My Beautiful Dark Twisted Fantasy",
+        "Tame Impala::InnerSpeaker"
+      ]
+    },
+    "2026-10-30": {
+      "album": "Kanye West::My Beautiful Dark Twisted Fantasy",
+      "puzzle": "Bon Iver::For Emma, Forever Ago",
+      "cover": "Kendrick Lamar::GNX",
+      "heardle": "NewJeans::Get Up",
+      "scramble": "The Antlers::Hospice",
+      "lyric": "Michael Jackson::Thriller",
+      "versus": ["Dijon::Baby", "Chico Buarque::Construção"],
+      "taste": ["Bon Iver::For Emma, Forever Ago", "Tame Impala::InnerSpeaker"]
+    },
+    "2026-10-31": {
+      "album": "Elliott Smith::Either/Or",
+      "puzzle": "Bon Iver::For Emma, Forever Ago",
+      "cover": "Kendrick Lamar::GNX",
+      "heardle": "NewJeans::Get Up",
+      "scramble": "The Antlers::Hospice",
+      "lyric": "Michael Jackson::Thriller",
+      "versus": ["MF DOOM::Mm..Food", "Men I Trust::Oncle Jazz"],
+      "taste": [
+        "Fiona Apple::Fetch the Bolt Cutters",
+        "Gorillaz::Plastic Beach"
       ]
     }
   }

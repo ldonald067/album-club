@@ -1939,11 +1939,12 @@
   {
     "title": "KEXP Live Sessions: Khruangbin",
     "artist": "Khruangbin",
-    "year": 2019,
+    "year": 2025,
     "genre": "Psychedelic/Live",
     "cover": "🪬",
     "color": "#67452e",
-    "recognizable": false
+    "recognizable": false,
+    "youtubeId": "0PsOJ_fRckg"
   },
   {
     "title": "Live at Third Man Records",

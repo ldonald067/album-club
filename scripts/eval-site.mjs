@@ -792,7 +792,7 @@ const NO_COVER = new Map([
   ],
   [
     "Khruangbin::KEXP Live Sessions: Khruangbin",
-    "no 2019 session found (KEXP has 2018 and 2025); wore The Universe Smiles Upon You ii",
+    "a 2025 session with no release art; wore The Universe Smiles Upon You ii",
   ],
   [
     "Lofi Girl::Jazz Vibes",

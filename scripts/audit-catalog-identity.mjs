@@ -93,10 +93,12 @@ const DECIDED = {
     "kept as a mix by owner decision; mixes are allowed in the catalog (reviewed 2026-09-27)",
 
   /* Sessions: the performance itself, confirmed by the series' own upload or a
-     dated source. Four Tet, Khruangbin and Boiler Room: Berlin are left out
-     on purpose — none could be tied to one performance. */
+     dated source. Four Tet and Boiler Room: Berlin are left out on purpose —
+     neither could be tied to one performance. */
   "Kaytranada::Boiler Room: Montreal":
     "confirmed by the series' own upload, -5EQIiabJvk (2026-10-07)",
+  "Khruangbin::KEXP Live Sessions: Khruangbin":
+    "confirmed by KEXP's own upload, 0PsOJ_fRckg, recorded 2025-11-19; year corrected from 2019 by owner decision, since KEXP has no 2019 session (2026-10-30)",
   "Various Artists::Boiler Room: Tokyo":
     "confirmed by the series' own upload, T1tcUfUhR5U (2026-10-07)",
   "Mac Miller::NPR Tiny Desk: Mac Miller":

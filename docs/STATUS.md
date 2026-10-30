@@ -109,7 +109,7 @@ doc, and what is still unchecked is in the open items:
     audit's `DECIDED` map.
   - The Nina Kraviz set was renamed to the one that exists (owner
     decision).
-  - Seven still wait on the owner (open item 1).
+  - Six still wait on the owner (open item 1).
 - **Bundle re-measured (10-22):** a fresh visit downloads 228KB, against
   213KB on 09-03 measured the same way. Nearly all of the growth is the app
   chunk (+8.8KB), which holds the record and the rails. The generator and
@@ -192,7 +192,9 @@ and build cleanly).
      10-29 (_Reasonable Doubt_) passed with nothing recorded of it. After the
      vote, check for "The club went …. You went …", the pitch card tagged
      "The club's call", and the agree tally.
-   - **11-03:** _KEXP Live Sessions: Khruangbin_ shows its emoji.
+   - **11-03:** _KEXP Live Sessions: Khruangbin_ (re-dated 2025 on 10-30)
+     shows its emoji on the record, with KEXP's 35.7-minute set playing as a
+     whole session: every ring, then the run-out.
    - **11-01:** the poster leaves its Halloween frame for tabloid, the
      first costume seen to change on production. Y2k follows on Monday
      11-02.
@@ -215,9 +217,8 @@ and build cleanly).
    routine is in "One thing is in flight" above. When `--plan` shows nothing
    left, the review, audit and re-record steps are listed in the open item.
 4. **The catalog's remainder** (open item 1):
-   - Seven entries need the owner's ruling. Ask them; don't decide. A rename
-     or removal has to come before the entry airs: Khruangbin 11-03, Ravi
-     Shankar 11-25, Lofi Girl 2027-05-12, jinsang 2027-06-14, Boiler Room:
+   - Six entries need the owner's ruling. Ask them; don't decide. A rename
+     or removal has to come before the entry airs: Ravi Shankar 11-25, Lofi Girl 2027-05-12, jinsang 2027-06-14, Boiler Room:
      Berlin 2027-07-23, Four Tet 2027-10-03, Liniker 2027-12-14.
    - The _Wolf's Rain_ album facts describe OST 2 instead of the entry's
      OST 1.
@@ -349,13 +350,14 @@ docs.
      confirmed. The owner ruled on one: _Cercle: Nina Kraviz at Château de
      Fontainebleau_ is renamed _Cercle: Nina Kraviz at Tour Eiffel_ (2018),
      her documented Cercle set, and it has that set's cover back. It is
-     confirmed now and airs 10-26. What happens to the other seven is **the
-     owner's call**. Each could be renamed or removed, and since none of them
-     has aired, neither would break a recorded day:
+     confirmed now and airs 10-26. On 10-30 they ruled on a second:
+     _KEXP Live Sessions: Khruangbin_ is the 2025-11-19 session, re-dated from
+     2019, and carries KEXP's own full performance (`0PsOJ_fRckg`). What
+     happens to the other six is **the owner's call**. Each could be renamed or
+     removed, and since none of them has aired, neither would break a recorded
+     day:
      - _Essential Mix: Four Tet_ (2022): he has Essential Mixes from 2010,
        2015 (with Jamie xx), 2018 and 2026, but none from 2022.
-     - _KEXP Live Sessions: Khruangbin_ (2019): KEXP has sessions from
-       April 2018 and 2025-11-19, but none from 2019.
      - _Boiler Room: Berlin_: a city's night, with no performer to tie it to.
      - _jinsang — everything perfect is already here_: that title is claire
        rousay's 2022 album. Jinsang's 2018 album is _in flight_.
@@ -473,10 +475,6 @@ docs.
      songs really change and a needle dropped on a ring would start that
      song. Needs a check that the video plays the release's running order
      (the Hayley Williams bootleg did not).
-   - **KEXP's full Khruangbin performance** (`0PsOJ_fRckg`, 35.7 min) passes
-     the audit's `FULL_SESSION` rule. However, KEXP's description says it was
-     recorded on 2025-11-19, and the catalog entry is dated 2019. Attach it
-     only if the entry is meant to be that session (open item 1).
    - **Skip:** anything audio-reactive (the YouTube iframe is opaque to Web
      Audio — the Club Player's spectrum was costume for this reason), another
      flip (the Runout Groove is one), and 45 rpm for EPs (only 3 entries).
