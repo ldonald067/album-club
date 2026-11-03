@@ -17,6 +17,9 @@ npm run eval-site        # data guardrails; also prints live pool counts
 
 ## Workflow
 
+**The site has been offline since 2026-11-03.** Before anything else, read `docs/restart.md`.
+While the site is down, pushing deploys nothing.
+
 **Pushing to `master` deploys production** (Railway auto-deploys — see `docs/project.md`).
 
 YOU MUST run `npm test && npm run build` before committing, plus `npm run eval-site`
@@ -104,6 +107,7 @@ standing decisions, including features deliberately _not_ built.
 
 | Task involves...       | Read first            |
 | ---------------------- | --------------------- |
+| Bringing the site back | `docs/restart.md`     |
 | Where things stand     | `docs/STATUS.md`      |
 | Games or puzzles       | `docs/games.md`       |
 | API routes or database | `docs/api.md`         |

@@ -2,7 +2,7 @@
 
 ## Production
 
-- **Live site**: https://littlealbumclub.net (Railway, auto-deploys on `git push`)
+- **Live site**: https://littlealbumclub.net (Railway, auto-deploys on `git push`). **Offline since 2026-11-03**: see `docs/restart.md`.
 - **Analytics**: https://littlealbumclub.goatcounter.com (GoatCounter, script in `layout.js`)
 - **Contact**: rainbowpudding@littlealbumclub.net (mailto link in footer)
 
@@ -44,8 +44,9 @@ share the link — those need a human with the accounts.
 The community aggregate (all ratings/vibes/votes) lives only on the Railway
 volume at `data/aotd.db`, which is gitignored. Back it up off-volume.
 
-**It is on.** `.github/workflows/backup.yml` runs daily (and on manual
-dispatch), pulls the snapshot, checks it starts with the SQLite header, and
+**Its daily schedule is off while the site is offline (2026-11-03):** see
+`docs/restart.md`, which also says where the final copy is. When it was on,
+`.github/workflows/backup.yml` ran daily (and on manual dispatch), pulls the snapshot, checks it starts with the SQLite header, and
 keeps it as a GitHub artifact for 90 days. Checked 2026-10-20: every recent
 run succeeded and uploaded a real database. The cron says 06:00 UTC; GitHub
 starts scheduled runs late, so they land a few hours after that.

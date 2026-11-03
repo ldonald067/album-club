@@ -6,9 +6,12 @@ name: Backup DB
 #   BACKUP_TOKEN the same value set as BACKUP_TOKEN in the Railway service
 # The workflow is inert until both secrets exist (it skips with a notice).
 
+# The daily schedule is off while the site is offline (since 2026-11-03):
+# every run would fail on a 404 and send a failure email. To bring it back,
+# restore these two lines under `on:` (docs/restart.md):
+#   schedule:
+#     - cron: "0 6 * * *" # daily at 06:00 UTC
 on:
-  schedule:
-    - cron: "0 6 * * *" # daily at 06:00 UTC
   workflow_dispatch: {}
 
 jobs:

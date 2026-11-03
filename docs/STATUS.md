@@ -1,12 +1,28 @@
 # Project Status & Handoff
 
 Living snapshot of where the site is and what's next. Start here in a new
-session. Last updated: 2026-10-30.
+session. Last updated: 2026-11-03.
 
 This file holds **current state, open items and standing decisions** only.
 How things work lives in the topic docs; what happened and when lives in git
 history (`git log`, and this file's own history for the long-form narrative
 it used to carry).
+
+## Paused — the site is offline (2026-11-03)
+
+**The owner ended their subscriptions and the site is down.** Railway
+removed the deployment, and littlealbumclub.net answers 404. **Coming back
+starts at `docs/restart.md`**, which covers:
+
+- the final database copy, which is local and dated 10-31;
+- the secrets that are not in git;
+- the hosting, domain and backup steps;
+- what will have drifted.
+
+The daily backup job's schedule is off, so it is not failing every day.
+
+Everything below is the state at the pause. The dated checks are past, and
+the open items and standing decisions still hold.
 
 ## Handoff — read this first
 
